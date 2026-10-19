@@ -1,3 +1,58 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import 'tailwindcss';
+
+:root {
+    --color-canvas: #eef2f6;          /* Fondo base ideal para sombras neumórficas */
+    --color-canvas-dark: #0f172a;     /* Fondo para modo oscuro */
+    
+    --color-brand-500: #6366f1;       /* Indigo principal */
+    --color-brand-600: #4f46e5;
+    --color-brand-glow: #818cf8;
+
+    /* 2. Sombras Neumórficas Claras y de Inset (Hundido al hacer click) */
+    --shadow-neu-flat: 6px 6px 14px #a6b4c873, -6px -6px 14px #ffffffe6;
+    --shadow-neu-hover: 3px 3px 8px #a6b4c880, -3px -3px 8px #ffffff;
+    --shadow-neu-pressed: inset 4px 4px 8px #a6b4c880, inset -4px -4px 8px #ffffffd9;
+    --shadow-neu-brand: 5px 5px 15px #4f46e566, -4px -4px 12px #ffffffcc;
+    --shadow-neu-brand-pressed: inset 3px 3px 6px #312e8180, inset -3px -3px 6px #818cf84d;
+}
+body {
+  background-color: var(--color-canvas);
+  color: #1e293b;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+/* Botón Neutro (Superficie de Cristal Neumórfica) */
+.btn-glass-neu {
+  @apply px-5 py-2.5 rounded-xl font-medium text-slate-700
+         bg-white/60 backdrop-blur-md
+         border border-white/60
+         transition-all duration-200 cursor-pointer
+         hover:bg-white/80 active:scale-[0.98];
+  box-shadow: var(--shadow-neu-flat);
+}
+.btn-glass-neu:hover {
+  box-shadow: var(--shadow-neu-hover);
+}
+.btn-glass-neu:active {
+  box-shadow: var(--shadow-neu-pressed);
+}
+
+/* Botón Primario (Acento con Brillo de Cristal) */
+.btn-glass-primary {
+  @apply px-5 py-2.5 rounded-xl font-medium text-white
+         bg-linear-to-br from-indigo-500/90 to-blue-600/90 backdrop-blur-md
+         border border-indigo-300/40
+         transition-all duration-200 cursor-pointer
+         hover:from-indigo-600 hover:to-blue-700 active:scale-[0.98];
+  box-shadow: var(--shadow-neu-brand);
+}
+.btn-glass-primary:active {
+  box-shadow: var(--shadow-neu-brand-pressed);
+}
+
+/* Tarjeta / Contenedor Glass-Neu */
+.card-glass-neu {
+  @apply p-6 rounded-2xl bg-white/50 backdrop-blur-xl border border-white/50;
+  box-shadow: var(--shadow-neu-flat);
+}
