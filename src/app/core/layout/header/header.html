@@ -1,6 +1,16 @@
-﻿<header>
-    <div class="logo-container">
-        <img src="" alt="" class="logo">
+﻿<header class="w-full fixed backdrop-blur-sm ">
+    <div class="p-4 flex items-center justify-between">
+        <div class="flex items-center space-x-5">
+            <div class=" h-17.5 w-20 bg-white rounded-xl flex px-2.5 justify-center items-center">
+            <img src="/worklink logo.svg"alt="worklink-logo" class="w-full h-full">
+            </div>
+            <h1 class="font-bold text-4xl text-white text-center">Work<span class="text-sky-400">Link</span></h1>
+        </div>
+        <app-navbar></app-navbar> 
+        <div class="flex justify-end gap-5">
+                <button class="m-px border hover:border hover:border-white px-3 py-2 border-transparent rounded-xl cursor-pointer font-medium text-white hover:shadow-[0_0_5px_1px_rgba(255,255,255,0.5)] transition-all duration-300 ease-in-out">Iniciar Sesión</button>
+                <button class="bg-conic bg-violet-700 m-px py-2 px-3 rounded-xl cursor-pointer font-medium text-white hover:shadow-[0_0_5px_4px_rgba(181,101,255,0.7)] transition-all duration-300 ease-in-out hover:scale-[1.05]">Registrarse</button>
+        </div>
     </div>
-    <app-navbar></app-navbar>
 </header>
+

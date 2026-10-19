@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 
 @Component({
   imports: [],
@@ -6,4 +6,17 @@ import { Component } from '@angular/core';
   styleUrl: './navbar.css',
   templateUrl: './navbar.html',
 })
-export class Navbar {}
+export class Navbar {
+   pildoraX = signal(0);
+  pildoraW = signal(0);
+  pildoraVisible = signal(false);
+  moverPildora(e: MouseEvent) {
+    const el = e.currentTarget as HTMLElement;
+    this.pildoraX.set(el.offsetLeft);
+    this.pildoraW.set(el.offsetWidth);
+    this.pildoraVisible.set(true);
+  }
+  ocultarPildora() {
+    this.pildoraVisible.set(false);
+  }
+}
