@@ -1,12 +1,12 @@
-﻿<header class="w-full fixed backdrop-blur-sm p-4 flex items-center justify-between">
+﻿<header class="w-full fixed top-0 left-0 z-50 backdrop-blur-sm p-4 flex items-center justify-between">
     <div class="flex items-center space-x-5">
-        <div class=" md:h-17.5 md:w-20 h-17 w-18 bg-white/5 rounded-3xl flex px-2.5 justify-center items-center">
+        <div class=" md:h-14 md:w-16 h-17 w-18 bg-white/5 rounded-3xl md:rounded-2xl flex px-2.5 justify-center items-center">
         <img src="/worklink logo.svg"alt="worklink-logo" class="w-full h-full">
         </div>
         <h1 class="font-bold text-2xl md:4xl text-white text-center">Work<span class="text-sky-400">Link</span></h1>
     </div>
     <app-navbar class="hidden md:flex"></app-navbar> 
-    @if (!auth.usuarioActual()){
+    @if (!auth.session()){
         <div class="flex flex-col md:flex-row justify-end md:gap-5 gap-1.5">
             <button class="m-px px-3 py-2 rounded-xl cursor-pointer font-medium text-white btn-iniciar-sesion" routerLink="/auth/login">Iniciar Sesión</button>
             <button class="bg-conic bg-indigo-700 m-px py-2 px-3 rounded-xl cursor-pointer font-medium text-white btn-registrarse" routerLink="/auth/register">Registrarse</button>
@@ -14,7 +14,7 @@
     }@else {
         <div class="flex items-center gap-3">
         <span class="text-white text-sm font-medium">
-            Hola, <strong class="text-sky-300">{{ auth.usuarioActual() }}</strong>
+            Hola, <strong class="text-sky-300">{{auth.session()?.nombreUsuario }}</strong>
         </span>
         <button 
             (click)="auth.logout()"

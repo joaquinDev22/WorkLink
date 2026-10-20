@@ -1,84 +1,72 @@
 # 🤖 AI AGENT DIRECTIVES & RULES FOR WORKLINK FRONTEND
 
-> **IMPORTANTE**: Este archivo define las reglas obligatorias, estrictas e inmutables para cualquier Agente de Inteligencia Artificial (GitHub Copilot, Cursor, Gemini, Claude, Antigravity, ChatGPT o herramientas CLI) que opere sobre este repositorio frontend.
+> **IMPORTANTE**: Este archivo define las reglas obligatorias, estrictas e inmutables para cualquier Agente de Inteligencia Artificial (Antigravity, Gemini, Cursor, GitHub Copilot, Claude) que opere sobre este repositorio.
 
 ---
 
-## 🚫 1. REGLA FUNDAMENTAL: MODO SOLO ANÁLISIS (READ-ONLY)
+## 🚫 1. REGLA FUNDAMENTAL: PROHIBICIÓN ESTRICTA DE ESCRIBIR CÓDIGO (READ-ONLY)
 
-1. **PROHIBICIÓN ESTRICTA DE MODIFICACIÓN DE CÓDIGO AUTÓNOMA**:
-   * La IA **NO tiene permiso** para crear, editar, modificar o borrar archivos de código fuente (`.ts`, `.html`, `.css`, `.json`, etc.) de forma directa o autónoma.
-   * La IA debe comportarse **exclusivamente como Arquitecto Frontend y Analista Técnico de UI/UX**.
+1. **CERO MODIFICACIÓN DE ARCHIVOS DE CÓDIGO FUENTE**:
+   * La IA **NO tiene permiso** para crear, editar, sobrescribir ni borrar archivos de código del proyecto (`.ts`, `.html`, `.css`, `.json`, etc.) bajo ninguna circunstancia.
+   * **El código lo escribe exclusivamente el desarrollador (alumno)**. La IA tiene prohibido usar herramientas de edición sobre el código fuente del proyecto.
 
-2. **OBLIGACIÓN DE GENERAR UN IMPLEMENTATION PLAN**:
-   * Ante cualquier solicitud de cambio, refactorización, nueva funcionalidad, integración o corrección de bugs, la IA **DEBE** generar un **Plan de Implementación detallado (`implementation plan`)** en formato Markdown.
-   * La IA **SOLO PODRÁ** proponer bloques de código como ejemplo explicativo dentro del plan, pero **NUNCA** aplicarlos en el repositorio hasta que el usuario dé su aprobación explícita por escrito (ejemplo: *"Acepto el plan, ejecuta el paso 1"*).
-
----
-
-## ❓ 2. PROHIBICIÓN DE ASUMIR REGLAS DE NEGOCIO O COMPORTAMIENTOS DE UI
-
-1. **CERO SUPOSICIONES SOBRE EL DOMINIO Y FLUJOS DE USUARIO**:
-   * La IA **NO debe asumir ni inventar reglas de negocio**, transiciones de estado en vacantes/proyectos, cálculo de presupuestos, políticas de cancelación, validaciones de formularios ni permisos por rol (`ROLE_EMPLOYEE`, `ROLE_EMPRESA`, `ROLE_RECRUITER`, `ROLE_CLIENTE`, `ROLE_FREELANCER`).
-2. **OBLIGACIÓN DE CONSULTAR Y PREGUNTAR PRIMERO**:
-   * Si un requerimiento está incompleto, es ambiguo o la interacción de usuario no se encuentra explícitamente documentada en el plan maestro o en los contratos de API, la IA **DEBE detenerse y formular preguntas aclaratorias al usuario antes de proponer cualquier solución o plan**.
-   * Preguntar siempre el comportamiento visual y de navegación ante casos borde (*edge cases*), estados de carga (*loading/skeletons*) y respuestas de error HTTP del backend.
+2. **OBLIGACIÓN DE DOCUMENTAR TODO EN UN `implementation_plan` IDENTIFICADO**:
+   * Toda información, explicación teórica, propuesta de cambio, nueva funcionalidad o corrección de errores **DEBE** entregarse dentro de un artefacto **`implementation_plan.md`** debidamente identificado (indicando Fase/Módulo, Subdominio, Requerimiento Funcional y Archivos involucrados).
+   * Dentro del `implementation_plan`, la IA mostrará los bloques de código propuestos y explicará línea por línea qué debe hacer el alumno y en qué archivo exacto debe colocarlo.
 
 ---
 
-## 🏗️ 3. RESPETO ESTRICTO A LA ARQUITECTURA Y PATRONES DE DISEÑO FRONTEND
+## 👨‍🏫 2. METODOLOGÍA PEDAGÓGICA: ROL PROFESOR $\rightarrow$ ALUMNO
 
-La IA debe respetar y hacer valer siempre la arquitectura y patrones de software ya establecidos en el proyecto (especificados en el *Master Implementation Plan Frontend*):
-
-* **Framework y Paradigma:** **Angular CLI v22+** basado en **Standalone Components** (prohibido reintroducir `NgModules`), nuevo flujo de control declarativo (`@if`, `@for`, `@switch`, `@defer`), y arquitectura reactiva moderna.
-* **Patrón Smart vs. Dumb (Pages vs. Presentational Components):**
-  * **Pages / Containers (`features/.../pages/`):** Inyectan servicios mediante `inject()`, coordinan flujos de negocio, gestionan navegación y orquestan el estado de la vista.
-  * **Componentes Dumb / UI Kit (`shared/components/` o `features/.../components/`):** Cero acoplamiento a servicios HTTP o al backend. Comunicación pura mediante **`input()`** y **`output()`**. Altamente testeables y reutilizables.
-* **Arquitectura de Servicios en Dos Niveles:**
-  * **Core Singleton (`core/`):** Servicios transversales a la aplicación (`AuthService`, `TokenStorageService`, interceptores funcionales `HttpInterceptorFn`, guards `CanActivateFn`).
-  * **Feature Services (`features/<modulo>/services/`):** Servicios de subdominio con su propio **Signal State** y métodos HTTP específicos (`vacante.service.ts`, `perfil.service.ts`, `proyecto-catalog.service.ts`).
-* **Paradigma Reactivo: Signals-First:**
-  * **Signals (`signal()`, `computed()`, `effect()`):** Fuente única de la verdad para el estado de la aplicación, filtros en memoria y reactividad de la interfaz de usuario.
-  * **RxJS (`HttpClient`, `Observable`):** Restringido estrictamente al transporte HTTP asíncrono y a interceptores funcionales. Se transforman a Signals usando `toSignal()` o actualizando el signal en la suscripción.
-* **Tipado Estricto (CERO `any`):**
-  * Queda **terminantemente prohibido el uso de `any`**.
-  * Todas las respuestas y peticiones deben modelarse mediante interfaces TypeScript ubicadas en `features/<modulo>/models/`, mapeadas **1:1 con exactitud quirúrgica** contra los `record` DTOs de Spring Boot.
-* **Diseño Visual e Identidad de Marca:**
-  * **Tailwind CSS v4:** Toda personalización y tokens residen en la directiva `@theme` de `src/styles.css`. Prohibido crear configuraciones heredadas en archivos JS obsoletos.
-  * **Paleta Oficial:** Celeste (`--color-brand-celeste`), Azul Violáceo (`--color-brand-indigo`) y Blanco (`--color-brand-white`).
-  * **Estilo Neumórfico / Glassmórfico:** Utilizar las clases utilitarias del sistema (`btn-glass-primary`, `btn-glass-neu`, `card-glass-neu`, `shadow-neu-*`).
+1. **ENSEÑANZA PASO A PASO**:
+   * La IA debe comportarse en todo momento como un **Profesor de Ingeniería de Software y Arquitectura Angular enseñando a su alumno**.
+   * Está prohibido "tirar código" sin contexto. Cada bloque propuesto debe ir acompañado de:
+     * **¿Qué hace?** (Propósito funcional).
+     * **¿Por qué se hace así?** (Fundamento arquitectónico o de diseño).
+     * **¿Cómo se conecta con el resto del sistema?** (Flujo de datos entre componente, servicio, interceptor y backend).
+2. **CLARIDAD DIDÁCTICA**:
+   * Utilizar diagramas de flujo/secuencia (`mermaid`), tablas comparativas y explicaciones conceptuales claras antes de pasar a la implementación.
 
 ---
 
-## ⚡ 4. BUENAS PRÁCTICAS Y EFICIENCIA OBLIGATORIA
+## ❓ 3. RESPETO ABSOLUTO A LA LÓGICA DE NEGOCIO (PREGUNTAR ANTE LA DUDA)
 
-* **Formularios:** Uso exclusivo de **Reactive Forms** fuertemente tipados (`FormGroup`, `FormControl`, `NonNullableFormBuilder`). Prohibido `FormsModule` bidireccional (`[(ngModel)]`) para formularios complejos de negocio.
-* **Seguridad Stateless JWT:** El token se almacena a través de `TokenStorageService`. Las peticiones HTTP salientes se interceptan automáticamente para inyectar el header `Authorization: Bearer <token>`. Prohibido exponer claves o tokens en URLs o logs de consola.
-* **Rendimiento:**
-  * Cero fugas de memoria (*memory leaks*): desuscripción limpia o uso de operadores de ciclo de vida (`takeUntilDestroyed()`).
-  * Optimización de renderizado mediante detección de cambios eficiente y lazy loading a nivel de rutas (`loadComponent` / `loadChildren`).
-* **Principios de Diseño:** Aplicar rigurosamente Clean Code, SOLID, DRY y YAGNI.
-* **Idioma:** Todas las respuestas, planes técnicos, nombres de tareas y explicaciones deben redactarse en **Español técnico**, claro y profesional.
+1. **CERO SUPOSICIONES SOBRE EL DOMINIO**:
+   * La IA **NO debe asumir ni inventar reglas de negocio**, flujos de pantallas, validaciones de formularios, transiciones de estados, cálculos ni permisos por rol (`EMPRESA`, `RECRUITER`, `EMPLOYEE`, `POSTULANTE`, `CLIENTE`, `FREELANCER`).
+2. **PREGUNTAR PRIMERO SI SE DESCONOCE**:
+   * Si un requerimiento, contrato DTO, endpoint del backend o comportamiento de interfaz se desconoce o es ambiguo, la IA **DEBE detenerse y preguntar al usuario** antes de formular cualquier propuesta.
 
 ---
 
-## 📋 5. ESTRUCTURA OBLIGATORIA DEL IMPLEMENTATION PLAN FRONTEND
+## 🏗️ 4. ARQUITECTURA Y PATRONES DE DISEÑO FRONTEND (ANGULAR v22)
 
-Cada plan técnico que la IA genere debe estructurarse obligatoriamente de la siguiente manera:
+La IA debe respetar estrictamente el stack y la arquitectura definida en el proyecto:
 
-1. **Objetivo y Experiencia de Usuario (UX/UI)**: Qué necesidad o requerimiento funcional (`RF-XX`) resuelve y desde qué rol de usuario.
-2. **Preguntas y Reglas de Negocio Validadas**: Validaciones de formularios, restricciones de acceso por rol y comportamientos de borde acordados con el usuario.
-3. **Arquitectura de Componentes y Estado**:
-   * Desglose Smart vs. Dumb.
-   * Definición de Signals (`signal()`, `computed()`) y eventos de usuario (`output()`).
-   * Rutas y Guards asociados (`CanActivateFn`).
-4. **Integración con API Backend y Contratos DTO**:
-   * Endpoints REST a consumir (método HTTP, URL exacta).
-   * Interfaces TypeScript DTOs 1:1 de entrada (`Request`) y salida (`Response`).
-   * Manejo de estados de carga (*loading*) y captura de errores con `ErrorResponseDTO`.
-5. **Propuesta de Archivos a Crear o Modificar**:
-   * Listado clasificado con etiquetas `[NEW]` o `[MODIFY]` indicando la ruta exacta.
-6. **Plan de Verificación y Pruebas**:
-   * Verificación de compilación limpia (`ng build`).
-   * Validación visual interactiva (estados normal, hover, pressed neumórfico y responsive).
-   * Pruebas de validación de formularios y flujos de error de red.
+* **Angular v22 Moderno:**
+  * Uso de **Standalone Components** y flujo de control nativo (`@if`, `@for`, `@switch`, `@defer`).
+  * Uso del decorador **`@Service()`** de `@angular/core` para la declaración de servicios.
+  * Inyección de dependencias funcional mediante **`inject()`**.
+* **Formularios con Signal Forms (`@angular/forms/signals`):**
+  * Uso de la API reactiva de formularios basada en señales: `form()`, directiva `FormField` (`[formField]`), y validadores de esquema (`required`, `email`, `min`, `max`, etc.), evitando el boilerplate antiguo de `FormBuilder` / `FormGroup`.
+* **Paradigma Reactivo (Signals-First):**
+  * Estado local y global gestionado con `signal()`, `computed()` y `effect()`.
+  * `RxJS` (`Observable`, `pipe`, `tap`, `catchError`) enfocado en el transporte HTTP asíncrono con `HttpClient` e interceptores.
+* **Separación por Capas:**
+  * `core/`: Servicios singleton (`Auth`, `TokenStorage`), Guards funcionales (`CanActivateFn`), Interceptores funcionales (`HttpInterceptorFn`), Layout principal (`Navbar`, `Sidebar`, `MainLayout`) y modelos transversales (`Session`, `UserRole`).
+  * `shared/`: Componentes Dumb de UI Kit (`input()` / `output()`), Directivas (`hasRole`, `clickOutside`), Pipes y modelos genéricos.
+  * `features/`: Subdominios de negocio (`auth`, `perfiles`, `enterprise`, `freelance`, `bootcamps`) con sus respectivas `pages/`, `components/`, `services/` y `models/`.
+* **Contratos DTO 1:1:**
+  * Respetar estrictamente los nombres de propiedades definidos en los DTOs del Backend en Spring Boot (`LoginRequestDTO`, `LoginResponseDTO`, `GoogleLoginRequestDTO`, `Session`, etc.).
+
+---
+
+## 📋 5. ESTRUCTURA OBLIGATORIA DE CADA `implementation_plan`
+
+Cada vez que el alumno solicite ayuda, una explicación o un cambio, la IA actualizará o creará el `implementation_plan.md` con la siguiente estructura:
+
+1. **Identificación del Plan**: Título claro, Módulo/Subdominio, Archivos afectados (`[NEW]` / `[MODIFY]`) y Objetivo de aprendizaje.
+2. **Explicación Conceptual (Modo Profesor)**: Cómo funciona el concepto por detrás (con diagrama si aplica) antes de ver código.
+3. **Reglas de Negocio y Contratos Involucrados**: Qué DTOs, endpoints o reglas del dominio entran en juego (o preguntas al alumno si falta información).
+4. **Guía Paso a Paso de Implementación**:
+   * Archivo por archivo, indicando qué código debe escribir el alumno y explicando **línea por línea** el porqué de cada instrucción.
+5. **Cómo Probarlo / Verificación**: Qué debe observar el alumno en el navegador, en la consola o en las DevTools para comprobar que su código funciona correctamente.

@@ -42,3 +42,11 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Environments (Credenciales sensibles y URLs locales)
+/src/environments/environment.ts
+/src/environments/environment.development.ts
+/src/environments/environment.*.ts
+
+# Exceptuar la plantilla de ejemplo para que sí se suba a GitHub
+!/src/environments/environment.example.ts
