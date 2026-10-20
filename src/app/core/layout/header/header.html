@@ -1,16 +1,27 @@
-﻿<header class="w-full fixed backdrop-blur-sm ">
-    <div class="p-4 flex items-center justify-between">
-        <div class="flex items-center space-x-5">
-            <div class=" h-17.5 w-20 bg-white rounded-xl flex px-2.5 justify-center items-center">
-            <img src="/worklink logo.svg"alt="worklink-logo" class="w-full h-full">
-            </div>
-            <h1 class="font-bold text-4xl text-white text-center">Work<span class="text-sky-400">Link</span></h1>
+﻿<header class="w-full fixed backdrop-blur-sm p-4 flex items-center justify-between">
+    <div class="flex items-center space-x-5">
+        <div class=" md:h-17.5 md:w-20 h-17 w-18 bg-white/5 rounded-3xl flex px-2.5 justify-center items-center">
+        <img src="/worklink logo.svg"alt="worklink-logo" class="w-full h-full">
         </div>
-        <app-navbar></app-navbar> 
-        <div class="flex justify-end gap-5">
-                <button class="m-px border hover:border hover:border-white px-3 py-2 border-transparent rounded-xl cursor-pointer font-medium text-white hover:shadow-[0_0_5px_1px_rgba(255,255,255,0.5)] transition-all duration-300 ease-in-out">Iniciar Sesión</button>
-                <button class="bg-conic bg-violet-700 m-px py-2 px-3 rounded-xl cursor-pointer font-medium text-white hover:shadow-[0_0_5px_4px_rgba(181,101,255,0.7)] transition-all duration-300 ease-in-out hover:scale-[1.05]">Registrarse</button>
-        </div>
+        <h1 class="font-bold text-2xl md:4xl text-white text-center">Work<span class="text-sky-400">Link</span></h1>
     </div>
+    <app-navbar class="hidden md:flex"></app-navbar> 
+    @if (!auth.usuarioActual()){
+        <div class="flex flex-col md:flex-row justify-end md:gap-5 gap-1.5">
+            <button class="m-px px-3 py-2 rounded-xl cursor-pointer font-medium text-white btn-iniciar-sesion" routerLink="/auth/login">Iniciar Sesión</button>
+            <button class="bg-conic bg-indigo-700 m-px py-2 px-3 rounded-xl cursor-pointer font-medium text-white btn-registrarse" routerLink="/auth/register">Registrarse</button>
+        </div>
+    }@else {
+        <div class="flex items-center gap-3">
+        <span class="text-white text-sm font-medium">
+            Hola, <strong class="text-sky-300">{{ auth.usuarioActual() }}</strong>
+        </span>
+        <button 
+            (click)="auth.logout()"
+            class="px-3 py-1.5 rounded-xl text-sm font-medium text-red-200 bg-red-500/20 border border-red-400/30 hover:bg-red-500/40 hover:text-white transition-all cursor-pointer">
+            Cerrar Sesión
+        </button>
+        </div>
+    }
 </header>
 
