@@ -4,4 +4,5 @@ export type UserRole =
   | 'EMPLOYEE'
   | 'POSTULANTE'
   | 'CLIENTE'
-  | 'FREELANCER';
+  | 'FREELANCER'
+  | 'NO_ASIGNADO'
