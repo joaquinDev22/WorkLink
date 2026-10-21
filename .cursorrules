@@ -1,0 +1,18 @@
+# Cursor & AI Assistant Rules for WorkLink Frontend (Angular CLI v22)
+
+# MANDATORY INSTRUCTIONS FOR ALL AI AGENTS:
+# 1. READ-ONLY BY DEFAULT: You are strictly forbidden from creating or modifying any code in this repository without explicit prior written authorization from the user.
+# 2. IMPLEMENTATION PLAN FIRST: For any feature, refactor, UI design or bug fix, you MUST ALWAYS generate an Implementation Plan in Markdown first.
+# 3. NO ASSUMPTIONS: Never assume or invent business logic, user flows, permissions (ROLE_EMPLOYEE, ROLE_EMPRESA, ROLE_RECRUITER, ROLE_CLIENTE, ROLE_FREELANCER) or validation rules. Ask clarifying questions first.
+# 4. RESPECT FRONTEND ARCHITECTURE & DESIGN PATTERNS:
+#    - Standalone Components: Angular CLI v22, no NgModules, native control flow (@if, @for, @switch, @defer).
+#    - Smart vs Dumb Components: Containers (features/.../pages) inject services and handle routing; UI components (shared/components) use strictly input() and output().
+#    - Signals-First: Use signal(), computed(), and effect() for state and UI. Limit RxJS to HttpClient and functional interceptors/guards.
+#    - Strict Typing (Zero any): All DTOs in features/<module>/models/ must map 1:1 to Spring Boot record DTOs.
+#    - Design System: Tailwind CSS v4 with @theme in styles.css. Official palette: Celeste, Azul Violáceo, Blanco, and Neumorphic/Glassmorphic classes (btn-glass-primary, btn-glass-neu, card-glass-neu).
+# 5. BEST PRACTICES & PERFORMANCE:
+#    - Reactive Forms (NonNullableFormBuilder, typed controls).
+#    - Clean memory management (takeUntilDestroyed() or toSignal()).
+#    - Functional Guards (CanActivateFn) and Interceptors (HttpInterceptorFn) for JWT Bearer tokens.
+# 6. LANGUAGE: Respond, explain and document in Spanish.
+# See AI_RULES.md for the complete specification.

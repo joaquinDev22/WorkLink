@@ -1,0 +1,25 @@
+﻿.btn-registrarse {
+  /* 1. Sombra interna de Tailwind (shadow-inner con tu color índigo) */
+  box-shadow: inset 0 2px 4px 0 #818cf8;
+  transition: transform 0.25s ease-out, box-shadow 0.25s ease-out;
+}
+.btn-registrarse:hover {
+    transform: translateY(-2px);
+  /* Combina el inner shadow + la doble capa exacta del shadow-xl de Tailwind */
+  box-shadow: 
+    inset 0 2px 4px 0 #818cf8,                              /* Capa 1: Sombra interior */
+    0 0 28px -5px rgba(75, 63, 248, 0.842),               /* Capa 2: Desenfoque profundo */
+    0 0 13px -6px rgba(40, 16, 255, 0.658);                /* Capa 3: Nitidez de borde */
+}
+
+.btn-iniciar-sesion {
+  /* 1. Sombra interna de Tailwind (shadow-inner con tu color índigo) */
+  transition: transform 0.25s ease-out, box-shadow 0.25s ease-out;
+}
+.btn-iniciar-sesion:hover {
+  /* Combina el inner shadow + la doble capa exacta del shadow-xl de Tailwind */
+  box-shadow: 
+    inset 0 2px 4px 0 #ffffff,                              /* Capa 1: Sombra interior */
+    0 0 25px -5px rgba(255, 255, 255, 0.45),               /* Capa 2: Desenfoque profundo */
+    0 0 10px -6px rgba(253, 253, 253, 0.45);                /* Capa 3: Nitidez de borde */
+}
