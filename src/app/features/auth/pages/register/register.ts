@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { Auth } from '../../../../core/auth/services/auth';
 import { RegisterRequestDTO } from '../../models/auth.models';
+import { form, required } from '@angular/forms/signals';
 
 @Component({
   imports: [],
@@ -16,5 +17,9 @@ export class Register {
       email: '',
       password: '',
       rol: 'NO_ASIGNADO'
+  })
+
+  registerForm = form(this.registerModel, (field) =>{
+    required(field.usuario, {message:'El usuario es obligatorio'})
   })
 }
