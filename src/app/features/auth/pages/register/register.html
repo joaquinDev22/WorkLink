@@ -1,30 +1,229 @@
 <div class="flex flex-col justify-center items-center py-6">
-    <form 
-    class="bg-linear-to-t from-indigo-800/50 to-indigo-400/50 backdrop-blur-xs px-6 py-8 rounded-2xl w-full max-w-md h-auto mx-4 space-y-5 shadow-2xl shadow-indigo-400/50">
-        <h2 class="text-center text-3xl font-bold text-white mb-1">Bienvenido</h2>
-        <h4 class="text-md text-indigo-800 text-center mb-2">Crea tu cuenta para continuar</h4>
-        <fieldset class="flex flex-col space-y-2">
-            <label class="text-white font-medium" for="">Nombre:</label>
-            <input class="bg-white p-1 rounded-lg focus:outline-none  focus:ring-4 focus:ring-indigo-400/50 px-2" type="text" placeholder="juan">
-        </fieldset>
-        <fieldset class="flex flex-col space-y-2">
-            <label class="text-white font-medium" for="">Apellido:</label>
-            <input class="bg-white p-1 rounded-lg focus:outline-none  focus:ring-4 focus:ring-indigo-400/50 px-2" type="text" placeholder="perez">
-        </fieldset>
-                <fieldset class="flex flex-col space-y-2">
-            <label class="text-white font-medium" for="">Ciudad:</label>
-            <input class="bg-white p-1 rounded-lg focus:outline-none  focus:ring-4 focus:ring-indigo-400/50 px-2" type="text" placeholder="ciudad">
-        </fieldset>
-        <fieldset class="flex flex-col space-y-2">
-            <label class="text-white font-medium" for="">Telefono:</label>
-            <input class="bg-white p-1 rounded-lg focus:outline-none  focus:ring-4 focus:ring-indigo-400/50 px-2" type="number" placeholder="+00 0 000 000000">
-        </fieldset>
-        <fieldset class="flex flex-col space-y-2">
-            <label class="text-white font-medium" for="">Email:</label>
-            <input class="bg-white p-1 rounded-lg focus:outline-none  focus:ring-4 focus:ring-indigo-400/50 px-2" type="email" placeholder="example@gmail.com">
-        </fieldset>
-        
-        <button class="w-full text-center p-4 bg-indigo-600 text-white rounded-2xl shadow-inner shadow-indigo-400 cursor-pointer hover:bg-indigo-800 hover:shadow-indigo-600 transition-all duration-300 ease-in-out" type="submit">Siguiente</button>
-    </form>
-</div>
+    <div 
+    [class.hidden]="intencion() !== ''"
+    class="bg-linear-to-t from-brand-indigo-dark/50 to-brand-indigo-light/50 backdrop-blur-xs px-6 py-8 rounded-2xl w-full max-w-lg h-auto mx-4 space-y-5 shadow-card-login">
 
+        <h2 class="text-2xl text-white font-bold text-center">¿Cuál es tu objetivo?</h2>
+        
+        <div class="grid md:grid-cols-2 grid-cols-1 gap-4 w-full">    
+            <!-- BOTÓN 1: QUIERO CONTRATAR -->
+            <button 
+                type="button" 
+                class="group relative flex flex-col items-center justify-between p-4 rounded-2xl bg-white/5 border border-glass-border hover:border-brand-sky/60 hover:bg-white/10 hover:-translate-y-1 hover:shadow-glow-sky transition-all duration-300 cursor-pointer text-white" 
+                (click)="seleccionarIntencion('CONTRATAR')">
+                
+                <!-- Cápsula de Cristal para el Icono (Tamaño fijo simétrico) -->
+                <div class="w-16 h-16 sm:w-20 sm:h-20 mb-3 rounded-2xl bg-brand-indigo-dark/50 flex items-center justify-center shadow-inner group-hover:shadow-inner-white transition-all duration-300">
+                    <img src="/contratar.svg" alt="Quiero Contratar" class="w-10 h-10 sm:w-12 sm:h-12 object-contain">
+                </div>
+
+                <span class="font-bold text-sm tracking-wide group-hover:text-brand-sky transition-colors text-center">
+                    Quiero Contratar
+                </span>
+            </button>
+
+            <!-- BOTÓN 2: QUIERO TRABAJAR -->
+            <button 
+                type="button" 
+                class="group relative flex flex-col items-center justify-between p-4 rounded-2xl bg-white/5 border border-glass-border hover:border-brand-sky/60 hover:bg-white/10 hover:-translate-y-1 hover:shadow-glow-sky transition-all duration-300 cursor-pointer text-white" (click)="seleccionarIntencion('TRABAJAR')">
+                
+                <!-- Cápsula de Cristal para el Icono (Mismo tamaño idéntico) -->
+                <div class="w-16 h-16 sm:w-20 sm:h-20 mb-3 rounded-2xl bg-brand-indigo-dark/50 flex items-center justify-center shadow-inner group-hover:shadow-inner-white transition-all duration-300">
+                    <img src="/trabajar.svg" alt="Quiero Trabajar" class="w-10 h-10 sm:w-14 sm:h-14 object-contain">
+                </div>
+
+                <span class="font-bold text-sm tracking-wide group-hover:text-brand-sky transition-colors text-center">
+                    Quiero Trabajar
+                </span>
+            </button>
+        </div>
+    </div>
+    <div 
+    [class.hidden]="intencion() === ''"
+    class="bg-linear-to-t from-brand-indigo-dark/50 to-brand-indigo-light/50 backdrop-blur-xs px-6 py-8 rounded-2xl w-full max-w-lg h-auto mx-4 space-y-5 shadow-card-login">
+        <form (submit)="crearCuenta($event)">
+            <div class="flex items-center justify-between border-b border-glass-border pb-3">
+                <button 
+                    type="button" 
+                    (click)="intencion.set('')"
+                    class="text-sm text-brand-indigo-dark hover:underline cursor-pointer flex items-center gap-1 font-medium">
+                    ← Cambiar objetivo
+                </button>
+                <span class="text-sm text-slate-300">
+                    Modo: <strong class="text-white">{{ intencion() === 'TRABAJAR' ? 'Trabajar' : 'Contratar' }}</strong>
+                </span>
+            </div>
+            <h2 class="text-2xl text-white font-bold text-center mt-5 mb-5">Crea tu cuenta</h2>
+            <fieldset class="flex flex-col space-y-2 mb-5">
+                <label for="usuario" class="text-md text-white font-bold">Usuario:</label>
+                <input class="bg-white p-1 rounded-lg focus:outline-none focus:ring-4 focus:ring-brand-indigo-light/50 px-2 shadow-inner shadow-slate-500" type="text" placeholder="usuario3312" [formField]="registerForm.usuario">
+                @if (registerForm.usuario().touched() && registerForm.usuario().invalid()) {
+                    @for (error of registerForm.usuario().errors(); track error.kind) {
+                        <span class="text-brand-danger-muted text-xs font-semibold">{{ error.message }}</span>
+                    }
+                }
+            </fieldset>
+            <fieldset class="flex flex-col space-y-2 mb-5">
+                <label for="email" class="text-md text-white font-bold">Email:</label>
+                <input class="bg-white p-1 rounded-lg focus:outline-none focus:ring-4 focus:ring-brand-indigo-light/50 px-2 shadow-inner shadow-slate-500" type="text" placeholder="email@example.com" [formField]="registerForm.email">
+                @if (registerForm.email().touched() && registerForm.email().invalid()) {
+                    @for (error of registerForm.email().errors(); track error.kind) {
+                        <span class="text-brand-danger-muted text-xs font-semibold">{{ error.message }}</span>
+                    }
+                }
+            </fieldset>
+            <fieldset class="flex flex-col space-y-2 mb-5">
+                <label for="password" class="text-md text-white font-bold">Contraseña:</label>
+                <div class="relative w-full flex items-center">
+                    <!-- Input con espacio a la derecha (pr-10) -->
+                    <input 
+                        class="w-full bg-white p-1 pr-10 rounded-lg focus:outline-none focus:ring-4 focus:ring-brand-indigo-light/50 px-2 text-slate-900 shadow-inner shadow-slate-500" 
+                        [type]="showPassword() ? 'text' : 'password'" 
+                        placeholder="••••••••" 
+                        [formField]="registerForm.password"
+                    >
+                    <!-- Botón flotante a la derecha -->
+                    <button 
+                        type="button" 
+                        (click)="showPassword.set(!showPassword())"
+                        class="absolute right-2 p-1 cursor-pointer flex items-center justify-center">
+                        <img 
+                            [src]="showPassword() ? '/eye.svg' : '/eye-off.svg'" 
+                            alt="Mostrar contraseña" 
+                            class="w-5 h-5 opacity-60 hover:opacity-100 transition-opacity"
+                        >
+                    </button>
+                </div>
+                @if (registerForm.password().value()) {
+                    <div class="space-y-1 pt-1">
+                        <div class="flex justify-between text-xs">
+                            <span class="text-slate-300">Seguridad:</span>
+                            <span [class]="textoFortaleza().color" class="font-bold">{{ textoFortaleza().texto }}</span>
+                        </div>
+                        <div class="w-full bg-black/40 h-1.5 rounded-full overflow-hidden">
+                            <div class="h-full transition-all duration-300" [class]="textoFortaleza().bar"></div>
+                        </div>
+                    </div>
+                }
+                <!-- CHECKLIST DINÁMICO DE REQUISITOS (cambian a verde con ✓ al cumplirse) -->
+                <div class="grid grid-cols-2 gap-1.5 pt-1 text-xs select-none">
+                    <span class="flex items-center gap-1 transition-colors" [class]="reqPassword().longitud ? 'text-emerald-400 font-semibold' : 'text-slate-400'">
+                        {{ reqPassword().longitud ? '✓' : '○' }} 8+ caracteres
+                    </span>
+                    <span class="flex items-center gap-1 transition-colors" [class]="reqPassword().mayuscula ? 'text-emerald-400 font-semibold' : 'text-slate-400'">
+                        {{ reqPassword().mayuscula ? '✓' : '○' }} 1 Mayúscula
+                    </span>
+                    <span class="flex items-center gap-1 transition-colors" [class]="reqPassword().minuscula ? 'text-emerald-400 font-semibold' : 'text-slate-400'">
+                        {{ reqPassword().minuscula ? '✓' : '○' }} 1 Minúscula
+                    </span>
+                    <span class="flex items-center gap-1 transition-colors" [class]="reqPassword().numero ? 'text-emerald-400 font-semibold' : 'text-slate-400'">
+                        {{ reqPassword().numero ? '✓' : '○' }} 1 Número
+                    </span>
+                </div>
+            </fieldset>
+            <fieldset class="flex flex-col space-y-2 mb-5">
+                <label for="password" class="text-md text-white font-bold">Repetir Contraseña:</label>
+                <div class="relative w-full flex items-center">
+                    <!-- Input con espacio a la derecha (pr-10) -->
+                    <input 
+                        class="w-full bg-white p-1 pr-10 rounded-lg focus:outline-none focus:ring-4 focus:ring-brand-indigo-light/50 px-2 text-slate-900 shadow-inner shadow-slate-500" 
+                        [type]="showConfirmPassword() ? 'text' : 'password'" 
+                        placeholder="••••••••" 
+                        [formField]="registerForm.confirmPassword"
+                    >
+                    <!-- Botón flotante a la derecha -->
+                    <button 
+                        type="button" 
+                        (click)="showConfirmPassword.set(!showConfirmPassword())"
+                        class="absolute right-2 p-1 cursor-pointer flex items-center justify-center">
+                        <img 
+                            [src]="showConfirmPassword() ? '/eye.svg' : '/eye-off.svg'" 
+                            alt="Mostrar contraseña" 
+                            class="w-5 h-5 opacity-60 hover:opacity-100 transition-opacity"
+                        >
+                    </button>
+                </div>
+                @if (registerForm.confirmPassword().touched() && registerForm.confirmPassword().invalid()) {
+                    @for (error of registerForm.confirmPassword().errors(); track error.kind) {
+                        <span class="text-brand-danger-muted text-xs font-semibold">{{ error.message }}</span>
+                    }
+                }
+            </fieldset>
+            <fieldset class="flex flex-col space-y-2 mb-5">
+                <label class="text-md font-semibold text-white">
+                    Selecciona tu rol exacto:
+                </label>
+
+                <div class="relative w-full">
+                    <!-- BOTÓN PRINCIPAL (Cerrado) -->
+                    <button 
+                        type="button" 
+                        (click)="dropdownRolesAbierto.update(v => !v)"
+                        class="w-full bg-white/10 hover:bg-brand-indigo-light/25 focus:ring-4 focus:ring-brand-indigo-light/50 p-2.5 rounded-xl flex items-center justify-between cursor-pointer transition-all text-left shadow-inner shadow-slate-500">
+                        
+                        <!-- Rol actual seleccionado -->
+                        <div class="flex items-center gap-3">
+                            <img [src]="rolSeleccionado()?.icono" [alt]="rolSeleccionado()?.titulo" class="w-6 h-6 object-contain">
+                            <div>
+                                <span class="block font-bold text-white text-sm leading-tight">
+                                    {{ rolSeleccionado()?.titulo }}
+                                </span>
+                                <span class="block text-xs text-slate-300 leading-tight line-clamp-1">
+                                    {{ rolSeleccionado()?.descripcion }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Flecha con rotación dinámica como en el Navbar -->
+                        <svg 
+                            class="w-4 h-4 text-sky-500/80 transition-transform duration-200 shrink-0 ml-2" 
+                            [class.rotate-180]="dropdownRolesAbierto()"
+                            fill="none" 
+                            viewBox="0 0 24 24" 
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <!-- CAPA TRANSPARENTE: Cierra el menú al hacer clic afuera -->
+                    @if (dropdownRolesAbierto()) {
+                        <div class="fixed inset-0 z-40" (click)="dropdownRolesAbierto.set(false)"></div>
+                    }
+
+                    <!-- MENÚ DESPLEGABLE CON GLASSMORPHISM -->
+                    @if (dropdownRolesAbierto()) {
+                        <div class="absolute top-full left-0 right-0 mt-2 z-50 bg-brand-indigo-dark/65 backdrop-blur-xl border border-glass-border rounded-xl shadow-card-login overflow-hidden py-1.5 flex flex-col max-h-60 overflow-y-auto">
+                            @for (item of rolesVisibles(); track item.rol) {
+                                <div 
+                                    (click)="seleccionarRol(item.rol)"
+                                    [class.bg-white/15]="registerModel().rol === item.rol"
+                                    [class.border-l-4]="registerModel().rol === item.rol"
+                                    [class.border-brand-sky]="registerModel().rol === item.rol"
+                                    class="px-3 py-2.5 flex items-center justify-between hover:bg-white/10 cursor-pointer transition-colors border-l-4 border-transparent">
+                                    
+                                    <div class="flex items-center gap-3">
+                                        <img [src]="item.icono" [alt]="item.titulo" class="w-6 h-6 object-contain">
+                                        <div>
+                                            <span class="block font-bold text-white text-sm leading-tight">
+                                                {{ item.titulo }}
+                                            </span>
+                                            <span class="block text-xs text-slate-300 leading-tight">
+                                                {{ item.descripcion }}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Check de selección activa -->
+                                    @if (registerModel().rol === item.rol) {
+                                        <span class="text-brand-sky text-sm font-bold ml-2">✓</span>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </fieldset>
+            <button class="w-full text-center p-4 bg-brand-indigo text-white rounded-2xl shadow-inner-indigo cursor-pointer hover:bg-brand-indigo-dark hover:shadow-inner-indigo-dark transition-all duration-300 ease-in-out" type="submit">Crear Cuenta</button>
+        </form>
+    </div>
+</div>

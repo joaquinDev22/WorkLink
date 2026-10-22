@@ -1,27 +1,47 @@
-﻿<header class="w-full fixed top-0 left-0 z-50 backdrop-blur-sm p-4 flex items-center justify-between">
-    <div class="flex items-center space-x-5">
-        <div class=" md:h-14 md:w-16 h-17 w-18 bg-white/5 rounded-3xl md:rounded-2xl flex px-2.5 justify-center items-center">
-        <img src="/worklink logo.svg"alt="worklink-logo" class="w-full h-full">
+<header class="w-full fixed top-0 left-0 z-50 p-4">
+    <!-- 1. Capa de fondo con blur (evita atrapar al fixed del sidebar) -->
+    <div class="absolute inset-0 backdrop-blur-lg -z-10 pointer-events-none"></div>
+
+    <!-- 2. Barra del Header (Flex principal) -->
+    <div class="flex items-center justify-between w-full">
+        <!-- Logo -->
+        <div class="flex items-center space-x-5">
+            <div class="md:h-14 md:w-16 h-17 w-18 bg-glass-surface rounded-3xl md:rounded-2xl flex px-2.5 justify-center items-center">
+                <img src="/worklink logo.svg" alt="worklink-logo" class="w-full h-full">
+            </div>
+            <div routerLink="/" class="hover:cursor-pointer">
+                <h1 class="font-bold text-2xl md:4xl text-white text-center hover:text-shadow-glow-white">Work<span class="text-brand-sky">Link</span></h1>
+            </div>
         </div>
-        <h1 class="font-bold text-2xl md:4xl text-white text-center">Work<span class="text-sky-400">Link</span></h1>
+
+        @if (!isMinWidth()) {
+            @if (!auth.session()) {
+                <div class="flex flex-col md:flex-row justify-end md:gap-5 gap-1.5">
+                    <button class="m-px px-3 py-2 rounded-xl cursor-pointer font-medium text-white btn-iniciar-sesion" routerLink="/auth/login">Iniciar Sesión</button>
+                    <button class="bg-conic bg-brand-violet m-px py-2 px-3 rounded-xl cursor-pointer font-medium text-white btn-registrarse" routerLink="/auth/register">Registrarse</button>
+                </div>
+            } @else {
+                <!-- Desktop: Navbar + Botones de sesión -->
+                <app-navbar class="hidden md:flex"></app-navbar> 
+                <div class="flex items-center gap-3">
+                    <span class="text-white text-sm font-medium">
+                        Hola, <strong class="text-brand-sky-light">{{ auth.session()?.nombreUsuario }}</strong>
+                    </span>
+                    <button 
+                        (click)="auth.logout()"
+                        class="px-3 py-1.5 rounded-xl text-sm font-medium text-brand-danger-muted bg-brand-danger/20 border border-brand-danger-muted/30 hover:bg-brand-danger/40 hover:text-white transition-all cursor-pointer">
+                        Cerrar Sesión
+                    </button>
+                </div>
+            }
+        } @else {
+            <!-- Móvil: Únicamente el botón hamburguesa (alineado a la derecha) -->
+            <app-burger-menu class="relative z-50" [(isActivo)]="isMenuOpen"></app-burger-menu>
+        }
     </div>
-    <app-navbar class="hidden md:flex"></app-navbar> 
-    @if (!auth.session()){
-        <div class="flex flex-col md:flex-row justify-end md:gap-5 gap-1.5">
-            <button class="m-px px-3 py-2 rounded-xl cursor-pointer font-medium text-white btn-iniciar-sesion" routerLink="/auth/login">Iniciar Sesión</button>
-            <button class="bg-conic bg-indigo-700 m-px py-2 px-3 rounded-xl cursor-pointer font-medium text-white btn-registrarse" routerLink="/auth/register">Registrarse</button>
-        </div>
-    }@else {
-        <div class="flex items-center gap-3">
-        <span class="text-white text-sm font-medium">
-            Hola, <strong class="text-sky-300">{{auth.session()?.nombreUsuario }}</strong>
-        </span>
-        <button 
-            (click)="auth.logout()"
-            class="px-3 py-1.5 rounded-xl text-sm font-medium text-red-200 bg-red-500/20 border border-red-400/30 hover:bg-red-500/40 hover:text-white transition-all cursor-pointer">
-            Cerrar Sesión
-        </button>
-        </div>
+
+    <!-- 3. Sidebar fuera de la fila flex para que no distorsione la barra -->
+    @if (isMinWidth()) {
+        <app-sidebar [(isOpen)]="isMenuOpen"></app-sidebar>
     }
 </header>
-

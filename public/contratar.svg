@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="url(#gradienteMaletin)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-12 h-12 drop-shadow-[0_0_12px_rgba(56,189,248,0.5)]">
+  <defs>
+    <!-- Gradiente que va transicionando de Blanco -> Celeste -> Violeta de forma infinita -->
+    <linearGradient id="gradienteMaletin" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%">
+        <animate attributeName="stop-color" values="#ffffff; #38bdf8; #818cf8; #ffffff" dur="4s" repeatCount="indefinite" />
+      </stop>
+      <stop offset="100%">
+        <animate attributeName="stop-color" values="#38bdf8; #818cf8; #ffffff; #38bdf8" dur="4s" repeatCount="indefinite" />
+      </stop>
+    </linearGradient>
+  </defs>
+
+  <!-- Asa -->
+  <path d="M16 8V6a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+  <!-- Maletín -->
+  <rect width="20" height="14" x="2" y="8" rx="3" />
+  <!-- Línea y broche -->
+  <path d="M2 13h20" />
+  <path d="M10 13v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-2" />
+</svg>

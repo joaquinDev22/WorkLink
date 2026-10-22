@@ -36,14 +36,16 @@
 
   /* El resplandor blanco de tu botón Iniciar Sesión */
   --shadow-glow-white: 0 0 25px -5px rgba(255, 255, 255, 0.45), 0 0 10px -6px rgba(253, 253, 253, 0.45);
+  --text-shadow-glow-white: 0 0 25px rgba(255, 255, 255, 0.45), 0 0 10px rgba(253, 253, 253, 0.45);
 
   /* El halo celeste de tu píldora del Navbar */
   --shadow-glow-sky: 0 0 15px rgba(56, 189, 248, 0.40);
 
   /* El bisel interior de tus botones (reemplazo sin delay de shadow-inner) */
   --shadow-inner-indigo: inset 0 2px 4px 0 #818cf8;
+  --shadow-inner-indigo-dark: inset 0 2px 4px 0 #4f39f6;
   --shadow-inner-white: inset 0 2px 4px 0 #ffffff;
-
+   
   /* Sombra de la tarjeta de Login */
   --shadow-card-login: 0 25px 50px -12px rgba(99, 102, 241, 0.45);
 }

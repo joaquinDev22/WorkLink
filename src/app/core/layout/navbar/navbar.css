@@ -11,10 +11,10 @@
   top: calc(50% - 16px);
   
   /* 2. COLOR: gradiente, color plano o glass semitransparente */
-  background: #6366f173;
+  background: color-mix(in srgb, var(--color-brand-indigo) 45%, transparent);
   backdrop-filter: blur(8px);
-  border: 1px solid #ffffff4d;
-  box-shadow: 0 0 15px #38bdf84d;
+  border: 1px solid var(--color-glass-border);
+  box-shadow: var(--shadow-glow-sky);
   
   /* 3. VELOCIDAD: suavidad con la que viaja entre enlaces */
   transition: left 0.25s ease-out, width 0.25s ease-out, opacity 0.2s ease;
