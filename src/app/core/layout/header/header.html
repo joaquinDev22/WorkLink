@@ -1,4 +1,11 @@
-<header class="w-full fixed top-0 left-0 z-50 p-4">
+<header 
+  [class.fixed]="floating()"
+  [class.top-0]="floating()"
+  [class.left-0]="floating()"
+  [class.relative]="!floating()"
+  [class.border-b]="!floating()"
+  class="w-full z-50 backdrop-blur-md p-4 flex items-center justify-between border-white/10"
+>
     <!-- 1. Capa de fondo con blur (evita atrapar al fixed del sidebar) -->
     <div class="absolute inset-0 backdrop-blur-lg -z-10 pointer-events-none"></div>
 

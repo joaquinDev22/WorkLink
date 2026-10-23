@@ -1,1 +1,68 @@
-<p>main-layout works!</p>
+<!-- Estructura vertical de pantalla completa -->
+<div class="flex flex-col h-screen w-full overflow-hidden bg-slate-950/80">
+  
+  <!-- 1. Header en modo estático (floating=false: no flota, ocupa su espacio natural) -->
+  <app-header [floating]="false"></app-header>
+
+  <!-- 2. Área inferior: Sidebar a la izquierda + Router-outlet a la derecha -->
+  <div class="flex flex-1 overflow-hidden">
+    
+    <!-- Sidebar de roles -->
+    <aside class="w-64 bg-slate-950/60 backdrop-blur-xl border-r border-white/10 p-5 flex-col justify-between hidden md:flex shrink-0">
+      <div class="flex flex-col space-y-5">
+        
+        <div class="p-3 bg-white/5 rounded-2xl border border-white/10">
+          <span class="text-xs text-sky-400 font-bold uppercase tracking-wider block">Panel de Control</span>
+          <span class="text-white text-sm font-semibold truncate block mt-0.5">{{ auth.session()?.nombreUsuario }}</span>
+          <span class="text-[11px] text-slate-400 uppercase font-medium">{{ auth.session()?.rol }}</span>
+        </div>
+
+        <nav class="flex flex-col space-y-1.5">
+          <!-- Roles condicionales -->
+          @if (auth.session()?.rol === 'EMPRESA' || auth.session()?.rol === 'RECRUITER') {
+            <a routerLink="/enterprise/vacantes" routerLinkActive="bg-brand-indigo/30 text-sky-300 border-brand-sky/50" class="px-3 py-2.5 rounded-xl text-sm text-slate-300 hover:bg-white/5 hover:text-white transition-all border border-transparent flex items-center gap-2.5">
+              <span>💼</span> Mis Vacantes
+            </a>
+            <a routerLink="/enterprise/recruiters" routerLinkActive="bg-brand-indigo/30 text-sky-300 border-brand-sky/50" class="px-3 py-2.5 rounded-xl text-sm text-slate-300 hover:bg-white/5 hover:text-white transition-all border border-transparent flex items-center gap-2.5">
+              <span>👥</span> Equipo Recruiters
+            </a>
+            <a routerLink="/enterprise/entrevistas" routerLinkActive="bg-brand-indigo/30 text-sky-300 border-brand-sky/50" class="px-3 py-2.5 rounded-xl text-sm text-slate-300 hover:bg-white/5 hover:text-white transition-all border border-transparent flex items-center gap-2.5">
+              <span>📅</span> Entrevistas
+            </a>
+          }
+
+          @if (auth.session()?.rol === 'FREELANCER') {
+            <a routerLink="/freelance/proyectos" routerLinkActive="bg-brand-indigo/30 text-sky-300 border-brand-sky/50" class="px-3 py-2.5 rounded-xl text-sm text-slate-300 hover:bg-white/5 hover:text-white transition-all border border-transparent flex items-center gap-2.5">
+              <span>🔍</span> Explorar Proyectos
+            </a>
+            <a routerLink="/freelance/finanzas" routerLinkActive="bg-brand-indigo/30 text-sky-300 border-brand-sky/50" class="px-3 py-2.5 rounded-xl text-sm text-slate-300 hover:bg-white/5 hover:text-white transition-all border border-transparent flex items-center gap-2.5">
+              <span>💰</span> Mis Finanzas
+            </a>
+            <a routerLink="/perfiles/mi-perfil" routerLinkActive="bg-brand-indigo/30 text-sky-300 border-brand-sky/50" class="px-3 py-2.5 rounded-xl text-sm text-slate-300 hover:bg-white/5 hover:text-white transition-all border border-transparent flex items-center gap-2.5">
+              <span>👤</span> Mi Portafolio
+            </a>
+          }
+
+          @if (auth.session()?.rol === 'CLIENTE') {
+            <a routerLink="/freelance/cliente-dashboard" routerLinkActive="bg-brand-indigo/30 text-sky-300 border-brand-sky/50" class="px-3 py-2.5 rounded-xl text-sm text-slate-300 hover:bg-white/5 hover:text-white transition-all border border-transparent flex items-center gap-2.5">
+              <span>📈</span> Mis Proyectos
+            </a>
+            <a routerLink="/freelance/proyecto-gestion/nuevo" routerLinkActive="bg-brand-indigo/30 text-sky-300 border-brand-sky/50" class="px-3 py-2.5 rounded-xl text-sm text-slate-300 hover:bg-white/5 hover:text-white transition-all border border-transparent flex items-center gap-2.5">
+              <span>➕</span> Publicar Proyecto
+            </a>
+          }
+        </nav>
+      </div>
+
+      <button (click)="auth.logout()" class="w-full text-left px-3 py-2.5 text-sm text-red-300 hover:bg-red-500/10 rounded-xl transition-colors cursor-pointer flex items-center gap-2">
+        <span>🚪</span> Cerrar Sesión
+      </button>
+    </aside>
+
+    <!-- Área de trabajo con scroll independiente -->
+    <main class="flex-1 p-6 lg:p-8 overflow-y-auto">
+      <router-outlet></router-outlet>
+    </main>
+
+  </div>
+</div>

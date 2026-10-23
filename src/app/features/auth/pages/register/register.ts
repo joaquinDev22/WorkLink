@@ -78,7 +78,7 @@ export class Register {
       email: '',
       password: '',
       confirmPassword:'',
-      rol: 'NO_ASIGNADO'
+      rol: ''
   })
 
   registerForm = form(this.registerModel, (field) =>{

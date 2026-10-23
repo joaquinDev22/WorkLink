@@ -1,10 +1,10 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, input, signal } from '@angular/core';
 import { Navbar } from '../navbar/navbar';
 import { RouterLink } from '@angular/router';
 import { Auth } from '../../auth/services/auth';
-import { BreakpointObserver } from '@angular/cdk/layout';
 import { BurgerMenu } from '../../../shared/components/burger-menu/burger-menu';
 import { Sidebar } from '../sidebar/sidebar';
+import { BreakpointObserver } from '@angular/cdk/layout';
 
 @Component({
   imports: [Navbar, RouterLink, BurgerMenu, Sidebar],
@@ -18,6 +18,7 @@ export class Header {
 
   isMinWidth = signal<boolean>(false)
   isMenuOpen = signal<boolean>(false)
+  floating = input<boolean>(true);
   
   ngOnInit(): void {
     this.observer.observe(['(max-width: 1024px)']).subscribe((rdo) => {

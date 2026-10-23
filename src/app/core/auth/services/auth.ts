@@ -24,9 +24,9 @@ export class Auth {
                 token: 'mock-jwt-token-develop-123456789',
                 nombreUsuario: credenciales.usuario || 'UsuarioDev',
                 rol: 'FREELANCER'
-            };
-            this.guardarSesion(mockRes);
-            return of(mockRes);
+            }
+            this.guardarSesion(mockRes)
+            return of(mockRes)
         }
 
         return this.http.post<LoginResponseDTO>(`${this.apiUrl}/login`, credenciales).pipe(
@@ -57,10 +57,20 @@ export class Auth {
             token: res.token,
             nombreUsuario: res.nombreUsuario,
             rol: res.rol
+        };
+
+        this.tokenStorage.saveSession(session);
+        this.session.set(session);
+
+        // Redirección inteligente al área privada según su rol:
+        if (session.rol === 'EMPRESA' || session.rol === 'RECRUITER') {
+            this.router.navigate(['/enterprise/vacantes']);
+        } else if (session.rol === 'CLIENTE') {
+            this.router.navigate(['/freelance/cliente-dashboard']);
+        } else {
+            // FREELANCER, POSTULANTE o por defecto
+            this.router.navigate(['/perfiles/mi-perfil']);
         }
-        this.tokenStorage.saveSession(session)
-        this.session.set(session)
-        this.router.navigate(['/'])
     }
     
     logout(): void {
