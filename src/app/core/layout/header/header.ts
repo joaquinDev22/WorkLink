@@ -1,4 +1,4 @@
-import { Component, inject, input, signal } from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import { Navbar } from '../navbar/navbar';
 import { RouterLink } from '@angular/router';
 import { Auth } from '../../auth/services/auth';
@@ -19,13 +19,21 @@ export class Header {
   isMinWidth = signal<boolean>(false)
   isMenuOpen = signal<boolean>(false)
   floating = input<boolean>(true);
-  
+
+  readonly homeRoute = computed(() => {
+    const s = this.auth.session();
+    if (!s) return '/'
+    if (s.rol === 'EMPRESA' || s.rol === 'RECRUITER') return '/enterprise/vacantes'
+    if (s.rol === 'CLIENTE') return '/freelance/cliente-dashboard'
+    return '/perfiles/mi-perfil'
+  })
+
   ngOnInit(): void {
     this.observer.observe(['(max-width: 1024px)']).subscribe((rdo) => {
-      this.isMinWidth.set(rdo.matches);
+      this.isMinWidth.set(rdo.matches)
       if (!rdo.matches) {
-        this.isMenuOpen.set(false);
+        this.isMenuOpen.set(false)
       }
-    });
+    })
   }
 }

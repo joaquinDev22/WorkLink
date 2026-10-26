@@ -1,142 +1,88 @@
-# 📘 Implementation Plan #23: Rol Vacío en Registro y Activación del `MainLayout`
+# 📘 Implementation Plan #29: Cápsula de Perfil con Avatar en Header (Reemplazo de Cerrar Sesión)
 
 | Campo | Detalle |
 | :--- | :--- |
-| **Identificador** | `PLAN-FE-23` |
-| **Módulo / Capa** | `features/auth/pages/register` & `features/perfiles/perfiles.routes.ts` & `features/enterprise/enterprise.routes.ts` |
-| **Objetivo de Aprendizaje** | 1. Tipar limpiamente estados iniciales vacíos de formularios en TypeScript con la utilidad `Omit`.<br>2. Resolver el misterio del rebote: comprender por qué un archivo de rutas hijas vacío (`routes = []`) activa el comodín `**` enviándote a la Landing con footer. |
-| **Archivos Involucrados** | <ul><li>`[MODIFY]` [register.ts](file:///c:/Users/joaki/OneDrive/Escritorio/WorkLink/src/app/features/auth/pages/register/register.ts)</li><li>`[MODIFY]` [perfiles.routes.ts](file:///c:/Users/joaki/OneDrive/Escritorio/WorkLink/src/app/features/perfiles/perfiles.routes.ts)</li><li>`[MODIFY]` [enterprise.routes.ts](file:///c:/Users/joaki/OneDrive/Escritorio/WorkLink/src/app/features/enterprise/enterprise.routes.ts)</li></ul> |
+| **Identificador** | `PLAN-FE-29` |
+| **Módulo / Capa** | `Core` / `Layout` ([header.html](file:///c:/Users/joaki/OneDrive/Escritorio/WorkLink/src/app/core/layout/header/header.html)) |
+| **Objetivo de Aprendizaje** | 1. **Principio DRY (Don't Repeat Yourself) en UI/UX**: Eliminar botones redundantes. Si el cierre de sesión vive en la base del Sidebar (`MainLayout`), el Header superior debe dedicarse a la identidad del usuario.<br>2. **Patrón SaaS de Avatar**: Crear una píldora táctil moderna con avatar degradado (inicial del nombre o foto) y etiqueta de rol que navega a `/perfiles/mi-perfil`.<br>3. **Surgical Diff con Ponytail**: Cero dependencias nuevas. Reutilizamos Tailwind nativo y el signal `auth.session()`. |
+| **Archivos Involucrados** | <ul><li>`[MODIFY]` [header.html](file:///c:/Users/joaki/OneDrive/Escritorio/WorkLink/src/app/core/layout/header/header.html)</li></ul> |
 
 ---
 
-## 1. Explicación Didáctica (Modo Profesor)
+## 1. Justificación de Diseño y UX
 
-### A. ¿Cómo declarar el rol vacío en [register.ts](file:///c:/Users/joaki/OneDrive/Escritorio/WorkLink/src/app/features/auth/pages/register/register.ts)?
+Tener un botón rojo de *"Cerrar Sesión"* en el Header cuando el usuario ya tiene uno visible en el pie del Sidebar genera:
+1. **Redundancia visual:** Dos acciones destructivas idénticas en la misma pantalla.
+2. **Espacio desperdiciado:** El Header lucía desproporcionado con texto plano (`Hola, usuario`) y un botón de alerta roja.
 
-En tu archivo tienes:
-```typescript
-export interface FormularioRegistro extends RegisterRequestDTO {
-  confirmPassword: string;
-}
-```
-Y tu `RegisterRequestDTO` define `rol: UserRole`. Como `UserRole` solo acepta `'EMPRESA' | 'FREELANCER' | ...`, TypeScript no te permite poner `rol: ''` porque `''` no es un rol válido del sistema.
-
-#### La Solución Técnica en TypeScript (`Omit`):
-Usamos la utilidad nativa `Omit` para decirle a TypeScript: *"Hereda todo de `RegisterRequestDTO` excepto `rol`, y permíteme que en el formulario `rol` pueda empezar como `UserRole | ''`"*:
-
-```typescript
-export interface FormularioRegistro extends Omit<RegisterRequestDTO, 'rol'> {
-  confirmPassword: string;
-  rol: UserRole | ''; // 👈 Permite iniciar en vacío antes de que el usuario elija
-}
-```
-
----
-
-### B. El Misterio Resuelto: ¿Por qué te manda a la Landing y sigue saliendo el Footer?
-
-¡Acabo de revisar tu código y encontré el culpable exacto! Mira la cadena de lo que estaba ocurriendo:
-
-```mermaid
-flowchart TD
-    L[Usuario hace Login] --> A[auth.ts redirige a /perfiles/mi-perfil]
-    A --> R[Angular entra a perfiles.routes.ts]
-    R --> EMPTY["perfiles.routes.ts está VACÍO (routes = []) ⚠️"]
-    EMPTY --> W["Falla la ruta y salta al comodín: { path: '**', redirectTo: '' }"]
-    W --> LANDING["Te devuelve a la Landing Page ('')"]
-    LANDING --> FOOTER["La Landing usa PublicLayout (¡que tiene el Footer!)"]
-```
-
-1. Al hacer login, tu servicio `auth.ts` redirige con éxito a:
-   `/perfiles/mi-perfil`
-2. Angular va a tu archivo [perfiles.routes.ts](file:///c:/Users/joaki/OneDrive/Escritorio/WorkLink/src/app/features/perfiles/perfiles.routes.ts).
-3. **¡Pero `perfiles.routes.ts` estaba completamente vacío! (`export const routes: Routes = [];`)**.
-4. Como Angular no encuentra ninguna página registrada para `mi-perfil`, salta automáticamente a tu regla comodín en `app.routes.ts`:
-   `{ path: '**', redirectTo: '' }`
-5. Y como `''` es la **Landing Page** (que vive dentro de `PublicLayout`), ¡te devuelve al inicio con el Footer!
-6. Por esa razón nunca llegabas a ver el `MainLayout` ni el Sidebar.
+### El nuevo estándar (SaaS moderno):
+Reemplazamos ese bloque por una **Cápsula de Identidad de Usuario**:
+- **Avatar redondeado:** Con degradado Índigo-Sky y la inicial en mayúscula de su `nombreUsuario`.
+- **Información del perfil:** Nombre de usuario en blanco y rol (`FREELANCER`, `EMPRESA`, etc.) en texto sutil.
+- **Enlace directo:** Con `routerLink="/perfiles/mi-perfil"` para abrir rápidamente su portafolio o datos personales.
 
 ---
 
 ## 2. Guía Paso a Paso para el Alumno
 
-### Paso 1: Corregir el tipado en [register.ts](file:///c:/Users/joaki/OneDrive/Escritorio/WorkLink/src/app/features/auth/pages/register/register.ts)
+Abre [header.html](file:///c:/Users/joaki/OneDrive/Escritorio/WorkLink/src/app/core/layout/header/header.html) y ubica el bloque `@else` del usuario autenticado (alrededor de las líneas 31 a 44):
 
-En las líneas 13-15 de [register.ts](file:///c:/Users/joaki/OneDrive/Escritorio/WorkLink/src/app/features/auth/pages/register/register.ts), cambia la definición de `FormularioRegistro`:
-
-```typescript
-// Usamos Omit para permitir que el rol arranque vacío en el formulario:
-export interface FormularioRegistro extends Omit<RegisterRequestDTO, 'rol'> {
-  confirmPassword: string;
-  rol: UserRole | ''; 
-}
-```
-Y en tu `registerModel`:
-```typescript
-registerModel = signal<FormularioRegistro>({
-  usuario: '',
-  email: '',
-  password: '',
-  confirmPassword: '',
-  rol: '' // ✅ Ahora TypeScript lo acepta sin ningún error
-});
+### 🔴 Antes:
+```html
+            } @else {
+                <!-- Desktop Autenticado: Navbar + Perfil y Logout -->
+                <app-navbar class="hidden md:flex"></app-navbar> 
+                <div class="flex items-center gap-3">
+                    <span class="text-white text-sm font-medium">
+                        Hola, <strong class="text-brand-sky-light">{{ auth.session()?.nombreUsuario }}</strong>
+                    </span>
+                    <button 
+                        (click)="auth.logout()"
+                        class="px-3 py-1.5 rounded-xl text-sm font-medium text-brand-danger-muted bg-brand-danger/20 border border-brand-danger-muted/30 hover:bg-brand-danger/40 hover:text-white transition-all cursor-pointer">
+                        Cerrar Sesión
+                    </button>
+                </div>
+            }
 ```
 
----
+### 🟢 Después:
+```html
+            } @else {
+                <!-- Desktop Autenticado: Navbar + Cápsula de Perfil con Avatar -->
+                <app-navbar class="hidden md:flex"></app-navbar> 
+                
+                <a 
+                    routerLink="/perfiles/mi-perfil"
+                    class="group flex items-center gap-3 p-1.5 pr-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-brand-sky/40 transition-all cursor-pointer shadow-sm select-none">
+                    
+                    <!-- Avatar con Degradado de Marca e Inicial -->
+                    <div class="w-9 h-9 rounded-xl bg-linear-to-tr from-brand-indigo to-brand-sky flex items-center justify-center text-white font-bold text-sm shadow-inner group-hover:scale-105 transition-transform">
+                        <span>{{ auth.session()?.nombreUsuario?.charAt(0)?.toUpperCase() || 'U' }}</span>
+                    </div>
 
-### Paso 2: Registrar la ruta en [perfiles.routes.ts](file:///c:/Users/joaki/OneDrive/Escritorio/WorkLink/src/app/features/perfiles/perfiles.routes.ts)
+                    <!-- Datos del Usuario -->
+                    <div class="flex flex-col text-left">
+                        <span class="text-white text-xs font-semibold group-hover:text-brand-sky-light transition-colors leading-tight">
+                            {{ auth.session()?.nombreUsuario }}
+                        </span>
+                        <span class="text-[10px] text-slate-400 uppercase tracking-wider font-medium leading-tight">
+                            {{ auth.session()?.rol }}
+                        </span>
+                    </div>
 
-Abre [perfiles.routes.ts](file:///c:/Users/joaki/OneDrive/Escritorio/WorkLink/src/app/features/perfiles/perfiles.routes.ts) y agrega la ruta de `mi-perfil`:
-
-```typescript
-import { Routes } from '@angular/router';
-
-export const routes: Routes = [
-  {
-    path: 'mi-perfil',
-    loadComponent: () => import('./pages/mi-perfil/mi-perfil').then(m => m.MiPerfil)
-  },
-  {
-    path: '',
-    redirectTo: 'mi-perfil',
-    pathMatch: 'full'
-  }
-];
-```
-
----
-
-### Paso 3: Registrar las rutas básicas en [enterprise.routes.ts](file:///c:/Users/joaki/OneDrive/Escritorio/WorkLink/src/app/features/enterprise/enterprise.routes.ts)
-
-Para cuando pruebes iniciar sesión con rol `EMPRESA` o `RECRUITER`, abre [enterprise.routes.ts](file:///c:/Users/joaki/OneDrive/Escritorio/WorkLink/src/app/features/enterprise/enterprise.routes.ts) y registra sus páginas:
-
-```typescript
-import { Routes } from '@angular/router';
-
-export const routes: Routes = [
-  {
-    path: 'vacantes',
-    loadComponent: () => import('./vacantes/pages/vacante-admin/vacante-admin-list').then(m => m.VacanteAdminList)
-  },
-  {
-    path: 'dashboard',
-    loadComponent: () => import('./dashboard/pages/empresa-dashboard/empresa-dashboard').then(m => m.EmpresaDashboard)
-  },
-  {
-    path: '',
-    redirectTo: 'vacantes',
-    pathMatch: 'full'
-  }
-];
+                    <!-- Flecha indicadora sutil -->
+                    <span class="text-slate-400 group-hover:text-white text-xs transition-colors ml-0.5">→</span>
+                </a>
+            }
 ```
 
 ---
 
 ## 3. Verificación
-
-1. Guarda los cambios.
-2. Inicia sesión en `/auth/login`.
-3. Observarás la magia:
-   * Como ahora la ruta `/perfiles/mi-perfil` **sí existe**, Angular no te rebotará a la Landing.
-   * Se cargará el cascarón **`MainLayout`**.
-   * Verás tu **Sidebar lateral a la izquierda**, la página de perfil a la derecha, y **el footer habrá desaparecido por completo**.
+1. Guarda [header.html](file:///c:/Users/joaki/OneDrive/Escritorio/WorkLink/src/app/core/layout/header/header.html).
+2. Entra a tu sesión:
+   - En el Header desaparece el botón rojo redundante.
+   - En su lugar aparece la elegante píldora con tu avatar e inicial en mayúscula (`U` o la primera letra de tu nombre), tu usuario y tu rol.
+   - Al pasar el cursor, el avatar se agranda sutilmente (`scale-105`) y el borde resplandece en celeste (`brand-sky`).
+   - Al hacer clic, navega directamente a `/perfiles/mi-perfil`.
+   - La opción de cerrar sesión sigue estando disponible de manera natural en la base del Sidebar.
