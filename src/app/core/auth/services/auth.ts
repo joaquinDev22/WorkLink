@@ -6,6 +6,7 @@ import { Session } from '../../models/session.model';
 import { GoogleLoginRequestDTO, LoginRequestDTO, LoginResponseDTO, RegisterRequestDTO } from '../../../features/auth/models/auth.models';
 import { of, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { UserRole } from '../../models/user-role';
 
 @Service()
 export class Auth {
@@ -16,6 +17,27 @@ export class Auth {
 
     // Signal con tu Session tipada
     session = signal<Session | null>(this.tokenStorage.getSession());
+    
+    cambiarRol(nuevoRol: UserRole): void {
+        const actual = this.session();
+        if (!actual) return;
+        const actualizada: Session = {
+            ...actual,
+            rol: nuevoRol
+        };
+        this.tokenStorage.saveSession(actualizada);
+        this.session.set(actualizada);
+        // Redirección inmediata al panel del nuevo rol
+        this.redirigirSegunRol(nuevoRol);
+    }
+
+    redirigirSegunRol(rol : UserRole){
+        if (rol === 'POSTULANTE') {
+            this.router.navigate(['/enterprise/catalogo'])
+        } else if (rol === 'FREELANCER') {
+            this.router.navigate(['/freelance/proyectos'])
+        }
+    }
 
     login(credenciales: LoginRequestDTO) {
         if (environment.bypassAuth) {
@@ -63,13 +85,14 @@ export class Auth {
         this.session.set(session);
 
         // Redirección inteligente al área privada según su rol:
-        if (session.rol === 'EMPRESA' || session.rol === 'RECRUITER') {
+        if (session.rol === 'EMPRESA') {
+            this.router.navigate(['/enterprise/dashboard']);
+        } else if (session.rol === 'RECRUITER') {
             this.router.navigate(['/enterprise/vacantes']);
         } else if (session.rol === 'CLIENTE') {
             this.router.navigate(['/freelance/cliente-dashboard']);
         } else {
-            // FREELANCER, POSTULANTE o por defecto
-            this.router.navigate(['/perfiles/mi-perfil']);
+            this.router.navigate(['/freelance/proyectos']);
         }
     }
     

@@ -29,7 +29,7 @@ export const routes: Routes = [
       {
         path: 'enterprise',
         canActivate: [roleGuard],
-        data: { roles: ['EMPRESA', 'RECRUITER'] },
+        data: { roles: ['EMPRESA', 'RECRUITER', 'POSTULANTE'] },
         loadChildren: () => import('./features/enterprise/enterprise.routes').then(m => m.routes)
       },
       {
