@@ -13,7 +13,7 @@ export interface PerfilResponseDTO {
   perfil_id: number
   usuario: string
   email: string
-  rol: UserRole
+  rol?: UserRole
 }
 
 // POST /api/v1/auth/login

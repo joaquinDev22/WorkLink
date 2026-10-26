@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <defs>
+    <!-- Gradiente Torre Principal -->
+    <linearGradient id="gradEmpresa" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#4338ca"/>
+    </linearGradient>
+    <!-- Gradiente Torre Secundaria -->
+    <linearGradient id="gradTower" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+  </defs>
+  <!-- Edificio principal central -->
+  <path d="M3 7C3 5.89543 3.89543 5 5 5H13C14.1046 5 15 5.89543 15 7V21H3V7Z" fill="url(#gradEmpresa)"/>
+  <!-- Torre lateral secundaria -->
+  <path d="M15 11C15 9.89543 15.8954 9 17 9H20C21.1046 9 22 9.89543 22 11V21H15V11Z" fill="url(#gradTower)"/>
+  <!-- Ventanitas iluminadas -->
+  <rect x="5.5" y="8" width="2" height="2" rx="0.5" fill="#f8fafc"/>
+  <rect x="9.5" y="8" width="2" height="2" rx="0.5" fill="#f8fafc"/>
+  <rect x="5.5" y="12" width="2" height="2" rx="0.5" fill="#f8fafc"/>
+  <rect x="9.5" y="12" width="2" height="2" rx="0.5" fill="#f8fafc"/>
+  <rect x="17" y="12" width="2" height="2" rx="0.5" fill="#ffffff"/>
+  <rect x="17" y="16" width="2" height="2" rx="0.5" fill="#ffffff"/>
+  <!-- Puerta de entrada -->
+  <path d="M7 21V17H11V21H7Z" fill="#1e1b4b"/>
+</svg>

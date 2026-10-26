@@ -1,18 +1,311 @@
-<div class="flex flex-col justify-center items-center py-6">
-    <form 
-    class="bg-linear-to-t from-indigo-800/50 to-indigo-400/50 backdrop-blur-xs px-6 py-8 rounded-2xl w-full max-w-md h-auto mx-4 space-y-5 shadow-2xl shadow-indigo-400/50">
-        <h2 class="text-center text-3xl font-bold text-white mb-1">Bienvenido</h2>
-        <h4 class="text-md text-indigo-800 text-center mb-2">Crea tu cuenta para continuar</h4>
-        <fieldset class="flex flex-col space-y-2">
-            <label class="text-white font-medium" for="">Usuario:</label>
-            <input class="bg-white p-1 rounded-lg focus:outline-none  focus:ring-4 focus:ring-indigo-400/50 px-2" type="text" placeholder="usuario3312">
-        </fieldset>
-        <fieldset class="flex flex-col space-y-2">
-            <label class="text-white font-medium" for="">Contraseña:</label>
-            <input class="bg-white p-1 rounded-lg focus:outline-none  focus:ring-4 focus:ring-indigo-400/50 px-2" type="password" placeholder="••••••••">
-        </fieldset>
-        
-        <button class="w-full text-center p-4 bg-indigo-600 text-white rounded-2xl shadow-inner shadow-indigo-400 cursor-pointer hover:bg-indigo-800 hover:shadow-indigo-600 transition-all duration-300 ease-in-out" type="submit">Siguiente</button>
-    </form>
-</div>
+<div class="flex flex-col justify-center items-center py-6 px-4 min-h-[85vh]">
 
+    <!-- =========================================================================
+    PASO 1: SELECCIÓN DE OBJETIVOS (100% Paleta Índigo/Violeta de WorkLink)
+    ========================================================================= -->
+    <div 
+        [class.hidden]="intencion() !== ''"
+        class="card-register-brand p-6 sm:p-9 w-full max-w-xl mx-auto space-y-6">
+
+        <!-- Cabecera -->
+        <div class="text-center space-y-1.5">
+            <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">¿Cuál es tu objetivo?</h2>
+            <p class="text-sm text-slate-200">
+                Selecciona cómo deseas utilizar WorkLink para personalizar tu cuenta.
+            </p>
+        </div>
+        
+        <!-- Opciones de Selección en Colores de Marca -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">    
+            
+            <!-- TARJETA 1: QUIERO CONTRATAR -->
+            <button 
+                type="button" 
+                class="choice-card-brand group flex flex-col justify-between p-5 rounded-2xl cursor-pointer text-left space-y-4" 
+                (click)="seleccionarIntencion('CONTRATAR')">
+                
+                <div class="space-y-3">
+                    <div class="w-14 h-14 rounded-2xl icon-capsule-brand flex items-center justify-center group-hover:scale-105 transition-transform">
+                        <img src="/contratar.svg" alt="Quiero Contratar" class="w-8 h-8 object-contain">
+                    </div>
+
+                    <div>
+                        <h3 class="font-bold text-base text-white group-hover:text-brand-sky transition-colors">
+                            Quiero Contratar
+                        </h3>
+                        <p class="text-xs text-slate-200 pt-1 leading-relaxed">
+                            Publicar proyectos con fondos en custodia o abrir búsquedas laborales tech para tu empresa.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="pt-2 border-t border-glass-border/40 flex items-center justify-between text-xs text-brand-sky-light font-medium">
+                    <span>Cliente · Empresa</span>
+                    <span class="group-hover:translate-x-1 transition-transform font-bold text-white">→</span>
+                </div>
+            </button>
+
+            <!-- TARJETA 2: QUIERO TRABAJAR -->
+            <button 
+                type="button" 
+                class="choice-card-brand group flex flex-col justify-between p-5 rounded-2xl cursor-pointer text-left space-y-4" 
+                (click)="seleccionarIntencion('TRABAJAR')">
+                
+                <div class="space-y-3">
+                    <div class="w-14 h-14 rounded-2xl icon-capsule-brand flex items-center justify-center group-hover:scale-105 transition-transform">
+                        <img src="/trabajar.svg" alt="Quiero Trabajar" class="w-8 h-8 object-contain">
+                    </div>
+
+                    <div>
+                        <h3 class="font-bold text-base text-white group-hover:text-brand-sky transition-colors">
+                            Quiero Trabajar
+                        </h3>
+                        <p class="text-xs text-slate-200 pt-1 leading-relaxed">
+                            Postularte a proyectos freelance por hitos o aplicar a empleos formales en empresas consolidadas.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="pt-2 border-t border-glass-border/40 flex items-center justify-between text-xs text-brand-sky-light font-medium">
+                    <span>Freelancer · Postulante</span>
+                    <span class="group-hover:translate-x-1 transition-transform font-bold text-white">→</span>
+                </div>
+            </button>
+
+        </div>
+
+        <!-- Enlace a Login idéntico -->
+        <div class="text-center pt-2 border-t border-glass-border/40">
+            <span class="text-xs sm:text-sm text-slate-200">
+                ¿Ya tienes una cuenta? 
+                <a routerLink="/auth/login" class="text-brand-sky hover:text-white underline font-semibold ml-1 cursor-pointer">
+                    Inicia Sesión
+                </a>
+            </span>
+        </div>
+    </div>
+
+    <!-- =========================================================================
+    PASO 2: FORMULARIO DE REGISTRO (Estética Idéntica al Login)
+    ========================================================================= -->
+    <div 
+        [class.hidden]="intencion() === ''"
+        class="card-register-brand p-6 sm:p-8 w-full max-w-lg mx-auto space-y-5">
+        
+        <form (submit)="crearCuenta($event)" class="space-y-4">
+            
+            <!-- Barra superior: Volver y Modo -->
+            <div class="flex items-center justify-between pb-3 border-b border-glass-border">
+                <button 
+                    type="button" 
+                    (click)="intencion.set('')"
+                    class="text-xs text-brand-sky hover:text-white transition-colors cursor-pointer inline-flex items-center gap-1 font-semibold">
+                    <span>←</span> Cambiar objetivo
+                </button>
+                <span class="text-xs text-slate-200">
+                    Modo: <strong class="text-white">{{ intencion() === 'TRABAJAR' ? 'Trabajar' : 'Contratar' }}</strong>
+                </span>
+            </div>
+
+            <!-- Título del Formulario -->
+            <div class="text-center">
+                <h2 class="text-2xl sm:text-3xl font-bold text-white">Crea tu cuenta</h2>
+                <h4 class="text-xs text-brand-sky-light mt-0.5">Ingresa tus datos para registrarte</h4>
+            </div>
+
+            <!-- Error de servidor si existe -->
+            @if (errorServidor()) {
+                <div class="p-2.5 rounded-lg bg-brand-danger/20 border border-brand-danger-muted text-white text-xs text-center font-medium">
+                    {{ errorServidor() }}
+                </div>
+            }
+
+            <!-- Campo: Usuario (Mismo estilo exacto de Login) -->
+            <fieldset class="flex flex-col space-y-1.5">
+                <label for="usuario" class="text-white font-medium text-sm">Usuario:</label>
+                <input 
+                    id="usuario"
+                    class="bg-white p-2 rounded-lg text-slate-900 focus:outline-none focus:ring-4 focus:ring-brand-indigo-light/50 px-3 text-sm shadow-inner shadow-slate-500" 
+                    type="text" 
+                    placeholder="usuario3312" 
+                    [formField]="registerForm.usuario">
+                @if (registerForm.usuario().touched() && registerForm.usuario().invalid()) {
+                    @for (error of registerForm.usuario().errors(); track error.kind) {
+                        <span class="text-brand-danger-muted text-xs font-semibold">{{ error.message }}</span>
+                    }
+                }
+            </fieldset>
+
+            <!-- Campo: Email -->
+            <fieldset class="flex flex-col space-y-1.5">
+                <label for="email" class="text-white font-medium text-sm">Email:</label>
+                <input 
+                    id="email"
+                    class="bg-white p-2 rounded-lg text-slate-900 focus:outline-none focus:ring-4 focus:ring-brand-indigo-light/50 px-3 text-sm shadow-inner shadow-slate-500" 
+                    type="email" 
+                    placeholder="email@example.com" 
+                    [formField]="registerForm.email">
+                @if (registerForm.email().touched() && registerForm.email().invalid()) {
+                    @for (error of registerForm.email().errors(); track error.kind) {
+                        <span class="text-brand-danger-muted text-xs font-semibold">{{ error.message }}</span>
+                    }
+                }
+            </fieldset>
+
+            <!-- Campo: Contraseña -->
+            <fieldset class="flex flex-col space-y-1.5">
+                <label for="password" class="text-white font-medium text-sm">Contraseña:</label>
+                <div class="relative w-full flex items-center">
+                    <input 
+                        id="password"
+                        class="w-full bg-white p-2 pr-10 rounded-lg text-slate-900 focus:outline-none focus:ring-4 focus:ring-brand-indigo-light/50 px-3 text-sm shadow-inner shadow-slate-500" 
+                        [type]="showPassword() ? 'text' : 'password'" 
+                        placeholder="••••••••" 
+                        [formField]="registerForm.password">
+                    <button 
+                        type="button" 
+                        (click)="showPassword.set(!showPassword())"
+                        class="absolute right-2 p-1 cursor-pointer flex items-center justify-center opacity-70 hover:opacity-100 transition-opacity">
+                        <img [src]="showPassword() ? '/eye.svg' : '/eye-off.svg'" alt="Mostrar contraseña" class="w-5 h-5">
+                    </button>
+                </div>
+
+                <!-- Barra de seguridad -->
+                @if (registerForm.password().value()) {
+                    <div class="space-y-1 pt-1">
+                        <div class="flex justify-between text-xs">
+                            <span class="text-slate-200">Seguridad:</span>
+                            <span [class]="textoFortaleza().color" class="font-bold">{{ textoFortaleza().texto }}</span>
+                        </div>
+                        <div class="w-full bg-black/40 h-1.5 rounded-full overflow-hidden">
+                            <div class="h-full transition-all duration-300" [class]="textoFortaleza().bar"></div>
+                        </div>
+                    </div>
+                }
+
+                <!-- Requisitos dinámicos -->
+                <div class="grid grid-cols-2 gap-1 pt-1 text-xs select-none">
+                    <span class="flex items-center gap-1 transition-colors" [class]="reqPassword().longitud ? 'text-emerald-400 font-semibold' : 'text-slate-300'">
+                        {{ reqPassword().longitud ? '✓' : '○' }} 8+ caracteres
+                    </span>
+                    <span class="flex items-center gap-1 transition-colors" [class]="reqPassword().mayuscula ? 'text-emerald-400 font-semibold' : 'text-slate-300'">
+                        {{ reqPassword().mayuscula ? '✓' : '○' }} 1 Mayúscula
+                    </span>
+                    <span class="flex items-center gap-1 transition-colors" [class]="reqPassword().minuscula ? 'text-emerald-400 font-semibold' : 'text-slate-300'">
+                        {{ reqPassword().minuscula ? '✓' : '○' }} 1 Minúscula
+                    </span>
+                    <span class="flex items-center gap-1 transition-colors" [class]="reqPassword().numero ? 'text-emerald-400 font-semibold' : 'text-slate-300'">
+                        {{ reqPassword().numero ? '✓' : '○' }} 1 Número
+                    </span>
+                </div>
+            </fieldset>
+
+            <!-- Campo: Confirmar Contraseña -->
+            <fieldset class="flex flex-col space-y-1.5">
+                <label for="confirmPassword" class="text-white font-medium text-sm">Confirmar Contraseña:</label>
+                <div class="relative w-full flex items-center">
+                    <input 
+                        id="confirmPassword"
+                        class="w-full bg-white p-2 pr-10 rounded-lg text-slate-900 focus:outline-none focus:ring-4 focus:ring-brand-indigo-light/50 px-3 text-sm shadow-inner shadow-slate-500" 
+                        [type]="showConfirmPassword() ? 'text' : 'password'" 
+                        placeholder="••••••••" 
+                        [formField]="registerForm.confirmPassword">
+                    <button 
+                        type="button" 
+                        (click)="showConfirmPassword.set(!showConfirmPassword())"
+                        class="absolute right-2 p-1 cursor-pointer flex items-center justify-center opacity-70 hover:opacity-100 transition-opacity">
+                        <img [src]="showConfirmPassword() ? '/eye.svg' : '/eye-off.svg'" alt="Mostrar contraseña" class="w-5 h-5">
+                    </button>
+                </div>
+                @if (registerForm.confirmPassword().touched() && registerForm.confirmPassword().invalid()) {
+                    @for (error of registerForm.confirmPassword().errors(); track error.kind) {
+                        <span class="text-brand-danger-muted text-xs font-semibold">{{ error.message }}</span>
+                    }
+                }
+            </fieldset>
+
+            <!-- Selector de Rol Específico -->
+            <fieldset class="flex flex-col space-y-1.5 pt-1">
+                <label class="text-white font-medium text-sm">
+                    Selecciona tu rol exacto:
+                </label>
+
+                <div class="relative w-full">
+                    <!-- Botón Selector Cerrado -->
+                    <button 
+                        type="button" 
+                        (click)="dropdownRolesAbierto.update(v => !v)"
+                        class="w-full bg-white/10 hover:bg-brand-indigo-light/25 focus:ring-4 focus:ring-brand-indigo-light/50 p-2.5 rounded-xl flex items-center justify-between cursor-pointer transition-all text-left shadow-inner shadow-slate-500 border border-glass-border">
+                        
+                        <div class="flex items-center gap-3">
+                            <img [src]="rolSeleccionado()?.icono" [alt]="rolSeleccionado()?.titulo" class="w-6 h-6 object-contain">
+                            <div>
+                                <span class="block font-bold text-white text-sm leading-tight">
+                                    {{ rolSeleccionado()?.titulo }}
+                                </span>
+                                <span class="block text-xs text-slate-200 leading-tight line-clamp-1">
+                                    {{ rolSeleccionado()?.descripcion }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <svg 
+                            class="w-4 h-4 text-brand-sky transition-transform duration-200 shrink-0 ml-2" 
+                            [class.rotate-180]="dropdownRolesAbierto()"
+                            fill="none" 
+                            viewBox="0 0 24 24" 
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <!-- Capa para cerrar al hacer clic afuera -->
+                    @if (dropdownRolesAbierto()) {
+                        <div class="fixed inset-0 z-40" (click)="dropdownRolesAbierto.set(false)"></div>
+                    }
+
+                    <!-- Menú Desplegable con Glassmorphism Índigo -->
+                    @if (dropdownRolesAbierto()) {
+                        <div class="absolute top-full left-0 right-0 mt-2 z-50 bg-brand-indigo-dark/90 backdrop-blur-xl border border-glass-border rounded-xl shadow-card-login overflow-hidden py-1.5 flex flex-col max-h-60 overflow-y-auto">
+                            @for (item of rolesVisibles(); track item.rol) {
+                                <div 
+                                    (click)="seleccionarRol(item.rol)"
+                                    [class.bg-white/15]="registerModel().rol === item.rol"
+                                    [class.border-l-4]="registerModel().rol === item.rol"
+                                    [class.border-brand-sky]="registerModel().rol === item.rol"
+                                    class="px-3 py-2.5 flex items-center justify-between hover:bg-white/10 cursor-pointer transition-colors border-l-4 border-transparent">
+                                    
+                                    <div class="flex items-center gap-3">
+                                        <img [src]="item.icono" [alt]="item.titulo" class="w-6 h-6 object-contain">
+                                        <div>
+                                            <span class="block font-bold text-white text-sm leading-tight">
+                                                {{ item.titulo }}
+                                            </span>
+                                            <span class="block text-xs text-slate-200 leading-tight">
+                                                {{ item.descripcion }}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    @if (registerModel().rol === item.rol) {
+                                        <span class="text-brand-sky text-sm font-bold ml-2">✓</span>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </fieldset>
+
+            <!-- Botón Final Idéntico a Login -->
+            <div class="pt-2">
+                <button 
+                    class="btn-submit-brand w-full text-center p-3.5 bg-brand-indigo text-white rounded-2xl cursor-pointer hover:bg-brand-indigo-dark font-bold text-sm tracking-wide" 
+                    type="submit">
+                    Crear Cuenta
+                </button>
+            </div>
+        </form>
+    </div>
+
+</div>

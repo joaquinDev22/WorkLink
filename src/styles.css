@@ -1,3 +1,80 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import 'tailwindcss';
+
+@theme {
+  /* ==========================================================
+     1. COLORES DE IDENTIDAD WORKLINK
+     ========================================================== */
+  /* Índigo / Violeta (Base y Acciones Primarias) */
+  --color-brand-indigo-dark: #3730a3;      /* indigo-800 (base de degradados) */
+  --color-brand-indigo: #4f46e5;           /* indigo-600 (botones principales) */
+  --color-brand-indigo-light: #818cf8;     /* indigo-400 (bordes y sombras internas) */
+  --color-brand-violet: #6d28d9;           /* violet-700 (botón registrarse) */
+
+  /* Celeste / Sky (Acentos y Resplandores) */
+  --color-brand-sky: #38bdf8;              /* sky-400 (acento de logo y enlaces activos) */
+  --color-brand-sky-light: #7dd3fc;        /* sky-300 (saludo usuario y focus) */
+
+  /* Alertas y Peligro */
+  --color-brand-danger: #ef4444;           /* red-500 (cerrar sesión / bajas) */
+  --color-brand-danger-muted: #f87171;     /* red-400 (errores de validación) */
+
+  /* ==========================================================
+     2. SUPERFICIES GLASSMORPHISM
+     ========================================================== */
+  --color-glass-surface: rgba(255, 255, 255, 0.08);
+  --color-glass-border-subtle: rgba(255, 255, 255, 0.15);
+  --color-glass-border: rgba(255, 255, 255, 0.30);
+  --color-glass-border-strong: rgba(255, 255, 255, 0.50);
+
+  /* ==========================================================
+     3. TUS SOMBRAS PERSONALIZADAS (GLOWS & INSET)
+     ========================================================== */
+  /* El resplandor profundo de tu botón Registrarse */
+  --shadow-glow-indigo: 0 0 28px -5px rgba(75, 63, 248, 0.85), 0 0 13px -6px rgba(40, 16, 255, 0.65);
+
+  /* El resplandor blanco de tu botón Iniciar Sesión */
+  --shadow-glow-white: 0 0 25px -5px rgba(255, 255, 255, 0.45), 0 0 10px -6px rgba(253, 253, 253, 0.45);
+  --text-shadow-glow-white: 0 0 25px rgba(255, 255, 255, 0.45), 0 0 10px rgba(253, 253, 253, 0.45);
+
+  /* El halo celeste de tu píldora del Navbar */
+  --shadow-glow-sky: 0 0 15px rgba(56, 189, 248, 0.40);
+
+  /* El bisel interior de tus botones (reemplazo sin delay de shadow-inner) */
+  --shadow-inner-indigo: inset 0 2px 4px 0 #818cf8;
+  --shadow-inner-indigo-dark: inset 0 2px 4px 0 #4f39f6;
+  --shadow-inner-white: inset 0 2px 4px 0 #ffffff;
+   
+  /* Sombra de la tarjeta de Login */
+  --shadow-card-login: 0 25px 50px -12px rgba(99, 102, 241, 0.45);
+}
+.btn-registrarse {
+  box-shadow: var(--shadow-inner-indigo);
+  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.btn-registrarse:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-inner-indigo), var(--shadow-glow-indigo);
+}
+
+.btn-registrarse:active {
+  transform: translateY(1px) scale(0.96);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.btn-iniciar-sesion {
+  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.btn-iniciar-sesion:hover {
+  box-shadow: var(--shadow-inner-white), var(--shadow-glow-white);
+}
+
+.btn-iniciar-sesion:active {
+  transform: translateY(1px) scale(0.96);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5);
+}

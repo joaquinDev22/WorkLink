@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <defs>
+    <!-- Gradiente Celeste -> Azul Profundo -->
+    <linearGradient id="gradCV" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#4f46e5"/>
+    </linearGradient>
+  </defs>
+  <!-- Hoja de papel base sólida -->
+  <path d="M5 3C3.89543 3 3 3.89543 3 5V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V9L15 3H5Z" fill="url(#gradCV)"/>
+  <!-- Esquina doblada -->
+  <path d="M15 3V8C15 8.55228 15.4477 9 16 9H21L15 3Z" fill="#bae6fd"/>
+  <!-- Foto de perfil en el CV -->
+  <circle cx="8" cy="9" r="2" fill="#ffffff"/>
+  <!-- Líneas de datos en el CV -->
+  <rect x="11.5" y="8" width="5.5" height="1.5" rx="0.75" fill="#ffffff"/>
+  <rect x="6" y="13" width="12" height="1.5" rx="0.75" fill="#ffffff"/>
+  <rect x="6" y="16" width="9" height="1.5" rx="0.75" fill="#ffffff"/>
+</svg>

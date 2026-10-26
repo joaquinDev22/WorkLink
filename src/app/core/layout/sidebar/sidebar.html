@@ -1,1 +1,35 @@
-<p>sidebar works!</p>
+<!-- Fondo oscuro difuminado (al hacer clic afuera, se cierra con fade-in / fade-out) -->
+<div 
+  class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity duration-300"
+  [class.opacity-100]="isOpen()"
+  [class.opacity-0]="!isOpen()"
+  [class.pointer-events-none]="!isOpen()"
+  (click)="cerrar()">
+</div>
+
+<!-- Panel lateral deslizante (exclusivo para usuarios autenticados en móvil) -->
+<aside 
+  class="fixed top-0 right-0 h-dvh w-[80vw] max-w-xs bg-brand-indigo-dark/95 backdrop-blur-2xl gap-4 border-l border-glass-border z-40 p-6 pt-24 flex flex-col shadow-2xl transition-transform duration-300 ease-in-out"
+  [class.translate-x-0]="isOpen()"
+  [class.translate-x-full]="!isOpen()">
+
+    <div class="flex flex-col gap-6">
+        <!-- Ficha de Usuario -->
+        <div class="flex items-center gap-3 pb-4 border-b border-glass-border">
+            <div class="size-10 rounded-full bg-brand-indigo/40 border border-brand-indigo-light/50 flex items-center justify-center text-white font-bold text-sm shadow-inner-indigo">
+                {{ auth.session()?.nombreUsuario?.charAt(0)?.toUpperCase() }}
+            </div>
+            <div class="flex flex-col overflow-hidden">
+                <span class="text-xs text-slate-300">Conectado como</span>
+                <span class="text-white text-sm font-semibold truncate">{{ auth.session()?.nombreUsuario }}</span>
+            </div>
+        </div>
+
+        <!-- Botón de Cerrar Sesión -->
+        <button 
+            (click)="auth.logout(); cerrar()" 
+            class="w-full py-2.5 px-3 rounded-xl text-sm font-medium text-brand-danger-muted bg-brand-danger/20 border border-brand-danger-muted/30 hover:bg-brand-danger/40 hover:text-white transition-all cursor-pointer">
+            Cerrar Sesión
+        </button>
+    </div>
+</aside>

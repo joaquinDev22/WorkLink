@@ -7,13 +7,13 @@
     [style.opacity]="pildoraVisible() ? 1 : 0">
   </div>
   <!-- TUS ENLACES (Solo tienen relative y z-10 para quedar sobre la píldora) -->
-  <a href="" (mouseenter)="moverPildora($event)" class="relative z-10 px-3.5 py-1 font-medium text-white transition-colors">
+  <a routerLink="" (mouseenter)="moverPildora($event)" class="relative z-10 px-3.5 py-1 font-medium text-white transition-colors">
     Inicio
   </a>
-  <a href="" (mouseenter)="moverPildora($event)" class="relative z-10 px-3.5 py-1 font-medium text-white transition-colors">
+  <a routerLink="" (mouseenter)="moverPildora($event)" class="relative z-10 px-3.5 py-1 font-medium text-white transition-colors">
     Freelancers
   </a>
-  <a href="" (mouseenter)="moverPildora($event)" class="relative z-10 px-3.5 py-1 font-medium text-white transition-colors">
+  <a routerLink="" (mouseenter)="moverPildora($event)" class="relative z-10 px-3.5 py-1 font-medium text-white transition-colors">
     Enterprise
   </a>
     <!-- EL (mouseenter) VA EN ESTE CONTENEDOR -->
@@ -30,10 +30,10 @@
     <!-- Menú desplegable -->
     <div class="absolute top-full left-1/2 -translate-x-1/2 pt-2 hidden group-hover:block z-50">
       <div class="w-44 py-2 rounded-xl bg-white/80 backdrop-blur-xl border border-white/60 hover:shadow-xl flex flex-col">
-        <a href="" class="px-4 py-2 text-sm text-slate-700 hover:bg-indigo-400 hover:text-white transition-colors">
+        <a href="" class="px-4 py-2 text-sm text-slate-700 hover:bg-brand-indigo-light hover:text-white transition-colors">
           Sobre Nosotros
         </a>
-        <a href="" class="px-4 py-2 text-sm text-slate-700 hover:bg-indigo-400 hover:text-white transition-colors">
+        <a href="" class="px-4 py-2 text-sm text-slate-700 hover:bg-brand-indigo-light hover:text-white transition-colors">
           Contáctanos
         </a>
       </div>
