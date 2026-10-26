@@ -1,0 +1,179 @@
+/* ==========================================================================
+   1. BOTONES UNIFICADOS CON EL HEADER
+   ========================================================================== */
+
+.btn-registrarse {
+  box-shadow: var(--shadow-inner-indigo);
+  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.btn-registrarse:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-inner-indigo), var(--shadow-glow-indigo);
+}
+
+.btn-registrarse:active {
+  transform: translateY(1px) scale(0.96);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.btn-iniciar-sesion {
+  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.btn-iniciar-sesion:hover {
+  box-shadow: var(--shadow-inner-white), var(--shadow-glow-white);
+}
+
+.btn-iniciar-sesion:active {
+  transform: translateY(1px) scale(0.96);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+/* ==========================================================================
+   2. GLASSMORPHISM + NEUMORPHISM DE MARCA (En Tonos Índigo / Violeta / Sky)
+   ========================================================================== */
+
+/* Tarjetas elevadas con cristal índigo de marca (sin negros planos) */
+.glass-neu-card {
+  background: linear-gradient(135deg, rgba(55, 48, 163, 0.4) 0%, rgba(79, 70, 229, 0.2) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--color-glass-border-subtle);
+  box-shadow: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.3),
+    0 16px 36px -10px rgba(55, 48, 163, 0.5);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
+}
+
+.glass-neu-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(56, 189, 248, 0.4);
+  box-shadow: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.4),
+    var(--shadow-card-login);
+}
+
+/* Ventana de producto del Hero y Showcase de Objetivos */
+.glass-neu-window {
+  background: linear-gradient(145deg, rgba(55, 48, 163, 0.6) 0%, rgba(79, 70, 229, 0.35) 100%);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid var(--color-glass-border);
+  box-shadow: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.35),
+    var(--shadow-card-login);
+}
+
+/* Hendiduras hundidas en tono Índigo Profundo (Debossed Inset de Marca) */
+.glass-neu-inset {
+  background: rgba(55, 48, 163, 0.45);
+  border: 1px solid var(--color-glass-border-subtle);
+  box-shadow: 
+    inset 0 2px 5px 0 rgba(0, 0, 0, 0.35),
+    var(--shadow-inner-indigo);
+}
+
+/* ==========================================================================
+   3. SELECTOR DE OBJETIVOS (Tabs Neumórficos Índigo)
+   ========================================================================== */
+
+.neu-objective-idle {
+  background: rgba(55, 48, 163, 0.35);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--color-glass-border-subtle);
+  box-shadow: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.2),
+    0 8px 20px -4px rgba(55, 48, 163, 0.35);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.neu-objective-idle:hover {
+  background: rgba(55, 48, 163, 0.6);
+  border-color: var(--color-brand-sky);
+  transform: translateY(-2px);
+  box-shadow: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.3),
+    var(--shadow-glow-indigo);
+}
+
+.neu-objective-idle:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.neu-objective-active {
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.6) 0%, rgba(109, 40, 217, 0.6) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--color-brand-sky);
+  box-shadow: 
+    var(--shadow-inner-indigo),
+    var(--shadow-glow-indigo);
+  transform: translateY(1px);
+  user-select: none;
+}
+
+/* Píldoras de testimonios */
+.neu-pill-idle {
+  background: rgba(55, 48, 163, 0.3);
+  box-shadow: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.15),
+    0 4px 10px rgba(55, 48, 163, 0.3);
+  transition: all 0.15s ease-out;
+  user-select: none;
+}
+
+.neu-pill-idle:hover {
+  background: rgba(55, 48, 163, 0.5);
+  box-shadow: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.25),
+    var(--shadow-glow-indigo);
+}
+
+.neu-pill-idle:active {
+  transform: translateY(1px) scale(0.96);
+}
+
+.neu-pill-active {
+  background: var(--color-brand-indigo);
+  box-shadow: 
+    var(--shadow-inner-indigo),
+    var(--shadow-glow-indigo);
+  transform: translateY(1px);
+  user-select: none;
+}
+
+/* ==========================================================================
+   4. MARQUEE CONTINUO (Loop 100% CSS Autónomo a 60fps)
+   ========================================================================== */
+
+@keyframes marquee-slide {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-slide 28s linear infinite;
+  will-change: transform;
+}
+
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.25; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(1.08); }
+}
+
+.animate-glow-subtle {
+  animation: glow-pulse 8s ease-in-out infinite;
+}

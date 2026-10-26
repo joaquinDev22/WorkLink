@@ -16,19 +16,20 @@
             <div class="md:h-14 md:w-16 h-17 w-18 bg-glass-surface rounded-3xl md:rounded-2xl flex px-2.5 justify-center items-center">
                 <img src="/worklink logo.svg" alt="worklink-logo" class="w-full h-full">
             </div>
-            <div routerLink="/" class="hover:cursor-pointer">
+            <div routerLink="/" class="hover:cursor-pointer active:scale-95 transition-transform duration-150">
                 <h1 class="font-bold text-2xl md:4xl text-white text-center hover:text-shadow-glow-white">Work<span class="text-brand-sky">Link</span></h1>
             </div>
         </div>
 
         @if (!isMinWidth()) {
             @if (!auth.session()) {
+                <!-- Desktop Visitante: Botones de Auth -->
                 <div class="flex flex-col md:flex-row justify-end md:gap-5 gap-1.5">
-                    <button class="m-px px-3 py-2 rounded-xl cursor-pointer font-medium text-white btn-iniciar-sesion" routerLink="/auth/login">Iniciar Sesión</button>
-                    <button class="bg-conic bg-brand-violet m-px py-2 px-3 rounded-xl cursor-pointer font-medium text-white btn-registrarse" routerLink="/auth/register">Registrarse</button>
+                    <button class="m-px px-4 py-2 rounded-xl cursor-pointer font-medium text-white btn-iniciar-sesion" routerLink="/auth/login">Iniciar Sesión</button>
+                    <button class="bg-conic bg-brand-violet m-px py-2 px-4 rounded-xl cursor-pointer font-medium text-white btn-registrarse" routerLink="/auth/register">Registrarse</button>
                 </div>
             } @else {
-                <!-- Desktop: Navbar + Botones de sesión -->
+                <!-- Desktop Autenticado: Navbar + Perfil y Logout -->
                 <app-navbar class="hidden md:flex"></app-navbar> 
                 <div class="flex items-center gap-3">
                     <span class="text-white text-sm font-medium">
@@ -42,13 +43,15 @@
                 </div>
             }
         } @else {
-            <!-- Móvil: Únicamente el botón hamburguesa (alineado a la derecha) -->
-            <app-burger-menu class="relative z-50" [(isActivo)]="isMenuOpen"></app-burger-menu>
+            <!-- Móvil: La hamburguesa SOLO se muestra si el usuario está autenticado -->
+            @if (auth.session()) {
+                <app-burger-menu class="relative z-50" [(isActivo)]="isMenuOpen"></app-burger-menu>
+            }
         }
     </div>
 
-    <!-- 3. Sidebar fuera de la fila flex para que no distorsione la barra -->
-    @if (isMinWidth()) {
+    <!-- 3. Sidebar: Solo se instancia en móvil si existe una sesión activa -->
+    @if (isMinWidth() && auth.session()) {
         <app-sidebar [(isOpen)]="isMenuOpen"></app-sidebar>
     }
 </header>

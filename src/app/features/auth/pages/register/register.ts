@@ -3,6 +3,7 @@ import { Auth } from '../../../../core/auth/services/auth';
 import { RegisterRequestDTO } from '../../models/auth.models';
 import { email, form, maxLength, minLength, pattern, required, FormField, validate } from '@angular/forms/signals';
 import { UserRole } from '../../../../core/models/user-role';
+import { RouterLink } from '@angular/router';
 
 export interface OpcionRol {
   rol: UserRole
@@ -15,7 +16,7 @@ export interface FormularioRegistro extends RegisterRequestDTO {
 }
 
 @Component({
-  imports: [FormField],
+  imports: [FormField, RouterLink],
   selector: 'app-register',
   styleUrl: './register.css',
   templateUrl: './register.html',
@@ -78,7 +79,7 @@ export class Register {
       email: '',
       password: '',
       confirmPassword:'',
-      rol: ''
+      rol: 'FREELANCER'
   })
 
   registerForm = form(this.registerModel, (field) =>{
