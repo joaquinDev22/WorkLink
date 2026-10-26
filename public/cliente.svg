@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <defs>
+    <!-- Gradiente Celeste -> Índigo -->
+    <linearGradient id="gradCliente" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#6366f1"/>
+    </linearGradient>
+  </defs>
+  <!-- Usuario Principal Sólido -->
+  <circle cx="9" cy="7" r="4" fill="url(#gradCliente)"/>
+  <path d="M2 19C2 15.134 5.134 12 9 12C12.866 12 16 15.134 16 19C16 19.5523 15.5523 20 15 20H3C2.44772 20 2 19.5523 2 19Z" fill="url(#gradCliente)"/>
+  
+  <!-- Usuario Secundario (Socio / Colaborador) -->
+  <circle cx="17" cy="8" r="3" fill="#818cf8"/>
+  <path d="M14 13.5C14.9 12.6 16.1 12 17.5 12C20.5 12 23 14.5 23 17.5V19C23 19.6 22.6 20 22 20H17C17.4 19.1 17.6 18.1 17.6 17C17.6 15.4 16.9 13.9 15.7 13C15.1 13.2 14.5 13.4 14 13.5Z" fill="#818cf8"/>
+</svg>

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <defs>
+    <!-- Gradiente Rojo -> Naranja -> Amarillo -->
+    <linearGradient id="gradRayo" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ef4444"/>
+      <stop offset="50%" stop-color="#f97316"/>
+      <stop offset="100%" stop-color="#facc15"/>
+    </linearGradient>
+  </defs>
+  <!-- Rayo Sólido -->
+  <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="url(#gradRayo)"/>
+</svg>

@@ -1,1 +1,41 @@
-<p>main-layout works!</p>
+<!-- Estructura vertical de pantalla completa -->
+<div class="flex flex-col h-screen w-full overflow-hidden bg-slate-950/80">
+  
+  <!-- 1. Header en modo estático (floating=false: no flota, ocupa su espacio natural) -->
+  <app-header [floating]="false"></app-header>
+
+  <!-- 2. Área inferior: Sidebar a la izquierda + Router-outlet a la derecha -->
+  <div class="flex flex-1 overflow-hidden">
+    
+    <!-- Sidebar de roles -->
+    <aside class="w-64 bg-slate-950/60 backdrop-blur-xl border-r border-white/10 p-5 flex-col justify-between hidden md:flex shrink-0">
+      <div class="flex flex-col space-y-5">
+        <span class="text-xs text-sky-400 font-bold uppercase tracking-wider block">Panel de Control</span>
+        <nav class="flex flex-col space-y-1.5">
+          <!-- Roles condicionales -->
+          @if (auth.session()?.rol === 'EMPRESA') {
+           
+          }
+          
+          @if(auth.session()?.rol === 'RECRUITER'){
+
+          }
+
+          @if (auth.session()?.rol === 'FREELANCER') {
+            
+          }
+
+          @if (auth.session()?.rol === 'CLIENTE') {
+           
+          }
+        </nav>
+      </div>
+    </aside>
+
+    <!-- Área de trabajo con scroll independiente -->
+    <main class="flex-1 p-6 lg:p-8 overflow-y-auto">
+      <router-outlet></router-outlet>
+    </main>
+
+  </div>
+</div>
