@@ -1,0 +1,59 @@
+<div class="relative min-h-[75vh] flex items-center justify-center px-4 py-12 overflow-hidden">
+  
+  @let err = errorActual();
+
+  <!-- Número de Error Gigante Difuminado en Fondo (Watermark sutil) -->
+  <div class="absolute inset-0 flex items-center justify-center pointer-events-none select-none -z-10" aria-hidden="true">
+    <span class="text-[12rem] sm:text-[18rem] font-mono font-black text-slate-900/[0.04] leading-none tracking-tighter">
+      {{ err.codigo }}
+    </span>
+  </div>
+
+  <!-- Tarjeta Central de Contención -->
+  <div class="w-full max-w-lg bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-10 shadow-xl shadow-slate-100/80 text-center space-y-6 relative">
+    
+    <!-- Badge de Estado -->
+    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-xs font-bold uppercase tracking-wider {{ err.badgeClass }}">
+      <span class="w-2 h-2 rounded-full bg-current"></span>
+      <span>{{ err.badge }}</span>
+    </div>
+
+    <!-- Título y Código -->
+    <div class="space-y-2">
+      <span class="block text-4xl sm:text-5xl font-mono font-extrabold text-slate-900 tracking-tight">
+        {{ err.codigo }}
+      </span>
+      <h1 class="text-xl sm:text-2xl font-bold text-slate-800 tracking-tight text-balance">
+        {{ err.titulo }}
+      </h1>
+    </div>
+
+    <!-- Mensaje y Sugerencia -->
+    <div class="space-y-2 text-sm text-slate-600 leading-relaxed max-w-md mx-auto text-pretty">
+      <p>{{ err.descripcion }}</p>
+      <p class="text-xs text-slate-500 font-medium pt-1">{{ err.sugerencia }}</p>
+    </div>
+
+    <!-- Divisor sutil -->
+    <div class="border-t border-slate-100 pt-2"></div>
+
+    <!-- Acciones Contextuales -->
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-3 w-full">
+      <button 
+        type="button" 
+        (click)="volverAtras()"
+        class="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-semibold text-sm hover:bg-slate-50 active:scale-95 transition-all cursor-pointer">
+        ← Volver atrás
+      </button>
+
+      <a 
+        [routerLink]="rutaInicio()"
+        class="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-brand-indigo hover:bg-brand-indigo-dark text-white font-semibold text-sm shadow-md shadow-brand-indigo/20 active:scale-95 transition-all text-center cursor-pointer">
+        Ir al panel principal
+      </a>
+    </div>
+
+  </div>
+
+</div>
+

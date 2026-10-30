@@ -1,1 +1,41 @@
-﻿
+/* ==========================================================
+   DESPEGUE Y ROTACIÓN 3D FLUIDA (transitions-dev)
+   ========================================================== */
+.modal-3d-stage {
+  perspective: 1200px;
+  perspective-origin: center center;
+}
+
+.modal-3d-card {
+  transform-style: preserve-3d;
+  will-change: transform, opacity, box-shadow;
+  transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Estado sumergido en el espacio 3D (detrás de la pantalla, girado) */
+.modal-3d-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(0, 60px, -240px) rotateX(18deg) rotateY(-8deg) scale(0.82);
+  box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.1);
+  transition-duration: 0.22s;
+  transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
+}
+
+/* Estado elevado frente al usuario (aterrizaje suave y sin giro) */
+.modal-3d-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg) scale(1);
+  box-shadow: 0 35px 70px -15px rgba(15, 23, 42, 0.38),
+              0 0 45px -10px rgba(79, 70, 229, 0.30);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-3d-card {
+    transition: opacity 0.15s ease-out !important;
+    transform: none !important;
+  }
+}
