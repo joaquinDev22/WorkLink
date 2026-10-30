@@ -4,6 +4,7 @@
   [class.left-0]="floating()"
   [class.relative]="!floating()"
   [class.border-b]="!floating()"
+  [class.bg-brand-indigo]="!floating()"
   class="w-full z-50 backdrop-blur-md p-4 flex items-center justify-between border-white/10"
 >
     <!-- 1. Capa de fondo con blur (evita atrapar al fixed del sidebar) -->
@@ -17,7 +18,7 @@
                 <img src="/worklink logo.svg" alt="worklink-logo" class="w-full h-full">
             </div>
             <div [routerLink]="homeRoute()" class="hover:cursor-pointer active:scale-95 transition-transform duration-150">
-                <h1 class="font-bold text-2xl md:4xl text-white text-center hover:text-shadow-glow-white">Work<span class="text-brand-sky">Link</span></h1>
+                <h1 class="font-bold text-2xl md:text-4xl text-white text-center hover:text-shadow-glow-white">Work<span class="text-brand-sky">Link</span></h1>
             </div>
         </div>
 

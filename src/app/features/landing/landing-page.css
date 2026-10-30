@@ -1,10 +1,5 @@
 /* ==========================================================================
-   1. BOTONES UNIFICADOS CON EL HEADER
-   ========================================================================== */
-
-
-/* ==========================================================================
-   2. GLASSMORPHISM + NEUMORPHISM DE MARCA (En Tonos Índigo / Violeta / Sky)
+   1. GLASSMORPHISM + NEUMORPHISM DE MARCA (Tonos Índigo / Violeta / Sky)
    ========================================================================== */
 
 /* Tarjetas elevadas con cristal índigo de marca (sin negros planos) */
@@ -21,7 +16,7 @@
 
 .glass-neu-card:hover {
   transform: translateY(-3px);
-  border-color: rgba(56, 189, 248, 0.4);
+  border-color: rgba(56, 189, 248, 0.45);
   box-shadow: 
     inset 0 1px 1px 0 rgba(255, 255, 255, 0.4),
     var(--shadow-card-login);
@@ -48,7 +43,7 @@
 }
 
 /* ==========================================================================
-   3. SELECTOR DE OBJETIVOS (Tabs Neumórficos Índigo)
+   2. SELECTOR DE OBJETIVOS (Tabs Neumórficos Índigo)
    ========================================================================== */
 
 .neu-objective-idle {
@@ -72,7 +67,7 @@
 }
 
 .neu-objective-idle:active {
-  transform: translateY(1px) scale(0.98);
+  transform: translateY(1px) scale(0.97);
 }
 
 .neu-objective-active {
@@ -92,7 +87,7 @@
   box-shadow: 
     inset 0 1px 1px 0 rgba(255, 255, 255, 0.15),
     0 4px 10px rgba(55, 48, 163, 0.3);
-  transition: all 0.15s ease-out;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
   user-select: none;
 }
 
@@ -117,8 +112,13 @@
 }
 
 /* ==========================================================================
-   4. MARQUEE CONTINUO (Loop 100% CSS Autónomo a 60fps)
+   3. MARQUEE CONTINUO (Loop 100% CSS Autónomo a 60fps con Desvanecimiento)
    ========================================================================== */
+
+.marquee-container {
+  mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+}
 
 @keyframes marquee-slide {
   0% {

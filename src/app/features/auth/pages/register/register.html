@@ -1,4 +1,4 @@
-<div class="flex flex-col justify-center items-center py-6 px-4 min-h-[85vh]">
+<div class="flex flex-col justify-center items-center py-8 px-4 min-h-[85vh]">
 
     <!-- =========================================================================
     PASO 1: SELECCIÓN DE OBJETIVOS (100% Paleta Índigo/Violeta de WorkLink)
@@ -9,9 +9,9 @@
 
         <!-- Cabecera -->
         <div class="text-center space-y-1.5">
-            <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">¿Cuál es tu objetivo?</h2>
-            <p class="text-sm text-slate-200">
-                Selecciona cómo deseas utilizar WorkLink para personalizar tu cuenta.
+            <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight [text-wrap:balance]">¿Cuál es tu objetivo?</h2>
+            <p class="text-xs sm:text-sm text-slate-200 [text-wrap:pretty]">
+                Selecciona cómo deseas utilizar WorkLink para personalizar tu experiencia.
             </p>
         </div>
         
@@ -25,7 +25,7 @@
                 (click)="seleccionarIntencion('CONTRATAR')">
                 
                 <div class="space-y-3">
-                    <div class="w-14 h-14 rounded-2xl icon-capsule-brand flex items-center justify-center group-hover:scale-105 transition-transform">
+                    <div class="w-14 h-14 rounded-2xl icon-capsule-brand flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
                         <img src="/contratar.svg" alt="Quiero Contratar" class="w-8 h-8 object-contain">
                     </div>
 
@@ -33,7 +33,7 @@
                         <h3 class="font-bold text-base text-white group-hover:text-brand-sky transition-colors">
                             Quiero Contratar
                         </h3>
-                        <p class="text-xs text-slate-200 pt-1 leading-relaxed">
+                        <p class="text-xs text-slate-200 pt-1 leading-relaxed [text-wrap:pretty]">
                             Publicar proyectos con fondos en custodia o abrir búsquedas laborales tech para tu empresa.
                         </p>
                     </div>
@@ -52,7 +52,7 @@
                 (click)="seleccionarIntencion('TRABAJAR')">
                 
                 <div class="space-y-3">
-                    <div class="w-14 h-14 rounded-2xl icon-capsule-brand flex items-center justify-center group-hover:scale-105 transition-transform">
+                    <div class="w-14 h-14 rounded-2xl icon-capsule-brand flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
                         <img src="/trabajar.svg" alt="Quiero Trabajar" class="w-8 h-8 object-contain">
                     </div>
 
@@ -60,7 +60,7 @@
                         <h3 class="font-bold text-base text-white group-hover:text-brand-sky transition-colors">
                             Quiero Trabajar
                         </h3>
-                        <p class="text-xs text-slate-200 pt-1 leading-relaxed">
+                        <p class="text-xs text-slate-200 pt-1 leading-relaxed [text-wrap:pretty]">
                             Postularte a proyectos freelance por hitos o aplicar a empleos formales en empresas consolidadas.
                         </p>
                     </div>
@@ -78,7 +78,7 @@
         <div class="text-center pt-2 border-t border-glass-border/40">
             <span class="text-xs sm:text-sm text-slate-200">
                 ¿Ya tienes una cuenta? 
-                <a routerLink="/auth/login" class="text-brand-sky hover:text-white underline font-semibold ml-1 cursor-pointer">
+                <a routerLink="/auth/login" class="text-brand-sky hover:text-white underline font-semibold ml-1 cursor-pointer transition-colors">
                     Inicia Sesión
                 </a>
             </span>
@@ -95,7 +95,7 @@
         <form (submit)="crearCuenta($event)" class="space-y-4">
             
             <!-- Barra superior: Volver y Modo -->
-            <div class="flex items-center justify-between pb-3 border-b border-glass-border">
+            <div class="flex items-center justify-between pb-3 border-b border-glass-border/40">
                 <button 
                     type="button" 
                     (click)="intencion.set('')"
@@ -108,14 +108,14 @@
             </div>
 
             <!-- Título del Formulario -->
-            <div class="text-center">
-                <h2 class="text-2xl sm:text-3xl font-bold text-white">Crea tu cuenta</h2>
-                <h4 class="text-xs text-brand-sky-light mt-0.5">Ingresa tus datos para registrarte</h4>
+            <div class="text-center space-y-1">
+                <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Crea tu cuenta</h2>
+                <h4 class="text-xs sm:text-sm text-brand-sky-light">Ingresa tus datos para registrarte</h4>
             </div>
 
             <!-- Error de servidor si existe -->
             @if (errorServidor()) {
-                <div class="p-2.5 rounded-lg bg-brand-danger/20 border border-brand-danger-muted text-white text-xs text-center font-medium">
+                <div class="p-2.5 rounded-xl bg-brand-danger/20 border border-brand-danger-muted text-white text-xs text-center font-medium">
                     {{ errorServidor() }}
                 </div>
             }
@@ -125,13 +125,13 @@
                 <label for="usuario" class="text-white font-medium text-sm">Usuario:</label>
                 <input 
                     id="usuario"
-                    class="bg-white p-2 rounded-lg text-slate-900 focus:outline-none focus:ring-4 focus:ring-brand-indigo-light/50 px-3 text-sm shadow-inner shadow-slate-500" 
+                    class="w-full bg-white text-slate-900 py-2.5 px-3.5 rounded-xl text-sm font-medium placeholder:text-slate-400 border border-transparent focus:outline-none focus:ring-2 focus:ring-brand-sky focus:border-brand-sky shadow-inner shadow-slate-400/40 transition-all duration-150" 
                     type="text" 
                     placeholder="usuario3312" 
                     [formField]="registerForm.usuario">
                 @if (registerForm.usuario().touched() && registerForm.usuario().invalid()) {
                     @for (error of registerForm.usuario().errors(); track error.kind) {
-                        <span class="text-brand-danger-muted text-xs font-semibold">{{ error.message }}</span>
+                        <span class="text-brand-danger-muted text-xs font-semibold pt-0.5">{{ error.message }}</span>
                     }
                 }
             </fieldset>
@@ -141,13 +141,13 @@
                 <label for="email" class="text-white font-medium text-sm">Email:</label>
                 <input 
                     id="email"
-                    class="bg-white p-2 rounded-lg text-slate-900 focus:outline-none focus:ring-4 focus:ring-brand-indigo-light/50 px-3 text-sm shadow-inner shadow-slate-500" 
+                    class="w-full bg-white text-slate-900 py-2.5 px-3.5 rounded-xl text-sm font-medium placeholder:text-slate-400 border border-transparent focus:outline-none focus:ring-2 focus:ring-brand-sky focus:border-brand-sky shadow-inner shadow-slate-400/40 transition-all duration-150" 
                     type="email" 
                     placeholder="email@example.com" 
                     [formField]="registerForm.email">
                 @if (registerForm.email().touched() && registerForm.email().invalid()) {
                     @for (error of registerForm.email().errors(); track error.kind) {
-                        <span class="text-brand-danger-muted text-xs font-semibold">{{ error.message }}</span>
+                        <span class="text-brand-danger-muted text-xs font-semibold pt-0.5">{{ error.message }}</span>
                     }
                 }
             </fieldset>
@@ -158,14 +158,15 @@
                 <div class="relative w-full flex items-center">
                     <input 
                         id="password"
-                        class="w-full bg-white p-2 pr-10 rounded-lg text-slate-900 focus:outline-none focus:ring-4 focus:ring-brand-indigo-light/50 px-3 text-sm shadow-inner shadow-slate-500" 
+                        class="w-full bg-white text-slate-900 py-2.5 px-3.5 pr-11 rounded-xl text-sm font-medium placeholder:text-slate-400 border border-transparent focus:outline-none focus:ring-2 focus:ring-brand-sky focus:border-brand-sky shadow-inner shadow-slate-400/40 transition-all duration-150" 
                         [type]="showPassword() ? 'text' : 'password'" 
                         placeholder="••••••••" 
                         [formField]="registerForm.password">
                     <button 
                         type="button" 
                         (click)="showPassword.set(!showPassword())"
-                        class="absolute right-2 p-1 cursor-pointer flex items-center justify-center opacity-70 hover:opacity-100 transition-opacity">
+                        class="absolute right-2 p-1.5 cursor-pointer flex items-center justify-center opacity-60 hover:opacity-100 active:scale-90 transition-all"
+                        aria-label="Alternar visibilidad de contraseña">
                         <img [src]="showPassword() ? '/eye.svg' : '/eye-off.svg'" alt="Mostrar contraseña" class="w-5 h-5">
                     </button>
                 </div>
@@ -206,20 +207,21 @@
                 <div class="relative w-full flex items-center">
                     <input 
                         id="confirmPassword"
-                        class="w-full bg-white p-2 pr-10 rounded-lg text-slate-900 focus:outline-none focus:ring-4 focus:ring-brand-indigo-light/50 px-3 text-sm shadow-inner shadow-slate-500" 
+                        class="w-full bg-white text-slate-900 py-2.5 px-3.5 pr-11 rounded-xl text-sm font-medium placeholder:text-slate-400 border border-transparent focus:outline-none focus:ring-2 focus:ring-brand-sky focus:border-brand-sky shadow-inner shadow-slate-400/40 transition-all duration-150" 
                         [type]="showConfirmPassword() ? 'text' : 'password'" 
                         placeholder="••••••••" 
                         [formField]="registerForm.confirmPassword">
                     <button 
                         type="button" 
                         (click)="showConfirmPassword.set(!showConfirmPassword())"
-                        class="absolute right-2 p-1 cursor-pointer flex items-center justify-center opacity-70 hover:opacity-100 transition-opacity">
+                        class="absolute right-2 p-1.5 cursor-pointer flex items-center justify-center opacity-60 hover:opacity-100 active:scale-90 transition-all"
+                        aria-label="Alternar visibilidad de contraseña">
                         <img [src]="showConfirmPassword() ? '/eye.svg' : '/eye-off.svg'" alt="Mostrar contraseña" class="w-5 h-5">
                     </button>
                 </div>
                 @if (registerForm.confirmPassword().touched() && registerForm.confirmPassword().invalid()) {
                     @for (error of registerForm.confirmPassword().errors(); track error.kind) {
-                        <span class="text-brand-danger-muted text-xs font-semibold">{{ error.message }}</span>
+                        <span class="text-brand-danger-muted text-xs font-semibold pt-0.5">{{ error.message }}</span>
                     }
                 }
             </fieldset>
@@ -235,7 +237,7 @@
                     <button 
                         type="button" 
                         (click)="dropdownRolesAbierto.update(v => !v)"
-                        class="w-full bg-white/10 hover:bg-brand-indigo-light/25 focus:ring-4 focus:ring-brand-indigo-light/50 p-2.5 rounded-xl flex items-center justify-between cursor-pointer transition-all text-left shadow-inner shadow-slate-500 border border-glass-border">
+                        class="w-full bg-white/10 hover:bg-brand-indigo-light/20 focus:ring-2 focus:ring-brand-sky py-2.5 px-3.5 rounded-xl flex items-center justify-between cursor-pointer transition-all text-left shadow-inner shadow-slate-500/30 border border-glass-border">
                         
                         <div class="flex items-center gap-3">
                             <img [src]="rolSeleccionado()?.icono" [alt]="rolSeleccionado()?.titulo" class="w-6 h-6 object-contain">
@@ -266,14 +268,14 @@
 
                     <!-- Menú Desplegable con Glassmorphism Índigo -->
                     @if (dropdownRolesAbierto()) {
-                        <div class="absolute top-full left-0 right-0 mt-2 z-50 bg-brand-indigo-dark/90 backdrop-blur-xl border border-glass-border rounded-xl shadow-card-login overflow-hidden py-1.5 flex flex-col max-h-60 overflow-y-auto">
+                        <div class="absolute top-full left-0 right-0 mt-2 z-50 bg-brand-indigo-dark/95 backdrop-blur-xl border border-glass-border rounded-xl shadow-card-login overflow-hidden py-1.5 flex flex-col max-h-60 overflow-y-auto">
                             @for (item of rolesVisibles(); track item.rol) {
                                 <div 
                                     (click)="seleccionarRol(item.rol)"
                                     [class.bg-white/15]="registerModel().rol === item.rol"
                                     [class.border-l-4]="registerModel().rol === item.rol"
                                     [class.border-brand-sky]="registerModel().rol === item.rol"
-                                    class="px-3 py-2.5 flex items-center justify-between hover:bg-white/10 cursor-pointer transition-colors border-l-4 border-transparent">
+                                    class="px-3.5 py-2.5 flex items-center justify-between hover:bg-white/10 cursor-pointer transition-colors border-l-4 border-transparent">
                                     
                                     <div class="flex items-center gap-3">
                                         <img [src]="item.icono" [alt]="item.titulo" class="w-6 h-6 object-contain">
@@ -297,10 +299,10 @@
                 </div>
             </fieldset>
 
-            <!-- Botón Final Idéntico a Login -->
+            <!-- Botón Final Unificado con Login y Header -->
             <div class="pt-2">
                 <button 
-                    class="btn-submit-brand w-full text-center p-3.5 bg-brand-indigo text-white rounded-2xl cursor-pointer hover:bg-brand-indigo-dark font-bold text-sm tracking-wide" 
+                    class="btn-registrarse bg-brand-violet w-full py-3.5 px-4 rounded-xl font-semibold text-white text-sm tracking-wide cursor-pointer text-center active:scale-[0.97]" 
                     type="submit">
                     Crear Cuenta
                 </button>

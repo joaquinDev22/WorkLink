@@ -1,1 +1,185 @@
-﻿<p>propuesta-modal works!</p>
+<!-- =========================================================================
+     MODAL / BOTTOM SHEET DE POSTULACIÓN TÉCNICA (transitions.dev)
+     ========================================================================= -->
+
+<!-- Backdrop difuminado con fade suave -->
+<div 
+  class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 transition-opacity duration-300 ease-out"
+  [class.opacity-100]="isOpen()"
+  [class.opacity-0]="!isOpen()"
+  [class.pointer-events-none]="!isOpen()"
+  (click)="cerrar()"
+  aria-hidden="true">
+</div>
+
+<!-- Panel del Modal / Bottom Sheet -->
+<div 
+  class="fixed inset-x-0 bottom-0 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-lg bg-white rounded-t-[28px] sm:rounded-3xl p-5 sm:p-7 shadow-2xl z-50 max-h-[90vh] flex flex-col transform-gpu transition-all duration-350 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none"
+  [class.translate-y-0]="isOpen()"
+  [class.translate-y-full]="!isOpen()"
+  [class.opacity-100]="isOpen()"
+  [class.opacity-0]="!isOpen()"
+  [class.pointer-events-none]="!isOpen()"
+  role="dialog"
+  aria-labelledby="modal-title">
+
+  <!-- Tirador táctil visual para móvil -->
+  <div class="w-12 h-1 bg-slate-200 rounded-full mx-auto mb-3 sm:hidden shrink-0"></div>
+
+  <!-- Encabezado del Modal -->
+  <div class="flex items-start justify-between pb-4 border-b border-slate-100 shrink-0">
+    <div class="space-y-0.5 pr-2">
+      <h3 id="modal-title" class="text-slate-900 font-extrabold text-lg sm:text-xl tracking-tight">
+        Enviar Propuesta
+      </h3>
+      <p class="text-xs sm:text-sm text-slate-500 truncate max-w-xs sm:max-w-sm">
+        {{ proyecto()?.nombreProyecto }}
+      </p>
+    </div>
+
+    <!-- Botón Cerrar Aislado -->
+    <button 
+      type="button" 
+      (click)="cerrar()"
+      class="w-10 h-10 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 active:scale-90 transition-all cursor-pointer -mr-2"
+      aria-label="Cerrar modal">
+      ✕
+    </button>
+  </div>
+
+  <!-- =======================================================================
+       CUERPO: FORMULARIO O MENSAJE DE ÉXITO
+       ======================================================================= -->
+  <div class="overflow-y-auto overscroll-contain py-4 flex-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden space-y-5">
+    
+    @if (mensajeExito()) {
+      <!-- Pantalla de Confirmación de Éxito -->
+      <div class="text-center py-6 sm:py-8 space-y-4">
+        <div class="w-16 h-16 mx-auto rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center shadow-inner shadow-emerald-200">
+          <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <div class="space-y-1">
+          <h4 class="text-lg font-bold text-slate-900">¡Propuesta Enviada!</h4>
+          <p class="text-sm text-slate-500 max-w-xs mx-auto">
+            El cliente ha recibido tu cotización y se pondrá en contacto contigo si tu perfil es seleccionado.
+          </p>
+        </div>
+        <button 
+          type="button" 
+          (click)="cerrar()"
+          class="bg-brand-indigo hover:bg-brand-indigo-dark text-white font-semibold text-sm px-6 py-2.5 rounded-xl shadow-xs active:scale-95 transition-all cursor-pointer">
+          Entendido
+        </button>
+      </div>
+
+    } @else {
+      <!-- Formulario de Postulación -->
+      <form id="formPropuesta" (submit)="enviarPropuesta($event)" class="space-y-4">
+        
+        <!-- Alerta de Error -->
+        @if (errorMsg()) {
+          <div class="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold rounded-xl flex items-center gap-2">
+            <svg class="w-4 h-4 shrink-0 text-rose-500" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+            </svg>
+            <span>{{ errorMsg() }}</span>
+          </div>
+        }
+
+        <!-- Campo 1: Tarifa Ofertada -->
+        <fieldset class="space-y-1.5">
+          <div class="flex items-center justify-between">
+            <label for="costoInput" class="text-xs sm:text-sm font-bold text-slate-800">
+              Tu cotización económica (USD)
+            </label>
+            <span class="text-[11px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
+              Rango del cliente: ${{ proyecto()?.presupuestoMin }} - ${{ proyecto()?.presupuestoMax }}
+            </span>
+          </div>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 font-bold text-sm">
+              $
+            </span>
+            <input 
+              id="costoInput"
+              #inputCosto
+              type="number" 
+              min="1"
+              [value]="costo() ?? ''"
+              (input)="costo.set(inputCosto.valueAsNumber || null)"
+              class="w-full pl-8 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-sky focus:border-brand-sky transition-all placeholder:text-slate-400" 
+              placeholder="Ej: 1500"
+              required>
+          </div>
+        </fieldset>
+
+        <!-- Campo 2: Tiempo Estimado de Entrega -->
+        <fieldset class="space-y-1.5">
+          <label class="text-xs sm:text-sm font-bold text-slate-800">
+            Tiempo estimado de entrega
+          </label>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            @for (opcion of ['1 semana', '2 semanas', '1 mes', 'Más de 1 mes']; track opcion) {
+              @let isSelected = tiempoEntrega() === opcion;
+              <button 
+                type="button" 
+                (click)="seleccionarTiempo(opcion)"
+                [class]="isSelected 
+                  ? 'bg-brand-indigo text-white font-bold border-brand-indigo shadow-xs' 
+                  : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 font-medium'"
+                class="py-2 px-2 text-xs text-center rounded-xl border transition-all active:scale-95 cursor-pointer">
+                {{ opcion }}
+              </button>
+            }
+          </div>
+        </fieldset>
+
+        <!-- Campo 3: Propuesta / Carta Técnica -->
+        <fieldset class="space-y-1.5">
+          <label for="descPropuesta" class="text-xs sm:text-sm font-bold text-slate-800">
+            Carta de presentación y enfoque técnico
+          </label>
+          <textarea 
+            id="descPropuesta"
+            #inputDesc
+            rows="4"
+            [value]="descripcion()"
+            (input)="descripcion.set(inputDesc.value)"
+            class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-sky focus:border-brand-sky transition-all placeholder:text-slate-400 leading-relaxed" 
+            placeholder="Explica brevemente tu experiencia con las tecnologías requeridas, cómo encararías el proyecto y tus dudas técnicas iniciales..."
+            required></textarea>
+        </fieldset>
+
+      </form>
+    }
+
+  </div>
+
+  <!-- Pie con Botones de Acción (Thumb Zone) -->
+  @if (!mensajeExito()) {
+    <div class="pt-3 border-t border-slate-100 flex items-center gap-3 shrink-0">
+      <button 
+        type="button" 
+        (click)="cerrar()"
+        class="px-4 py-3 rounded-xl border border-slate-200 text-slate-600 font-semibold text-sm active:scale-95 hover:bg-slate-50 transition-all cursor-pointer">
+        Cancelar
+      </button>
+
+      <button 
+        type="submit" 
+        form="formPropuesta"
+        [disabled]="isSubmitting()"
+        class="btn-registrarse flex-1 bg-brand-violet hover:bg-brand-violet/90 active:scale-[0.98] text-white font-bold py-3 px-4 rounded-xl text-sm transition-all shadow-md shadow-brand-violet/25 disabled:opacity-50 disabled:pointer-events-none cursor-pointer flex items-center justify-center gap-2">
+        @if (isSubmitting()) {
+          <span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+          <span>Enviando...</span>
+        } @else {
+          <span>Confirmar y Enviar</span>
+        }
+      </button>
+    </div>
+  }
+
+</div>

@@ -11,7 +11,7 @@
   top: calc(50% - 16px);
   
   /* 2. COLOR: gradiente, color plano o glass semitransparente */
-  background-color: var(--color-brand-indigo);
+  background-color: rgb(98, 0, 255);
   backdrop-filter: blur(8px);
   box-shadow: var(--shadow-inner-indigo);
   

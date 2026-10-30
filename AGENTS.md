@@ -21,3 +21,17 @@ Before proposing or writing any code, evaluate this ladder top to bottom. Stop a
 * **Preserve strict boundaries:** Security, validation boundaries, accessibility (a11y), and data-loss prevention are never skipped.
 * **Keep diffs surgical:** Small, clean, readable changes directly addressing the user's need.
 
+---
+
+## 🎯 Directivas de Trabajo y Estilo del Proyecto (WorkLink Ruleset)
+
+1. **Plan de Implementación Obligatorio:** Antes de modificar o crear cualquier archivo, formular o actualizar un plan de implementación estructurado con pasos pequeños y solicitar confirmación.
+2. **Cero Asunciones:** No adivinar decisiones de UI/UX o negocio; preguntar siempre cómo prefiere el usuario diseñar el componente o flujo.
+3. **Entrega Incremental (Paso a Paso):** Desarrollar en partes pequeñas y quirúrgicas (nunca pantallas o layouts enteros de un solo golpe) para poder testear y compilar (`ng build`) de inmediato.
+4. **Sintaxis TypeScript:** Cero punto y coma (`no semicolons`). Código moderno con Angular Signals, template control flow (`@if`, `@for`, `@let`) y funciones de inyección `inject()`.
+5. **Regla de Oro de Diseño (Skills Activas Obligatorias):**
+   - 100% responsivo en todas las resoluciones (`<sm`, `sm`, `md`, `lg`, `xl`).
+   - Cero defectos visuales: sin cabeceras que tapen contenido, sin elementos superpuestos, sin barras de scroll no deseadas (`[scrollbar-width:none]`), sin paddings o márgenes rotos.
+   - Respetar los tokens visuales de WorkLink: glassmorphism sobrio, bordes suaves (`rounded-2xl`, `rounded-3xl`), sombras profundas/internas calibradas y alto contraste en texto claro/oscuro.
+   - Microinteracciones con física fluida (`transitions-dev`: `cubic-bezier(0.16, 1, 0.3, 1)` y targets táctiles >= 44px).
+6. **Ponytail Note:** Finalizar cada respuesta técnica con `💡 Ponytail summary: [Lo que se omitió / simplificó / evitó]`.

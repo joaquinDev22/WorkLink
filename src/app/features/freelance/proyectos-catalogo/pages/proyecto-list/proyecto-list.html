@@ -1,23 +1,346 @@
-<div class="space-y-5">
-    <label for="searchbar">Buscar:</label>
-    <input type="text" id="searchbar" class="bg-white">
+<!-- =========================================================================
+     1. PLANTILLA DE FILTROS (Solo las categorías, sin títulos duplicados)
+     ========================================================================= -->
+<ng-template #filtrosTemplate>
+  <div class="space-y-4">
+    <!-- CATEGORÍA 1: ÁREAS -->
+    <details open class="group">
+      <summary class="flex items-center justify-between py-1.5 text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-slate-800 cursor-pointer list-none select-none transition-colors">
+        <span>Área Profesional</span>
+        <svg class="w-4 h-4 text-slate-400 group-hover:text-slate-600 transition-transform duration-200 group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </summary>
 
-    <label for="filters">Fecha de Publicacion:</label>
-    <select name="filters" id="filters">
-    </select>
-    <label for="filters">Tecnologias:</label>
-    <select name="filters" id="filters">
-    </select>
-    <label for="filters">Area:</label>
-    <select name="filters" id="filters"></select>
+      <div class="flex flex-col gap-1 pt-2">
+        @for(area of ['TODOS', 'Frontend', 'Backend', 'Fullstack', 'Mobile']; track area) {
+          @let isActive = filtroArea() === area;
 
-    @for( c of catalogo(); track c){
-        <div class="bg-white">
-            <h2>{{c.nombreProyecto}}</h2>
-            <p>{{c.habilidades}}</p>
-            <p>{{c.estado}}</p>
-            <p>{{c.fechaPublicacion}}</p>
-            <button type="button">Postularse</button>
+          <button 
+            type="button" 
+            (click)="filtroArea.set(area); paginaActual.set(1)"
+            [class]="isActive 
+              ? 'bg-brand-indigo text-white font-semibold shadow-md shadow-brand-indigo/25 scale-[1.01]' 
+              : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900 font-medium'"
+            class="w-full text-left px-3 py-2 rounded-xl text-sm transition-all duration-150 flex items-center justify-between cursor-pointer active:scale-95">
+            <span>{{ area }}</span>
+          </button>
+        }
+      </div>
+    </details>
+
+    <!-- CATEGORÍA 2: DURACIÓN -->
+    <details class="group pt-2 border-t border-slate-100">
+      <summary class="flex items-center justify-between py-1.5 text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-slate-800 cursor-pointer list-none select-none transition-colors">
+        <span>Duración Estimada</span>
+        <svg class="w-4 h-4 text-slate-400 group-hover:text-slate-600 transition-transform duration-200 group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </summary>
+      
+      <div class="flex flex-col gap-1 pt-2">
+        @for(duracion of ['Cualquiera', 'Menos de 1 mes', '1 a 3 meses', 'Más de 3 meses']; track duracion) {
+          <button 
+            type="button" 
+            class="w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all">
+            {{ duracion }}
+          </button>
+        }
+      </div>
+    </details>
+  </div>
+</ng-template>
+
+<!-- =========================================================================
+     2. CONTENEDOR PRINCIPAL
+     ========================================================================= -->
+<div class="flex flex-col lg:flex-row gap-6 items-start w-full">
+
+  <!-- ASIDE EN DESKTOP (Solo visible en lg+) -->
+  <aside class="hidden lg:block w-72 shrink-0 sticky top-6">
+    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-md shadow-slate-100 space-y-4">
+      
+      <!-- Encabezado de la barra lateral -->
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-brand-indigo" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+          </svg>
+          <h3 class="text-slate-900 font-bold text-base tracking-tight">Filtros</h3>
         </div>
+        <button 
+          type="button" 
+          (click)="filtroArea.set('TODOS'); paginaActual.set(1)" 
+          class="text-xs font-semibold text-brand-indigo hover:text-brand-indigo-dark transition-colors cursor-pointer">
+          Limpiar
+        </button>
+      </div>
+
+      <!-- Inyección del template -->
+      <ng-container *ngTemplateOutlet="filtrosTemplate" />
+    </div>
+  </aside>
+
+  <!-- CONTENIDO CENTRAL (Feed de proyectos) -->
+  <main class="flex-1 min-w-0 space-y-4 min-h-[70vh] w-full">
+    
+    <!-- BARRA SUPERIOR EN MÓVIL: Botón Filtros + Botón Lupa (Solo visible en < lg) -->
+    <div class="flex items-center justify-between gap-3 w-full lg:hidden">
+      <!-- Botón para abrir el Modal de Filtros -->
+      <button 
+        type="button" 
+        (click)="mostrarFiltrosModal.set(true)"
+        class="flex items-center gap-2 bg-white border border-slate-200 px-4 py-2 rounded-xl text-sm font-semibold text-slate-700 shadow-sm active:scale-95 transition-all cursor-pointer">
+        <svg class="w-4 h-4 text-brand-indigo" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+        </svg>
+        <span>Filtros</span>
+        @if (filtroArea() !== 'TODOS') {
+          <span class="w-2 h-2 rounded-full bg-brand-sky"></span>
+        }
+      </button>
+
+      <!-- Botón de Lupa para alternar el buscador en móvil -->
+      <button 
+        type="button" 
+        (click)="mostrarBuscadorMobile.update(v => !v)"
+        class="p-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 shadow-sm active:scale-95 transition-all cursor-pointer"
+        aria-label="Abrir buscador">
+        <svg class="w-5 h-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- BUSCADOR MÓVIL FLUIDO (Interruptible, GPU-accelerated) -->
+    <div 
+      class="grid transition-all duration-250 ease-[cubic-bezier(0.16,1,0.3,1)] lg:hidden motion-reduce:transition-none"
+      [class.grid-rows-[1fr]]="mostrarBuscadorMobile()"
+      [class.opacity-100]="mostrarBuscadorMobile()"
+      [class.mb-2]="mostrarBuscadorMobile()"
+      [class.grid-rows-[0fr]]="!mostrarBuscadorMobile()"
+      [class.opacity-0]="!mostrarBuscadorMobile()"
+      [class.pointer-events-none]="!mostrarBuscadorMobile()">
+      
+      <div class="overflow-hidden">
+        <div class="flex items-center gap-2 bg-white p-2 rounded-xl border border-slate-200 shadow-sm w-full">
+          <input 
+            #inputBusquedaMobile
+            type="text" 
+            [value]="terminoBusqueda()"
+            class="flex-1 text-sm px-2.5 py-1.5 focus:outline-none placeholder:text-slate-400" 
+            placeholder="Buscar por título o área..."
+            (keyup.enter)="buscar(inputBusquedaMobile.value)">
+          
+          <button 
+            type="button" 
+            (click)="buscar(inputBusquedaMobile.value)" 
+            class="bg-brand-indigo active:scale-95 text-white text-xs font-semibold px-3.5 py-2 rounded-lg transition-transform duration-150 cursor-pointer">
+            Buscar
+          </button>
+          
+          <button 
+            type="button" 
+            (click)="mostrarBuscadorMobile.set(false)" 
+            class="text-slate-400 hover:text-slate-600 p-1.5 text-sm active:scale-90 transition-transform cursor-pointer"
+            aria-label="Cerrar buscador">
+            ✕
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BUSCADOR ESTÁTICO EN DESKTOP (Solo visible en lg+) -->
+    <fieldset class="hidden lg:flex items-center gap-2 justify-end w-full">
+      <input 
+        #inputBusquedaDesktop 
+        type="text" 
+        [value]="terminoBusqueda()"
+        class="border border-slate-300 py-1.5 px-3 rounded-lg w-64 text-sm focus:outline-none focus:ring-2 focus:ring-brand-sky" 
+        placeholder="Buscar proyectos..." 
+        (keyup.enter)="buscar(inputBusquedaDesktop.value)">
+      <button 
+        type="button" 
+        (click)="buscar(inputBusquedaDesktop.value)" 
+        class="bg-brand-indigo hover:bg-brand-indigo-dark text-white font-bold px-4 py-1.5 rounded-lg text-sm cursor-pointer active:scale-95 transition-all">
+        Buscar
+      </button>
+    </fieldset>
+
+    <!-- ESTADO DE CARGA: SKELETONS IDÉNTICOS A LAS TARJETAS REALES -->
+    @if (isLoading()) {
+      <div class="grid grid-cols-1 gap-4" aria-busy="true" aria-label="Cargando proyectos...">
+        @for (item of [1, 2, 3]; track item) {
+          <div class="bg-white border border-slate-200/80 p-5 rounded-2xl space-y-4 animate-pulse shadow-sm shadow-slate-100">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div class="h-6 bg-slate-200 rounded-lg w-2/3 sm:w-1/3"></div>
+              <div class="h-5 bg-slate-200 rounded-lg w-36"></div>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="h-6 bg-slate-200 rounded-full w-28"></div>
+              <div class="h-4 bg-slate-200 rounded-md w-32"></div>
+            </div>
+            <div class="space-y-2">
+              <div class="h-4 bg-slate-200 rounded w-full"></div>
+              <div class="h-4 bg-slate-200 rounded w-4/5"></div>
+            </div>
+            <div class="h-10 bg-slate-200 rounded-lg w-full"></div>
+          </div>
+        }
+      </div>
+    } @else {
+      <!-- GRILLA DE PROYECTOS REALES -->
+      <div class="grid grid-cols-1 gap-4">
+        @for(c of proyectosPaginados(); track c.proyectoId) {
+          <div class="bg-white space-y-4 sm:space-y-6 shadow-inner shadow-brand-indigo-light p-4 sm:p-5 rounded-2xl hover:scale-[1.01] transition-all duration-300">
+            
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">          
+              <h1 class="text-xl sm:text-2xl font-bold wrap-break-words">{{c.nombreProyecto}}</h1>
+              <h2 class="font-bold text-sm sm:text-base shrink-0">Presupuesto: USD ${{c.presupuestoMax}}</h2>
+            </div>
+
+            <div class="flex flex-col w-fit gap-3">
+              @let config = estadoConfig[c.estado];
+              <span class="px-2.5 py-1 rounded-full text-center text-xs sm:text-sm font-semibold {{ config.badgeClass }}">
+                {{ config.label }}
+              </span>
+              <span class="text-xs sm:text-sm"><span class="font-bold">Publicado:</span> {{formatFecha(c.fechaPublicacion)}}</span>       
+            </div>
+
+            <span class="font-black text-sm sm:text-base">Descripción:</span>
+            <p class="text-sm sm:text-base wrap-break-words">{{c.descripcion}}</p>
+
+            <button 
+              type="button"
+              class="text-center w-full shadow-inner shadow-white bg-sky-500 p-2 sm:p-1 rounded-lg text-white font-bold text-base sm:text-lg hover:bg-sky-600 hover:text-slate-300 transition-all duration-200 cursor-pointer active:shadow-black"
+              [routerLink]="['/freelance/proyecto', c.uuid]">
+              Ver detalles
+            </button>
+          </div>
+        }
+        @empty {
+          <div class="bg-white border border-dashed border-slate-300 rounded-2xl p-8 sm:p-12 text-center space-y-3">
+            <div class="w-12 h-12 mx-auto rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
+              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <h3 class="text-base font-semibold text-slate-800">No se encontraron proyectos</h3>
+            <p class="text-sm text-slate-500 max-w-sm mx-auto">
+              No hay proyectos que coincidan con "{{ terminoBusqueda() || filtroArea() }}". Intenta con otros términos o limpia los filtros.
+            </p>
+            <button 
+              type="button" 
+              (click)="filtroArea.set('TODOS'); terminoBusqueda.set(''); paginaActual.set(1)"
+              class="mt-2 text-xs font-semibold text-brand-indigo hover:text-brand-indigo-dark transition-colors cursor-pointer underline">
+              Restablecer todos los filtros
+            </button>
+          </div>
+        }
+      </div>
+
+      <!-- PAGINACIÓN REACTIVA -->
+      @if (totalPaginas() > 1) {
+        <nav class="flex items-center justify-between border-t border-slate-200/80 pt-5 px-1" aria-label="Paginación de proyectos">
+          <span class="text-xs sm:text-sm text-slate-500 font-medium">
+            Página <span class="font-bold text-slate-800">{{ paginaActual() }}</span> de <span class="font-bold text-slate-800">{{ totalPaginas() }}</span>
+            <span class="hidden md:inline text-slate-400 ml-1">({{ proyectosFiltrados().length }} proyectos en total)</span>
+          </span>
+          <div class="flex items-center gap-2">
+            <button 
+              type="button"
+              (click)="cambiarPagina(paginaActual() - 1)"
+              [disabled]="paginaActual() === 1"
+              class="px-3.5 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm font-semibold text-slate-700 bg-white hover:bg-slate-50 active:scale-95 disabled:opacity-40 disabled:pointer-events-none transition-all shadow-xs cursor-pointer flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+              </svg>
+              <span class="hidden sm:inline">Anterior</span>
+            </button>
+            <button 
+              type="button"
+              (click)="cambiarPagina(paginaActual() + 1)"
+              [disabled]="paginaActual() === totalPaginas()"
+              class="px-3.5 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm font-semibold text-slate-700 bg-white hover:bg-slate-50 active:scale-95 disabled:opacity-40 disabled:pointer-events-none transition-all shadow-xs cursor-pointer flex items-center gap-1.5">
+              <span class="hidden sm:inline">Siguiente</span>
+              <svg class="w-4 h-4 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+        </nav>
+      }
     }
+
+  </main>
+</div>
+
+<!-- =========================================================================
+     3. BOTTOM SHEET EN MÓVIL (Encabezado único + Scroll invisible)
+     ========================================================================= -->
+
+<!-- Backdrop difuminado -->
+<div 
+  class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 transition-opacity duration-300 ease-out"
+  [class.opacity-100]="mostrarFiltrosModal()"
+  [class.opacity-0]="!mostrarFiltrosModal()"
+  [class.pointer-events-none]="!mostrarFiltrosModal()"
+  (click)="mostrarFiltrosModal.set(false)"
+  aria-hidden="true">
+</div>
+
+<!-- Panel del Modal / Bottom Sheet -->
+<div 
+  class="fixed inset-x-0 bottom-0 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-md bg-white rounded-t-[28px] sm:rounded-3xl p-5 sm:p-6 shadow-2xl z-50 max-h-[85vh] flex flex-col transform-gpu transition-all duration-350 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none"
+  [class.translate-y-0]="mostrarFiltrosModal()"
+  [class.translate-y-full]="!mostrarFiltrosModal()"
+  [class.opacity-100]="mostrarFiltrosModal()"
+  [class.opacity-0]="!mostrarFiltrosModal()"
+  [class.pointer-events-none]="!mostrarFiltrosModal()">
+
+  <!-- Tirador táctil visual para móvil -->
+  <div class="w-12 h-1 bg-slate-200 rounded-full mx-auto mb-3 sm:hidden shrink-0"></div>
+
+  <!-- 1. ENCABEZADO AISLADO -->
+  <div class="flex items-center justify-between pb-3 border-b border-slate-100 shrink-0">
+    <div class="flex items-center gap-2">
+      <h3 class="text-slate-900 font-bold text-base">Filtros</h3>
+      @if (filtroArea() !== 'TODOS') {
+        <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-brand-sky/15 text-brand-indigo">
+          Activo
+        </span>
+      }
+    </div>
+    
+    <button 
+      type="button" 
+      (click)="mostrarFiltrosModal.set(false)"
+      class="w-10 h-10 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 active:scale-90 transition-all cursor-pointer"
+      aria-label="Cerrar modal">
+      ✕
+    </button>
+  </div>
+
+  <!-- 2. CONTENIDO CON SCROLL INVISIBLE -->
+  <div class="overflow-y-auto overscroll-contain py-3 flex-1 scrollbar-none [&::-webkit-scrollbar]:hidden">
+    <ng-container *ngTemplateOutlet="filtrosTemplate" />
+  </div>
+
+  <!-- 3. PIE CON ACCIÓN DUAL EN LA ZONA DEL PULGAR -->
+  <div class="pt-3 border-t border-slate-100 flex items-center gap-3 shrink-0">
+    <button 
+      type="button" 
+      (click)="filtroArea.set('TODOS'); paginaActual.set(1)" 
+      [disabled]="filtroArea() === 'TODOS'"
+      class="px-4 py-3 rounded-xl border border-slate-200 text-slate-600 font-semibold text-sm active:scale-95 disabled:opacity-40 disabled:pointer-events-none hover:bg-slate-50 transition-all cursor-pointer">
+      Limpiar
+    </button>
+
+    <button 
+      type="button" 
+      (click)="mostrarFiltrosModal.set(false)"
+      class="flex-1 bg-brand-indigo hover:bg-brand-indigo-dark active:scale-[0.98] text-white font-bold py-3 rounded-xl text-sm transition-transform duration-150 shadow-md shadow-brand-indigo/20 cursor-pointer">
+      Ver {{ proyectosFiltrados().length }} proyectos
+    </button>
+  </div>
 </div>

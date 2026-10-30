@@ -3,15 +3,18 @@ import { Auth } from '../../../../core/auth/services/auth';
 import { GoogleButton } from '../../components/google-btn/google-button';
 import { form, FormField, required } from '@angular/forms/signals';
 import { LoginRequestDTO } from '../../models/auth.models';
+import { RouterLink } from '@angular/router';
 
 @Component({
-  imports: [FormField, GoogleButton],
+  imports: [FormField, GoogleButton, RouterLink],
   selector: 'app-login',
   styleUrl: './login.css',
   templateUrl: './login.html',
 })
 export class Login {
-  private auth = inject(Auth);
+  private auth = inject(Auth)
+  isLoading = signal(false)
+  errorMsg = signal<string | null>(null)
 
   showPassword = signal<boolean>(false)
   loginModel = signal<LoginRequestDTO>({
@@ -25,7 +28,7 @@ export class Login {
   })
 
   iniciarSesion(e: Event) {
-    e.preventDefault();
+    e.preventDefault()
 
     if (this.loginForm().invalid()) {
       return;
@@ -41,7 +44,7 @@ export class Login {
       error: (err) => {
         console.error('Error al iniciar sesión:', err);
       }
-    });
+    })
   }
   
   onClick() : void{

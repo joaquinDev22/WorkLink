@@ -1,1 +1,259 @@
-﻿<p>proyecto-detail works!</p>
+<!-- Contenedor general del Detalle -->
+<div class="max-w-7xl mx-auto space-y-6 pb-12">
+
+  <!-- =========================================================================
+       1. NAVEGACIÓN CONTEXTUAL DE RETORNO (Top Bar)
+       ========================================================================= -->
+  <div class="flex items-center justify-between">
+    <a 
+      routerLink="/freelance/proyectos" 
+      class="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-brand-indigo active:scale-95 transition-all py-1.5 px-2 -ml-2 rounded-lg cursor-pointer">
+      <svg class="w-4 h-4 text-slate-500 group-hover:text-brand-indigo transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      </svg>
+      <span>Volver a proyectos</span>
+    </a>
+  </div>
+
+  <!-- =========================================================================
+       2. ESTADO DE CARGA: SKELETON RESPONSIVO EN 2 COLUMNAS
+       ========================================================================= -->
+  @if (isLoading()) {
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start animate-pulse" aria-busy="true">
+      
+      <!-- Skeleton Columna Izquierda (70%) -->
+      <div class="lg:col-span-8 bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xs">
+        <div class="flex flex-wrap items-center gap-3">
+          <div class="h-6 bg-slate-200 rounded-full w-28"></div>
+          <div class="h-6 bg-slate-200 rounded-full w-24"></div>
+          <div class="h-4 bg-slate-200 rounded w-32 ml-auto"></div>
+        </div>
+
+        <div class="h-8 bg-slate-200 rounded-xl w-3/4"></div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 py-3 border-y border-slate-100">
+          <div class="space-y-1.5">
+            <div class="h-3.5 bg-slate-200 rounded w-16"></div>
+            <div class="h-4 bg-slate-200 rounded w-24"></div>
+          </div>
+          <div class="space-y-1.5">
+            <div class="h-3.5 bg-slate-200 rounded w-16"></div>
+            <div class="h-4 bg-slate-200 rounded w-20"></div>
+          </div>
+        </div>
+
+        <div class="space-y-3 pt-2">
+          <div class="h-5 bg-slate-200 rounded w-48"></div>
+          <div class="h-4 bg-slate-200 rounded w-full"></div>
+          <div class="h-4 bg-slate-200 rounded w-full"></div>
+          <div class="h-4 bg-slate-200 rounded w-5/6"></div>
+        </div>
+
+        <div class="space-y-3 pt-2">
+          <div class="h-5 bg-slate-200 rounded w-40"></div>
+          <div class="flex flex-wrap gap-2">
+            <div class="h-7 bg-slate-200 rounded-xl w-20"></div>
+            <div class="h-7 bg-slate-200 rounded-xl w-24"></div>
+            <div class="h-7 bg-slate-200 rounded-xl w-16"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skeleton Columna Derecha (30%) -->
+      <div class="lg:col-span-4 space-y-6">
+        <div class="bg-white border border-slate-200/80 rounded-2xl p-6 space-y-5 shadow-xs">
+          <div class="h-4 bg-slate-200 rounded w-32"></div>
+          <div class="h-8 bg-slate-200 rounded-xl w-48"></div>
+          <div class="h-12 bg-slate-200 rounded-xl w-full"></div>
+          <div class="h-4 bg-slate-200 rounded w-40 mx-auto"></div>
+        </div>
+
+        <div class="bg-white border border-slate-200/80 rounded-2xl p-5 space-y-4 shadow-xs">
+          <div class="h-4 bg-slate-200 rounded w-28"></div>
+          <div class="flex items-center gap-3">
+            <div class="size-11 rounded-full bg-slate-200"></div>
+            <div class="space-y-1.5 flex-1">
+              <div class="h-4 bg-slate-200 rounded w-32"></div>
+              <div class="h-3.5 bg-slate-200 rounded w-20"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  }
+
+  <!-- =========================================================================
+       3. ESTADO DE ERROR / NO ENCONTRADO
+       ========================================================================= -->
+  @else if (error() || !proyecto()) {
+    <div class="bg-white border border-dashed border-slate-300 rounded-2xl p-8 sm:p-12 text-center space-y-4 max-w-lg mx-auto my-8">
+      <div class="w-14 h-14 mx-auto rounded-full bg-rose-50 flex items-center justify-center text-rose-500">
+        <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+      </div>
+      <h2 class="text-lg font-bold text-slate-800">Proyecto no disponible</h2>
+      <p class="text-sm text-slate-500">
+        {{ error() || 'No hemos podido cargar la información de este proyecto.' }}
+      </p>
+      <a 
+        routerLink="/freelance/proyectos" 
+        class="inline-block mt-2 bg-brand-indigo hover:bg-brand-indigo-dark text-white font-semibold text-sm px-5 py-2.5 rounded-xl shadow-xs active:scale-95 transition-all">
+        Volver al Catálogo
+      </a>
+    </div>
+  }
+
+  <!-- =========================================================================
+       4. CONTENIDO PRINCIPAL: 2 COLUMNAS (Desktop) / APILADO (Móvil)
+       ========================================================================= -->
+  @else {
+    @let p = proyecto()!;
+    @let config = estadoConfig[p.estado] || estadoConfig.BUSCANDO_TALENTO;
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      
+      <!-- COLUMNA IZQUIERDA (70%): Especificaciones y Alcance -->
+      <article class="lg:col-span-8 bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8 space-y-6 shadow-sm shadow-slate-100">
+        
+        <!-- Badges y Fecha de publicación -->
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="flex flex-wrap items-center gap-2">
+            <!-- Badge de Área -->
+            <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-brand-indigo/10 text-brand-indigo border border-brand-indigo/20">
+              {{ p.area }}
+            </span>
+            <!-- Badge de Estado -->
+            <span class="px-3 py-1 rounded-full text-xs font-semibold {{ config.badgeClass }}">
+              {{ config.label }}
+            </span>
+          </div>
+
+          <span class="text-xs sm:text-sm text-slate-500">
+            Publicado el <span class="font-medium text-slate-700">{{ formatFecha(p.fechaPublicacion) }}</span>
+          </span>
+        </div>
+
+        <!-- Título Principal -->
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight wrap-break-words">
+          {{ p.nombreProyecto }}
+        </h1>
+
+        <!-- Ficha de Datos Rápidos -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 py-4 border-y border-slate-100 bg-slate-50/50 -mx-6 sm:-mx-8 px-6 sm:px-8">
+          <div>
+            <span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider">Duración</span>
+            <span class="text-sm sm:text-base font-bold text-slate-800">{{ p.duracion || 'A convenir' }}</span>
+          </div>
+          <div>
+            <span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider">Modalidad</span>
+            <span class="text-sm sm:text-base font-bold text-slate-800">{{ p.tipoPago || 'Por Hitos' }}</span>
+          </div>
+          <div class="col-span-2 sm:col-span-1">
+            <span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider">Garantía</span>
+            <span class="text-sm sm:text-base font-bold text-emerald-600 flex items-center gap-1">
+              <svg class="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              Fondos en Custodia
+            </span>
+          </div>
+        </div>
+
+        <!-- Descripción Completa -->
+        <div class="space-y-3">
+          <h2 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">Descripción del Trabajo</h2>
+          <div class="text-sm sm:text-base text-slate-700 leading-relaxed space-y-3 whitespace-pre-line text-pretty">
+            {{ p.descripcion }}
+          </div>
+        </div>
+
+        <!-- Habilidades Requeridas -->
+        @if (p.habilidades && p.habilidades.length > 0) {
+          <div class="space-y-3 pt-2 border-t border-slate-100">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-slate-600">Habilidades & Tecnologías Requeridas</h3>
+            <div class="flex flex-wrap gap-2">
+              @for (skill of p.habilidades; track skill) {
+                <span class="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-medium bg-slate-100 text-slate-800 border border-slate-200 hover:border-brand-sky transition-colors cursor-default">
+                  {{ skill }}
+                </span>
+              }
+            </div>
+          </div>
+        }
+
+      </article>
+
+      <!-- COLUMNA DERECHA (30%): Tarjeta Sticky de Presupuesto + Cliente -->
+      <aside class="lg:col-span-4 space-y-6 lg:sticky lg:top-6">
+        
+        <!-- Tarjeta de Presupuesto y CTA -->
+        <div class="bg-white border border-slate-200/80 rounded-2xl p-6 space-y-5 shadow-md shadow-slate-100">
+          <div class="space-y-1">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Presupuesto Estimado</span>
+            <div class="flex items-baseline gap-1 text-slate-900">
+              <span class="text-2xl sm:text-3xl font-extrabold tracking-tight">
+                USD ${{ p.presupuestoMin }}
+              </span>
+              <span class="text-slate-500 font-semibold text-lg"> - ${{ p.presupuestoMax }}</span>
+            </div>
+          </div>
+
+          <!-- Botón de Postulación Principal con efectos del design system -->
+          <button 
+            type="button" 
+            (click)="mostrarModalPropuesta.set(true)"
+            class="btn-registrarse bg-brand-violet w-full py-3.5 px-4 rounded-xl font-bold text-white text-base text-center cursor-pointer active:scale-[0.97] transition-all shadow-md shadow-brand-violet/25 flex items-center justify-center gap-2">
+            <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+            </svg>
+            <span>Enviar Propuesta</span>
+          </button>
+
+          <!-- Microcopia de seguridad de pagos -->
+          <div class="flex items-center justify-center gap-2 text-xs text-slate-500 pt-1">
+            <svg class="w-4 h-4 text-emerald-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+            <span>Pagos asegurados por contrato</span>
+          </div>
+        </div>
+
+        <!-- Ficha del Cliente -->
+        <div class="bg-white border border-slate-200/80 rounded-2xl p-5 space-y-4 shadow-xs">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 pb-2 border-b border-slate-100">
+            Sobre el Cliente
+          </h3>
+
+          <div class="flex items-center gap-3">
+            <div class="size-11 rounded-full bg-brand-indigo/15 text-brand-indigo font-bold text-base flex items-center justify-center border border-brand-indigo/30 shrink-0">
+              {{ p.nombreCliente.charAt(0).toUpperCase() }}
+            </div>
+            
+            <div class="flex flex-col min-w-0">
+              <span class="text-sm font-bold text-slate-900 truncate">{{ p.nombreCliente }}</span>
+              <span class="inline-flex items-center gap-1 text-xs text-emerald-600 font-medium">
+                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                Cliente Verificado
+              </span>
+            </div>
+          </div>
+        </div>
+
+      </aside>
+
+    </div>
+  }
+
+  <!-- =========================================================================
+       5. MODAL DE POSTULACIÓN TÉCNICA
+       ========================================================================= -->
+  <app-propuesta-modal 
+    [(isOpen)]="mostrarModalPropuesta" 
+    [proyecto]="proyecto()">
+  </app-propuesta-modal>
+
+</div>
