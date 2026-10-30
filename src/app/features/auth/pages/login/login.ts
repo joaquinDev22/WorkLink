@@ -17,12 +17,12 @@ export class Login {
   loginModel = signal<LoginRequestDTO>({
     usuario: '',
     password: ''
-  });
+  })
 
   loginForm = form(this.loginModel, (field) => {
-    required(field.usuario, { message: 'El usuario es obligatorio' });
-    required(field.password, { message: 'La contraseña es obligatoria' });
-  });
+    required(field.usuario, { message: 'El usuario es obligatorio' })
+    required(field.password, { message: 'La contraseña es obligatoria' })
+  })
 
   iniciarSesion(e: Event) {
     e.preventDefault();
@@ -30,8 +30,10 @@ export class Login {
     if (this.loginForm().invalid()) {
       return;
     }
+
     console.log(this.loginForm().invalid())
-    const data = this.loginModel();
+    const data = this.loginModel()
+
     this.auth.login(data).subscribe({
       next: (res) => {
         console.log('Sesión iniciada con éxito:', res);

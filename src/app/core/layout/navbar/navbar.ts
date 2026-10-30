@@ -28,7 +28,7 @@ export class Navbar {
     if (rol === 'FREELANCER') {
       return [
         { label: 'Explorar Proyectos', route: '/freelance/proyectos' },
-        { label: 'Explorar Proyectos', route: '/freelance/proyectos' },
+        { label: 'Mis Proyectos/Hitos', route: '/freelance/mis-trabajos' },
         { label: 'Mis Finanzas', route: '/freelance/finanzas' },
       ];
     }

@@ -1,1 +1,23 @@
-<p>proyecto-list works!</p>
+<div class="space-y-5">
+    <label for="searchbar">Buscar:</label>
+    <input type="text" id="searchbar" class="bg-white">
+
+    <label for="filters">Fecha de Publicacion:</label>
+    <select name="filters" id="filters">
+    </select>
+    <label for="filters">Tecnologias:</label>
+    <select name="filters" id="filters">
+    </select>
+    <label for="filters">Area:</label>
+    <select name="filters" id="filters"></select>
+
+    @for( c of catalogo(); track c){
+        <div class="bg-white">
+            <h2>{{c.nombreProyecto}}</h2>
+            <p>{{c.habilidades}}</p>
+            <p>{{c.estado}}</p>
+            <p>{{c.fechaPublicacion}}</p>
+            <button type="button">Postularse</button>
+        </div>
+    }
+</div>

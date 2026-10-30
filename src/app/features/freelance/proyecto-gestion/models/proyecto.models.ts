@@ -7,6 +7,7 @@ export type EstadoProyecto =
 
 // POST /api/v1/freelance/proyectos, POST /me y PUT /{id}
 export interface ProyectoRequestDTO {
+  nombreProyecto: string
   area: string
   descripcion: string
   presupuestoMax: number
@@ -21,6 +22,7 @@ export interface ProyectoRequestDTO {
 export interface ProyectoResponseDTO {
   proyectoId: number
   uuid: string
+  nombreProyecto: string
   area: string
   descripcion: string
   fechaPublicacion: string // YYYY-MM-DD

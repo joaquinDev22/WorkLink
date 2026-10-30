@@ -14,7 +14,8 @@ import { Perfil } from '../../../features/perfiles/services/perfil';
   templateUrl: './header.html',
 })
 export class Header {
-  protected auth = inject(Auth);
+  protected auth = inject(Auth)
+  
   protected perfilService = inject(Perfil)
   private observer = inject(BreakpointObserver)
 
