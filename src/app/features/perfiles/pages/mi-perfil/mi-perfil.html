@@ -1,3 +1,503 @@
-<div>
-    
+<div class="max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-6 space-y-6">
+
+  <!-- ================================================================= -->
+  <!-- 1. VISTA DE CARGA CON SKELETONS Y EFECTO SHINE (isLoading = true)  -->
+  <!-- ================================================================= -->
+  @if (isLoading()) {
+    <div class="space-y-6">
+      <!-- Skeleton Header Card -->
+      <div class="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden p-6 sm:p-8 space-y-6">
+        <!-- Skeleton Banner -->
+        <div class="h-44 sm:h-60 w-full rounded-2xl bg-slate-200/90 animate-shine"></div>
+        
+        <div class="flex flex-row items-end justify-between gap-6 -mt-16 sm:-mt-22 px-2 sm:px-4">
+          <!-- Skeleton Avatar -->
+          <div class="w-28 h-28 sm:w-36 sm:h-36 rounded-full ring-4 ring-white bg-slate-300 animate-shine shrink-0"></div>
+          <!-- Skeleton Action Button -->
+          <div class="h-10 w-32 bg-slate-200 rounded-xl animate-shine"></div>
+        </div>
+        <div class="space-y-3 pt-2">
+          <div class="h-7 w-48 sm:w-64 bg-slate-200 rounded-lg animate-shine"></div>
+          <div class="h-4 w-32 sm:w-44 bg-slate-200 rounded-lg animate-shine"></div>
+          <div class="h-5 w-40 bg-slate-200 rounded-full animate-shine"></div>
+        </div>
+      </div>
+
+      <!-- Skeleton Grid 2 Columnas -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="bg-white rounded-3xl border border-slate-200/80 p-6 space-y-4">
+          <div class="h-5 w-36 bg-slate-200 rounded animate-shine"></div>
+          <div class="space-y-3 pt-2">
+            <div class="h-4 w-full bg-slate-100 rounded animate-shine"></div>
+            <div class="h-4 w-3/4 bg-slate-100 rounded animate-shine"></div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-2 space-y-6">
+          <div class="bg-white rounded-3xl border border-slate-200/80 p-6 space-y-4">
+            <div class="h-5 w-48 bg-slate-200 rounded animate-shine"></div>
+            <div class="flex flex-wrap gap-2.5">
+              <div class="h-8 w-24 bg-slate-200 rounded-xl animate-shine"></div>
+              <div class="h-8 w-32 bg-slate-200 rounded-xl animate-shine"></div>
+              <div class="h-8 w-28 bg-slate-200 rounded-xl animate-shine"></div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-3xl border border-slate-200/80 p-6 space-y-4">
+            <div class="h-5 w-48 bg-slate-200 rounded animate-shine"></div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="h-28 bg-slate-100 rounded-2xl animate-shine"></div>
+              <div class="h-28 bg-slate-100 rounded-2xl animate-shine"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  } 
+  
+  <!-- ================================================================= -->
+  <!-- 2. VISTA DE DATOS REALES DEL PERFIL (isLoading = false)            -->
+  <!-- ================================================================= -->
+  @else if (perfil()) {
+    <!-- TARJETA PRINCIPAL / HERO DEL PERFIL (LinkedIn & GitHub style) -->
+    <div class="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden">
+      <!-- 1. Banner Superior con botón para subir portada -->
+      <div class="h-44 sm:h-64 w-full relative overflow-hidden bg-gradient-to-r from-brand-indigo via-indigo-600 to-brand-sky group">
+        @if (bannerUrl()) {
+          <img [src]="bannerUrl()" alt="Banner de perfil" class="w-full h-full object-cover">
+        } @else {
+          <!-- Gráfico decorativo de fondo sutil cuando no hay banner personalizado -->
+          <div class="absolute inset-0 opacity-20">
+            <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+              <defs>
+                <radialGradient id="meshGrad" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#ffffff" stop-opacity="0.8"/>
+                  <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+                </radialGradient>
+              </defs>
+              <circle cx="20" cy="30" r="35" fill="url(#meshGrad)"/>
+              <circle cx="85" cy="70" r="40" fill="url(#meshGrad)"/>
+            </svg>
+          </div>
+        }
+
+        <!-- Botón para subir / cambiar Banner (z-40 para que nunca quede tapado por márgenes negativos) -->
+        <label 
+          class="absolute top-4 right-4 sm:top-auto sm:bottom-4 sm:right-4 z-40 px-3.5 py-1.5 rounded-xl bg-slate-900/80 hover:bg-slate-900 text-white text-xs font-semibold backdrop-blur-md border border-white/20 cursor-pointer shadow-lg flex items-center gap-1.5 active:scale-95 transition-all">
+          <input type="file" accept="image/png, image/jpeg" class="hidden" (change)="onBannerSelected($event)">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          <span>Cambiar Portada</span>
+        </label>
+      </div>
+
+      <!-- 2. Información de Identidad (Avatar, Nombre, Rol, Ubicación y Bio) -->
+      <div class="px-6 sm:px-8 pb-6 sm:pb-8">
+        
+        <!-- Fila de Avatar y Botón Editar (100% visible en Desktop y Móvil) -->
+        <div class="flex items-end justify-between relative -mt-14 sm:-mt-20 mb-4 z-20">
+          
+          <!-- Avatar Circular Superpuesto con botón de cámara -->
+          <div class="relative shrink-0">
+            <div class="w-28 h-28 sm:w-36 sm:h-36 rounded-full ring-4 ring-white shadow-xl bg-white overflow-hidden flex items-center justify-center text-4xl sm:text-5xl font-black text-brand-indigo">
+              @if (fotoUrl()) {
+                <img [src]="fotoUrl()" alt="Foto de perfil" class="w-full h-full object-cover">
+              } @else {
+                <span>{{ initial() }}</span>
+              }
+            </div>
+
+            <!-- Botón flotante para subir foto de perfil -->
+            <label 
+              class="absolute bottom-0 right-0 z-30 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-900 hover:bg-slate-800 text-white flex items-center justify-center cursor-pointer shadow-lg ring-2 ring-white active:scale-95 transition-all"
+              title="Cambiar foto de perfil">
+              <input type="file" accept="image/png, image/jpeg" class="hidden" (change)="onFotoSelected($event)">
+              <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </label>
+          </div>
+
+          <!-- Botón CTA para editar perfil -->
+          <div class="pt-2">
+            <button 
+              type="button"
+              (click)="toggleEditModal()"
+              class="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold shadow-sm hover:shadow active:scale-95 transition-all cursor-pointer">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              <span>Editar Perfil</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Identidad y Resumen Profesional -->
+        <div class="space-y-3 pt-1">
+          <div class="flex flex-wrap items-center gap-2.5">
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+              {{ perfil()?.nombre }} {{ perfil()?.apellido || '' }}
+            </h1>
+            <span class="px-3 py-0.5 text-xs font-bold rounded-full uppercase tracking-wider bg-brand-indigo/10 text-brand-indigo border border-brand-indigo/25">
+              {{ perfil()?.rol }}
+            </span>
+
+            <!-- Ubicación en el hero como dato clave geográfico -->
+            @if (perfil()?.ubicacion || perfil()?.pais) {
+              <span class="inline-flex items-center gap-1.5 text-xs sm:text-sm text-slate-500 font-medium">
+                <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span>{{ perfil()?.ubicacion || perfil()?.pais }}</span>
+              </span>
+            }
+          </div>
+
+          @if (perfil()?.descripcion) {
+            <p class="text-slate-600 text-sm sm:text-base leading-relaxed max-w-3xl">
+              {{ perfil()?.descripcion }}
+            </p>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- ANILLO CIRCULAR DE PROGRESO DE PERFIL (Visible si el perfil no está al 100%) -->
+    @if (!completitud().completado) {
+      <div class="bg-gradient-to-r from-indigo-50 via-sky-50 to-white rounded-3xl border border-indigo-100/80 p-5 sm:p-6 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+        <div class="flex items-center gap-4">
+          <!-- Anillo Circular SVG -->
+          <div class="relative w-16 h-16 shrink-0 flex items-center justify-center">
+            <svg class="w-16 h-16 -rotate-90" viewBox="0 0 48 48">
+              <circle 
+                cx="24" cy="24" r="19" 
+                class="stroke-indigo-100" 
+                stroke-width="4" 
+                fill="transparent" 
+              />
+              <circle 
+                cx="24" cy="24" r="19" 
+                class="stroke-brand-indigo transition-all duration-1000 ease-out" 
+                stroke-width="4" 
+                stroke-linecap="round"
+                fill="transparent" 
+                stroke-dasharray="119.38" 
+                [style.strokeDashoffset]="119.38 - (119.38 * completitud().porcentaje / 100)" 
+              />
+            </svg>
+            <span class="absolute text-sm font-extrabold text-slate-800">
+              {{ completitud().porcentaje }}%
+            </span>
+          </div>
+
+          <div class="space-y-1">
+            <h3 class="text-sm sm:text-base font-bold text-slate-900">
+              ¡Tu perfil está al {{ completitud().porcentaje }}%!
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-600">
+              Sube tus imágenes y datos para completar el 100% y ganar mayor visibilidad.
+            </p>
+          </div>
+        </div>
+
+        <!-- Checklist de Faltantes interactivo -->
+        <div class="flex flex-wrap items-center gap-2">
+          @for (item of completitud().itemsFaltantes; track item.clave) {
+            @if (item.clave === 'foto') {
+              <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-white hover:bg-slate-50 text-brand-indigo border border-brand-indigo/30 shadow-2xs cursor-pointer active:scale-95 transition-all">
+                <input type="file" accept="image/png, image/jpeg" class="hidden" (change)="onFotoSelected($event)">
+                <span>+ {{ item.label }}</span>
+              </label>
+            } @else if (item.clave === 'banner') {
+              <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-white hover:bg-slate-50 text-brand-indigo border border-brand-indigo/30 shadow-2xs cursor-pointer active:scale-95 transition-all">
+                <input type="file" accept="image/png, image/jpeg" class="hidden" (change)="onBannerSelected($event)">
+                <span>+ {{ item.label }}</span>
+              </label>
+            } @else {
+              <button 
+                type="button" 
+                (click)="toggleEditModal()"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 shadow-2xs cursor-pointer active:scale-95 transition-all">
+                <span class="text-amber-500 font-bold">+</span>
+                {{ item.label }}
+              </button>
+            }
+          }
+        </div>
+      </div>
+    }
+
+    <!-- GRID INFERIOR DE DETALLES Y CONTENIDO (2 Columnas) -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+      <!-- COLUMNA IZQUIERDA: Canales de Contacto e Información Directa -->
+      <div class="space-y-6">
+        <div class="bg-white rounded-3xl border border-slate-200/90 p-6 shadow-sm space-y-4">
+          <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+            <svg class="w-5 h-5 text-brand-indigo" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            <span>Contacto y Enlaces</span>
+          </h2>
+
+          <div class="space-y-3.5 text-xs sm:text-sm divide-y divide-slate-100">
+            <!-- Email con mailto directo -->
+            <div class="pt-2">
+              <span class="block text-slate-400 text-[11px] font-semibold uppercase">Correo Electrónico</span>
+              <a [href]="'mailto:' + perfil()?.email" class="font-medium text-slate-800 hover:text-brand-indigo transition-colors break-all">
+                {{ perfil()?.email }}
+              </a>
+            </div>
+
+            <!-- Teléfono si existe -->
+            @if (perfil()?.telefono) {
+              <div class="pt-2">
+                <span class="block text-slate-400 text-[11px] font-semibold uppercase">Teléfono</span>
+                <a [href]="'tel:' + perfil()?.telefono" class="font-medium text-slate-800 hover:text-brand-indigo transition-colors">
+                  {{ perfil()?.telefono }}
+                </a>
+              </div>
+            }
+
+            <!-- Sitio Web Oficial si existe -->
+            @if (perfil()?.sitioWeb) {
+              <div class="pt-2">
+                <span class="block text-slate-400 text-[11px] font-semibold uppercase">Sitio Web Oficial</span>
+                <a [href]="perfil()?.sitioWeb" target="_blank" rel="noopener" class="font-medium text-brand-indigo hover:text-brand-indigo-dark inline-flex items-center gap-1.5 transition-colors">
+                  <span>{{ perfil()?.sitioWeb }}</span>
+                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                </a>
+              </div>
+            }
+
+            <!-- Fecha de Nacimiento si aplica -->
+            @if (perfil()?.fechaNacimiento) {
+              <div class="pt-2">
+                <span class="block text-slate-400 text-[11px] font-semibold uppercase">Fecha de Nacimiento</span>
+                <span class="font-medium text-slate-800">{{ perfil()?.fechaNacimiento }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- COLUMNA DERECHA: Habilidades y Portafolio -->
+      <div class="lg:col-span-2 space-y-6">
+
+        <!-- 1. Sección de Habilidades Técnicas -->
+        @if (perfil()?.rol !== 'EMPRESA') {
+          <div class="bg-white rounded-3xl border border-slate-200/90 p-6 shadow-sm space-y-4">
+            <div class="flex items-center justify-between">
+              <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                <svg class="w-5 h-5 text-brand-sky" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                </svg>
+                <span>Habilidades Técnicas</span>
+              </h2>
+              <span class="text-xs text-slate-400 font-medium">{{ perfil()?.habilidades?.length || 0 }} registradas</span>
+            </div>
+
+            @if (perfil()?.habilidades && perfil()!.habilidades.length > 0) {
+              <div class="flex flex-wrap gap-2.5">
+                @for (hab of perfil()!.habilidades; track hab.habilidadId) {
+                  @let info = getNivelInfo(hab.nivel);
+                  <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border {{ info.colorClass }} text-xs font-semibold shadow-2xs">
+                    <span>{{ hab.nombre }}</span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-current opacity-60"></span>
+                    <span class="text-[11px] font-normal opacity-90">{{ info.label }}</span>
+                  </div>
+                }
+              </div>
+            } @else {
+              <p class="text-slate-400 text-xs sm:text-sm py-4 italic text-center">
+                Aún no has agregado habilidades. Añade tus tecnologías y áreas de especialidad para que otros te descubran.
+              </p>
+            }
+          </div>
+        }
+
+        <!-- 2. Sección de Proyectos y Portafolio -->
+        @if (perfil()?.rol !== 'EMPRESA') {
+          <div class="bg-white rounded-3xl border border-slate-200/90 p-6 shadow-sm space-y-4">
+            <div class="flex items-center justify-between">
+              <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                <svg class="w-5 h-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+                <span>Proyectos Destacados</span>
+              </h2>
+              <span class="text-xs text-slate-400 font-medium">{{ perfil()?.proyectos?.length || 0 }} proyectos</span>
+            </div>
+
+            @if (perfil()?.proyectos && perfil()!.proyectos.length > 0) {
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                @for (proy of perfil()!.proyectos; track proy.id) {
+                  <div class="bg-slate-50/70 hover:bg-slate-50 border border-slate-200/80 rounded-2xl p-4.5 space-y-2.5 transition-all hover:shadow-xs group">
+                    <div class="flex items-start justify-between gap-2">
+                      <h3 class="font-bold text-slate-900 text-sm group-hover:text-brand-indigo transition-colors">
+                        {{ proy.nombre }}
+                      </h3>
+                      @if (proy.link) {
+                        <a [href]="proy.link" target="_blank" rel="noopener" class="text-slate-400 hover:text-brand-indigo shrink-0">
+                          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                          </svg>
+                        </a>
+                      }
+                    </div>
+
+                    <p class="text-xs text-slate-600 line-clamp-3 leading-relaxed">
+                      {{ proy.descripcion }}
+                    </p>
+                  </div>
+                }
+              </div>
+            } @else {
+              <p class="text-slate-400 text-xs sm:text-sm py-4 italic text-center">
+                Aún no has registrado proyectos en tu portafolio. Agrega tus trabajos previos para demostrar tu experiencia.
+              </p>
+            }
+          </div>
+        }
+
+      </div>
+    </div>
+  }
+
+  <!-- ================================================================= -->
+  <!-- 3. MODAL DE EDICIÓN DE PERFIL (WL-14: US-07) CON TRANSICIÓN SUAVE -->
+  <!-- ================================================================= -->
+  @if (isEditModalOpen()) {
+    <div 
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-modal-backdrop"
+      (click)="onBackdropClick($event)">
+      <div 
+        class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-lg p-6 sm:p-8 space-y-5 animate-modal-spring"
+        (click)="$event.stopPropagation()">
+        
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+          <h2 class="text-lg font-bold text-slate-900">Editar Datos de Perfil</h2>
+          <button 
+            type="button" 
+            (click)="cerrarEditModal()"
+            class="text-slate-400 hover:text-slate-600 p-1 rounded-lg cursor-pointer">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <form (submit)="$event.preventDefault(); guardarCambios()" class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <label class="text-xs font-semibold text-slate-700">Nombre *</label>
+              <input 
+                type="text" 
+                [(ngModel)]="editForm().nombre" 
+                name="nombre"
+                required
+                class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
+            </div>
+
+            <div class="space-y-1">
+              <label class="text-xs font-semibold text-slate-700">Apellido</label>
+              <input 
+                type="text" 
+                [(ngModel)]="editForm().apellido" 
+                name="apellido"
+                class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
+            </div>
+          </div>
+
+          <div class="space-y-1">
+            <label class="text-xs font-semibold text-slate-700">Biografía o Resumen</label>
+            <textarea 
+              rows="3"
+              [(ngModel)]="editForm().descripcion" 
+              name="descripcion"
+              class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all resize-none"></textarea>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <label class="text-xs font-semibold text-slate-700">Teléfono</label>
+              <input 
+                type="text" 
+                [(ngModel)]="editForm().telefono" 
+                name="telefono"
+                class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
+            </div>
+
+            <div class="space-y-1">
+              <label class="text-xs font-semibold text-slate-700">Ubicación</label>
+              <input 
+                type="text" 
+                [(ngModel)]="editForm().ubicacion" 
+                name="ubicacion"
+                class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
+            </div>
+          </div>
+
+          <div class="space-y-1">
+            <label class="text-xs font-semibold text-slate-700">Sitio Web o Enlace</label>
+            <input 
+              type="url" 
+              [(ngModel)]="editForm().sitioWeb" 
+              name="sitioWeb"
+              placeholder="https://..."
+              [class.border-rose-400]="!isUrlValid(editForm().sitioWeb)"
+              [class.focus:ring-rose-400]="!isUrlValid(editForm().sitioWeb)"
+              [class.focus:border-rose-400]="!isUrlValid(editForm().sitioWeb)"
+              class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
+            @if (!isUrlValid(editForm().sitioWeb)) {
+              <p class="text-[11px] text-rose-500 font-medium">Debe ser una URL válida (ej: https://mi-portfolio.com)</p>
+            }
+          </div>
+
+          <div class="pt-3 flex items-center justify-end gap-3 border-t border-slate-100">
+            <button 
+              type="button" 
+              (click)="cerrarEditModal()"
+              class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl cursor-pointer">
+              Cancelar
+            </button>
+            <button 
+              type="submit" 
+              [disabled]="isSaving() || !isFormValid()"
+              class="px-5 py-2 text-xs font-semibold bg-brand-indigo hover:bg-brand-indigo-dark text-white rounded-xl shadow-xs active:scale-95 disabled:opacity-50 transition-all cursor-pointer inline-flex items-center gap-2">
+              @if (isSaving()) {
+                <svg class="animate-spin w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                </svg>
+                <span>Guardando...</span>
+              } @else {
+                <span>Guardar Cambios</span>
+              }
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  }
+
+  <!-- ================================================================= -->
+  <!-- 4. MENSAJE TOAST DE CONFIRMACIÓN                                   -->
+  <!-- ================================================================= -->
+  @if (toastMsg()) {
+    <div class="fixed bottom-6 right-6 z-50 bg-slate-900 text-white text-xs sm:text-sm font-semibold px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2.5 animate-in slide-in-from-bottom-5 duration-200">
+      <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg>
+      <span>{{ toastMsg() }}</span>
+    </div>
+  }
+
 </div>

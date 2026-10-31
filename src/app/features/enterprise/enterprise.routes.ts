@@ -1,5 +1,5 @@
-﻿import { Routes } from '@angular/router';
-import { roleGuard } from '../../core/auth/guards/role-guard';
+import { Routes } from '@angular/router'
+import { roleGuard } from '../../core/auth/guards/role-guard'
 
 export const routes: Routes = [
   // --- ZONA POSTULANTE / PÚBLICA ---
@@ -10,6 +10,12 @@ export const routes: Routes = [
   {
     path: 'vacante/:id',
     loadComponent: () => import('./vacantes/pages/vacante-detail/vacante-detail').then(m => m.VacanteDetail)
+  },
+  {
+    path: 'mis-postulaciones',
+    canActivate: [roleGuard],
+    data: { roles: ['POSTULANTE'] },
+    loadComponent: () => import('./vacantes/pages/vacante-postulantes/vacante-postulantes').then(m => m.VacantePostulantes)
   },
 
   // --- ZONA EXCLUSIVA EMPRESA ---
@@ -26,11 +32,11 @@ export const routes: Routes = [
     loadComponent: () => import('./recruiters/pages/recruiter-list/recruiter-list').then(m => m.RecruiterList)
   },
 
-  // --- ZONA EXCLUSIVA RECRUITER ---
+  // --- ZONA ENTREVISTAS (RECRUITER & POSTULANTE) ---
   {
     path: 'entrevistas',
     canActivate: [roleGuard],
-    data: { roles: ['RECRUITER'] },
+    data: { roles: ['RECRUITER', 'POSTULANTE'] },
     loadComponent: () => import('./entrevistas/pages/entrevista-calendar/entrevista-calendar').then(m => m.EntrevistaCalendar)
   },
   {
@@ -52,4 +58,4 @@ export const routes: Routes = [
     redirectTo: 'catalogo',
     pathMatch: 'full'
   }
-];
+]

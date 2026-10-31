@@ -11,9 +11,9 @@
   top: calc(50% - 16px);
   
   /* 2. COLOR: gradiente, color plano o glass semitransparente */
-  background-color: var(--color-brand-indigo);
+  background-color: #6200ff;
   backdrop-filter: blur(8px);
-  box-shadow: var(--shadow-inner-indigo);
+  box-shadow: var(--shadow-inner-indigo-light);
   
   /* 3. VELOCIDAD: suavidad con la que viaja entre enlaces */
   transition: left 0.25s ease-out, width 0.25s ease-out, opacity 0.2s ease;

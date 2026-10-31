@@ -1,62 +1,103 @@
-<div class="flex flex-col justify-center items-center py-6">
+<div class="flex flex-col justify-center items-center py-8 px-4 min-h-[80vh]">
     <form 
-    class="bg-linear-to-t from-brand-indigo-dark/50 to-brand-indigo-light/50 backdrop-blur-xs px-6 py-8 rounded-2xl w-full max-w-md h-auto mx-4 space-y-5 shadow-card-login" 
-    (submit)="iniciarSesion($event)"
+        class="bg-linear-to-t from-brand-indigo-dark/60 to-brand-indigo-light/40 backdrop-blur-md border border-glass-border p-6 sm:p-8 rounded-3xl w-full max-w-md mx-auto space-y-5 shadow-card-login" 
+        (submit)="iniciarSesion($event)"
     >
-        <h2 class="text-center text-3xl font-bold text-white mb-1">Bienvenido</h2>
-        <h4 class="text-md text-brand-indigo-dark text-center mb-2">Inicia sesión para continuar</h4>
-        <fieldset class="flex flex-col space-y-2">
-            <label class="text-white font-medium" for="">Usuario:</label>
-            <input class="bg-white p-1 rounded-lg focus:outline-none focus:ring-4 focus:ring-brand-indigo-light/50 px-2 shadow-inner shadow-slate-500" type="text" placeholder="usuario3312" [formField]="loginForm.usuario">
+        <!-- Cabecera del Login -->
+        <div class="text-center space-y-1">
+            <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Bienvenido de nuevo</h2>
+            <h4 class="text-xs sm:text-sm text-brand-sky-light">Ingresa tus credenciales para continuar</h4>
+        </div>
+
+        <!-- Campo: Usuario -->
+        <fieldset class="flex flex-col space-y-1.5">
+            <label class="text-white font-medium text-sm" for="usuario">Usuario:</label>
+            <input 
+                id="usuario"
+                class="w-full bg-white text-slate-900 py-2.5 px-3.5 rounded-xl text-sm font-medium placeholder:text-slate-400 border border-transparent focus:outline-none focus:ring-2 focus:ring-brand-sky focus:border-brand-sky shadow-inner shadow-slate-400/40 transition-all duration-150" 
+                type="text" 
+                placeholder="usuario3312" 
+                [formField]="loginForm.usuario"
+            >
             @if (loginForm.usuario().touched() && loginForm.usuario().invalid()) {
                 @for (error of loginForm.usuario().errors(); track error.kind) {
-                    <span class="text-brand-danger-muted text-xs font-semibold">{{ error.message }}</span>
+                    <span class="text-brand-danger-muted text-xs font-semibold pt-0.5">{{ error.message }}</span>
                 }
             }
         </fieldset>
-        <fieldset class="flex flex-col space-y-2">
-            <label for="password" class="text-md text-white font-bold">Contraseña:</label>
+
+        <!-- Campo: Contraseña -->
+        <fieldset class="flex flex-col space-y-1.5">
+            <label for="password" class="text-white font-medium text-sm">Contraseña:</label>
             <div class="relative w-full flex items-center">
-                <!-- Input con espacio a la derecha (pr-10) -->
                 <input 
-                    class="w-full bg-white p-1 pr-10 rounded-lg focus:outline-none focus:ring-4 focus:ring-brand-indigo-light/50 px-2 text-slate-900 shadow-inner shadow-slate-500" 
+                    id="password"
+                    class="w-full bg-white text-slate-900 py-2.5 px-3.5 pr-11 rounded-xl text-sm font-medium placeholder:text-slate-400 border border-transparent focus:outline-none focus:ring-2 focus:ring-brand-sky focus:border-brand-sky shadow-inner shadow-slate-400/40 transition-all duration-150" 
                     [type]="showPassword() ? 'text' : 'password'" 
                     placeholder="••••••••" 
                     [formField]="loginForm.password"
                 >
-                <!-- Botón flotante a la derecha -->
                 <button 
                     type="button" 
                     (click)="showPassword.set(!showPassword())"
-                    class="absolute right-2 p-1 cursor-pointer flex items-center justify-center">
+                    class="absolute right-2 p-1.5 cursor-pointer flex items-center justify-center opacity-60 hover:opacity-100 active:scale-90 transition-all"
+                    aria-label="Alternar visibilidad de contraseña">
                     <img 
                         [src]="showPassword() ? '/eye.svg' : '/eye-off.svg'" 
                         alt="Mostrar contraseña" 
-                        class="w-5 h-5 opacity-60 hover:opacity-100 transition-opacity"
+                        class="w-5 h-5"
                     >
                 </button>
             </div>
             @if (loginForm.password().touched() && loginForm.password().invalid()) {
                 @for (error of loginForm.password().errors(); track error.kind) {
-                    <span class="text-brand-danger-muted text-xs font-semibold">{{ error.message }}</span>
+                    <span class="text-brand-danger-muted text-xs font-semibold pt-0.5">{{ error.message }}</span>
                 }
             }
         </fieldset>
-        <fieldset class="flex justify-between">
-            <label class="flex items-center gap-2.5 cursor-pointer text-white font-medium text-sm select-none">
+
+        <!-- Opciones de Sesión -->
+        <fieldset class="flex items-center justify-between pt-1">
+            <label class="flex items-center gap-2 cursor-pointer text-slate-200 font-medium text-xs sm:text-sm select-none">
                 <input 
-                type="checkbox" 
-                class="custom-checkbox size-4.5 rounded-md appearance-none border border-glass-border-strong bg-white/20 backdrop-blur-sm cursor-pointer checked:bg-brand-indigo checked:border-brand-indigo-light focus:outline-none focus:ring-2 focus:ring-brand-indigo-light/50 transition-all">
+                    type="checkbox" 
+                    class="custom-checkbox size-4 rounded-md appearance-none border border-glass-border-strong bg-white/20 backdrop-blur-sm cursor-pointer checked:bg-brand-indigo checked:border-brand-indigo-light focus:outline-none focus:ring-2 focus:ring-brand-sky/50 transition-all">
                 <span>Recuérdame</span>
             </label>
-            <a class="font-medium text-brand-sky underline cursor-pointer">Olvide mi contraseña</a>
+            <a class="text-xs sm:text-sm font-semibold text-brand-sky hover:text-white underline cursor-pointer transition-colors">
+                ¿Olvidaste tu contraseña?
+            </a>
         </fieldset>
-        <button class="w-full text-center p-4 bg-brand-indigo text-white rounded-2xl shadow-inner-indigo cursor-pointer hover:bg-brand-indigo-dark transition-all duration-300 ease-in-out active:scale-[0.96] active:shadow-black" type="submit">Iniciar Sesión</button>
-        <div class="flex items-center gap-3">
-            <div class="flex-1 border-t border-glass-border"></div>
-                <span class="text-xs uppercase font-semibold text-white/70">O</span>
-            <div class="flex-1 border-t border-glass-border"></div>
+
+        <!-- Botón de Envío -->
+        <div class="pt-1">
+            <button 
+                class="btn-registrarse bg-brand-violet w-full py-3.5 px-4 rounded-xl font-semibold text-white text-sm tracking-wide cursor-pointer text-center active:scale-[0.97]" 
+                type="submit"
+                [disabled]="isLoading()"
+                >
+                {{isLoading() ? 'Autenticando...' : 'Iniciar Sesión'}}
+            </button>
         </div>
+
+        <!-- Separador -->
+        <div class="flex items-center gap-3 pt-1">
+            <div class="flex-1 border-t border-glass-border/40"></div>
+            <span class="text-xs uppercase font-semibold text-slate-300">O</span>
+            <div class="flex-1 border-t border-glass-border/40"></div>
+        </div>
+
+        <!-- Google SSO -->
         <app-google-button></app-google-button>
+
+        <!-- Enlace a Registro -->
+        <div class="text-center pt-3 border-t border-glass-border/40">
+            <span class="text-xs sm:text-sm text-slate-200">
+                ¿No tienes una cuenta?
+                <a routerLink="/auth/register" class="text-brand-sky hover:text-white underline font-semibold ml-1 cursor-pointer transition-colors">
+                    Regístrate gratis
+                </a>
+            </span>
+        </div>
     </form>
 </div>

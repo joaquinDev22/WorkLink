@@ -1,4 +1,4 @@
-import { Component, model } from '@angular/core';
+import { Component, model } from '@angular/core'
 
 @Component({
   imports: [],
@@ -9,7 +9,7 @@ import { Component, model } from '@angular/core';
 export class BurgerMenu {
   isActivo = model<boolean>(false)
 
-  onClick() : void{
+  onClick() : void {
     this.isActivo.update(activo => !activo)
   }
 }

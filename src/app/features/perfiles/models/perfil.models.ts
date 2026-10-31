@@ -1,4 +1,4 @@
-﻿// Perfil DTO contracts
+// Perfil DTO contracts
 export type NivelHabilidad = 1 | 2 | 3 | 4 // 1: Básico, 2: Intermedio, 3: Avanzado, 4: Experto
 
 export interface PerfilHabilidadDTO {
@@ -32,4 +32,15 @@ export interface PerfilUsuarioDTO {
   bannerPerfil?: string    // byte[] en Base64
   habilidades: PerfilHabilidadDTO[]
   proyectos: PerfilProyectoPortafolioDTO[]
+}
+
+export interface ItemFaltantePerfil {
+  label: string
+  clave: string
+}
+
+export interface PerfilCompletitud {
+  porcentaje: number
+  completado: boolean
+  itemsFaltantes: ItemFaltantePerfil[]
 }

@@ -1,6 +1,6 @@
-import { Routes } from '@angular/router';
-import { authGuard } from './core/auth/guards/auth-guard';
-import { roleGuard } from './core/auth/guards/role-guard';
+import { Routes } from '@angular/router'
+import { authGuard } from './core/auth/guards/auth-guard'
+import { roleGuard } from './core/auth/guards/role-guard'
 
 export const routes: Routes = [
   // 1. ZONA PÚBLICA (Con Header y Footer de Landing)
@@ -16,6 +16,10 @@ export const routes: Routes = [
       {
         path: 'auth',
         loadChildren: () => import('./features/auth/auth.routes').then(m => m.routes)
+      },
+      {
+        path: 'error',
+        loadComponent: () => import('./core/layout/error-page/error-page').then(m => m.ErrorPage)
       }
     ]
   },
@@ -41,10 +45,25 @@ export const routes: Routes = [
       {
         path: 'perfiles',
         loadChildren: () => import('./features/perfiles/perfiles.routes').then(m => m.routes)
+      },
+      {
+        path: 'perfil',
+        redirectTo: 'perfiles/mi-perfil',
+        pathMatch: 'full'
       }
     ]
   },
 
-  // 404 Redirección
-  { path: '**', redirectTo: '' }
-];
+  // 3. CATCH-ALL: Cualquier ruta no reconocida carga la pantalla de error 404
+  {
+    path: '**',
+    loadComponent: () => import('./core/layout/public-layout/public-layout').then(m => m.PublicLayout),
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./core/layout/error-page/error-page').then(m => m.ErrorPage),
+        data: { codigo: 404 }
+      }
+    ]
+  }
+]

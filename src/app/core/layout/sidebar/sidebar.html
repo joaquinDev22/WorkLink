@@ -24,7 +24,15 @@
                 <span class="text-white text-sm font-semibold truncate">{{ auth.session()?.nombreUsuario }}</span>
             </div>
         </div>
-
+        @for (item of navItems(); track item.route) {
+            <a 
+            [routerLink]="item.route"
+            (click)="cerrar()"
+            routerLinkActive="text-brand-sky-light font-semibold"
+            class="relative z-10 px-3.5 py-1 text-sm font-medium text-white transition-colors">
+            {{ item.label }}
+            </a>
+        }
         <!-- Botón de Cerrar Sesión -->
         <button 
             (click)="auth.logout(); cerrar()" 

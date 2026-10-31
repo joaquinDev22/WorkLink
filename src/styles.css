@@ -1,58 +1,77 @@
-/* You can add global styles to this file, and also import other style files */
-
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @theme {
-  /* ==========================================================
-     1. COLORES DE IDENTIDAD WORKLINK
-     ========================================================== */
-  /* Índigo / Violeta (Base y Acciones Primarias) */
-  --color-brand-indigo-dark: #3730a3;      /* indigo-800 (base de degradados) */
-  --color-brand-indigo: #4f46e5;           /* indigo-600 (botones principales) */
-  --color-brand-indigo-light: #818cf8;     /* indigo-400 (bordes y sombras internas) */
-  --color-brand-violet: #6d28d9;           /* violet-700 (botón registrarse) */
+  --color-brand-indigo: #4F46E5;
+  --color-brand-indigo-light: #6366F1;
+  --color-brand-indigo-dark: #3730A3;
+  --color-brand-violet: #845ec2;
+  --color-brand-violet-dark: #6200ff;
+  --color-brand-sky: #00c9a7;
+  --color-brand-sky-light: #70ffff;
+  --color-brand-dark: #0F172A;
 
-  /* Celeste / Sky (Acentos y Resplandores) */
-  --color-brand-sky: #38bdf8;              /* sky-400 (acento de logo y enlaces activos) */
-  --color-brand-sky-light: #7dd3fc;        /* sky-300 (saludo usuario y focus) */
+  /* Colores para alertas y estados */
+  --color-brand-danger-muted: #FF6F91;
+  --color-brand-danger-bright: #FF5E7E;
 
-  /* Alertas y Peligro */
-  --color-brand-danger: #ef4444;           /* red-500 (cerrar sesión / bajas) */
-  --color-brand-danger-muted: #f87171;     /* red-400 (errores de validación) */
+  /* Glassmorphism semántico */
+  --color-glass-surface: rgba(255, 255, 255, 0.05);
+  --color-glass-border: rgba(255, 255, 255, 0.12);
 
-  /* ==========================================================
-     2. SUPERFICIES GLASSMORPHISM
-     ========================================================== */
-  --color-glass-surface: rgba(255, 255, 255, 0.08);
-  --color-glass-border-subtle: rgba(255, 255, 255, 0.15);
-  --color-glass-border: rgba(255, 255, 255, 0.30);
-  --color-glass-border-strong: rgba(255, 255, 255, 0.50);
+  /* Sombras y Luces */
+  --shadow-inner-indigo: inset 0 2px 4px 0 rgba(79, 70, 229, 0.3);
+  --shadow-glow-indigo: 0 0 20px -3px rgba(79, 70, 229, 0.4);
+  --shadow-glow-white: 0 0 15px rgba(255, 255, 255, 0.3);
+  --shadow-glow-sky: 0 0 15px rgba(56, 189, 248, 0.5);
+  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 
-  /* ==========================================================
-     3. TUS SOMBRAS PERSONALIZADAS (GLOWS & INSET)
-     ========================================================== */
-  /* El resplandor profundo de tu botón Registrarse */
-  --shadow-glow-indigo: 0 0 28px -5px rgba(75, 63, 248, 0.85), 0 0 13px -6px rgba(40, 16, 255, 0.65);
+  /* Glassmorphic Neumorphism Utilities */
+  --shadow-glass-neu-elevated: 
+    0 10px 30px -5px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.15) inset,
+    0 1px 0 0 rgba(255, 255, 255, 0.2) inset;
+    
+  --shadow-glass-neu-pressed:
+    0 2px 8px 0 rgba(0, 0, 0, 0.4) inset,
+    0 0 0 1px rgba(0, 0, 0, 0.2) inset;
 
-  /* El resplandor blanco de tu botón Iniciar Sesión */
-  --shadow-glow-white: 0 0 25px -5px rgba(255, 255, 255, 0.45), 0 0 10px -6px rgba(253, 253, 253, 0.45);
-  --text-shadow-glow-white: 0 0 25px rgba(255, 255, 255, 0.45), 0 0 10px rgba(253, 253, 253, 0.45);
-
-  /* El halo celeste de tu píldora del Navbar */
-  --shadow-glow-sky: 0 0 15px rgba(56, 189, 248, 0.40);
-
-  /* El bisel interior de tus botones (reemplazo sin delay de shadow-inner) */
-  --shadow-inner-indigo: inset 0 2px 4px 0 #818cf8;
-  --shadow-inner-indigo-dark: inset 0 2px 4px 0 #4f39f6;
-  --shadow-inner-white: inset 0 2px 4px 0 #ffffff;
+  --shadow-glass-neu-pill:
+    0 4px 12px 0 rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.12) inset,
+    0 1px 0 0 rgba(255, 255, 255, 0.25) inset;
+    
+  --shadow-glass-neu-float:
+    0 20px 40px -15px rgba(79, 70, 229, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.2) inset;
    
   /* Sombra de la tarjeta de Login */
   --shadow-card-login: 0 25px 50px -12px rgba(99, 102, 241, 0.45);
+
+  /* 🌟 1. Rayo de brillo reflectivo (destello que cruza una tarjeta o botón) */
+  --animate-dash: dash 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  @keyframes dash {
+    0% {
+      transform: translateX(-150%) skewX(-20deg);
+    }
+    40%, 100% {
+      transform: translateX(250%) skewX(-20deg);
+    }
+  }
+  /* 💡 2. Halo de resplandor pulsante (glow suave con el celeste de WorkLink) */
+  --animate-glow: glow 2s ease-in-out infinite alternate;
+  @keyframes glow {
+    from {
+      filter: drop-shadow(0 0 4px rgba(56, 189, 248, 0.2));
+    }
+    to {
+      filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.65));
+    }
+  }
 }
+
 .btn-registrarse {
   box-shadow: var(--shadow-inner-indigo);
-  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1);
-  user-select: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .btn-registrarse:hover {
@@ -66,15 +85,126 @@
 }
 
 .btn-iniciar-sesion {
-  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1);
-  user-select: none;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--color-glass-border);
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.15), inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .btn-iniciar-sesion:hover {
-  box-shadow: var(--shadow-inner-white), var(--shadow-glow-white);
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px 0 rgba(0, 0, 0, 0.2), var(--shadow-glow-white);
 }
 
 .btn-iniciar-sesion:active {
   transform: translateY(1px) scale(0.96);
   box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+@utility animate-shine {
+  position: relative;
+  overflow: hidden;
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      115deg,
+      transparent 25%,
+      rgba(255, 255, 255, 0.25) 50%,
+      transparent 75%
+    );
+    transform: translateX(-100%);
+    animation: shine-sweep 3s ease-in-out infinite;
+    pointer-events: none;
+  }
+}
+@keyframes shine-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  35%, 100% {
+    transform: translateX(100%);
+  }
+}
+
+/* ==========================================================
+   4. TRANSICIONES DE PÁGINA NATIVAS (View Transitions API)
+   ========================================================== */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root) {
+    animation: 180ms cubic-bezier(0.4, 0, 1, 1) both page-fade-out;
+  }
+  ::view-transition-new(root) {
+    animation: 320ms cubic-bezier(0.16, 1, 0.3, 1) 30ms both page-fade-in,
+               320ms cubic-bezier(0.16, 1, 0.3, 1) 30ms both page-slide-up;
+  }
+}
+
+@keyframes page-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes page-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes page-slide-up {
+  from { transform: translateY(12px) scale(0.995); }
+  to { transform: translateY(0) scale(1); }
+}
+
+/* ==========================================================
+   5. MICRO-INTERACCIONES Y TRANSICIONES SUAVES (transitions-dev)
+   ========================================================== */
+.animate-dropdown-spring {
+  transform-origin: top right;
+  animation: dropdown-spring 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes dropdown-spring {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-modal-backdrop {
+  animation: backdrop-fade 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes backdrop-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-modal-spring {
+  transform-origin: center;
+  animation: modal-spring 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes modal-spring {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }

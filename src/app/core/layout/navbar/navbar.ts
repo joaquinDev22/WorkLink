@@ -1,10 +1,10 @@
-import { Component, computed, inject, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
-import { Auth } from '../../auth/services/auth';
+import { Component, computed, inject, signal } from '@angular/core'
+import { RouterLink, RouterLinkActive } from '@angular/router'
+import { Auth } from '../../auth/services/auth'
 
 export interface NavItem {
-  label: string;
-  route: string;
+  label: string
+  route: string
 }
 
 @Component({
@@ -14,23 +14,31 @@ export interface NavItem {
   templateUrl: './navbar.html',
 })
 export class Navbar {
-  protected auth = inject(Auth);
+  protected auth = inject(Auth)
 
-  pildoraX = signal(0);
-  pildoraW = signal(0);
-  pildoraVisible = signal(false);
+  pildoraX = signal(0)
+  pildoraW = signal(0)
+  pildoraVisible = signal(false)
 
   // Lista dinámica de enlaces calculada reactivamente según el rol
   readonly navItems = computed<NavItem[]>(() => {
-    const session = this.auth.session();
-    const rol = session?.rol;
+    const session = this.auth.session()
+    const rol = session?.rol
 
     if (rol === 'FREELANCER') {
       return [
         { label: 'Explorar Proyectos', route: '/freelance/proyectos' },
-        { label: 'Explorar Proyectos', route: '/freelance/proyectos' },
+        { label: 'Mis Proyectos/Hitos', route: '/freelance/mis-trabajos' },
         { label: 'Mis Finanzas', route: '/freelance/finanzas' },
-      ];
+      ]
+    }
+
+    if (rol === 'POSTULANTE') {
+      return [
+        { label: 'Explorar Vacantes', route: '/enterprise/catalogo' },
+        { label: 'Mis Postulaciones', route: '/enterprise/mis-postulaciones' },
+        { label: 'Mis Entrevistas', route: '/enterprise/entrevistas' },
+      ]
     }
 
     if (rol === 'EMPRESA') {
@@ -38,7 +46,7 @@ export class Navbar {
         { label: 'Dashboard', route: '/enterprise/dashboard' },
         { label: 'Mis Vacantes', route: '/enterprise/vacantes' },
         { label: 'Recruiters', route: '/enterprise/recruiters' },
-      ];
+      ]
     }
     
     if (rol === 'RECRUITER') {
@@ -46,27 +54,27 @@ export class Navbar {
         { label: 'Vacantes Asignadas', route: '/enterprise/vacantes' },
         { label: 'Postulantes', route: '/enterprise/postulantes' },
         { label: 'Entrevistas', route: '/enterprise/entrevistas' },
-      ];
+      ]
     }
 
     if (rol === 'CLIENTE') {
       return [
         { label: 'Mis Proyectos', route: '/freelance/cliente-dashboard' },
-        { label: 'Publicar Proyecto', route: '/freelance/proyectos' },
-      ];
+        { label: 'Publicar Proyecto', route: '/freelance/nuevo-proyecto' },
+      ]
     }
 
-    return [];
-  });
+    return []
+  })
 
   moverPildora(e: MouseEvent) {
-    const el = e.currentTarget as HTMLElement;
-    this.pildoraX.set(el.offsetLeft);
-    this.pildoraW.set(el.offsetWidth);
-    this.pildoraVisible.set(true);
+    const el = e.currentTarget as HTMLElement
+    this.pildoraX.set(el.offsetLeft)
+    this.pildoraW.set(el.offsetWidth)
+    this.pildoraVisible.set(true)
   }
 
   ocultarPildora() {
-    this.pildoraVisible.set(false);
+    this.pildoraVisible.set(false)
   }
 }
