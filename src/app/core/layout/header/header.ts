@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input, signal, OnInit, HostListener, ElementRef } from '@angular/core'
+import { Component, computed, effect, inject, input, signal, OnInit } from '@angular/core'
 import { Navbar } from '../navbar/navbar'
 import { RouterLink } from '@angular/router'
 import { Auth } from '../../auth/services/auth'
@@ -17,7 +17,6 @@ export class Header implements OnInit {
   protected auth = inject(Auth)
   protected perfilService = inject(Perfil)
   private observer = inject(BreakpointObserver)
-  private elementRef = inject(ElementRef)
 
   isMinWidth = signal<boolean>(false)
   isMenuOpen = signal<boolean>(false)
@@ -71,21 +70,5 @@ export class Header implements OnInit {
 
   cerrarUserModal(): void {
     this.isUserModalOpen.set(false)
-  }
-
-  // Cierra el modal de usuario al hacer clic en cualquier lugar fuera de él
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent): void {
-    if (!this.isUserModalOpen()) return
-    const target = event.target as HTMLElement
-    const container = this.elementRef.nativeElement.querySelector('#userMenuContainer')
-    if (container && container.contains(target)) return
-    this.cerrarUserModal()
-  }
-
-  // Cierra con la tecla Escape
-  @HostListener('document:keydown.escape')
-  onEscapePress(): void {
-    this.cerrarUserModal()
   }
 }

@@ -31,7 +31,7 @@ export class Register {
   showPassword = signal<boolean>(false)
   showConfirmPassword = signal<boolean>(false)
 
-  dropdownRolesAbierto = signal<boolean>(false);
+  dropdownRolesAbierto = signal<boolean>(false)
 
   private rolesTrabajo : OpcionRol[] = [
     {
@@ -67,12 +67,11 @@ export class Register {
       descripcion: 'Cazar y seleccionar talento especializado.',
       icono: '/recruiter.svg'
     }
-  ];
+  ]
 
   rolesVisibles = computed(() => {
-    return this.intencion() === 'TRABAJAR' ? this.rolesTrabajo : this.rolesContratar;
-  });
-
+    return this.intencion() === 'TRABAJAR' ? this.rolesTrabajo : this.rolesContratar
+  })
   
   registerModel = signal<FormularioRegistro>({
       usuario: '',
@@ -96,6 +95,7 @@ export class Register {
     pattern(field.password, /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/, {
       message: 'Debe incluir al menos una mayúscula, una minúscula y un número'
     })
+
     validate(field.password, ({ value }) => {
       const val = value() || ''
 
@@ -109,20 +109,20 @@ export class Register {
         return {
           kind: 'pattern',
           message: `Debe incluir al menos: ${faltantes.join(', ')}`
-        };
+        }
       }
-      return null;
-    });
+      return null
+    })
     
     validate(field.confirmPassword, ({ value }) => {
-      const confirm = value();
+      const confirm = value()
       const pass = this.registerForm.password().value() // Señal directa reactiva
 
       if (!confirm) {
-        return { kind: 'required', message: 'Debes repetir la contraseña' };
+        return {kind: 'required', message: 'Debes repetir la contraseña'}
       }
       if (confirm !== pass) {
-        return { kind: 'mismatch', message: 'Las contraseñas no coinciden' };
+        return {kind: 'mismatch', message: 'Las contraseñas no coinciden'}
       }
       return null;
     });
@@ -131,15 +131,15 @@ export class Register {
   })
 
   reqPassword = computed(() => {
-    const pwd = this.registerForm.password().value() || '';
+    const pwd = this.registerForm.password().value() || ''
     return {
       longitud: pwd.length >= 8,
       mayuscula: /[A-Z]/.test(pwd),
       minuscula: /[a-z]/.test(pwd),
       numero: /\d/.test(pwd),
       valida: pwd.length >= 8 && /[A-Z]/.test(pwd) && /[a-z]/.test(pwd) && /\d/.test(pwd)
-    };
-  });
+    }
+  })
   // Nivel de 0 a 4
   nivelFortaleza = computed(() => {
     const pwd = this.registerModel().password || ''
@@ -151,7 +151,7 @@ export class Register {
     if (/[0-9]/.test(pwd)) score++          // Número
     if (/[^A-Za-z0-9]/.test(pwd)) score++  // Símbolo especial (@, $, !, etc.)
 
-    return score;
+    return score
   })
 
   textoFortaleza = computed(() => {
@@ -166,30 +166,30 @@ export class Register {
   })
 
   seleccionarIntencion(nuevaIntencion: 'TRABAJAR' | 'CONTRATAR'): void {
-    this.intencion.set(nuevaIntencion);
-    const primerRol = nuevaIntencion === 'TRABAJAR' ? 'FREELANCER' : 'CLIENTE';
-    this.registerModel.update(m => ({ ...m, rol: primerRol }));
+    this.intencion.set(nuevaIntencion)
+    const primerRol = nuevaIntencion === 'TRABAJAR' ? 'FREELANCER' : 'CLIENTE'
+    this.registerModel.update(m => ({ ...m, rol: primerRol }))
   }
 
   
   rolSeleccionado = computed(() => {
-    const rolActual = this.registerModel().rol;
-    return this.rolesVisibles().find(r => r.rol === rolActual) ?? this.rolesVisibles()[0];
-  });// 2. Información del rol actualmente seleccionado (para mostrarlo en el botón cerrado)
+    const rolActual = this.registerModel().rol
+    return this.rolesVisibles().find(r => r.rol === rolActual) ?? this.rolesVisibles()[0]
+  })// 2. Información del rol actualmente seleccionado (para mostrarlo en el botón cerrado)
 
   seleccionarRol(rol: UserRole): void {
-    this.registerModel.update(m => ({ ...m, rol }));
-    this.dropdownRolesAbierto.set(false);
+    this.registerModel.update(m => ({ ...m, rol }))
+    this.dropdownRolesAbierto.set(false)
   }// 3. Al elegir un rol, lo actualizamos y cerramos el dropdown
   
   crearCuenta(e: Event) {
 
-    e.preventDefault();
+    e.preventDefault()
 
     this.errorServidor.set(null); // Limpiamos errores previos
-    if (this.registerForm().invalid()) return;
+    if (this.registerForm().invalid()) return
 
-    const {confirmPassword, ...payload} = this.registerModel();
+    const {confirmPassword, ...payload} = this.registerModel()
 
     this.auth.register(payload).subscribe({
       next: () => {
@@ -198,11 +198,11 @@ export class Register {
       error: (err) => {
         // Si el backend devuelve 409 (Conflict) o 400 con mensaje de duplicado
         if (err.status === 409 || err.status === 400) {
-          this.errorServidor.set(err.error?.message || 'El usuario o el correo ya se encuentran registrados.');
+          this.errorServidor.set(err.error?.message || 'El usuario o el correo ya se encuentran registrados.')
         } else {
-          this.errorServidor.set('Ocurrió un error en el servidor. Intenta nuevamente.');
+          this.errorServidor.set('Ocurrió un error en el servidor. Intenta nuevamente.')
         }
       }
-    });
+    })
   }
 }

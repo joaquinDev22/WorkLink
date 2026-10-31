@@ -35,7 +35,7 @@
                     <app-navbar class="hidden md:flex"></app-navbar> 
                     
                     <!-- Contenedor del Avatar y Modal -->
-                    <div id="userMenuContainer" class="relative inline-flex items-center">
+                    <div class="relative inline-flex items-center">
                         <!-- Botón Trigger del Avatar -->
                         <button 
                             type="button"
@@ -49,16 +49,25 @@
                             }
                         </button>
 
-                        <!-- Punto de estado En Línea (siempre visible sobre la imagen en la esquina exterior) -->
-                        <span 
-                            class="absolute -top-1 -right-1 z-30 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full shadow-sm pointer-events-none" 
-                            title="En línea">
-                        </span>
+                        <!-- Indicador flotante exterior (por encima y fuera del círculo) -->
+                        @if (!perfilService.completitud().completado) {
+                            <span 
+                                class="absolute -top-1 -right-1 z-30 w-3.5 h-3.5 bg-amber-400 border-2 border-brand-indigo rounded-full shadow-sm pointer-events-none" 
+                                title="Perfil al {{ perfilService.completitud().porcentaje }}%">
+                            </span>
+                        }
 
-                        <!-- Modal / Dropdown Flotante Desktop con animación suave -->
+                        <!-- Modal / Dropdown Flotante Desktop -->
                         @if (isUserModalOpen()) {
+                            <!-- Backdrop invisible para capturar clic exterior -->
                             <div 
-                                class="absolute right-0 top-full mt-3 w-80 sm:w-84 bg-white text-slate-800 rounded-3xl shadow-2xl border border-slate-200/90 p-5 z-50 animate-dropdown-spring space-y-4">
+                                class="fixed inset-0 z-40" 
+                                (click)="cerrarUserModal()">
+                            </div>
+
+                            <!-- Tarjeta Modal -->
+                            <div 
+                                class="absolute right-0 top-full mt-3 w-80 sm:w-84 bg-white text-slate-800 rounded-3xl shadow-2xl border border-slate-200/90 p-5 z-50 animate-in fade-in zoom-in-95 duration-150 space-y-4">
                                 
                                 <!-- 1. Cabecera con datos del usuario -->
                                 <div class="flex items-center gap-3.5 pb-3 border-b border-slate-100">
@@ -79,38 +88,40 @@
                                 </div>
 
                                 <!-- 2. Anillo de Progreso de Perfil (Ring Progress) -->
-                                <div class="bg-slate-50 rounded-2xl p-3 border border-slate-100 flex items-center gap-3">
-                                    <div class="relative w-11 h-11 shrink-0 flex items-center justify-center">
-                                        <svg class="w-11 h-11 -rotate-90" viewBox="0 0 48 48">
-                                            <circle 
-                                                cx="24" cy="24" r="19" 
-                                                class="stroke-slate-200" 
-                                                stroke-width="4" 
-                                                fill="transparent" 
-                                            />
-                                            <circle 
-                                                cx="24" cy="24" r="19" 
-                                                class="stroke-brand-indigo transition-all duration-700 ease-out" 
-                                                stroke-width="4" 
-                                                stroke-linecap="round"
-                                                fill="transparent" 
-                                                stroke-dasharray="119.38" 
-                                                [style.strokeDashoffset]="119.38 - (119.38 * perfilService.completitud().porcentaje / 100)" 
-                                            />
-                                        </svg>
-                                        <span class="absolute text-[10px] font-bold text-slate-700">
-                                            {{ perfilService.completitud().porcentaje }}%
-                                        </span>
+                                @if(!perfilService.completitud().completado){
+                                    <div class="bg-slate-50 rounded-2xl p-3 border border-slate-100 flex items-center gap-3">
+                                        <div class="relative w-11 h-11 shrink-0 flex items-center justify-center">
+                                            <svg class="w-11 h-11 -rotate-90" viewBox="0 0 48 48">
+                                                <circle 
+                                                    cx="24" cy="24" r="19" 
+                                                    class="stroke-slate-200" 
+                                                    stroke-width="4" 
+                                                    fill="transparent" 
+                                                />
+                                                <circle 
+                                                    cx="24" cy="24" r="19" 
+                                                    class="stroke-brand-indigo transition-all duration-700 ease-out" 
+                                                    stroke-width="4" 
+                                                    stroke-linecap="round"
+                                                    fill="transparent" 
+                                                    stroke-dasharray="119.38" 
+                                                    [style.strokeDashoffset]="119.38 - (119.38 * perfilService.completitud().porcentaje / 100)" 
+                                                />
+                                            </svg>
+                                            <span class="absolute text-[10px] font-bold text-slate-700">
+                                                {{ perfilService.completitud().porcentaje }}%
+                                            </span>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <h4 class="text-xs font-semibold text-slate-800 leading-tight">
+                                                {{ perfilService.completitud().completado ? 'Perfil completo' : 'Perfil incompleto' }}
+                                            </h4>
+                                            <p class="text-[11px] text-slate-500 leading-tight mt-0.5">
+                                                {{ perfilService.completitud().completado ? 'Tu perfil luce profesional y visible.' : 'Completa tu información para destacar.' }}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div class="flex-1 min-w-0">
-                                        <h4 class="text-xs font-semibold text-slate-800 leading-tight">
-                                            {{ perfilService.completitud().completado ? 'Perfil completo' : 'Perfil incompleto' }}
-                                        </h4>
-                                        <p class="text-[11px] text-slate-500 leading-tight mt-0.5">
-                                            {{ perfilService.completitud().completado ? 'Tu perfil luce profesional y visible.' : 'Completa tu información para destacar.' }}
-                                        </p>
-                                    </div>
-                                </div>
+                                }
 
                                 <!-- 3. Acciones de Navegación -->
                                 <div class="space-y-1 text-sm font-medium">

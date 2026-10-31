@@ -1,11 +1,39 @@
-import { Component, OnInit, inject, computed, signal, HostListener } from '@angular/core'
+import { Component, OnInit, inject, computed, signal } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { FormsModule } from '@angular/forms'
 import { Perfil } from '../../services/perfil'
-import { NivelHabilidad } from '../../models/perfil.models'
+import { EditProfileModel, NivelHabilidad, PerfilUsuarioDTO } from '../../models/perfil.models'
+import { form, maxLength, minLength, pattern, required, validate, FormField } from '@angular/forms/signals'
+
+export const PATTERNS_TELEFONO: Record<string, { regex: RegExp, ejemplo: string }> = {
+  AR: {
+    regex: /^\+54\s?(9\s?)?\d{2,4}\s?\d{6,8}$/,
+    ejemplo: '+54 9 11 1234 5678'
+  },
+  MX: {
+    regex: /^\+52\s?\d{2,3}\s?\d{7,8}$/,
+    ejemplo: '+52 55 1234 5678'
+  },
+  ES: {
+    regex: /^\+34\s?[6789]\d{8}$/,
+    ejemplo: '+34 612 345 678'
+  },
+  CO: {
+    regex: /^\+57\s?3\d{9}$/,
+    ejemplo: '+57 300 123 4567'
+  },
+  CL: {
+    regex: /^\+56\s?9\s?\d{8}$/,
+    ejemplo: '+56 9 1234 5678'
+  },
+  OTRO: {
+    regex: /^\+[1-9]\d{6,14}$/,
+    ejemplo: '+1 555 123 4567'
+  }
+}
 
 @Component({
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, FormField],
   selector: 'app-mi-perfil',
   styleUrl: './mi-perfil.css',
   templateUrl: './mi-perfil.html',
@@ -23,14 +51,7 @@ export class MiPerfil implements OnInit {
   toastMsg = signal<string | null>(null)
 
   // Modelo de formulario de edición
-  editForm = signal<{
-    nombre: string
-    apellido: string
-    descripcion: string
-    telefono: string
-    ubicacion: string
-    sitioWeb: string
-  }>({
+  profileModel = signal<EditProfileModel>({
     nombre: '',
     apellido: '',
     descripcion: '',
@@ -39,6 +60,41 @@ export class MiPerfil implements OnInit {
     sitioWeb: ''
   })
 
+  editForm = form(this.profileModel, (f) => {
+
+    required(f.nombre, {message:'El nombre es obligatorio'})
+    minLength(f.nombre,3,{message:'El nombre debe tener minimo 3 caracteres'})
+    maxLength(f.nombre,10,{message:'El nombre no puede tener mas de 10 caracteres'})
+    pattern(f.nombre, /^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s]+$/, {
+      message:'El nombre no puede incluir caracteres especiales'
+    })
+
+    required(f.apellido, {message:'El apellido es obligatorio'})
+    minLength(f.apellido,5,{message:'El apellido debe tener minimo 5 caracteres'})
+    maxLength(f.apellido,10,{message:'El nombre debe tener minimo 10 caracteres'})
+    pattern(f.apellido, /^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s]+$/, {
+      message:'El apellido no puede incluir caracteres especiales'
+    })
+
+    pattern(f.sitioWeb,/^(https:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{2,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*))?$/,
+      {message: 'El sitio web debe comenzar con https:// y tener un dominio válido'}
+    )
+
+     validate(f.telefono, ({ value }) => {
+    const tel = value()?.trim()
+    if (!tel) return null
+    const pais = this.profileModel().ubicacion || 'AR'
+    const config = PATTERNS_TELEFONO[pais] || PATTERNS_TELEFONO['OTRO']
+    const limpio = tel.replace(/[-\s]/g, '')
+    if (!config.regex.test(tel) && !config.regex.test(limpio)) {
+      return {
+        kind: 'pattern',
+        message: `Formato requerido para ${pais}: ${config.ejemplo}`
+      }
+    }
+    return null
+  })
+})
   readonly initial = computed<string>(() => {
     const p = this.perfil()
     if (!p) return 'U'
@@ -70,10 +126,7 @@ export class MiPerfil implements OnInit {
     if (input.files && input.files.length > 0) {
       const file = input.files[0]
       this.perfilService.uploadPhoto(file).subscribe({
-        next: () => {
-          this.showToast('Foto de perfil actualizada correctamente')
-          input.value = ''
-        },
+        next: () => this.showToast('Foto de perfil actualizada correctamente'),
         error: (err) => console.error('Error al subir foto', err)
       })
     }
@@ -84,10 +137,7 @@ export class MiPerfil implements OnInit {
     if (input.files && input.files.length > 0) {
       const file = input.files[0]
       this.perfilService.uploadBanner(file).subscribe({
-        next: () => {
-          this.showToast('Banner de portada actualizado correctamente')
-          input.value = ''
-        },
+        next: () => this.showToast('Banner de portada actualizado correctamente'),
         error: (err) => console.error('Error al subir banner', err)
       })
     }
@@ -96,7 +146,7 @@ export class MiPerfil implements OnInit {
   toggleEditModal(): void {
     const current = this.perfil()
     if (current) {
-      this.editForm.set({
+      this.profileModel.set({
         nombre: current.nombre || '',
         apellido: current.apellido || '',
         descripcion: current.descripcion || '',
@@ -108,54 +158,15 @@ export class MiPerfil implements OnInit {
     this.isEditModalOpen.update(v => !v)
   }
 
-  cerrarEditModal(): void {
-    this.isEditModalOpen.set(false)
-  }
-
-  onBackdropClick(event: MouseEvent): void {
-    if (event.target === event.currentTarget) {
-      this.cerrarEditModal()
-    }
-  }
-
-  @HostListener('document:keydown.escape')
-  onEscape(): void {
-    if (this.isEditModalOpen()) {
-      this.cerrarEditModal()
-    }
-  }
-
-  isUrlValid(url: string): boolean {
-    if (!url || !url.trim()) return true
-    try {
-      const parsed = new URL(url.trim())
-      return parsed.protocol === 'http:' || parsed.protocol === 'https:'
-    } catch {
-      return false
-    }
-  }
-
-  isFormValid(): boolean {
-    const form = this.editForm()
-    return !!form.nombre.trim() && this.isUrlValid(form.sitioWeb)
-  }
-
   guardarCambios(): void {
     const form = this.editForm()
-    if (!this.isFormValid()) return
+    if (!form.value) return
 
     this.isSaving.set(true)
-    this.perfilService.updateProfile({
-      nombre: form.nombre.trim(),
-      apellido: form.apellido.trim(),
-      descripcion: form.descripcion.trim(),
-      telefono: form.telefono.trim(),
-      ubicacion: form.ubicacion.trim(),
-      sitioWeb: form.sitioWeb.trim()
-    }).subscribe({
+    this.perfilService.updateProfile(form.value()).subscribe({
       next: () => {
         this.isSaving.set(false)
-        this.cerrarEditModal()
+        this.isEditModalOpen.set(false)
         this.showToast('Perfil actualizado con éxito')
       },
       error: (err) => {

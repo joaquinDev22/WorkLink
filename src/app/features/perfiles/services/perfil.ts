@@ -2,7 +2,7 @@ import { TokenStorage } from './../../../core/auth/services/token-storage'
 import { inject, Service, signal, computed } from '@angular/core'
 import { environment } from '../../../../environments/environment'
 import { HttpClient } from '@angular/common/http'
-import { PerfilUsuarioDTO, PerfilCompletitud, ItemFaltantePerfil } from '../models/perfil.models'
+import { PerfilUsuarioDTO, PerfilCompletitud, ItemFaltantePerfil, EditProfileModel } from '../models/perfil.models'
 import { Observable, of, tap, delay, finalize } from 'rxjs'
 
 @Service()
@@ -190,7 +190,7 @@ export class Perfil {
     })
   }
 
-  updateProfile(datos: Partial<PerfilUsuarioDTO>): Observable<PerfilUsuarioDTO> {
+  updateProfile(datos: EditProfileModel): Observable<PerfilUsuarioDTO> {
     const current = this.perfilActual()
     const actualizado = { ...current, ...datos } as PerfilUsuarioDTO
     this.perfilActual.set(actualizado)

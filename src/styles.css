@@ -48,8 +48,58 @@
    
   /* Sombra de la tarjeta de Login */
   --shadow-card-login: 0 25px 50px -12px rgba(99, 102, 241, 0.45);
-}
 
+    /* 🌟 1. Rayo de brillo reflectivo (destello que cruza una tarjeta o botón) */
+  --animate-dash: dash 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  @keyframes dash {
+    0% {
+      transform: translateX(-150%) skewX(-20deg);
+    }
+    40%, 100% {
+      transform: translateX(250%) skewX(-20deg);
+    }
+  }
+  /* 💡 2. Halo de resplandor pulsante (glow suave con el celeste de WorkLink) */
+  --animate-glow: glow 2s ease-in-out infinite alternate;
+  @keyframes glow {
+    from {
+      filter: drop-shadow(0 0 4px rgba(56, 189, 248, 0.2));
+    }
+    to {
+      filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.65));
+    }
+  }
+
+  --animate-shake: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  @keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
+  }
+
+  --animate-fade-in: fadeIn 0.2s ease-out both;
+  --animate-scale-in: scaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+  /* 🎬 SALIDAS (Rápidas y aceleradas hacia afuera) */
+  --animate-fade-out: fadeOut 0.18s ease-in both;
+  --animate-scale-out: scaleOut 0.18s ease-in both;
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.96) translateY(8px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  @keyframes scaleOut {
+    from { opacity: 1; transform: scale(1) translateY(0); }
+    to { opacity: 0; transform: scale(0.96) translateY(8px); }
+  }
+}
 .btn-registrarse {
   box-shadow: var(--shadow-inner-indigo);
   transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1);
@@ -109,16 +159,17 @@
   }
 }
 
+
 /* ==========================================================
    4. TRANSICIONES DE PÁGINA NATIVAS (View Transitions API)
    ========================================================== */
 @media (prefers-reduced-motion: no-preference) {
   ::view-transition-old(root) {
-    animation: 180ms cubic-bezier(0.4, 0, 1, 1) both page-fade-out;
+    animation: 160ms cubic-bezier(0.4, 0, 1, 1) both page-fade-out;
   }
   ::view-transition-new(root) {
-    animation: 320ms cubic-bezier(0.16, 1, 0.3, 1) 30ms both page-fade-in,
-               320ms cubic-bezier(0.16, 1, 0.3, 1) 30ms both page-slide-up;
+    animation: 240ms cubic-bezier(0, 0, 0.2, 1) 30ms both page-fade-in,
+               240ms cubic-bezier(0.16, 1, 0.3, 1) 30ms both page-slide-up;
   }
 }
 
@@ -133,54 +184,19 @@
 }
 
 @keyframes page-slide-up {
-  from { transform: translateY(12px) scale(0.995); }
-  to { transform: translateY(0) scale(1); }
+  from { transform: translateY(8px); }
+  to { transform: translateY(0); }
 }
-
 /* ==========================================================
-   5. MICRO-INTERACCIONES Y TRANSICIONES SUAVES (transitions-dev)
+   CLASE DE UTILIDAD: ESTADO DE ERROR DE FORMULARIO
    ========================================================== */
-.animate-dropdown-spring {
-  transform-origin: top right;
-  animation: dropdown-spring 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+.input-error {
+  animation: var(--animate-shake);
+  border-color: #ef4444 !important; /* red-500 */
+  background-color: #fef2f2;         /* red-50 sutil */
 }
-
-@keyframes dropdown-spring {
-  from {
-    opacity: 0;
-    transform: translateY(-8px) scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.animate-modal-backdrop {
-  animation: backdrop-fade 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes backdrop-fade {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.animate-modal-spring {
-  transform-origin: center;
-  animation: modal-spring 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes modal-spring {
-  from {
-    opacity: 0;
-    transform: translateY(16px) scale(0.94);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+.input-error:focus {
+  border-color: #dc2626 !important; /* red-600 */
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25) !important; /* Ring rojo translúcido */
 }
