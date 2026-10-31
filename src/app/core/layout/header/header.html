@@ -49,13 +49,11 @@
                             }
                         </button>
 
-                        <!-- Indicador flotante exterior (por encima y fuera del círculo) -->
-                        @if (!perfilService.completitud().completado) {
-                            <span 
-                                class="absolute -top-1 -right-1 z-30 w-3.5 h-3.5 bg-amber-400 border-2 border-brand-indigo rounded-full shadow-sm pointer-events-none" 
-                                title="Perfil al {{ perfilService.completitud().porcentaje }}%">
-                            </span>
-                        }
+                        <!-- Punto de estado En Línea (siempre visible sobre la imagen en la esquina exterior) -->
+                        <span 
+                            class="absolute -top-1 -right-1 z-30 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full shadow-sm pointer-events-none" 
+                            title="En línea">
+                        </span>
 
                         <!-- Modal / Dropdown Flotante Desktop con animación suave -->
                         @if (isUserModalOpen()) {
