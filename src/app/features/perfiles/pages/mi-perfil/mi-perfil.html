@@ -238,7 +238,12 @@
                 <input type="file" accept="image/png, image/jpeg" class="hidden" (change)="onBannerSelected($event)">
                 <span>+ {{ item.label }}</span>
               </label>
-            } @else {
+            } @else if (item.clave === 'cv') {
+                <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-white hover:bg-slate-50 text-brand-indigo border border-brand-indigo/30 shadow-2xs cursor-pointer active:scale-95 transition-all">
+                  <input type="file" accept="application/pdf" class="hidden" (change)="onCvSelected($event)">
+                  <span>+ {{ item.label }}</span>
+                </label>
+            }@else {
               <button 
                 type="button" 
                 (click)="toggleEditModal()"
@@ -306,8 +311,101 @@
             }
           </div>
         </div>
-      </div>
+        <!-- TARJETA: Currículum Vitae (PDF) -->
+        @if (perfil()?.rol !== 'EMPRESA') {
+          <div class="bg-white rounded-3xl border border-slate-200/90 p-6 shadow-sm space-y-4">
+            <div class="flex items-center justify-between">
+              <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                <svg class="w-5 h-5 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                <span>Currículum Vitae (PDF)</span>
+              </h2>
+            </div>
 
+            @if (perfil()?.tieneCv) {
+                <!-- Estado: CV ya cargado -->
+                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-between gap-3">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-9 h-9 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0 font-bold text-xs shadow-2xs">
+                      PDF
+                    </div>
+                    <div class="truncate">
+                      <p class="text-xs font-bold text-slate-800 truncate">
+                        Curriculum-Vitae.pdf
+                      </p>
+                      <span class="text-[10px] text-emerald-600 font-semibold">✓ Verificado y listo</span>
+                    </div>
+                  </div>
+
+                  <!-- Acciones: Ver, Descargar y Reemplazar -->
+                  <div class="flex items-center gap-1.5 shrink-0">
+                    <!-- Ver en pestaña nueva -->
+                    <button 
+                      type="button" 
+                      (click)="verCV()"
+                      class="p-2 text-slate-600 hover:text-brand-indigo hover:bg-white rounded-xl border border-transparent hover:border-slate-200 cursor-pointer transition-all"
+                      title="Previsualizar CV">
+                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                    </button>
+
+                    <!-- Descargar al disco -->
+                    <button 
+                      type="button" 
+                      (click)="descargarCV()"
+                      class="p-2 text-slate-600 hover:text-brand-indigo hover:bg-white rounded-xl border border-transparent hover:border-slate-200 cursor-pointer transition-all"
+                      title="Descargar archivo PDF">
+                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                      </svg>
+                    </button>
+                    
+                    <!-- Reemplazar archivo -->
+                    <label class="p-2 text-slate-600 hover:text-brand-indigo hover:bg-white rounded-xl border border-transparent hover:border-slate-200 cursor-pointer transition-all" title="Reemplazar archivo">
+                      <input type="file" accept="application/pdf" class="hidden" (change)="onCvSelected($event)">
+                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                      </svg>
+                    </label>
+                  </div>
+                </div>
+              } @else {
+                <!-- Estado: Sin CV cargado -->
+                <label class="flex flex-col items-center justify-center p-5 border-2 border-dashed border-slate-200 hover:border-brand-indigo/50 rounded-2xl bg-slate-50/50 hover:bg-indigo-50/20 cursor-pointer transition-all group">
+                  <input type="file" accept="application/pdf" class="hidden" (change)="onCvSelected($event)">
+                  
+                  @if (isUploadingCv()) {
+                    <div class="flex items-center gap-2 text-brand-indigo text-xs font-semibold py-2">
+                      <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                      </svg>
+                      <span>Subiendo CV...</span>
+                    </div>
+                  } @else {
+                    <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-brand-indigo flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </div>
+                    <span class="text-xs font-bold text-slate-800 mt-2">Adjuntar Currículum</span>
+                    <span class="text-[11px] text-slate-400">Solo PDF hasta 5 MB</span>
+                  }
+                </label>
+              }
+
+            <!-- Mensaje de error visible si el backend rechaza el archivo -->
+            @if (cvError()) {
+              <p class="text-xs text-rose-500 font-medium text-center pt-1">{{ cvError() }}</p>
+            }
+          </div>
+        }
+        
+      </div>
+      
       <!-- COLUMNA DERECHA: Habilidades y Portafolio -->
       <div class="lg:col-span-2 space-y-6">
 

@@ -25,6 +25,9 @@ export class Perfil {
     const itemsFaltantes: ItemFaltantePerfil[] = []
     let puntos = 0
 
+    if (p.tieneCv) puntos += 20
+    else itemsFaltantes.push({ clave: 'cv', label: 'Adjuntar CV (PDF)' })
+
     if (p.rol === 'EMPRESA') {
       if (p.fotoPerfil || p.logo) puntos += 25
       else itemsFaltantes.push({ clave: 'foto', label: 'Logotipo de la empresa' })
@@ -199,5 +202,58 @@ export class Perfil {
       return of(actualizado).pipe(delay(300))
     }
     return this.client.put<PerfilUsuarioDTO>(`${this.API_URL}/updateProfile`, datos)
+  }
+
+  // 1. Descargar o previsualizar el CV en streaming binario
+  // En la clase Perfil (perfil.ts)
+  private mockCvFile: File | Blob | null = null
+
+  // 1. Descargar o previsualizar el CV
+  descargarMiCV(): Observable<Blob> {
+    if (environment.bypassAuth) {
+      // Si ya subiste tu PDF en esta sesión, devuelve exactamente tu archivo real
+      if (this.mockCvFile) {
+        return of(this.mockCvFile).pipe(delay(200))
+      }
+
+      // Fallback: un PDF mínimo 100% válido y legible por cualquier navegador
+      const pdfValidoBase64 = 'JVBERi0xLjQKMSAwIG9iago8PAovVHlwZSAvQ2F0YWxvZwovUGFnZXMgMiAwIFIKPj4KZW5kb2JqCjIgMCBvYmoKPDwKL1R5cGUgL1BhZ2VzCi9LaWRzIFszIDAgUl0KL0NvdW50IDEKPj4KZW5kb2JqCjMgMCBvYmoKPDwKL1R5cGUgL1BhZ2UKL1BhcmVudCAyIDAgUgovTWVkaWFCb3ggWzAgMCA2MTIgNzkyXQovQ29udGVudHMgNCAwIFIKPj4KZW5kb2JqCjQgMCBvYmoKPDwKL0xlbmd0aCA0NAo+PgpzdHJlYW0KQlQKL0YxIDI0IFRmCjEwMCA3MDAgVGROCihDVyBNb2NrIC0gV29ya0xpbmsgUGxhdGZvcm0pIFRqCkVUCmVuZHN0cmVhbQplbmRvYmoKeHJlZgowIDUKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAwMDAwMDAwNTggMDAwMDAgbigKMDAwMDAwMDExNSAwMDAwMCBuIAowMDAwMDAwMjE2IDAwMDAwIG4gCnRyYWlsZXIKPDwKL1NpemUgNQovUm9vdCAxIDAgUgo+PgpzdGFydHhyZWYKMzEwCiUlRU9G'
+      const bytes = Uint8Array.from(atob(pdfValidoBase64), c => c.charCodeAt(0))
+      return of(new Blob([bytes], { type: 'application/pdf' })).pipe(delay(200))
+    }
+
+    return this.client.get(`${this.API_URL}/downloadMyCV`, {
+      responseType: 'blob'
+    })
+  }
+
+  // 2. Subir o reemplazar el CV
+  uploadCV(file: File): Observable<{ message: string }> {
+    if (file.type !== 'application/pdf') {
+      throw new Error('Solo se permiten documentos en formato PDF')
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      throw new Error('El archivo no debe superar los 5 MB')
+    }
+
+    const formData = new FormData()
+    formData.append('file', file)
+
+    if (environment.bypassAuth) {
+      // 💡 Guardamos tu archivo real en memoria local
+      this.mockCvFile = file
+      return of({ message: 'CV subido exitosamente a la base de datos.' }).pipe(
+        delay(400),
+        tap(() => {
+          this.perfilActual.update((p) => (p ? { ...p, tieneCv: true } : null))
+        })
+      )
+    }
+
+    return this.client.post<{ message: string }>(`${this.API_URL}/uploadMyCV`, formData).pipe(
+      tap(() => {
+        this.perfilActual.update((p) => (p ? { ...p, tieneCv: true } : null))
+      })
+    )
   }
 }

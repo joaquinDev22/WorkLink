@@ -50,6 +50,9 @@ export class MiPerfil implements OnInit {
   isSaving = signal<boolean>(false)
   toastMsg = signal<string | null>(null)
 
+  isUploadingCv = signal<boolean>(false)
+  cvError = signal<string | null>(null)
+
   // Modelo de formulario de edición
   profileModel = signal<EditProfileModel>({
     nombre: '',
@@ -196,5 +199,54 @@ export class MiPerfil implements OnInit {
       default:
         return { label: 'Nivel no definido', colorClass: 'bg-slate-100 text-slate-600 border-slate-200', stars: 1 }
     }
+  }
+
+  onCvSelected(event: Event): void {
+    const input = event.target as HTMLInputElement
+    if (!input.files || input.files.length === 0) return
+    const file = input.files[0]
+    this.cvError.set(null)
+    if (file.type !== 'application/pdf') {
+      this.cvError.set('El archivo debe ser un documento PDF.')
+      return
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      this.cvError.set('El tamaño máximo permitido es de 5 MB.')
+      return
+    }
+    this.isUploadingCv.set(true)
+    this.perfilService.uploadCV(file).subscribe({
+      next: () => {
+        this.isUploadingCv.set(false)
+        this.showToast('Currículum Vitae cargado correctamente')
+      },
+      error: (err) => {
+        this.isUploadingCv.set(false)
+        this.cvError.set(err?.message || 'Error al subir el CV')
+      }
+    })
+  }
+  verCV(): void {
+  this.perfilService.descargarMiCV().subscribe({
+    next: (blob) => {
+      const fileUrl = URL.createObjectURL(blob)
+      window.open(fileUrl, '_blank')
+    },
+    error: () => this.showToast('No se pudo abrir el currículum')
+  })
+}
+
+  descargarCV(): void {
+    this.perfilService.descargarMiCV().subscribe({
+      next: (blob) => {
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `Curriculum_${this.perfil()?.nombre || 'WorkLink'}.pdf`
+        a.click()
+        URL.revokeObjectURL(url)
+      },
+      error: () => this.showToast('No se pudo descargar el currículum')
+    })
   }
 }

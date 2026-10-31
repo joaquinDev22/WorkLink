@@ -21,15 +21,16 @@ export interface PerfilUsuarioDTO {
   apellido?: string
   email: string
   rol: string
-  fechaNacimiento?: string // YYYY-MM-DD (Employee / Recruiter)
-  telefono?: string        // Cliente / Empresa
-  pais?: string            // Cliente / Empresa
+  tieneCv?: boolean // <-- Bandera que devuelve el backend
+  fechaNacimiento?: string
+  telefono?: string
+  pais?: string
   descripcion?: string
   ubicacion?: string
-  sitioWeb?: string        // Empresa
-  logo?: string            // Empresa
-  fotoPerfil?: string      // byte[] en Base64
-  bannerPerfil?: string    // byte[] en Base64
+  sitioWeb?: string
+  logo?: string
+  fotoPerfil?: string
+  bannerPerfil?: string
   habilidades: PerfilHabilidadDTO[]
   proyectos: PerfilProyectoPortafolioDTO[]
 }
