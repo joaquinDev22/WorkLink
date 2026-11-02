@@ -409,9 +409,10 @@
       <!-- COLUMNA DERECHA: Habilidades y Portafolio -->
       <div class="lg:col-span-2 space-y-6">
 
-        <!-- 1. Sección de Habilidades Técnicas -->
+                <!-- 1. Sección de Habilidades Técnicas con Card Contenedora -->
         @if (perfil()?.rol !== 'EMPRESA') {
           <div class="bg-white rounded-3xl border border-slate-200/90 p-6 shadow-sm space-y-4">
+            
             <div class="flex items-center justify-between">
               <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
                 <svg class="w-5 h-5 text-brand-sky" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -419,17 +420,36 @@
                 </svg>
                 <span>Habilidades Técnicas</span>
               </h2>
-              <span class="text-xs text-slate-400 font-medium">{{ perfil()?.habilidades?.length || 0 }} registradas</span>
+
+              <!-- Botón + Agregar Habilidad -->
+              <button 
+                type="button" 
+                (click)="abrirSkillModal()"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-2xs active:scale-95 transition-all cursor-pointer">
+                <span>+</span>
+                <span>Agregar</span>
+              </button>
             </div>
 
             @if (perfil()?.habilidades && perfil()!.habilidades.length > 0) {
               <div class="flex flex-wrap gap-2.5">
                 @for (hab of perfil()!.habilidades; track hab.habilidadId) {
                   @let info = getNivelInfo(hab.nivel);
-                  <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border {{ info.colorClass }} text-xs font-semibold shadow-2xs">
+                  <div class="group/chip inline-flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-xl border {{ info.colorClass }} text-xs font-semibold shadow-2xs transition-all">
                     <span>{{ hab.nombre }}</span>
                     <span class="w-1.5 h-1.5 rounded-full bg-current opacity-60"></span>
                     <span class="text-[11px] font-normal opacity-90">{{ info.label }}</span>
+
+                    <!-- Botón borrar habilidad -->
+                    <button 
+                      type="button" 
+                      (click)="eliminarSkill(hab.habilidadId)"
+                      class="ml-1 p-0.5 text-slate-400 hover:text-rose-500 rounded-md transition-colors cursor-pointer"
+                      title="Eliminar habilidad">
+                      <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
                   </div>
                 }
               </div>
@@ -438,9 +458,9 @@
                 Aún no has agregado habilidades. Añade tus tecnologías y áreas de especialidad para que otros te descubran.
               </p>
             }
+
           </div>
         }
-
         <!-- 2. Sección de Proyectos y Portafolio -->
         @if (perfil()?.rol !== 'EMPRESA') {
           <div class="bg-white rounded-3xl border border-slate-200/90 p-6 shadow-sm space-y-4">
@@ -655,5 +675,118 @@
       <span>{{ toastMsg() }}</span>
     </div>
   }
+      <!-- MODAL: Agregar Habilidad Técnica (WL-17) -->
+    @if (isSkillModalOpen()) {
+      <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-fade-in">
+        <div class="w-full max-w-lg bg-white rounded-3xl border border-slate-200 p-6 shadow-2xl space-y-5 animate-scale-in">
+          
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <h3 class="text-base font-bold text-slate-900">Agregar Habilidad Técnica</h3>
+            <button type="button" (click)="cerrarSkillModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">✕</button>
+          </div>
 
+          <!-- Input con sugerencias -->
+          <div class="space-y-2">
+            <label class="text-xs font-bold text-slate-700 uppercase">Tecnología o Habilidad</label>
+            <input 
+              type="text" 
+              [value]="skillNombre()"
+              (input)="skillNombre.set($any($event.target).value)"
+              placeholder="Ej: Angular, Docker, Python..."
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo"
+            />
+
+            <!-- Sugerencias del catálogo -->
+            <div class="flex flex-wrap gap-1.5 pt-1">
+              @for (sug of catalogoHabilidades(); track sug.id) {
+                <button 
+                  type="button" 
+                  (click)="seleccionarSugerencia(sug.name)"
+                  class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-indigo-50 text-[11px] font-medium text-slate-600 hover:text-brand-indigo transition-colors cursor-pointer">
+                  + {{ sug.name }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- Selector de 5 Niveles Graduales -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-bold text-slate-700 uppercase">Nivel de Dominio</label>
+              <span class="text-xs font-bold text-brand-indigo">
+                Nivel {{ skillNivel() }}: {{ getNivelInfo(skillNivel()).label }}
+              </span>
+            </div>
+            
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs font-semibold">
+              <!-- 1. Básico -->
+              <button 
+                type="button" 
+                (click)="skillNivel.set(1)"
+                class="py-2.5 px-3 rounded-xl border transition-all cursor-pointer text-center"
+                [ngClass]="skillNivel() === 1 
+                  ? 'bg-slate-900 text-white border-slate-900 shadow-xs hover:bg-slate-800' 
+                  : 'border-slate-200 text-slate-700 bg-white hover:bg-slate-100 hover:border-slate-300'">
+                1. Básico
+              </button>
+              <!-- 2. Básico / Intermedio -->
+              <button 
+                type="button" 
+                (click)="skillNivel.set(2)"
+                class="py-2.5 px-3 rounded-xl border transition-all cursor-pointer text-center"
+                [ngClass]="skillNivel() === 2 
+                  ? 'bg-teal-700 text-white border-teal-700 shadow-xs hover:bg-teal-800' 
+                  : 'border-slate-200 text-slate-700 bg-white hover:bg-slate-100 hover:border-slate-300'">
+                2. Básico / Intermedio
+              </button>
+              <!-- 3. Intermedio -->
+              <button 
+                type="button" 
+                (click)="skillNivel.set(3)"
+                class="py-2.5 px-3 rounded-xl border transition-all cursor-pointer text-center"
+                [ngClass]="skillNivel() === 3 
+                  ? 'bg-sky-600 text-white border-sky-600 shadow-xs hover:bg-sky-700' 
+                  : 'border-slate-200 text-slate-700 bg-white hover:bg-slate-100 hover:border-slate-300'">
+                3. Intermedio
+              </button>
+              <!-- 4. Intermedio / Avanzado -->
+              <button 
+                type="button" 
+                (click)="skillNivel.set(4)"
+                class="py-2.5 px-3 rounded-xl border transition-all cursor-pointer text-center"
+                [ngClass]="skillNivel() === 4 
+                  ? 'bg-brand-indigo text-white border-brand-indigo shadow-xs hover:bg-brand-indigo-dark' 
+                  : 'border-slate-200 text-slate-700 bg-white hover:bg-slate-100 hover:border-slate-300'">
+                4. Intermedio / Avanzado
+              </button>
+              <!-- 5. Avanzado -->
+              <button 
+                type="button" 
+                (click)="skillNivel.set(5)"
+                class="py-2.5 px-3 rounded-xl border transition-all cursor-pointer text-center col-span-2 sm:col-span-1"
+                [ngClass]="skillNivel() === 5 
+                  ? 'bg-purple-700 text-white border-purple-700 shadow-xs hover:bg-purple-800' 
+                  : 'border-slate-200 text-slate-700 bg-white hover:bg-slate-100 hover:border-slate-300'">
+                5. Avanzado
+              </button>
+            </div>
+          </div>
+
+          <!-- Botones de Acción -->
+          <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+            <button type="button" (click)="cerrarSkillModal()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100">
+              Cancelar
+            </button>
+            <button 
+              type="button" 
+              (click)="guardarSkill()"
+              [disabled]="!skillNombre().trim() || isSavingSkill()"
+              class="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-brand-indigo hover:bg-brand-indigo-dark disabled:opacity-50 cursor-pointer shadow-sm">
+              {{ isSavingSkill() ? 'Guardando...' : 'Agregar Habilidad' }}
+            </button>
+          </div>
+
+        </div>
+      </div>
+    }
 </div>

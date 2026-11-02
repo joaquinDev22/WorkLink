@@ -1,10 +1,15 @@
 // Perfil DTO contracts
-export type NivelHabilidad = 1 | 2 | 3 | 4 // 1: Básico, 2: Intermedio, 3: Avanzado, 4: Experto
+export type NivelHabilidad = 1 | 2 | 3 | 4 | 5// 1: Básico, 2: Intermedio, 3: Avanzado, 4: Experto
 
 export interface PerfilHabilidadDTO {
   habilidadId: number
   nombre: string
   nivel: NivelHabilidad
+}
+
+export interface HabilidadCatalogoDTO {
+  id: number
+  name: string
 }
 
 export interface PerfilProyectoPortafolioDTO {

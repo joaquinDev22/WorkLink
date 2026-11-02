@@ -1,152 +1,411 @@
-# 📘 Implementation Plan #35: Auditoría y Mapa de Reutilización de Componentes Compartidos (`Shared Components Architecture`)
+# 📘 Implementation Plan #40: `WL-18` (US-11) — Galería y Diálogo de Proyectos de Portafolio
 
 | Campo | Detalle |
 | :--- | :--- |
-| **Identificador** | `PLAN-FE-35` |
-| **Módulo / Capa** | `Shared` ([src/app/shared/components](file:///c:/Users/joaki/OneDrive/Escritorio/WorkLink/src/app/shared/components)) y su consumo en `Features` |
-| **Objetivo de Aprendizaje** | 1. **Aplicar la Escalera de Ponytail (Paso 2: Reutilización)**: Identificar qué componentes ya están creados en tu carpeta `shared/` para evitar escribir código duplicado en las vistas.<br>2. **Matriz de Reutilización Integral**: Mapear cada componente, pipe y directiva compartida con los lugares exactos de `Features` (Freelance, Enterprise, Perfiles, Auth) donde resuelven necesidades reales.<br>3. **Priorización de Implementación**: Definir el orden estratégico para dar vida a los componentes `shared/` con el mínimo código y máximo impacto. |
-| **Archivos Involucrados** | <ul><li>`[AUDIT]` `src/app/shared/components/*`</li><li>`[AUDIT]` `src/app/shared/directives/*`</li><li>`[AUDIT]` `src/app/shared/pipes/*`</li><li>`[TARGET]` `src/app/features/*`</li></ul> |
+| **Identificador** | `PLAN-FE-40` |
+| **Ticket Jira** | [WL-18](https://joaking102003.atlassian.net/browse/WL-18) (`US-11: Galería y Diálogo de Proyectos de Portafolio`) |
+| **Épica Padre** | `WL-13` (ÉPICA 2: Perfil Profesional, Portafolio y Habilidades - UI) |
+| **Estado Previo** | `WL-17` Finalizada exitosamente en Jira (Transition 41). |
+| **Objetivo** | Implementar la carga y eliminación de proyectos en el portafolio personal del usuario (título, descripción, link opcional y portada opcional con previsualización). |
+| **Módulo / Capa** | `Features` / `Perfiles` ([perfil.ts](file:///c:/Users/joaki/OneDrive/Escritorio/WorkLink/src/app/features/perfiles/services/perfil.ts), [mi-perfil.ts](file:///c:/Users/joaki/OneDrive/Escritorio/WorkLink/src/app/features/perfiles/pages/mi-perfil/mi-perfil.ts), [mi-perfil.html](file:///c:/Users/joaki/OneDrive/Escritorio/WorkLink/src/app/features/perfiles/pages/mi-perfil/mi-perfil.html)) |
+| **Archivos Involucrados** | <ul><li>`[MODIFY]` [perfil.ts](file:///c:/Users/joaki/OneDrive/Escritorio/WorkLink/src/app/features/perfiles/services/perfil.ts)</li><li>`[MODIFY]` [mi-perfil.ts](file:///c:/Users/joaki/OneDrive/Escritorio/WorkLink/src/app/features/perfiles/pages/mi-perfil/mi-perfil.ts)</li><li>`[MODIFY]` [mi-perfil.html](file:///c:/Users/joaki/OneDrive/Escritorio/WorkLink/src/app/features/perfiles/pages/mi-perfil/mi-perfil.html)</li></ul> |
 
 ---
 
-## 1. Estado Actual de la Capa `Shared`
+## 1. Criterios de Aceptación (Gherkin)
 
-Tras revisar la totalidad de tu árbol de archivos, encontramos que tienes una excelente estructura de carpetas ya pensada, con **9 componentes compartidos**, **2 directivas** y **2 pipes**. Actualmente la mayoría son cascarones generados con Angular CLI esperando lógica.
+```gherkin
+Escenario: Alta de Proyecto en Portafolio
+  Dado que el usuario abre el modal "+ Agregar" en la sección de Proyectos Destacados
+  Y completa título, descripción, link opcional y portada opcional
+  Cuando pulsa "Agregar Proyecto"
+  Entonces se despacha POST /api/v1/perfiles/addMyProject con FormData
+  Y se añade reactivamente a la cuadrícula de proyectos con su previsualización
+  Y se muestra toast "Proyecto agregado al portafolio".
 
+Escenario: Baja de Proyecto
+  Dado que el usuario pulsa el ícono de eliminar (tacho de basura) en una tarjeta de proyecto
+  Cuando confirma la eliminación
+  Entonces se despacha DELETE /api/v1/perfiles/removeMyProject/{proyectoId}
+  Y se remueve reactivamente de la cuadrícula
+  Y se muestra toast "Proyecto eliminado del portafolio".
 ```
-src/app/shared/
-├── components/
-│   ├── burger-menu/       ✅ IMPLEMENTADO (usado en Header)
-│   ├── status-badge/      ⏳ Cascarón (El componente con mayor potencial del proyecto)
-│   ├── spinner/           ⏳ Cascarón (Vital para estados de carga HTTP)
-│   ├── modal/             ⏳ Cascarón (Base para popups, propuestas y altas)
-│   ├── confirm-dialog/    ⏳ Cascarón (Acciones destructivas / Confirmaciones)
-│   ├── file-uploader/     ⏳ Cascarón (Drag & Drop para CVs, fotos y logos)
-│   ├── data-table/        ⏳ Cascarón (Tablas de vacantes, postulantes y finanzas)
-│   └── panel-control/     ⏳ Cascarón (KPI Cards para Dashboards)
-├── directives/
-│   ├── click-outside.ts   ⏳ Cascarón (Cierre automático de dropdowns)
-│   └── has-role.ts        ⏳ Cascarón (Control granular de vistas por rol)
-└── pipes/
-    ├── currency-ars-pipe  ⏳ Cascarón (Formato de presupuestos y salarios)
-    └── time-ago-pipe      ⏳ Cascarón (Fechas relativas "Hace 2 horas")
+
+---
+
+## 2. Paso a Paso para el Desarrollador
+
+### Paso 1: Métodos de Portafolio en [perfil.ts](file:///c:/Users/joaki/OneDrive/Escritorio/WorkLink/src/app/features/perfiles/services/perfil.ts)
+
+Al final de la clase `Perfil`, agrega los métodos `addMyProject` y `removeMyProject` (incluye soporte offline / mock con `bypassAuth`):
+
+```typescript
+  // 4. Agregar proyecto al portafolio (WL-18)
+  addMyProject(formData: FormData): Observable<PerfilProyectoPortafolioDTO> {
+    if (environment.bypassAuth) {
+      const nombre = (formData.get('nombre') as string) || 'Proyecto'
+      const descripcion = (formData.get('descripcion') as string) || ''
+      const link = (formData.get('link') as string) || undefined
+      const imageFile = formData.get('imagen') as File | null
+
+      const nuevo: PerfilProyectoPortafolioDTO = {
+        id: Date.now(),
+        nombre,
+        descripcion,
+        link: link || undefined,
+        imagen: imageFile ? URL.createObjectURL(imageFile) : undefined
+      }
+
+      this.perfilActual.update(p => {
+        if (!p) return null
+        return { ...p, proyectos: [...(p.proyectos || []), nuevo] }
+      })
+      return of(nuevo).pipe(delay(250))
+    }
+
+    return this.client.post<PerfilProyectoPortafolioDTO>(`${this.API_URL}/addMyProject`, formData).pipe(
+      tap(nuevo => {
+        this.perfilActual.update(p => p ? { ...p, proyectos: [...(p.proyectos || []), nuevo] } : null)
+      })
+    )
+  }
+
+  // 5. Eliminar proyecto del portafolio (WL-18)
+  removeMyProject(proyectoId: number): Observable<void> {
+    if (environment.bypassAuth) {
+      this.perfilActual.update(p => {
+        if (!p) return null
+        return {
+          ...p,
+          proyectos: (p.proyectos || []).filter(proj => proj.id !== proyectoId)
+        }
+      })
+      return of(undefined).pipe(delay(150))
+    }
+
+    return this.client.delete<void>(`${this.API_URL}/removeMyProject/${proyectoId}`).pipe(
+      tap(() => {
+        this.perfilActual.update(p => {
+          if (!p) return null
+          return {
+            ...p,
+            proyectos: (p.proyectos || []).filter(proj => proj.id !== proyectoId)
+          }
+        })
+      })
+    )
+  }
 ```
 
 ---
 
-## 2. Matriz de Reutilización: Dónde Encajan en tu Proyecto
+### Paso 2: Signals y Acciones en [mi-perfil.ts](file:///c:/Users/joaki/OneDrive/Escritorio/WorkLink/src/app/features/perfiles/pages/mi-perfil/mi-perfil.ts)
 
-A continuación tienes el mapa exacto de dónde debes reutilizar cada pieza:
+Agrega los signals y métodos de control para el modal de proyectos:
 
-### 🏷️ 1. `StatusBadge` (`shared/components/status-badge`)
-Es el componente más transversal de WorkLink. Muestra píldoras semánticas de color según el estado:
-* **En `freelance/proyecto-gestion/mis-proyectos-freelancer`**:
-  * Estados de hitos: `FONDOS_LIBERADOS` (Verde esmeralda), `EN_REVISION` (Ámbar), `PENDIENTE` (Pizarra).
-* **En `freelance/proyecto-gestion/mis-proyectos-cliente`**:
-  * Estados del proyecto: `PUBLICADO` (Azul), `EN_PROGRESO` (Índigo), `FINALIZADO` (Verde), `CANCELADO` (Rojo).
-* **En `freelance/freelancer-finances`**:
-  * Estados de fondos: `EN_CUSTODIA` (Ámbar), `DISPONIBLE` (Verde), `RETIRADO` (Pizarra).
-* **En `enterprise/vacantes/vacante-admin-list`**:
-  * Estados de vacante: `ABIERTA` (Verde), `EN_PAUSA` (Ámbar), `CERRADA` (Pizarra).
-* **En `enterprise/vacantes/vacante-postulantes`**:
-  * Estados del candidato: `POSTULADO` (Azul), `PRESELECCIONADO` (Violeta), `EN_ENTREVISTA` (Ámbar), `CONTRATADO` (Verde), `RECHAZADO` (Rojo).
-* **En `enterprise/entrevistas/entrevista-calendar`**:
-  * Estados de cita: `CONFIRMADA` (Verde), `PENDIENTE` (Ámbar), `CANCELADA` (Rojo).
+```typescript
+  // Modal de Proyectos de Portafolio (WL-18)
+  isProjectModalOpen = signal(false)
+  isSavingProject = signal(false)
+  projectNombre = signal('')
+  projectDescripcion = signal('')
+  projectLink = signal('')
+  projectImageFile = signal<File | null>(null)
+  projectImagePreview = signal<string | null>(null)
+  projectError = signal<string | null>(null)
 
----
+  abrirProjectModal(): void {
+    this.projectNombre.set('')
+    this.projectDescripcion.set('')
+    this.projectLink.set('')
+    this.projectImageFile.set(null)
+    this.projectImagePreview.set(null)
+    this.projectError.set(null)
+    this.isProjectModalOpen.set(true)
+  }
 
-### 🪟 2. `Modal` (`shared/components/modal`)
-Ventana emergente accesible con fondo difuminado (`backdrop-blur`), botón de cierre y tecla `ESC`:
-* **En `enterprise/recruiters/recruiter-register-modal`**:
-  * Formulario para que la Empresa invite o dé de alta a un recruiter en su equipo.
-* **En `freelance/proyectos-catalogo/propuesta-modal`**:
-  * Formulario emergente para que el Freelancer envíe su propuesta económica y carta de presentación a un proyecto.
-* **En `perfiles/components/portfolio-grid`**:
-  * Modal para ver la vista ampliada de un proyecto del portafolio o cargar un nuevo trabajo.
-* **En `shared/components/confirm-dialog`**:
-  * El propio diálogo de confirmación debe construirse **reutilizando `<app-modal>` por composición**, sin duplicar el backdrop ni el z-index.
+  cerrarProjectModal(): void {
+    this.isProjectModalOpen.set(false)
+  }
 
----
+  onProjectImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement
+    if (!input.files || input.files.length === 0) return
+    const file = input.files[0]
+    if (!file.type.startsWith('image/')) {
+      this.projectError.set('El archivo seleccionado debe ser una imagen.')
+      return
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      this.projectError.set('La imagen no puede superar los 5 MB.')
+      return
+    }
+    this.projectError.set(null)
+    this.projectImageFile.set(file)
+    this.projectImagePreview.set(URL.createObjectURL(file))
+  }
 
-### ⚠️ 3. `ConfirmDialog` (`shared/components/confirm-dialog`)
-Diálogo de confirmación para prevenir pérdida de datos o acciones críticas:
-* **En `perfiles/components/account-danger-zone`**:
-  * *"¿Estás seguro de que deseas darte de baja de WorkLink? Esta acción es irreversible."*
-* **En `enterprise/vacantes/vacante-admin-list`**:
-  * Confirmar cierre definitivo de una búsqueda laboral.
-* **En `enterprise/recruiters/recruiter-list`**:
-  * Confirmar desvinculación de un recruiter del equipo corporativo.
-* **En `freelance/proyecto-gestion/mis-proyectos-cliente`**:
-  * Confirmar liberación de fondos de un hito hacia el freelancer.
+  quitarImagenProyecto(): void {
+    this.projectImageFile.set(null)
+    this.projectImagePreview.set(null)
+  }
 
----
+  guardarProyecto(): void {
+    const nombre = this.projectNombre().trim()
+    const descripcion = this.projectDescripcion().trim()
+    if (!nombre || !descripcion) {
+      this.projectError.set('El título y la descripción son obligatorios.')
+      return
+    }
 
-### 📁 4. `FileUploader` (`shared/components/file-uploader`)
-Caja de carga con Drag & Drop, barra de progreso y validación de extensiones:
-* **En `perfiles/components/cv-uploader`**:
-  * En lugar de programar un uploader desde cero, `CvUploader` simplemente usa `<app-file-uploader accept=".pdf" label="Sube tu Currículum Vitae (PDF)"></app-file-uploader>`.
-* **En `perfiles/components/media-uploader`**:
-  * Carga de foto de perfil y banner usando `<app-file-uploader accept="image/*" [maxSizeMb]="3"></app-file-uploader>`.
-* **En `enterprise/empresa-perfil/empresa-form`**:
-  * Carga del logo corporativo de la empresa.
-* **En `freelance/proyecto-gestion/proyecto-edit`**:
-  * Carga de especificaciones o diagramas adjuntos al publicar un proyecto.
+    const formData = new FormData()
+    formData.append('nombre', nombre)
+    formData.append('descripcion', descripcion)
+    if (this.projectLink().trim()) {
+      formData.append('link', this.projectLink().trim())
+    }
+    if (this.projectImageFile()) {
+      formData.append('imagen', this.projectImageFile()!)
+    }
 
----
+    this.isSavingProject.set(true)
+    this.perfilService.addMyProject(formData).subscribe({
+      next: () => {
+        this.isSavingProject.set(false)
+        this.cerrarProjectModal()
+        this.showToast('Proyecto agregado al portafolio')
+      },
+      error: (err) => {
+        this.isSavingProject.set(false)
+        this.projectError.set(err?.message || 'Error al guardar el proyecto')
+      }
+    })
+  }
 
-### ⏳ 5. `Spinner` (`shared/components/spinner`)
-Indicador circular de carga en colores de marca (`border-brand-sky` / `border-brand-indigo`):
-* **En `auth/pages/login` y `register`**:
-  * Reemplazar el texto del botón por `<app-spinner />` mientras la petición HTTP está en curso para evitar clicks dobles.
-* **En `perfiles/pages/mi-perfil`**:
-  * Mostrado mientras `perfilService.cargarPerfil()` obtiene la respuesta.
-* **En `freelance/proyectos-catalogo/proyecto-list` y `enterprise/vacantes/vacante-catalogo`**:
-  * Estado de carga inicial mientras se reciben los catálogos del backend.
+  eliminarProyecto(proyectoId: number): void {
+    this.perfilService.removeMyProject(proyectoId).subscribe({
+      next: () => this.showToast('Proyecto eliminado del portafolio'),
+      error: () => this.showToast('Error al eliminar el proyecto')
+    })
+  }
 
----
-
-### 📊 6. `DataTable` (`shared/components/data-table`)
-Tabla responsiva con cabeceras estilizadas, estados vacíos (`empty-state`) y diseño adaptado al modo claro/oscuro:
-* **En `enterprise/vacantes/vacante-admin-list`**: Lista de vacantes creadas con total de postulantes y botón de acciones.
-* **En `enterprise/recruiters/recruiter-list`**: Lista de recruiters del equipo.
-* **En `enterprise/vacantes/vacante-postulantes`**: Lista de candidatos que enviaron su CV a una búsqueda.
-* **En `freelance/freelancer-finances`**: Historial de movimientos y pagos de hitos.
-* **En `freelance/proyecto-gestion/mis-proyectos-cliente`**: Listado de proyectos publicados y sus cotizaciones.
-
----
-
-### 📈 7. `PanelControl` (`shared/components/panel-control`)
-Tarjeta de métrica o KPI (Valor grande, etiqueta, icono y porcentaje de cambio):
-* **En `enterprise/dashboard/empresa-dashboard`**:
-  * KPIs: *Vacantes Activas*, *Postulaciones del Mes*, *Entrevistas Agendadas*, *Tasa de Contratación*.
-* **En `freelance/cliente-dashboard`**:
-  * KPIs: *Proyectos en Curso*, *Presupuesto en Custodia*, *Propuestas Recibidas*, *Proyectos Finalizados*.
-* **En `freelance/freelancer-finances`**:
-  * KPIs: *Saldo Disponible*, *Saldo en Custodia (Pendiente)*, *Ingresos del Mes*.
-
----
-
-### 🛠️ 8. Directivas y Pipes (`directives` y `pipes`)
-* **Directiva `[appClickOutside]`**:
-  * En `header.html`: para el dropdown *"Más"*.
-  * En el conmutador de rol y en cualquier menú desplegable de acciones (los 3 puntos `...` de cada fila de tabla).
-* **Pipe `currencyArs`**:
-  * Formatea montos monetarios en toda la plataforma: en las tarjetas de proyectos (`$1,200 USD`), en los salarios de vacantes y en el módulo de finanzas.
-* **Pipe `timeAgo`**:
-  * Muestra fechas relativas ("Publicado hace 3 horas", "Entrevista en 2 días", "Postulado ayer").
+  getProjectImageUrl(imagen?: string): string | null {
+    if (!imagen) return null
+    if (imagen.startsWith('data:') || imagen.startsWith('http') || imagen.startsWith('blob:')) return imagen
+    return `data:image/jpeg;base64,${imagen}`
+  }
+```
 
 ---
 
-## 3. Plan de Acción Recomendado (Roadmap de Implementación)
+### Paso 3: Actualizar Sección de Proyectos y Modal en [mi-perfil.html](file:///c:/Users/joaki/OneDrive/Escritorio/WorkLink/src/app/features/perfiles/pages/mi-perfil/mi-perfil.html)
 
-Para aplicar la filosofía **Ponytail** de manera quirúrgica, el orden ideal para implementar estos componentes es:
+#### 3.1. Reemplazar la sección 2 (Proyectos Destacados):
 
-1. **Fase 1: Los dos bloques clave de UI (Bajo esfuerzo, alto impacto)**
-   - `StatusBadge`: 15 líneas de código que mejorarán instantáneamente 6 pantallas del sistema.
-   - `Spinner`: Para eliminar la sensación de que la app se congela al hacer login o cargar datos.
-2. **Fase 2: Interacciones y Formularios**
-   - `Modal` + `ConfirmDialog`: Para propuestas freelance, invitaciones de recruiters y confirmaciones de borrado.
-   - `FileUploader`: Para unificar la carga de CVs y fotos en un solo componente reutilizable.
-3. **Fase 3: Datos y Paneles**
-   - `PanelControl` (KPI Card): Para darle vida al dashboard de la Empresa, del Cliente y de Finanzas.
-   - `DataTable`: Para unificar todas las tablas del sistema con el mismo estilo y soporte dark mode.
+```html
+        <!-- 2. Sección de Proyectos y Portafolio (WL-18) -->
+        @if (perfil()?.rol !== 'EMPRESA') {
+          <div class="bg-white rounded-3xl border border-slate-200/90 p-6 shadow-sm space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                  <svg class="w-5 h-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  </svg>
+                  <span>Proyectos Destacados</span>
+                </h2>
+                <span class="text-xs text-slate-400 font-medium">({{ perfil()?.proyectos?.length || 0 }})</span>
+              </div>
+
+              <!-- Botón + Agregar Proyecto -->
+              <button 
+                type="button" 
+                (click)="abrirProjectModal()"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-2xs active:scale-95 transition-all cursor-pointer">
+                <span>+</span>
+                <span>Agregar</span>
+              </button>
+            </div>
+
+            @if (perfil()?.proyectos && perfil()!.proyectos.length > 0) {
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                @for (proy of perfil()!.proyectos; track proy.id) {
+                  <div class="bg-slate-50/70 hover:bg-slate-50 border border-slate-200/80 rounded-2xl overflow-hidden transition-all hover:shadow-xs group flex flex-col justify-between">
+                    
+                    @if (proy.imagen) {
+                      <div class="h-36 w-full overflow-hidden bg-slate-200 border-b border-slate-200/80">
+                        <img 
+                          [src]="getProjectImageUrl(proy.imagen)" 
+                          [alt]="proy.nombre" 
+                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                    }
+
+                    <div class="p-4.5 space-y-2.5 flex-1 flex flex-col justify-between">
+                      <div class="space-y-1.5">
+                        <div class="flex items-start justify-between gap-2">
+                          <h3 class="font-bold text-slate-900 text-sm group-hover:text-brand-indigo transition-colors line-clamp-1">
+                            {{ proy.nombre }}
+                          </h3>
+                          <div class="flex items-center gap-1 shrink-0">
+                            @if (proy.link) {
+                              <a [href]="proy.link" target="_blank" rel="noopener" class="p-1 text-slate-400 hover:text-brand-indigo rounded-lg transition-colors" title="Abrir enlace externo">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                              </a>
+                            }
+                            <!-- Botón eliminar proyecto -->
+                            <button 
+                              type="button" 
+                              (click)="eliminarProyecto(proy.id)"
+                              class="p-1 text-slate-400 hover:text-rose-500 rounded-lg transition-colors cursor-pointer"
+                              title="Eliminar proyecto">
+                              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+
+                        <p class="text-xs text-slate-600 line-clamp-3 leading-relaxed">
+                          {{ proy.descripcion }}
+                        </p>
+                      </div>
+
+                      @if (proy.link) {
+                        <div class="pt-2">
+                          <a 
+                            [href]="proy.link" 
+                            target="_blank" 
+                            rel="noopener" 
+                            class="inline-flex items-center gap-1 text-[11px] font-semibold text-brand-indigo hover:underline">
+                            <span>Ver proyecto</span>
+                            <span class="text-xs">→</span>
+                          </a>
+                        </div>
+                      }
+                    </div>
+
+                  </div>
+                }
+              </div>
+            } @else {
+              <p class="text-slate-400 text-xs sm:text-sm py-4 italic text-center">
+                Aún no has registrado proyectos en tu portafolio. Agrega tus trabajos previos para demostrar tu experiencia.
+              </p>
+            }
+          </div>
+        }
+```
+
+#### 3.2. Añadir el Modal de Agregar Proyecto al final del HTML (junto al modal de habilidades):
+
+```html
+    <!-- MODAL: Agregar Proyecto al Portafolio (WL-18) -->
+    @if (isProjectModalOpen()) {
+      <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-fade-in">
+        <div class="w-full max-w-lg bg-white rounded-3xl border border-slate-200 p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto animate-scale-in">
+          
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <h3 class="text-base font-bold text-slate-900">Agregar Proyecto al Portafolio</h3>
+            <button type="button" (click)="cerrarProjectModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">✕</button>
+          </div>
+
+          @if (projectError()) {
+            <div class="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-600 font-medium">
+              {{ projectError() }}
+            </div>
+          }
+
+          <!-- Formulario -->
+          <div class="space-y-3.5">
+            <!-- Título del Proyecto -->
+            <div class="space-y-1.5">
+              <label class="text-xs font-bold text-slate-700 uppercase">Título del Proyecto *</label>
+              <input 
+                type="text" 
+                [value]="projectNombre()"
+                (input)="projectNombre.set($any($event.target).value)"
+                placeholder="Ej: E-Commerce Platform, API Gateway, etc."
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo"
+              />
+            </div>
+
+            <!-- Descripción -->
+            <div class="space-y-1.5">
+              <label class="text-xs font-bold text-slate-700 uppercase">Descripción *</label>
+              <textarea 
+                rows="3"
+                [value]="projectDescripcion()"
+                (input)="projectDescripcion.set($any($event.target).value)"
+                placeholder="Describe brevemente el objetivo, tecnologías usadas y tu rol..."
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo resize-none"
+              ></textarea>
+            </div>
+
+            <!-- Enlace externo (opcional) -->
+            <div class="space-y-1.5">
+              <label class="text-xs font-bold text-slate-700 uppercase">Enlace Web o Repositorio (Opcional)</label>
+              <input 
+                type="url" 
+                [value]="projectLink()"
+                (input)="projectLink.set($any($event.target).value)"
+                placeholder="https://github.com/... o https://midemo.app"
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo"
+              />
+            </div>
+
+            <!-- Imagen de Portada (Opcional) -->
+            <div class="space-y-1.5">
+              <label class="text-xs font-bold text-slate-700 uppercase">Imagen de Portada (Opcional)</label>
+              
+              @if (projectImagePreview()) {
+                <div class="relative rounded-2xl overflow-hidden border border-slate-200 h-36 bg-slate-100">
+                  <img [src]="projectImagePreview()!" alt="Preview" class="w-full h-full object-cover" />
+                  <button 
+                    type="button" 
+                    (click)="quitarImagenProyecto()"
+                    class="absolute top-2 right-2 p-1.5 rounded-xl bg-slate-900/80 hover:bg-rose-600 text-white transition-colors cursor-pointer"
+                    title="Quitar imagen">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              } @else {
+                <label class="flex flex-col items-center justify-center border-2 border-dashed border-slate-200 hover:border-brand-indigo rounded-2xl p-4 cursor-pointer transition-colors bg-slate-50/50 hover:bg-slate-50">
+                  <svg class="w-7 h-7 text-slate-400 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span class="text-xs font-semibold text-slate-600">Subir captura o portada</span>
+                  <span class="text-[11px] text-slate-400">PNG, JPG o WebP hasta 5 MB</span>
+                  <input type="file" accept="image/*" (change)="onProjectImageSelected($event)" class="hidden" />
+                </label>
+              }
+            </div>
+
+          </div>
+
+          <!-- Botones de Acción -->
+          <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+            <button 
+              type="button" 
+              (click)="cerrarProjectModal()" 
+              class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 cursor-pointer">
+              Cancelar
+            </button>
+            <button 
+              type="button" 
+              (click)="guardarProyecto()"
+              [disabled]="!projectNombre().trim() || !projectDescripcion().trim() || isSavingProject()"
+              class="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-brand-indigo hover:bg-brand-indigo-dark disabled:opacity-50 cursor-pointer shadow-sm">
+              {{ isSavingProject() ? 'Guardando...' : 'Agregar Proyecto' }}
+            </button>
+          </div>
+
+        </div>
+      </div>
+    }
+```

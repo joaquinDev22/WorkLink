@@ -53,6 +53,12 @@ export class MiPerfil implements OnInit {
   isUploadingCv = signal<boolean>(false)
   cvError = signal<string | null>(null)
 
+  isSkillModalOpen = signal(false)
+  skillNombre = signal('')
+  skillNivel = signal<NivelHabilidad>(3)
+  catalogoHabilidades = signal<Array<{ id: number; name: string }>>([])
+  isSavingSkill = signal(false)
+
   // Modelo de formulario de edición
   profileModel = signal<EditProfileModel>({
     nombre: '',
@@ -84,20 +90,21 @@ export class MiPerfil implements OnInit {
     )
 
      validate(f.telefono, ({ value }) => {
-    const tel = value()?.trim()
-    if (!tel) return null
-    const pais = this.profileModel().ubicacion || 'AR'
-    const config = PATTERNS_TELEFONO[pais] || PATTERNS_TELEFONO['OTRO']
-    const limpio = tel.replace(/[-\s]/g, '')
-    if (!config.regex.test(tel) && !config.regex.test(limpio)) {
-      return {
-        kind: 'pattern',
-        message: `Formato requerido para ${pais}: ${config.ejemplo}`
+      const tel = value()?.trim()
+      if (!tel) return null
+      const pais = this.profileModel().ubicacion || 'AR'
+      const config = PATTERNS_TELEFONO[pais] || PATTERNS_TELEFONO['OTRO']
+      const limpio = tel.replace(/[-\s]/g, '')
+      if (!config.regex.test(tel) && !config.regex.test(limpio)) {
+        return {
+          kind: 'pattern',
+          message: `Formato requerido para ${pais}: ${config.ejemplo}`
+        }
       }
-    }
-    return null
+      return null
+    })
   })
-})
+
   readonly initial = computed<string>(() => {
     const p = this.perfil()
     if (!p) return 'U'
@@ -191,13 +198,15 @@ export class MiPerfil implements OnInit {
       case 1:
         return { label: 'Básico', colorClass: 'bg-slate-100 text-slate-700 border-slate-200', stars: 1 }
       case 2:
-        return { label: 'Intermedio', colorClass: 'bg-sky-50 text-sky-700 border-sky-200', stars: 2 }
+        return { label: 'Básico / Intermedio', colorClass: 'bg-teal-50 text-teal-700 border-teal-200', stars: 2 }
       case 3:
-        return { label: 'Avanzado', colorClass: 'bg-indigo-50 text-indigo-700 border-indigo-200', stars: 3 }
+        return { label: 'Intermedio', colorClass: 'bg-sky-50 text-sky-700 border-sky-200', stars: 3 }
       case 4:
-        return { label: 'Experto', colorClass: 'bg-emerald-50 text-emerald-700 border-emerald-200', stars: 4 }
+        return { label: 'Intermedio / Avanzado', colorClass: 'bg-indigo-50 text-indigo-700 border-indigo-200', stars: 4 }
+      case 5:
+        return { label: 'Avanzado', colorClass: 'bg-purple-50 text-purple-700 border-purple-200', stars: 5 }
       default:
-        return { label: 'Nivel no definido', colorClass: 'bg-slate-100 text-slate-600 border-slate-200', stars: 1 }
+        return { label: 'Básico', colorClass: 'bg-slate-100 text-slate-700 border-slate-200', stars: 1 }
     }
   }
 
@@ -247,6 +256,39 @@ export class MiPerfil implements OnInit {
         URL.revokeObjectURL(url)
       },
       error: () => this.showToast('No se pudo descargar el currículum')
+    })
+  }
+
+  abrirSkillModal(): void {
+    this.skillNombre.set('')
+    this.skillNivel.set(3)
+    this.isSkillModalOpen.set(true)
+    this.perfilService.getHabilidadesCatalogo().subscribe({
+      next: (skills) => this.catalogoHabilidades.set(skills)
+    })
+  }
+  cerrarSkillModal(): void {
+    this.isSkillModalOpen.set(false)
+  }
+  seleccionarSugerencia(nombre: string): void {
+    this.skillNombre.set(nombre)
+  }
+  guardarSkill(): void {
+    const nombre = this.skillNombre().trim()
+    if (!nombre) return
+    this.isSavingSkill.set(true)
+    this.perfilService.addMySkill(nombre, this.skillNivel()).subscribe({
+      next: () => {
+        this.isSavingSkill.set(false)
+        this.cerrarSkillModal()
+        this.showToast('Habilidad agregada al perfil')
+      },
+      error: () => this.isSavingSkill.set(false)
+    })
+  }
+  eliminarSkill(habilidadId: number): void {
+    this.perfilService.removeMySkill(habilidadId).subscribe({
+      next: () => this.showToast('Habilidad eliminada')
     })
   }
 }

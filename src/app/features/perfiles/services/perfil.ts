@@ -2,7 +2,7 @@ import { TokenStorage } from './../../../core/auth/services/token-storage'
 import { inject, Service, signal, computed } from '@angular/core'
 import { environment } from '../../../../environments/environment'
 import { HttpClient } from '@angular/common/http'
-import { PerfilUsuarioDTO, PerfilCompletitud, ItemFaltantePerfil, EditProfileModel } from '../models/perfil.models'
+import { PerfilUsuarioDTO, PerfilCompletitud, ItemFaltantePerfil, EditProfileModel, PerfilHabilidadDTO, NivelHabilidad, HabilidadCatalogoDTO } from '../models/perfil.models'
 import { Observable, of, tap, delay, finalize } from 'rxjs'
 
 @Service()
@@ -253,6 +253,79 @@ export class Perfil {
     return this.client.post<{ message: string }>(`${this.API_URL}/uploadMyCV`, formData).pipe(
       tap(() => {
         this.perfilActual.update((p) => (p ? { ...p, tieneCv: true } : null))
+      })
+    )
+  }
+  // 1. Obtener catálogo sugerido de habilidades
+  getHabilidadesCatalogo(): Observable<HabilidadCatalogoDTO[]> {
+    if (environment.bypassAuth) {
+      return of([
+        { id: 1, name: 'Angular' },
+        { id: 2, name: 'TypeScript' },
+        { id: 3, name: 'Spring Boot' },
+        { id: 4, name: 'Java' },
+        { id: 5, name: 'Docker' },
+        { id: 6, name: 'PostgreSQL' },
+        { id: 7, name: 'Tailwind CSS' },
+        { id: 8, name: 'React' },
+        { id: 9, name: 'Node.js' },
+        { id: 10, name: 'AWS' }
+      ]).pipe(delay(150))
+    }
+    return this.client.get<HabilidadCatalogoDTO[]>(`${environment.apiUrl}/habilidades`)
+  }
+  // 2. Agregar una habilidad al perfil del usuario autenticado
+  addMySkill(nombre: string, nivel: NivelHabilidad): Observable<PerfilHabilidadDTO> {
+    if (environment.bypassAuth) {
+      const nueva: PerfilHabilidadDTO = {
+        habilidadId: Date.now(),
+        nombre,
+        nivel
+      }
+
+      this.perfilActual.update(p => {
+        if (!p) return null
+        const actuales = p.habilidades || []
+        // Evita duplicados por nombre
+        if (actuales.some(h => h.nombre.toLowerCase() === nombre.toLowerCase())) {
+          return p
+        }
+        return { ...p, habilidades: [...actuales, nueva] }
+      })
+      return of(nueva).pipe(delay(250))
+    }
+    
+    return this.client.post<PerfilHabilidadDTO>(
+      `${this.API_URL}/addMySkill`,
+      null,
+      { params: { nombre, nivel: nivel.toString() } }
+    ).pipe(
+      tap(nueva => {
+        this.perfilActual.update(p => p ? { ...p, habilidades: [...(p.habilidades || []), nueva] } : null)
+      })
+    )
+  }
+  // 3. Eliminar una habilidad del perfil
+  removeMySkill(habilidadId: number): Observable<void> {
+    if (environment.bypassAuth) {
+      this.perfilActual.update(p => {
+        if (!p) return null
+        return {
+          ...p,
+          habilidades: (p.habilidades || []).filter(h => h.habilidadId !== habilidadId)
+        }
+      })
+      return of(undefined).pipe(delay(150))
+    }
+    return this.client.delete<void>(`${this.API_URL}/removeMySkill/${habilidadId}`).pipe(
+      tap(() => {
+        this.perfilActual.update(p => {
+          if (!p) return null
+          return {
+            ...p,
+            habilidades: (p.habilidades || []).filter(h => h.habilidadId !== habilidadId)
+          }
+        })
       })
     )
   }
