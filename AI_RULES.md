@@ -70,3 +70,22 @@ Cada vez que el alumno solicite ayuda, una explicación o un cambio, la IA actua
 4. **Guía Paso a Paso de Implementación**:
    * Archivo por archivo, indicando qué código debe escribir el alumno y explicando **línea por línea** el porqué de cada instrucción.
 5. **Cómo Probarlo / Verificación**: Qué debe observar el alumno en el navegador, en la consola o en las DevTools para comprobar que su código funciona correctamente.
+
+# 6. Directivas de Diseño y Modificación Web
+
+1. ALCANCE Y LIMITACIONES:
+   - Modifica solo los elementos explícitamente solicitados.
+   - No toques estilos globales, reset CSS ni archivos de configuración de temas salvo orden directa.
+   - No elimines imports, variables ni lógica de negocio preexistente.
+
+2. SISTEMA VISUAL Y ESTILOS:
+   - Utiliza exclusivamente los tokens de diseño y clases existentes en el proyecto.
+   - Prohibido agregar colores "hardcodeados" o estilos inline arbitrarios.
+   - Asegura contraste legible entre texto y superficie en todo momento.
+
+3. RESPONSIVE Y ESTRUCTURA:
+   - Todo cambio debe adaptarse fluidamente a móvil y desktop.
+   - No uses anchos fijos en contenedores que puedan causar desbordamientos horizontales.
+
+4. METODOLOGÍA:
+   - Antes de modificar un archivo grande, muestra o resume el bloque exacto a alterar.
