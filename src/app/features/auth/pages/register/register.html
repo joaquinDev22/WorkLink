@@ -128,7 +128,8 @@
                     class="w-full bg-white text-slate-900 py-2.5 px-3.5 rounded-xl text-sm font-medium placeholder:text-slate-400 border border-transparent focus:outline-none focus:ring-2 focus:ring-brand-sky focus:border-brand-sky shadow-inner shadow-slate-400/40 transition-all duration-150" 
                     type="text" 
                     placeholder="usuario3312" 
-                    [formField]="registerForm.usuario">
+                    [formField]="registerForm.usuario"
+                    [class.input-error]="registerForm.usuario().touched() && registerForm.usuario().invalid()">
                 @if (registerForm.usuario().touched() && registerForm.usuario().invalid()) {
                     @for (error of registerForm.usuario().errors(); track error.kind) {
                         <span class="text-brand-danger-muted text-xs font-semibold pt-0.5">{{ error.message }}</span>
@@ -144,7 +145,8 @@
                     class="w-full bg-white text-slate-900 py-2.5 px-3.5 rounded-xl text-sm font-medium placeholder:text-slate-400 border border-transparent focus:outline-none focus:ring-2 focus:ring-brand-sky focus:border-brand-sky shadow-inner shadow-slate-400/40 transition-all duration-150" 
                     type="email" 
                     placeholder="email@example.com" 
-                    [formField]="registerForm.email">
+                    [formField]="registerForm.email"
+                    [class.input-error]="registerForm.email().touched() && registerForm.email().invalid()">
                 @if (registerForm.email().touched() && registerForm.email().invalid()) {
                     @for (error of registerForm.email().errors(); track error.kind) {
                         <span class="text-brand-danger-muted text-xs font-semibold pt-0.5">{{ error.message }}</span>
@@ -161,7 +163,8 @@
                         class="w-full bg-white text-slate-900 py-2.5 px-3.5 pr-11 rounded-xl text-sm font-medium placeholder:text-slate-400 border border-transparent focus:outline-none focus:ring-2 focus:ring-brand-sky focus:border-brand-sky shadow-inner shadow-slate-400/40 transition-all duration-150" 
                         [type]="showPassword() ? 'text' : 'password'" 
                         placeholder="••••••••" 
-                        [formField]="registerForm.password">
+                        [formField]="registerForm.password"
+                        [class.input-error]="registerForm.password().touched() && registerForm.password().invalid()">
                     <button 
                         type="button" 
                         (click)="showPassword.set(!showPassword())"
@@ -210,7 +213,8 @@
                         class="w-full bg-white text-slate-900 py-2.5 px-3.5 pr-11 rounded-xl text-sm font-medium placeholder:text-slate-400 border border-transparent focus:outline-none focus:ring-2 focus:ring-brand-sky focus:border-brand-sky shadow-inner shadow-slate-400/40 transition-all duration-150" 
                         [type]="showConfirmPassword() ? 'text' : 'password'" 
                         placeholder="••••••••" 
-                        [formField]="registerForm.confirmPassword">
+                        [formField]="registerForm.confirmPassword"
+                        [class.input-error]="registerForm.confirmPassword().touched() && registerForm.confirmPassword().invalid()">
                     <button 
                         type="button" 
                         (click)="showConfirmPassword.set(!showConfirmPassword())"

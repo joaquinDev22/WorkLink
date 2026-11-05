@@ -18,6 +18,7 @@
                 type="text" 
                 placeholder="usuario3312" 
                 [formField]="loginForm.usuario"
+                [class.input-error]="loginForm.usuario().touched() && loginForm.usuario().invalid()"
             >
             @if (loginForm.usuario().touched() && loginForm.usuario().invalid()) {
                 @for (error of loginForm.usuario().errors(); track error.kind) {
@@ -36,6 +37,7 @@
                     [type]="showPassword() ? 'text' : 'password'" 
                     placeholder="••••••••" 
                     [formField]="loginForm.password"
+                    [class.input-error]="loginForm.password().touched() && loginForm.password().invalid()"
                 >
                 <button 
                     type="button" 

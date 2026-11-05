@@ -2,8 +2,9 @@ import { Component, OnInit, inject, computed, signal } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { FormsModule } from '@angular/forms'
 import { Perfil } from '../../services/perfil'
-import { EditProfileModel, NivelHabilidad, PerfilUsuarioDTO } from '../../models/perfil.models'
+import { EditProfileModel, NivelHabilidad, PerfilUsuarioDTO, ReputacionPerfilDTO } from '../../models/perfil.models'
 import { form, maxLength, minLength, pattern, required, validate, FormField } from '@angular/forms/signals'
+import { MorphService } from '../../../../core/services/morph'
 
 export const PATTERNS_TELEFONO: Record<string, { regex: RegExp, ejemplo: string }> = {
   AR: {
@@ -40,6 +41,8 @@ export const PATTERNS_TELEFONO: Record<string, { regex: RegExp, ejemplo: string 
 })
 export class MiPerfil implements OnInit {
   protected perfilService = inject(Perfil)
+  protected morph = inject(MorphService)
+  private triggerEl: HTMLElement | null = null
 
   readonly perfil = this.perfilService.perfilActual
   readonly isLoading = this.perfilService.isLoading
@@ -58,6 +61,43 @@ export class MiPerfil implements OnInit {
   skillNivel = signal<NivelHabilidad>(3)
   catalogoHabilidades = signal<Array<{ id: number; name: string }>>([])
   isSavingSkill = signal(false)
+  
+  // Modal de proyectos (WL-18)
+  isProjectModalOpen = signal<boolean>(false)
+  isSavingProject = signal<boolean>(false)
+  
+  // Reputación y Reseñas (WL-19: US-12)
+  reputacion = signal<ReputacionPerfilDTO | null>(null)
+  isLoadingReputacion = signal<boolean>(false)
+  readonly paginaResenas = signal<number>(1)
+  readonly pageSizeResenas = 3
+
+  readonly totalPaginasResenas = computed<number>(() => {
+    const total = this.reputacion()?.calificaciones?.length || 0
+    return Math.max(1, Math.ceil(total / this.pageSizeResenas))
+  })
+
+  readonly resenasPaginadas = computed(() => {
+    const todas = this.reputacion()?.calificaciones || []
+    const inicio = (this.paginaResenas() - 1) * this.pageSizeResenas
+    return todas.slice(inicio, inicio + this.pageSizeResenas)
+  })
+
+  readonly rangoResenasActual = computed<string>(() => {
+    const total = this.reputacion()?.calificaciones?.length || 0
+    if (total === 0) return '0 de 0'
+    const inicio = (this.paginaResenas() - 1) * this.pageSizeResenas + 1
+    const fin = Math.min(inicio + this.pageSizeResenas - 1, total)
+    return `${inicio}-${fin} de ${total}`
+  })
+
+  deletingProjectId = signal<number | null>(null)
+  projectNombre = signal<string>('')
+  projectDescripcion = signal<string>('')
+  projectLink = signal<string>('')
+  projectImagenFile = signal<File | null>(null)
+  projectImagenPreview = signal<string | null>(null)
+
 
   // Modelo de formulario de edición
   profileModel = signal<EditProfileModel>({
@@ -129,6 +169,7 @@ export class MiPerfil implements OnInit {
     if (!this.perfil()) {
       this.perfilService.cargarPerfil().subscribe()
     }
+    this.cargarReputacion()
   }
 
   onFotoSelected(event: Event): void {
@@ -151,6 +192,36 @@ export class MiPerfil implements OnInit {
         error: (err) => console.error('Error al subir banner', err)
       })
     }
+  }
+
+  async abrirEditar(ev: Event): Promise<void> {
+    this.triggerEl = ev.currentTarget as HTMLElement
+    const current = this.perfil()
+    if (current) {
+      this.profileModel.set({
+        nombre: current.nombre || '',
+        apellido: current.apellido || '',
+        descripcion: current.descripcion || '',
+        telefono: current.telefono || '',
+        ubicacion: current.ubicacion || '',
+        sitioWeb: current.sitioWeb || ''
+      })
+    }
+    this.morph.name(this.triggerEl, 'edit-surface')
+    await this.morph.run(() => {
+      if (this.triggerEl) this.triggerEl.style.viewTransitionName = 'none'
+      this.isEditModalOpen.set(true)
+    })
+  }
+
+  async cerrarEditar(): Promise<void> {
+    await this.morph.run(() => {
+      this.isEditModalOpen.set(false)
+      if (this.triggerEl) {
+        this.morph.name(this.triggerEl, 'edit-surface')
+      }
+    })
+    this.morph.clear(this.triggerEl)
   }
 
   toggleEditModal(): void {
@@ -176,7 +247,7 @@ export class MiPerfil implements OnInit {
     this.perfilService.updateProfile(form.value()).subscribe({
       next: () => {
         this.isSaving.set(false)
-        this.isEditModalOpen.set(false)
+        this.cerrarEditar()
         this.showToast('Perfil actualizado con éxito')
       },
       error: (err) => {
@@ -290,5 +361,120 @@ export class MiPerfil implements OnInit {
     this.perfilService.removeMySkill(habilidadId).subscribe({
       next: () => this.showToast('Habilidad eliminada')
     })
+  }
+
+  // Métodos de portafolio y proyectos (WL-18)
+  abrirProjectModal(): void {
+    this.projectNombre.set('')
+    this.projectDescripcion.set('')
+    this.projectLink.set('')
+    this.projectImagenFile.set(null)
+    this.projectImagenPreview.set(null)
+    this.isProjectModalOpen.set(true)
+  }
+
+  cerrarProjectModal(): void {
+    this.isProjectModalOpen.set(false)
+  }
+
+  onProjectImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement
+    if (input.files && input.files[0]) {
+      const file = input.files[0]
+      if (!file.type.startsWith('image/')) {
+        this.showToast('Solo se permiten imágenes (PNG, JPG, WebP)')
+        return
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        this.showToast('La imagen no debe superar los 5 MB')
+        return
+      }
+      this.projectImagenFile.set(file)
+      this.projectImagenPreview.set(URL.createObjectURL(file))
+    }
+  }
+
+  quitarImagenProyecto(): void {
+    this.projectImagenFile.set(null)
+    this.projectImagenPreview.set(null)
+  }
+
+  guardarProyecto(): void {
+    const nombre = this.projectNombre().trim()
+    const descripcion = this.projectDescripcion().trim()
+    if (!nombre) {
+      this.showToast('El título del proyecto es obligatorio')
+      return
+    }
+    if (!descripcion) {
+      this.showToast('La descripción del proyecto es obligatoria')
+      return
+    }
+
+    const formData = new FormData()
+    formData.append('nombre', nombre)
+    formData.append('descripcion', descripcion)
+    if (this.projectLink().trim()) {
+      formData.append('link', this.projectLink().trim())
+    }
+    if (this.projectImagenFile()) {
+      formData.append('imagen', this.projectImagenFile()!)
+    }
+
+    this.isSavingProject.set(true)
+    this.perfilService.addMyProject(formData).subscribe({
+      next: () => {
+        this.isSavingProject.set(false)
+        this.cerrarProjectModal()
+        this.showToast('Proyecto agregado exitosamente a tu portafolio')
+      },
+      error: (err) => {
+        this.isSavingProject.set(false)
+        console.error('Error al agregar proyecto', err)
+        this.showToast('No se pudo guardar el proyecto. Intenta nuevamente')
+      }
+    })
+  }
+
+  eliminarProyecto(proyectoId: number): void {
+    this.deletingProjectId.set(proyectoId)
+    this.perfilService.removeMyProject(proyectoId).subscribe({
+      next: () => {
+        this.deletingProjectId.set(null)
+        this.showToast('Proyecto eliminado del portafolio')
+      },
+      error: (err) => {
+        this.deletingProjectId.set(null)
+        console.error('Error al eliminar proyecto', err)
+        this.showToast('Error al eliminar el proyecto')
+      }
+    })
+  }
+
+  cargarReputacion(): void {
+    this.isLoadingReputacion.set(true)
+    this.perfilService.getCalificaciones().subscribe({
+      next: (data) => {
+        this.reputacion.set(data)
+        this.isLoadingReputacion.set(false)
+      },
+      error: (err) => {
+        console.error('Error al cargar reputación', err)
+        this.isLoadingReputacion.set(false)
+      }
+    })
+  }
+
+  cambiarPaginaResenas(deltaOIndice: number, esIndiceDirecto = false): void {
+    if (esIndiceDirecto) {
+      if (deltaOIndice >= 1 && deltaOIndice <= this.totalPaginasResenas()) {
+        this.paginaResenas.set(deltaOIndice)
+      }
+      return
+    }
+    const nueva = this.paginaResenas() + deltaOIndice
+    if (nueva >= 1 && nueva <= this.totalPaginasResenas()) {
+      this.paginaResenas.set(nueva)
+    }
   }
 }

@@ -99,7 +99,14 @@
     from { opacity: 1; transform: scale(1) translateY(0); }
     to { opacity: 0; transform: scale(0.96) translateY(8px); }
   }
+
+  /* Curvas y duraciones morfológicas (AI_RULES §2) */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-emphasized: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-morph: 380ms;
+  --shadow-float: 0 2px 4px rgb(15 23 42 / 0.05), 0 12px 32px rgb(15 23 42 / 0.12);
 }
+
 .btn-registrarse {
   box-shadow: var(--shadow-inner-indigo);
   transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1);
@@ -159,34 +166,6 @@
   }
 }
 
-
-/* ==========================================================
-   4. TRANSICIONES DE PÁGINA NATIVAS (View Transitions API)
-   ========================================================== */
-@media (prefers-reduced-motion: no-preference) {
-  ::view-transition-old(root) {
-    animation: 160ms cubic-bezier(0.4, 0, 1, 1) both page-fade-out;
-  }
-  ::view-transition-new(root) {
-    animation: 240ms cubic-bezier(0, 0, 0.2, 1) 30ms both page-fade-in,
-               240ms cubic-bezier(0.16, 1, 0.3, 1) 30ms both page-slide-up;
-  }
-}
-
-@keyframes page-fade-out {
-  from { opacity: 1; }
-  to { opacity: 0; }
-}
-
-@keyframes page-fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes page-slide-up {
-  from { transform: translateY(8px); }
-  to { transform: translateY(0); }
-}
 /* ==========================================================
    CLASE DE UTILIDAD: ESTADO DE ERROR DE FORMULARIO
    ========================================================== */
@@ -199,4 +178,64 @@
   border-color: #dc2626 !important; /* red-600 */
   outline: none !important;
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25) !important; /* Ring rojo translúcido */
+}
+
+/* ==========================================================
+   4. TRANSFORMACIONES MORFOLÓGICAS LIMPIAS Y CRISTALINAS (AI_RULES: Patrón A & §5.8)
+   ========================================================== */
+@utility vt-morph {
+  view-transition-class: morph;
+}
+
+/* Transición limpia y fluida del fondo (evita congelamiento o saltos de pantalla) */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 200ms;
+  animation-timing-function: ease-out;
+}
+
+/* Contenedor del morph: interpola tamaño, posición y bordes suavemente */
+::view-transition-group(edit-surface) {
+  animation-duration: var(--duration-morph, 400ms);
+  animation-timing-function: var(--ease-emphasized, cubic-bezier(0.16, 1, 0.3, 1));
+  overflow: clip;
+  border-radius: 1.5rem;
+}
+
+/* El contenido del botón se desvanece de inmediato */
+::view-transition-old(edit-surface) {
+  animation: morph-content-out 120ms ease-out both;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+/* El contenido del modal emerge nítido, centrado y perfectamente recto */
+::view-transition-new(edit-surface) {
+  animation: morph-content-in 320ms cubic-bezier(0.16, 1, 0.3, 1) 50ms both;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+@keyframes morph-content-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+@keyframes morph-content-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }

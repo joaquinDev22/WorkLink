@@ -58,3 +58,29 @@ export interface PerfilCompletitud {
   completado: boolean
   itemsFaltantes: ItemFaltantePerfil[]
 }
+
+
+// Calificaciones y Reputación (WL-19: US-12)
+export interface CalificacionDTO {
+  id: number
+  autorNombre: string
+  autorFoto?: string
+  autorRol?: string
+  puntuacion: number
+  comentario: string
+  fecha: string
+  proyectoNombre?: string
+}
+
+export interface ReputacionPerfilDTO {
+  promedio: number
+  totalCalificaciones: number
+  desglose: {
+    estrellas5: number
+    estrellas4: number
+    estrellas3: number
+    estrellas2: number
+    estrellas1: number
+  }
+  calificaciones: CalificacionDTO[]
+}
