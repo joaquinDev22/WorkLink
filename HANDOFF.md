@@ -4,8 +4,9 @@ Este documento resume la configuración del entorno, herramientas, estado del pr
 
 ---
 
-## 🎯 1. Estado de la Épica 2 (`WL-13`) en Jira: **100% FINALIZADA**
+## 🎯 1. Estado de las Épicas en Jira
 
+### Épica 2 (`WL-13`): **100% FINALIZADA**
 | Clave | Resumen / Historia de Usuario | Estado Jira |
 |---|---|---|
 | **WL-12** | US-06: Vista de Consulta de Perfil de Usuario Autenticado | `Finalizado` |
@@ -17,6 +18,20 @@ Este documento resume la configuración del entorno, herramientas, estado del pr
 | **WL-19** | US-12: Visualización de Reputación y Reseñas de Usuario | `Finalizado` |
 | **WL-13** | **ÉPICA 2: Perfil Profesional, Portafolio y Habilidades (UI)** | **`Finalizado`** |
 
+### Épica 3 (`WL-21`): **En Curso**
+* **Rama Activa Git:** `WL-21-ÉPICA-3-Gestión-Empresarial-Vacantes-y-Reclutamiento-UI`
+
+| Clave | Resumen / Historia de Usuario | Estado Jira |
+|---|---|---|
+| **WL-20** | US-13: Formulario de Perfil y Branding Corporativo | `Finalizado` |
+| **WL-22** | US-14: Panel de Invitación y Gestión de Reclutadores | `Finalizado` |
+| **WL-23** | US-15: Formulario de Publicación y Edición de Vacantes | `Por hacer` |
+| **WL-24** | US-16: Feed Público de Vacantes con Filtros Reactivos | `Por hacer` |
+| **WL-25** | US-17: Diálogo de Postulación con Carta de Presentación | `Por hacer` |
+| **WL-26** | US-18: Gestión de Postulantes y Cambio de Estado | `Por hacer` |
+| **WL-27** | US-19: Agenda y Vista de Entrevistas Coordinadas | `Por hacer` |
+| **WL-28** | US-20: Dashboard de Analíticas Corporativas | `Por hacer` |
+
 ---
 
 ## 🛠️ 2. Arquitectura y Tecnologías Aplicadas
@@ -25,8 +40,8 @@ Este documento resume la configuración del entorno, herramientas, estado del pr
 * **Estilos:** Tailwind CSS v4 con variables semánticas `@theme` en `styles.css`.
 * **Formularios:** Angular Signal Forms (`form()`, `validate()`, `pattern()`, etc.).
 * **Transiciones Morfológicas:** Shared Element Transitions nativas (`document.startViewTransition`) con `MorphService` (`src/app/core/services/morph.ts`), respetando `prefers-reduced-motion` y manteniendo el fondo nítido sin distorsiones ni artefactos.
-* **Seguridad:** Interceptores de autenticación JWT (`authInterceptor`) y manejo centralizado de errores HTTP (`errorInterceptor`).
-* **Modo Offline/Local:** `environment.bypassAuth = true` permite probar flujos completos (subida de PDFs válidos, carga de fotos, alta y borrado de proyectos y calificaciones) sin requerir el backend encendido.
+* **Seguridad:** Interceptores de autenticación JWT (`authInterceptor`), RBAC guards (`roleGuard`) y manejo centralizado de errores HTTP (`errorInterceptor`).
+* **Modo Offline/Local:** `environment.bypassAuth = true` permite probar flujos completos (subida de PDFs válidos, carga de fotos, alta y borrado de proyectos, perfiles corporativos y gestión de recruiters) sin requerir el backend encendido.
 
 ---
 
@@ -47,10 +62,3 @@ Este documento resume la configuración del entorno, herramientas, estado del pr
    ```bash
    npx ng build --watch=false
    ```
-
----
-
-## 📋 4. Próxima Épica sugerida para el Sprint
-
-Revisar en Jira la siguiente épica priorizada (ej. Épica 3 de Búsqueda y Postulación a Ofertas Laborales o Épica de Contratación Freelance).
-
