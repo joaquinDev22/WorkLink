@@ -44,6 +44,7 @@ export class Navbar {
     if (rol === 'EMPRESA') {
       return [
         { label: 'Dashboard', route: '/enterprise/dashboard' },
+        { label: 'Perfil Empresa', route: '/enterprise/perfil' },
         { label: 'Mis Vacantes', route: '/enterprise/vacantes' },
         { label: 'Recruiters', route: '/enterprise/recruiters' },
       ]

@@ -20,6 +20,12 @@ export const routes: Routes = [
 
   // --- ZONA EXCLUSIVA EMPRESA ---
   {
+    path: 'perfil',
+    canActivate: [roleGuard],
+    data: { roles: ['EMPRESA'] },
+    loadComponent: () => import('./empresa-perfil/pages/empresa-form/empresa-form').then(m => m.EmpresaForm)
+  },
+  {
     path: 'dashboard',
     canActivate: [roleGuard],
     data: { roles: ['EMPRESA'] },

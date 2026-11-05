@@ -38,6 +38,7 @@ export class Sidebar {
     if (rol === 'EMPRESA') {
       return [
         { label: 'Mi Perfil', route: '/perfiles/mi-perfil' },
+        { label: 'Perfil Empresa', route: '/enterprise/perfil' },
         { label: 'Dashboard', route: '/enterprise/dashboard' },
         { label: 'Mis Vacantes', route: '/enterprise/vacantes' },
         { label: 'Recruiters', route: '/enterprise/recruiters' },

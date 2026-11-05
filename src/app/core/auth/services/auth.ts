@@ -45,7 +45,7 @@ export class Auth {
                 mensaje:'',
                 token: 'mock-jwt-token-develop-123456789',
                 nombreUsuario: credenciales.usuario || 'UsuarioDev',
-                rol: 'POSTULANTE'
+                rol: 'EMPRESA'
             }
             this.guardarSesion(mockRes)
             return of(mockRes)
@@ -62,7 +62,7 @@ export class Auth {
                 mensaje:'',
                 token: 'mock-google-jwt-develop',
                 nombreUsuario: 'GoogleUserDev',
-                rol: 'POSTULANTE'
+                rol: 'EMPRESA'
             }
             this.guardarSesion(mockRes)
             return of(mockRes)
