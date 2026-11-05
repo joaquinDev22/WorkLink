@@ -50,7 +50,7 @@
                         </button>
 
                         <!-- Indicador flotante exterior (por encima y fuera del círculo) -->
-                        @if (!perfilService.completitud().completado) {
+                        @if (mostrarCompletitud() && !perfilService.completitud().completado) {
                             <span 
                                 class="absolute -top-1 -right-1 z-30 w-3.5 h-3.5 bg-amber-400 border-2 border-brand-indigo rounded-full shadow-sm pointer-events-none" 
                                 title="Perfil al {{ perfilService.completitud().porcentaje }}%">
@@ -87,8 +87,8 @@
                                     </div>
                                 </div>
 
-                                <!-- 2. Anillo de Progreso de Perfil (Ring Progress) -->
-                                @if(!perfilService.completitud().completado){
+                                <!-- 2. Anillo de Progreso de Perfil (Solo para Freelancers y Postulantes) -->
+                                @if(mostrarCompletitud() && !perfilService.completitud().completado){
                                     <div class="bg-slate-50 rounded-2xl p-3 border border-slate-100 flex items-center gap-3">
                                         <div class="relative w-11 h-11 shrink-0 flex items-center justify-center">
                                             <svg class="w-11 h-11 -rotate-90" viewBox="0 0 48 48">
@@ -126,14 +126,14 @@
                                 <!-- 3. Acciones de Navegación -->
                                 <div class="space-y-1 text-sm font-medium">
                                     <a 
-                                        routerLink="/perfiles/mi-perfil" 
+                                        [routerLink]="perfilRoute()" 
                                         (click)="cerrarUserModal()"
                                         class="flex items-center justify-between px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-100 hover:text-brand-indigo active:scale-[0.99] transition-all cursor-pointer">
                                         <div class="flex items-center gap-2.5">
                                             <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                             </svg>
-                                            <span class="text-xs font-semibold">Ver mi perfil completo</span>
+                                            <span class="text-xs font-semibold">{{ perfilLabel() }}</span>
                                         </div>
                                         <span class="text-xs text-brand-sky font-semibold">&rarr;</span>
                                     </a>

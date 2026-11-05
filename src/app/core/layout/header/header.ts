@@ -34,6 +34,24 @@ export class Header implements OnInit {
     return '/freelance/proyectos'
   })
 
+  // Enlace dinámico al perfil correspondiente según el rol
+  readonly perfilRoute = computed(() => {
+    const s = this.auth.session()
+    if (s?.rol === 'EMPRESA') return '/enterprise/perfil'
+    return '/perfiles/mi-perfil'
+  })
+
+  readonly perfilLabel = computed(() => {
+    const s = this.auth.session()
+    if (s?.rol === 'EMPRESA') return 'Perfil de la Empresa'
+    return 'Ver mi perfil completo'
+  })
+
+  readonly mostrarCompletitud = computed(() => {
+    const s = this.auth.session()
+    return s?.rol === 'FREELANCER' || s?.rol === 'POSTULANTE'
+  })
+
   // Normaliza la foto: soporta URLs (http...), Base64 completos o byte[] planos
   readonly fotoUrl = computed(() => {
     const foto = this.perfilService.perfilActual()?.fotoPerfil
@@ -43,10 +61,10 @@ export class Header implements OnInit {
   })
   
   constructor() {
-    // Cuando hay sesión y aún no se cargó el perfil, lo solicita reactivamente
+    // Cuando hay sesión y aún no se cargó el perfil, lo solicita reactivamente si no es empresa
     effect(() => {
       const s = this.auth.session()
-      if (s && !this.perfilService.perfilActual()) {
+      if (s && s.rol !== 'EMPRESA' && !this.perfilService.perfilActual()) {
         this.perfilService.cargarPerfil().subscribe()
       }
     })
@@ -62,6 +80,10 @@ export class Header implements OnInit {
         this.isUserModalOpen.set(false)
       }
     })
+  }
+
+  toggleMenu(): void {
+    this.isMenuOpen.update(v => !v)
   }
 
   toggleUserModal(): void {
