@@ -4,7 +4,9 @@
   <!-- Toast Notification Flotante -->
   @if (toastMsg()) {
     <div
-      class="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 bg-slate-900 text-white text-xs sm:text-sm font-medium rounded-2xl shadow-xl border border-slate-800 transition-all transform animate-in slide-in-from-bottom-5 duration-300">
+      class="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 bg-slate-900 text-white text-xs sm:text-sm font-medium rounded-2xl shadow-xl border border-slate-800 transition-all transform animate-in slide-in-from-bottom-5 duration-300"
+      role="status"
+      aria-live="polite">
       <div class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
@@ -16,13 +18,15 @@
         (click)="toastMsg.set(null)"
         class="ml-2 text-slate-400 hover:text-white cursor-pointer"
         aria-label="Cerrar notificación">
-        ✕
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
       </button>
     </div>
   }
 
   <!-- Header de Página -->
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200/80 pb-6">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/80 pb-6">
     <div class="space-y-1">
       <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-indigo-50 border border-indigo-100/80 text-[11px] font-semibold text-brand-indigo uppercase tracking-wider">
         <span class="w-1.5 h-1.5 rounded-full bg-brand-indigo animate-pulse"></span>
@@ -36,12 +40,12 @@
       </p>
     </div>
 
-    <!-- Botón Principal: Alta Recruiter -->
-    <div class="flex items-center gap-3 shrink-0">
+    <!-- Botón Principal: Alta Recruiter (Responsive) -->
+    <div class="flex items-center gap-3 w-full sm:w-auto shrink-0">
       <button
         type="button"
         (click)="abrirModal()"
-        class="inline-flex items-center gap-2 px-4.5 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold text-white bg-brand-indigo hover:bg-brand-indigo-dark active:scale-95 shadow-md shadow-brand-indigo/25 cursor-pointer transition-all">
+        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold text-white bg-brand-indigo hover:bg-brand-indigo-dark active:scale-95 shadow-md shadow-brand-indigo/25 cursor-pointer transition-all">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
@@ -93,7 +97,7 @@
   </div>
 
   <!-- Filtros y Búsqueda -->
-  <div class="bg-white rounded-3xl border border-slate-200/80 p-4 sm:p-5 shadow-xs space-y-4">
+  <div class="bg-white rounded-3xl border border-slate-200/80 p-4 sm:p-5 shadow-xs space-y-3">
     <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
 
       <!-- Input de Búsqueda -->
@@ -107,20 +111,70 @@
           type="text"
           [(ngModel)]="searchTerm"
           placeholder="Buscar por nombre, apellido, email o área..."
-          class="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-all" />
+          class="w-full pl-10 pr-9 py-2.5 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-all" />
         @if (searchTerm()) {
           <button
             type="button"
             (click)="searchTerm.set('')"
-            class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer">
-            ✕
+            class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
+            aria-label="Limpiar búsqueda">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
         }
       </div>
 
-      <!-- Selector Rápido de Área -->
+      <!-- Control de Filtros para Pantallas Móviles (sm:hidden) -->
       @if (availableAreas().length > 0) {
-        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 text-xs">
+        <div class="sm:hidden flex items-center gap-2">
+          <button
+            type="button"
+            (click)="isMobileFilterOpen.update(v => !v)"
+            class="w-full inline-flex items-center justify-between px-3.5 py-2.5 rounded-2xl border text-xs font-semibold transition-all cursor-pointer {{ selectedArea() !== 'TODAS' ? 'bg-indigo-50 border-brand-indigo/40 text-brand-indigo shadow-xs' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100' }}">
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-brand-indigo shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+              </svg>
+              <span>{{ selectedArea() === 'TODAS' ? 'Filtrar por Área' : 'Área: ' + selectedArea() }}</span>
+            </div>
+            <svg class="w-4 h-4 transition-transform duration-200 text-slate-400 shrink-0" [class.rotate-180]="isMobileFilterOpen()" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Selector desplegable para móviles -->
+        @if (isMobileFilterOpen()) {
+          <div class="sm:hidden p-3.5 bg-slate-50 border border-slate-200/90 rounded-2xl space-y-2 animate-in fade-in zoom-in-95 duration-150">
+            <div class="flex items-center justify-between">
+              <label for="mobile-area-select" class="text-[11px] font-bold text-slate-600 uppercase tracking-wider block">
+                Seleccionar Especialidad o Área:
+              </label>
+              @if (selectedArea() !== 'TODAS') {
+                <button
+                  type="button"
+                  (click)="selectedArea.set('TODAS'); isMobileFilterOpen.set(false)"
+                  class="text-[11px] font-semibold text-brand-indigo hover:underline cursor-pointer">
+                  Restablecer
+                </button>
+              }
+            </div>
+            <select
+              id="mobile-area-select"
+              [(ngModel)]="selectedArea"
+              (change)="isMobileFilterOpen.set(false)"
+              class="w-full px-3.5 py-2.5 text-xs bg-white border border-slate-200 rounded-xl text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo cursor-pointer transition-all">
+              <option value="TODAS">Todas las áreas ({{ recruiters().length }})</option>
+              @for (area of availableAreas(); track area) {
+                <option [value]="area">{{ area }}</option>
+              }
+            </select>
+          </div>
+        }
+
+        <!-- Píldoras de Filtro para Tablets y Desktop (hidden sm:flex) -->
+        <div class="hidden sm:flex items-center gap-1.5 overflow-x-auto text-xs shrink-0">
           <button
             type="button"
             (click)="selectedArea.set('TODAS')"

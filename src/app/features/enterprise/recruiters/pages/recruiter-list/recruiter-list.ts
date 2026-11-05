@@ -22,6 +22,7 @@ export class RecruiterList implements OnInit {
   isModalOpen = signal<boolean>(false)
   searchTerm = signal<string>('')
   selectedArea = signal<string>('TODAS')
+  isMobileFilterOpen = signal<boolean>(false)
   recruiterToDelete = signal<RecruiterResponseDTO | null>(null)
   toastMsg = signal<string | null>(null)
 
