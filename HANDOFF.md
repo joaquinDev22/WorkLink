@@ -25,7 +25,7 @@ Este documento resume la configuración del entorno, herramientas, estado del pr
 |---|---|---|
 | **WL-20** | US-13: Formulario de Perfil y Branding Corporativo | `Finalizado` |
 | **WL-22** | US-14: Panel de Invitación y Gestión de Reclutadores | `Finalizado` |
-| **WL-23** | US-15: Formulario de Publicación y Edición de Vacantes | `Por hacer` |
+| **WL-23** | US-15: Formulario de Publicación y Edición de Vacantes | `Finalizado` |
 | **WL-24** | US-16: Feed Público de Vacantes con Filtros Reactivos | `Por hacer` |
 | **WL-25** | US-17: Diálogo de Postulación con Carta de Presentación | `Por hacer` |
 | **WL-26** | US-18: Gestión de Postulantes y Cambio de Estado | `Por hacer` |
