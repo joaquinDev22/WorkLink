@@ -20,7 +20,7 @@
     <div class="flex items-center gap-3 shrink-0">
       <a
         routerLink="/enterprise/vacantes/nueva"
-        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-brand-indigo hover:bg-brand-indigo-dark active:scale-95 shadow-sm cursor-pointer transition-all">
+        class="btn-tactile-primary w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold cursor-pointer">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
@@ -146,7 +146,7 @@
                   <div class="flex items-center gap-2 shrink-0">
                     <a
                       [routerLink]="['/enterprise/vacantes/editar', v.vacanteId]"
-                      class="px-3.5 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer">
+                      class="btn-tactile-secondary px-3.5 py-1.5 rounded-xl text-xs font-semibold cursor-pointer">
                       Modificar
                     </a>
                   </div>
@@ -288,8 +288,11 @@
           </p>
           <a
             routerLink="/enterprise/recruiters"
-            class="inline-block text-xs font-bold text-indigo-300 hover:text-white transition-colors cursor-pointer">
-            Gestionar reclutadores &rarr;
+            class="btn-tactile-dark inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold cursor-pointer border border-slate-700">
+            <span>Gestionar reclutadores</span>
+            <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
           </a>
         </div>
 
