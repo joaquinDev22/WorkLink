@@ -739,8 +739,10 @@
 
         <form (submit)="$event.preventDefault(); guardarCambios()" class="space-y-4">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div class="space-y-1">
-              <label for="nombre" class="text-xs font-semibold text-slate-700">Nombre*</label>
+            <div class="space-y-1" [class.sm:col-span-2]="perfil()?.rol === 'EMPRESA'">
+              <label for="nombre" class="text-xs font-semibold text-slate-700">
+                {{ perfil()?.rol === 'EMPRESA' ? 'Razón Social / Nombre de Empresa*' : 'Nombre*' }}
+              </label>
               <input
                 type="text"
                 id="nombre"
@@ -754,20 +756,22 @@
               }
             </div>
 
-            <div class="space-y-1">
-              <label for="apellido" class="text-xs font-semibold text-slate-700">Apellido*</label>
-              <input
-                type="text"
-                id="apellido"
-                [formField]="editForm.apellido"
-                [class.input-error]="editForm.apellido().touched() && editForm.apellido().invalid()"
-                class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
-              @if (editForm.apellido().touched() && editForm.apellido().invalid()) {
-                @for (error of editForm.apellido().errors(); track error.kind) {
-                  <span class="text-xs text-rose-500 font-medium block pt-1">{{ error.message }}</span>
+            @if (perfil()?.rol !== 'EMPRESA') {
+              <div class="space-y-1">
+                <label for="apellido" class="text-xs font-semibold text-slate-700">Apellido*</label>
+                <input
+                  type="text"
+                  id="apellido"
+                  [formField]="editForm.apellido"
+                  [class.input-error]="editForm.apellido().touched() && editForm.apellido().invalid()"
+                  class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
+                @if (editForm.apellido().touched() && editForm.apellido().invalid()) {
+                  @for (error of editForm.apellido().errors(); track error.kind) {
+                    <span class="text-xs text-rose-500 font-medium block pt-1">{{ error.message }}</span>
+                  }
                 }
-              }
-            </div>
+              </div>
+            }
           </div>
 
           <div class="space-y-1">

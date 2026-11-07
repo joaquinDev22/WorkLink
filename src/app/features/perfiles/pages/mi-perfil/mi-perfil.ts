@@ -111,18 +111,26 @@ export class MiPerfil implements OnInit {
 
   editForm = form(this.profileModel, (f) => {
 
-    required(f.nombre, {message:'El nombre es obligatorio'})
-    minLength(f.nombre,3,{message:'El nombre debe tener minimo 3 caracteres'})
-    maxLength(f.nombre,10,{message:'El nombre no puede tener mas de 10 caracteres'})
-    pattern(f.nombre, /^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s]+$/, {
-      message:'El nombre no puede incluir caracteres especiales'
-    })
+    required(f.nombre, { message: 'El nombre es obligatorio' })
+    minLength(f.nombre, 2, { message: 'El nombre debe tener al menos 2 caracteres' })
+    maxLength(f.nombre, 80, { message: 'El nombre no debe superar los 80 caracteres' })
 
-    required(f.apellido, {message:'El apellido es obligatorio'})
-    minLength(f.apellido,5,{message:'El apellido debe tener minimo 5 caracteres'})
-    maxLength(f.apellido,10,{message:'El nombre debe tener minimo 10 caracteres'})
-    pattern(f.apellido, /^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s]+$/, {
-      message:'El apellido no puede incluir caracteres especiales'
+    validate(f.apellido, ({ value }) => {
+      if (this.perfil()?.rol === 'EMPRESA') return null
+      const ap = value()?.trim() || ''
+      if (!ap) {
+        return { kind: 'required', message: 'El apellido es obligatorio' }
+      }
+      if (ap.length < 2) {
+        return { kind: 'minLength', message: 'El apellido debe tener al menos 2 caracteres' }
+      }
+      if (ap.length > 50) {
+        return { kind: 'maxLength', message: 'El apellido no debe superar los 50 caracteres' }
+      }
+      if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s]+$/.test(ap)) {
+        return { kind: 'pattern', message: 'El apellido no puede incluir caracteres especiales' }
+      }
+      return null
     })
 
     pattern(f.sitioWeb,/^(https:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{2,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*))?$/,

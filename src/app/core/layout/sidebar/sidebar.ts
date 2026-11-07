@@ -2,6 +2,7 @@ import { Component, model, inject, computed } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { Auth } from '../../auth/services/auth'
 import { NavItem } from '../navbar/navbar'
+import { EmpresaService } from '../../../features/enterprise/empresa-perfil/services/empresa'
 
 @Component({
   imports: [RouterLink],
@@ -12,6 +13,18 @@ import { NavItem } from '../navbar/navbar'
 export class Sidebar {
   isOpen = model<boolean>(false)
   protected auth = inject(Auth)
+  protected empresaService = inject(EmpresaService)
+
+  readonly userDisplayName = computed(() => {
+    const s = this.auth.session()
+    if (s?.rol === 'EMPRESA') return this.empresaService.empresaActual()?.nombre || 'InnovaCorp Technologies'
+    if (s?.rol === 'RECRUITER') return 'Lucía Fernández'
+    return s?.nombreUsuario || 'Usuario'
+  })
+
+  readonly userInitial = computed(() => {
+    return this.userDisplayName().charAt(0).toUpperCase() || 'U'
+  })
 
   readonly navItems = computed<NavItem[]>(() => {
     const session = this.auth.session()

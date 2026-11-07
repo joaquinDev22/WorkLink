@@ -87,27 +87,35 @@ export class Perfil {
       const nombreUsuario = session?.nombreUsuario || 'Usuario Desarrollador'
 
       const mockPerfil: PerfilUsuarioDTO = {
-        nombre: nombreUsuario,
-        apellido: rol === 'EMPRESA' ? undefined : 'Pérez',
-        email: `${nombreUsuario.toLowerCase().replace(/\s+/g, '')}@worklink.app`,
+        nombre: rol === 'EMPRESA' 
+          ? 'InnovaCorp Technologies S.A.' 
+          : (rol === 'RECRUITER' ? 'Lucía' : nombreUsuario),
+        apellido: rol === 'EMPRESA' 
+          ? undefined 
+          : (rol === 'RECRUITER' ? 'Fernández' : 'Pérez'),
+        email: rol === 'EMPRESA'
+          ? 'contacto@innovacorp.com'
+          : (rol === 'RECRUITER' ? 'lucia.fernandez@innovacorp.com' : `${nombreUsuario.toLowerCase().replace(/\s+/g, '')}@worklink.app`),
         rol: rol,
         descripcion: rol === 'EMPRESA'
-          ? 'Empresa tecnológica líder en innovación y desarrollo de software de alto impacto.'
-          : 'Desarrollador Full Stack apasionado por Angular, TypeScript y arquitecturas reactivas con Signals.',
+          ? 'Compañía líder en transformación digital y desarrollo de software corporativo en la nube.'
+          : (rol === 'RECRUITER'
+              ? 'Líder de Adquisición de Talento en InnovaCorp Technologies S.A. Conectando talento IT estratégico.'
+              : 'Desarrollador Full Stack apasionado por Angular, TypeScript y arquitecturas reactivas con Signals.'),
         ubicacion: 'Buenos Aires, Argentina',
         pais: 'Argentina',
-        telefono: '+54 11 5555-0199',
-        sitioWeb: rol === 'EMPRESA' ? 'https://worklink.app' : undefined,
+        telefono: rol === 'EMPRESA' ? '+54 11 4821 9900' : '+54 11 5555-0199',
+        sitioWeb: rol === 'EMPRESA' ? 'https://innovacorp.example.com' : undefined,
         fotoPerfil: undefined,
         bannerPerfil: undefined,
-        habilidades: rol === 'EMPRESA' ? [] : [
+        habilidades: (rol === 'EMPRESA' || rol === 'RECRUITER') ? [] : [
           { habilidadId: 1, nombre: 'Angular v22', nivel: 4 },
           { habilidadId: 2, nombre: 'TypeScript', nivel: 3 },
           { habilidadId: 3, nombre: 'Tailwind CSS', nivel: 4 },
           { habilidadId: 4, nombre: 'Spring Boot 3', nivel: 3 },
           { habilidadId: 5, nombre: 'PostgreSQL', nivel: 2 }
         ],
-        proyectos: rol === 'EMPRESA' ? [] : [
+        proyectos: (rol === 'EMPRESA' || rol === 'RECRUITER') ? [] : [
           {
             id: 1,
             nombre: 'WorkLink Platform UI',

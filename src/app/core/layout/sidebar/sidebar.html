@@ -17,11 +17,11 @@
         <!-- Ficha de Usuario -->
         <div class="flex items-center gap-3 pb-4 border-b border-glass-border">
             <div class="size-10 rounded-full bg-brand-indigo/40 border border-brand-indigo-light/50 flex items-center justify-center text-white font-bold text-sm shadow-inner-indigo">
-                {{ auth.session()?.nombreUsuario?.charAt(0)?.toUpperCase() }}
+                {{ userInitial() }}
             </div>
             <div class="flex flex-col overflow-hidden">
                 <span class="text-xs text-slate-300">Conectado como</span>
-                <span class="text-white text-sm font-semibold truncate">{{ auth.session()?.nombreUsuario }}</span>
+                <span class="text-white text-sm font-semibold truncate">{{ userDisplayName() }}</span>
             </div>
         </div>
         @for (item of navItems(); track item.route) {
