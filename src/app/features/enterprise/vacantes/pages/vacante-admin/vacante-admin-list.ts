@@ -21,8 +21,9 @@ export class VacanteAdminList implements OnInit {
   readonly isLoading = this.vacanteService.isLoading
   readonly isMutating = this.vacanteService.isMutating
 
-  // Control de rol: los postulantes solo son gestionados por RECRUITER
+  // Control de rol: los postulantes solo son gestionados por RECRUITER; ABM reservado a EMPRESA
   readonly esRecruiter = computed(() => this.auth.session()?.rol === 'RECRUITER')
+  readonly esEmpresa = computed(() => this.auth.session()?.rol === 'EMPRESA')
 
   searchTerm = signal<string>('')
   selectedModalidad = signal<string>('TODAS')

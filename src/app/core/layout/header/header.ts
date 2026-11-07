@@ -61,6 +61,19 @@ export class Header implements OnInit {
     return s?.rol === 'FREELANCER' || s?.rol === 'POSTULANTE'
   })
 
+  // Switch de rol dual: Postulante (búsqueda de empleo corporativo) <-> Freelancer (proyectos independientes)
+  readonly isCandidato = computed(() => {
+    const rol = this.auth.session()?.rol
+    return rol === 'POSTULANTE' || rol === 'FREELANCER'
+  })
+
+  togglePostulanteFreelancer(): void {
+    const s = this.auth.session()
+    if (!s) return
+    const nuevoRol = s.rol === 'POSTULANTE' ? 'FREELANCER' : 'POSTULANTE'
+    this.auth.cambiarRol(nuevoRol)
+  }
+
   // Normaliza la foto: soporta URLs (http...), Base64 completos o byte[] planos
   readonly fotoUrl = computed(() => {
     const foto = this.perfilService.perfilActual()?.fotoPerfil

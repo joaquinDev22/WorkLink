@@ -29,6 +29,10 @@ export class VacantePostulantes implements OnInit {
   readonly previewPostulacion = signal<PostulacionResponseDTO | null>(null)
   readonly isPreviewOpen = signal<boolean>(false)
 
+  // Modal para ver y descargar CV en PDF
+  readonly cvPostulacion = signal<PostulacionResponseDTO | null>(null)
+  readonly isCvModalOpen = signal<boolean>(false)
+
   // Modal para coordinar entrevista
   readonly isAgendaModalOpen = signal<boolean>(false)
   readonly agendaPostulacionId = signal<number | null>(null)
@@ -129,5 +133,34 @@ export class VacantePostulantes implements OnInit {
   cerrarPreview(): void {
     this.isPreviewOpen.set(false)
     this.previewPostulacion.set(null)
+  }
+
+  verCV(postulacion: PostulacionResponseDTO): void {
+    this.cvPostulacion.set(postulacion)
+    this.isCvModalOpen.set(true)
+  }
+
+  cerrarCvModal(): void {
+    this.isCvModalOpen.set(false)
+    this.cvPostulacion.set(null)
+  }
+
+  descargarCV(postulacion: PostulacionResponseDTO): void {
+    this.vacanteService.descargarCv(postulacion.employeeId).subscribe({
+      next: (blob) => {
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `CV-${postulacion.nombreCandidato.replace(/\s+/g, '_')}.pdf`
+        a.click()
+        setTimeout(() => URL.revokeObjectURL(url), 1000)
+        this.toastMessage.set(`Descargando CV de ${postulacion.nombreCandidato}`)
+        setTimeout(() => this.toastMessage.set(null), 3000)
+      },
+      error: () => {
+        this.toastMessage.set('No se pudo descargar el CV.')
+        setTimeout(() => this.toastMessage.set(null), 3000)
+      }
+    })
   }
 }

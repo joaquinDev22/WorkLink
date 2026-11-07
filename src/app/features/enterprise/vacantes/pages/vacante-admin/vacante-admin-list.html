@@ -28,35 +28,37 @@
     <div>
       <div class="flex items-center gap-3">
         <h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-          Mis Vacantes
+          {{ esRecruiter() ? 'Vacantes Asignadas' : 'Mis Vacantes' }}
         </h1>
         <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700">
           {{ vacantesActivasCount() }} activas / {{ misVacantes().length }} totales
         </span>
       </div>
       <p class="text-sm text-slate-500 mt-1">
-        Convocatorias activas de talento, condiciones de contratación y perfiles requeridos.
+        {{ esRecruiter() ? 'Búsquedas laborales bajo tu gestión directa para seguimiento de candidatos y coordinación de entrevistas.' : 'Convocatorias activas de talento, condiciones de contratación y perfiles requeridos.' }}
       </p>
     </div>
 
-    <!-- Botón Principal: Publicar Vacante -->
-    <div class="flex items-center gap-3 shrink-0">
-      <a
-        routerLink="/enterprise/vacantes/nueva"
-        class="btn-tactile-primary w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold cursor-pointer">
-        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
-        <span>Publicar Vacante</span>
-      </a>
-    </div>
+    <!-- Botón Principal: Publicar Vacante (Exclusivo Empresa) -->
+    @if (esEmpresa()) {
+      <div class="flex items-center gap-3 shrink-0">
+        <a
+          routerLink="/enterprise/vacantes/nueva"
+          class="btn-tactile-primary w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold cursor-pointer">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          <span>Publicar Vacante</span>
+        </a>
+      </div>
+    }
   </div>
 
   <!-- Contenedor Unificado de Datos (Toolbar Integrada + Tabla) -->
   <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
 
-    <!-- Barra de Herramientas Integrada -->
-    <div class="p-4 sm:px-6 sm:py-4 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <!-- Barra de Herramientas Integrada con Padding Generoso y Bordes Suaves -->
+    <div class="p-5 sm:px-6 sm:py-5 border-b border-slate-100 bg-linear-to-r from-slate-50/70 to-white flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       
       <!-- Búsqueda rápida -->
       <div class="relative flex-1 max-w-md">
@@ -70,7 +72,7 @@
           [(ngModel)]="searchTerm"
           (ngModelChange)="onFilterChange()"
           placeholder="Buscar puesto, tecnología o ubicación..."
-          class="w-full pl-10 pr-9 py-2 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-all" />
+          class="w-full pl-10 pr-9 py-2.5 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-all shadow-inner" />
         @if (searchTerm()) {
           <button
             type="button"
@@ -83,29 +85,29 @@
       </div>
 
       <!-- Segmented Control de Modalidad -->
-      <div class="flex flex-wrap items-center gap-1 bg-slate-200/60 p-1 rounded-xl text-xs shrink-0 scrollbar-none [&::-webkit-scrollbar]:hidden">
+      <div class="flex flex-wrap items-center gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200/80 text-xs shrink-0 scrollbar-none [&::-webkit-scrollbar]:hidden">
         <button
           type="button"
           (click)="selectedModalidad.set('TODAS'); onFilterChange()"
-          class="px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap cursor-pointer transition-all {{ selectedModalidad() === 'TODAS' ? 'tab-tactile-active' : 'tab-tactile-inactive' }}">
+          class="{{ selectedModalidad() === 'TODAS' ? 'tab-tactile-active' : 'tab-tactile-inactive' }}">
           Todas
         </button>
         <button
           type="button"
           (click)="selectedModalidad.set('REMOTO'); onFilterChange()"
-          class="px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap cursor-pointer transition-all {{ selectedModalidad() === 'REMOTO' ? 'tab-tactile-active' : 'tab-tactile-inactive' }}">
+          class="{{ selectedModalidad() === 'REMOTO' ? 'tab-tactile-active' : 'tab-tactile-inactive' }}">
           Remoto
         </button>
         <button
           type="button"
           (click)="selectedModalidad.set('HIBRIDO'); onFilterChange()"
-          class="px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap cursor-pointer transition-all {{ selectedModalidad() === 'HIBRIDO' ? 'tab-tactile-active' : 'tab-tactile-inactive' }}">
+          class="{{ selectedModalidad() === 'HIBRIDO' ? 'tab-tactile-active' : 'tab-tactile-inactive' }}">
           Híbrido
         </button>
         <button
           type="button"
           (click)="selectedModalidad.set('PRESENCIAL'); onFilterChange()"
-          class="px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap cursor-pointer transition-all {{ selectedModalidad() === 'PRESENCIAL' ? 'tab-tactile-active' : 'tab-tactile-inactive' }}">
+          class="{{ selectedModalidad() === 'PRESENCIAL' ? 'tab-tactile-active' : 'tab-tactile-inactive' }}">
           Presencial
         </button>
       </div>
@@ -209,39 +211,56 @@
 
                 <!-- Acciones -->
                 <td class="px-6 py-4 text-right">
-                  <div class="flex items-center justify-end gap-1">
+                  <div class="flex items-center justify-end gap-1.5">
+                    <!-- Ver Detalle Público -->
                     <a
-                      [routerLink]="['/enterprise/vacantes/editar', v.vacanteId]"
-                      class="p-2 rounded-lg text-slate-500 hover:text-brand-indigo hover:bg-slate-100 transition-colors cursor-pointer"
-                      title="Editar vacante"
-                      aria-label="Editar vacante">
+                      [routerLink]="['/enterprise/vacante', v.vacanteId]"
+                      class="p-2 rounded-xl text-slate-500 hover:text-brand-indigo hover:bg-slate-100 transition-colors cursor-pointer"
+                      title="Ver detalle público"
+                      aria-label="Ver detalle público">
                       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                       </svg>
                     </a>
 
+                    <!-- Recruiter: Ver Pipeline de Candidatos -->
                     @if (esRecruiter()) {
                       <a
                         routerLink="/enterprise/postulantes"
-                        class="p-2 rounded-lg text-brand-indigo hover:bg-indigo-50 transition-colors cursor-pointer"
-                        title="Ver candidatos"
-                        aria-label="Ver candidatos">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 text-brand-indigo hover:bg-indigo-100 transition-colors cursor-pointer"
+                        title="Ver pipeline de candidatos"
+                        aria-label="Ver pipeline de candidatos">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                         </svg>
+                        <span>Candidatos</span>
                       </a>
                     }
 
-                    <button
-                      type="button"
-                      (click)="solicitarBaja(v)"
-                      class="p-2 rounded-lg text-rose-500 hover:bg-rose-50 active:scale-95 transition-all cursor-pointer"
-                      title="Eliminar vacante"
-                      aria-label="Eliminar vacante">
-                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    </button>
+                    <!-- Empresa: ABM Completo (Editar y Eliminar) -->
+                    @if (esEmpresa()) {
+                      <a
+                        [routerLink]="['/enterprise/vacantes/editar', v.vacanteId]"
+                        class="p-2 rounded-xl text-slate-500 hover:text-brand-indigo hover:bg-slate-100 active:scale-95 transition-all cursor-pointer"
+                        title="Editar vacante"
+                        aria-label="Editar vacante">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </a>
+
+                      <button
+                        type="button"
+                        (click)="solicitarBaja(v)"
+                        class="p-2 rounded-xl text-rose-500 hover:bg-rose-50 active:scale-95 transition-all cursor-pointer"
+                        title="Eliminar vacante"
+                        aria-label="Eliminar vacante">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    }
                   </div>
                 </td>
 
@@ -275,22 +294,43 @@
 
               <div class="flex items-center gap-1 shrink-0">
                 <a
-                  [routerLink]="['/enterprise/vacantes/editar', v.vacanteId]"
-                  class="p-2 rounded-lg text-slate-600 hover:bg-slate-100"
-                  aria-label="Editar">
+                  [routerLink]="['/enterprise/vacante', v.vacanteId]"
+                  class="p-2 rounded-xl text-slate-500 hover:bg-slate-100"
+                  aria-label="Ver detalle">
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                   </svg>
                 </a>
-                <button
-                  type="button"
-                  (click)="solicitarBaja(v)"
-                  class="p-2 rounded-lg text-rose-500 hover:bg-rose-50"
-                  aria-label="Eliminar">
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                </button>
+                @if (esRecruiter()) {
+                  <a
+                    routerLink="/enterprise/postulantes"
+                    class="p-2 rounded-xl text-brand-indigo hover:bg-indigo-50 font-semibold text-xs inline-flex items-center gap-1"
+                    aria-label="Ver candidatos">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                  </a>
+                }
+                @if (esEmpresa()) {
+                  <a
+                    [routerLink]="['/enterprise/vacantes/editar', v.vacanteId]"
+                    class="p-2 rounded-xl text-slate-600 hover:bg-slate-100"
+                    aria-label="Editar">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </a>
+                  <button
+                    type="button"
+                    (click)="solicitarBaja(v)"
+                    class="p-2 rounded-xl text-rose-500 hover:bg-rose-50"
+                    aria-label="Eliminar">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                }
               </div>
             </div>
 

@@ -22,6 +22,11 @@ export class EntrevistaCalendar implements OnInit {
 
   readonly filterStatus = signal<'TODAS' | 'PROGRAMADA' | 'COMPLETADA' | 'CANCELADA'>('TODAS')
   readonly isAgendaModalOpen = signal<boolean>(false)
+
+  // Modal para confirmar cancelación de entrevista
+  readonly citaACancelar = signal<EntrevistaResponseDTO | null>(null)
+  readonly isCancelModalOpen = signal<boolean>(false)
+
   readonly toastMessage = signal<string | null>(null)
 
   // Candidatos elegibles para agendar (postulaciones en estado ENTREVISTA_AGENDADA o VISUALIZADO)
@@ -77,16 +82,35 @@ export class EntrevistaCalendar implements OnInit {
     }, 4500)
   }
 
-  cancelarCita(e: EntrevistaResponseDTO): void {
-    if (confirm(`¿Deseas cancelar la entrevista con ${e.candidateName}?`)) {
-      this.entrevistaService.cancelarEntrevista(e.id).subscribe({
-        next: () => {
-          this.toastMessage.set(`Entrevista con ${e.candidateName} cancelada.`)
-          setTimeout(() => {
-            this.toastMessage.set(null)
-          }, 3500)
-        }
-      })
-    }
+  abrirModalCancelar(e: EntrevistaResponseDTO): void {
+    this.citaACancelar.set(e)
+    this.isCancelModalOpen.set(true)
+  }
+
+  cerrarModalCancelar(): void {
+    this.isCancelModalOpen.set(false)
+    this.citaACancelar.set(null)
+  }
+
+  confirmarCancelacion(): void {
+    const e = this.citaACancelar()
+    if (!e) return
+
+    this.entrevistaService.cancelarEntrevista(e.id).subscribe({
+      next: () => {
+        this.cerrarModalCancelar()
+        this.toastMessage.set(`Entrevista con ${e.candidateName} cancelada exitosamente.`)
+        setTimeout(() => {
+          this.toastMessage.set(null)
+        }, 3500)
+      },
+      error: () => {
+        this.cerrarModalCancelar()
+        this.toastMessage.set('Error al cancelar la entrevista.')
+        setTimeout(() => {
+          this.toastMessage.set(null)
+        }, 3500)
+      }
+    })
   }
 }

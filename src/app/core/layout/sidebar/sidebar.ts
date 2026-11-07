@@ -26,6 +26,19 @@ export class Sidebar {
     return this.userDisplayName().charAt(0).toUpperCase() || 'U'
   })
 
+  readonly isCandidato = computed(() => {
+    const rol = this.auth.session()?.rol
+    return rol === 'POSTULANTE' || rol === 'FREELANCER'
+  })
+
+  togglePostulanteFreelancer(): void {
+    const s = this.auth.session()
+    if (!s) return
+    const nuevoRol = s.rol === 'POSTULANTE' ? 'FREELANCER' : 'POSTULANTE'
+    this.auth.cambiarRol(nuevoRol)
+    this.cerrar()
+  }
+
   readonly navItems = computed<NavItem[]>(() => {
     const session = this.auth.session()
     const rol = session?.rol

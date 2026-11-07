@@ -248,6 +248,8 @@
 .btn-tactile-primary {
   background: linear-gradient(180deg, var(--color-brand-indigo) 0%, var(--color-brand-indigo-dark) 100%);
   color: #ffffff;
+  border-radius: 0.75rem;
+  font-weight: 600;
   box-shadow: 
     inset 0 1px 1px 0 rgba(255, 255, 255, 0.35),
     inset 0 -2px 0 0 rgba(0, 0, 0, 0.25),
@@ -285,6 +287,8 @@
   background: #ffffff;
   color: #334155;
   border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  font-weight: 600;
   box-shadow: 
     inset 0 1px 0 0 rgba(255, 255, 255, 0.9),
     inset 0 -1px 0 0 rgba(0, 0, 0, 0.05),
@@ -318,6 +322,8 @@
 .btn-tactile-dark {
   background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
   color: #ffffff;
+  border-radius: 0.75rem;
+  font-weight: 600;
   box-shadow: 
     inset 0 1px 1px 0 rgba(255, 255, 255, 0.25),
     inset 0 -2px 0 0 rgba(0, 0, 0, 0.45),
@@ -350,6 +356,8 @@
 .btn-tactile-danger {
   background: linear-gradient(180deg, #e11d48 0%, #be123c 100%);
   color: #ffffff;
+  border-radius: 0.75rem;
+  font-weight: 600;
   box-shadow: 
     inset 0 1px 1px 0 rgba(255, 255, 255, 0.35),
     inset 0 -2px 0 0 rgba(0, 0, 0, 0.25),
@@ -376,20 +384,39 @@
 .tab-tactile-active {
   background: #ffffff;
   color: #0f172a;
+  border-radius: 0.75rem;
+  padding: 0.45rem 0.95rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
   box-shadow: 
     inset 0 1px 0 0 rgba(255, 255, 255, 0.9),
     inset 0 -1px 0 0 rgba(0, 0, 0, 0.06),
     0 1px 3px 0 rgba(15, 23, 42, 0.1);
   transform: scale(1);
+  cursor: pointer;
 }
 
 .tab-tactile-inactive {
   color: #64748b;
-  transition: color 0.15s ease, transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 0.75rem;
+  padding: 0.45rem 0.95rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.15s ease, transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s ease;
 }
 
 .tab-tactile-inactive:hover {
   color: #0f172a;
+  background-color: rgba(255, 255, 255, 0.5);
 }
 
 .tab-tactile-inactive:active {

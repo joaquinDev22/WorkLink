@@ -62,13 +62,13 @@ export const routes: Routes = [
   {
     path: 'vacantes/nueva',
     canActivate: [roleGuard],
-    data: { roles: ['EMPRESA', 'RECRUITER'] },
+    data: { roles: ['EMPRESA'] },
     loadComponent: () => import('./vacantes/pages/vacante-form/vacante-create-edit').then(m => m.VacanteCreateEdit)
   },
   {
     path: 'vacantes/editar/:id',
     canActivate: [roleGuard],
-    data: { roles: ['EMPRESA', 'RECRUITER'] },
+    data: { roles: ['EMPRESA'] },
     loadComponent: () => import('./vacantes/pages/vacante-form/vacante-create-edit').then(m => m.VacanteCreateEdit)
   },
   {

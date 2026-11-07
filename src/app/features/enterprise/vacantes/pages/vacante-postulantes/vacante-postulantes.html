@@ -74,44 +74,46 @@
         }
       </div>
 
-      <!-- Segmented Control de Estados -->
-      <div class="flex flex-wrap items-center gap-1.5 pt-1">
-        <span class="text-xs font-semibold text-slate-500 mr-2">Estado:</span>
-        <button
-          type="button"
-          (click)="estadoFilter.set('TODOS')"
-          [class]="estadoFilter() === 'TODOS' ? 'tab-tactile-active' : 'tab-tactile-inactive'"
-        >
-          Todos
-        </button>
-        <button
-          type="button"
-          (click)="estadoFilter.set('PENDIENTE')"
-          [class]="estadoFilter() === 'PENDIENTE' ? 'tab-tactile-active' : 'tab-tactile-inactive'"
-        >
-          Pendiente
-        </button>
-        <button
-          type="button"
-          (click)="estadoFilter.set('VISUALIZADO')"
-          [class]="estadoFilter() === 'VISUALIZADO' ? 'tab-tactile-active' : 'tab-tactile-inactive'"
-        >
-          Visualizado
-        </button>
-        <button
-          type="button"
-          (click)="estadoFilter.set('ENTREVISTA_AGENDADA')"
-          [class]="estadoFilter() === 'ENTREVISTA_AGENDADA' ? 'tab-tactile-active' : 'tab-tactile-inactive'"
-        >
-          Entrevista Agendada
-        </button>
-        <button
-          type="button"
-          (click)="estadoFilter.set('RECHAZADO')"
-          [class]="estadoFilter() === 'RECHAZADO' ? 'tab-tactile-active' : 'tab-tactile-inactive'"
-        >
-          Rechazado
-        </button>
+      <!-- Segmented Control de Estados con Padding y Contenedor Suave -->
+      <div class="flex flex-wrap items-center gap-2 pt-1">
+        <span class="text-xs font-semibold text-slate-500 mr-1">Estado:</span>
+        <div class="inline-flex flex-wrap items-center gap-1.5 p-1.5 bg-slate-100 rounded-2xl border border-slate-200/80">
+          <button
+            type="button"
+            (click)="estadoFilter.set('TODOS')"
+            [class]="estadoFilter() === 'TODOS' ? 'tab-tactile-active' : 'tab-tactile-inactive'"
+          >
+            Todos
+          </button>
+          <button
+            type="button"
+            (click)="estadoFilter.set('PENDIENTE')"
+            [class]="estadoFilter() === 'PENDIENTE' ? 'tab-tactile-active' : 'tab-tactile-inactive'"
+          >
+            Pendiente
+          </button>
+          <button
+            type="button"
+            (click)="estadoFilter.set('VISUALIZADO')"
+            [class]="estadoFilter() === 'VISUALIZADO' ? 'tab-tactile-active' : 'tab-tactile-inactive'"
+          >
+            Visualizado
+          </button>
+          <button
+            type="button"
+            (click)="estadoFilter.set('ENTREVISTA_AGENDADA')"
+            [class]="estadoFilter() === 'ENTREVISTA_AGENDADA' ? 'tab-tactile-active' : 'tab-tactile-inactive'"
+          >
+            Entrevista Agendada
+          </button>
+          <button
+            type="button"
+            (click)="estadoFilter.set('RECHAZADO')"
+            [class]="estadoFilter() === 'RECHAZADO' ? 'tab-tactile-active' : 'tab-tactile-inactive'"
+          >
+            Rechazado
+          </button>
+        </div>
       </div>
     </div>
 
@@ -198,14 +200,19 @@
                 <!-- Columna CV -->
                 <td class="py-4 px-6 whitespace-nowrap">
                   @if (postulacion.tieneCvSubido) {
-                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                      <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                    <button
+                      type="button"
+                      (click)="verCV(postulacion)"
+                      class="btn-tactile-secondary text-xs px-3 py-1.5 inline-flex items-center gap-1.5 text-slate-800 hover:text-indigo-600 cursor-pointer"
+                      title="Ver y descargar CV del postulante"
+                    >
+                      <svg class="w-4 h-4 text-rose-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                       </svg>
-                      PDF Adjunto
-                    </span>
+                      <span class="font-semibold">Ver CV (PDF)</span>
+                    </button>
                   } @else {
-                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full bg-slate-100 text-slate-500 border border-slate-200">
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full bg-slate-100 text-slate-400 border border-slate-200">
                       Sin CV
                     </span>
                   }
@@ -377,6 +384,96 @@
               class="btn-tactile-secondary text-xs sm:text-sm px-4 py-2"
             >
               Cerrar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Modal de Previsualización y Descarga de CV -->
+  @if (isCvModalOpen() && cvPostulacion()) {
+    <div
+      class="fixed inset-0 z-50 overflow-y-auto"
+      role="dialog"
+      aria-modal="true"
+      (keydown.escape)="cerrarCvModal()"
+    >
+      <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity" (click)="cerrarCvModal()"></div>
+
+      <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+        <div class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-slate-200/90 animate-modal-card">
+          <!-- Encabezado Modal -->
+          <div class="border-b border-slate-100 px-6 py-5 bg-linear-to-r from-slate-50 to-white flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-2xl bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600 shadow-inner">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-base font-bold text-slate-900 leading-tight">Currículum Vitae Oficial</h3>
+                <p class="text-xs text-slate-500 mt-0.5">{{ cvPostulacion()?.nombreCandidato }} • {{ cvPostulacion()?.puestoVacante }}</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              (click)="cerrarCvModal()"
+              class="rounded-xl p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors cursor-pointer"
+              aria-label="Cerrar modal"
+            >
+              ✕
+            </button>
+          </div>
+
+          <!-- Contenido del Modal -->
+          <div class="p-6 space-y-4">
+            <div class="rounded-2xl border border-slate-200 bg-slate-50/80 p-5 flex items-center justify-between gap-4">
+              <div class="flex items-center gap-3.5">
+                <div class="w-12 h-12 rounded-xl bg-rose-100 text-rose-600 font-black text-sm flex items-center justify-center shrink-0 shadow-inner">
+                  PDF
+                </div>
+                <div>
+                  <h4 class="font-bold text-slate-900 text-sm">CV_{{ cvPostulacion()?.nombreCandidato?.replace(' ', '_') }}.pdf</h4>
+                  <p class="text-xs text-slate-500 mt-0.5">Documento oficial verificado • Formato PDF</p>
+                  <span class="inline-flex items-center gap-1 text-[11px] text-emerald-600 font-semibold mt-1">
+                    ✓ Disponible para descarga y revisión técnica
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Datos del postulante -->
+            <div class="grid grid-cols-2 gap-3 text-xs bg-white rounded-2xl p-4 border border-slate-100">
+              <div>
+                <span class="block text-slate-400 font-medium text-[10px] uppercase">Email</span>
+                <span class="font-semibold text-slate-800 truncate block">{{ cvPostulacion()?.emailCandidato }}</span>
+              </div>
+              <div>
+                <span class="block text-slate-400 font-medium text-[10px] uppercase">Postulación</span>
+                <span class="font-semibold text-slate-800">{{ cvPostulacion()?.fechaPostulacion }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer con Botones Táctiles -->
+          <div class="border-t border-slate-100 bg-slate-50/60 px-6 py-4 flex flex-col sm:flex-row items-center justify-end gap-3">
+            <button
+              type="button"
+              (click)="cerrarCvModal()"
+              class="btn-tactile-secondary w-full sm:w-auto text-xs px-4 py-2 cursor-pointer"
+            >
+              Cerrar
+            </button>
+            <button
+              type="button"
+              (click)="descargarCV(cvPostulacion()!)"
+              class="btn-tactile-primary w-full sm:w-auto text-xs px-4 py-2 inline-flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              <span>Descargar Documento (PDF)</span>
             </button>
           </div>
         </div>
