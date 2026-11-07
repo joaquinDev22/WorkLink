@@ -2,7 +2,7 @@ import { inject, Service, signal } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
 import { Observable, of, tap, delay } from 'rxjs'
 import { environment } from '../../../../../environments/environment'
-import { EmpresaRequestDTO, EmpresaResponseDTO } from '../models/empresa.models'
+import { EmpresaRequestDTO, EmpresaResponseDTO, DashboardStatsResponseDTO } from '../models/empresa.models'
 
 @Service()
 export class EmpresaService {
@@ -119,5 +119,20 @@ export class EmpresaService {
         this.empresaActual.update((emp) => (emp ? { ...emp, banner: res.bannerUrl } : null))
       })
     )
+  }
+
+  // Métricas agregadas para el dashboard corporativo (GET /api/v1/empresas/dashboard)
+  getDashboardStats(): Observable<DashboardStatsResponseDTO> {
+    if (environment.bypassAuth) {
+      const stats: DashboardStatsResponseDTO = {
+        totalVacantes: 3,
+        totalPostulaciones: 38,
+        entrevistasPendientes: 6,
+        contratacionesEfectuadas: 4
+      }
+      return of(stats).pipe(delay(200))
+    }
+
+    return this.client.get<DashboardStatsResponseDTO>(`${this.API_URL}/dashboard`)
   }
 }

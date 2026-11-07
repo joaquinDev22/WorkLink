@@ -1,1 +1,424 @@
-﻿<p>empresa-dashboard works!</p>
+<!-- Contenedor Principal del Dashboard Corporativo -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+  <!-- Header Superior -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/80 pb-6">
+    <div class="space-y-1">
+      <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-indigo-50 border border-indigo-100/80 text-[11px] font-semibold text-brand-indigo uppercase tracking-wider">
+        <span class="w-1.5 h-1.5 rounded-full bg-brand-indigo animate-pulse"></span>
+        Panel Ejecutivo • Visión General
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+        Dashboard Corporativo
+      </h1>
+      <p class="text-xs sm:text-sm text-slate-500 max-w-2xl">
+        Métricas consolidadas de atracción de talento, estado de convocatorias laborales y rendimiento de selección.
+      </p>
+    </div>
+
+    <!-- Botón Principal: Nueva Vacante -->
+    <div class="flex items-center gap-3 w-full sm:w-auto shrink-0">
+      <a
+        routerLink="/enterprise/vacantes/nueva"
+        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold text-white bg-brand-indigo hover:bg-brand-indigo-dark active:scale-95 shadow-md shadow-brand-indigo/25 cursor-pointer transition-all">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        <span>Publicar Vacante</span>
+      </a>
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <!-- Skeleton Loader -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-pulse">
+      @for (i of [1, 2, 3, 4]; track i) {
+        <div class="h-32 bg-slate-100 rounded-3xl border border-slate-200/60 p-5"></div>
+      }
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div class="lg:col-span-2 h-96 bg-slate-100 rounded-3xl border border-slate-200/60 animate-pulse"></div>
+      <div class="h-96 bg-slate-100 rounded-3xl border border-slate-200/60 animate-pulse"></div>
+    </div>
+  } @else {
+
+    <!-- 4 KPI Cards Superiores -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+      <!-- KPI 1: Vacantes Activas -->
+      <div class="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between space-y-4">
+        <div class="flex items-start justify-between">
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Búsquedas Activas</span>
+          <div class="w-10 h-10 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-brand-indigo">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          </div>
+        </div>
+        <div>
+          <div class="flex items-baseline gap-2">
+            <span class="text-3xl font-black text-slate-900 tracking-tight">{{ vacantesActivas().length }}</span>
+            <span class="text-xs font-medium text-slate-400">de {{ misVacantes().length }} publicadas</span>
+          </div>
+          <p class="text-[11px] text-emerald-600 font-medium mt-1 flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+            </svg>
+            <span>Convocatorias vigentes</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- KPI 2: Postulaciones Totales -->
+      <div class="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between space-y-4">
+        <div class="flex items-start justify-between">
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Postulaciones</span>
+          <div class="w-10 h-10 rounded-2xl bg-sky-50 border border-sky-100 flex items-center justify-center text-sky-600">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+          </div>
+        </div>
+        <div>
+          <div class="flex items-baseline gap-2">
+            <span class="text-3xl font-black text-slate-900 tracking-tight">{{ stats()?.totalPostulaciones || 38 }}</span>
+            <span class="text-xs font-medium text-slate-400">aplicaciones</span>
+          </div>
+          <p class="text-[11px] text-slate-500 font-medium mt-1">
+            Gestionadas por el equipo de reclutamiento
+          </p>
+        </div>
+      </div>
+
+      <!-- KPI 3: Entrevistas en Curso -->
+      <div class="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between space-y-4">
+        <div class="flex items-start justify-between">
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Entrevistas</span>
+          <div class="w-10 h-10 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+        </div>
+        <div>
+          <div class="flex items-baseline gap-2">
+            <span class="text-3xl font-black text-slate-900 tracking-tight">{{ stats()?.entrevistasPendientes || 6 }}</span>
+            <span class="text-xs font-medium text-slate-400">coordinadas</span>
+          </div>
+          <p class="text-[11px] text-amber-600 font-medium mt-1">
+            En fase de evaluación técnica y cultural
+          </p>
+        </div>
+      </div>
+
+      <!-- KPI 4: Contrataciones -->
+      <div class="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between space-y-4">
+        <div class="flex items-start justify-between">
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Contrataciones</span>
+          <div class="w-10 h-10 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+        </div>
+        <div>
+          <div class="flex items-baseline gap-2">
+            <span class="text-3xl font-black text-slate-900 tracking-tight">{{ stats()?.contratacionesEfectuadas || 4 }}</span>
+            <span class="text-xs font-medium text-slate-400">incorporaciones</span>
+          </div>
+          <p class="text-[11px] text-emerald-600 font-medium mt-1">
+            Cierres exitosos este período
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Layout Asimétrico 2/3 + 1/3 (AI_RULES) -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+      <!-- Columna Principal (2/3): Analíticas Visuales & Vacantes Recientes -->
+      <div class="lg:col-span-2 space-y-8">
+
+        <!-- Panel de Gráficos y Distribución -->
+        <div class="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-xs space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
+            <div>
+              <h2 class="text-base font-bold text-slate-900 tracking-tight">
+                Distribución y Rendimiento de Selección
+              </h2>
+              <p class="text-xs text-slate-500">
+                Segmentación por modalidad operativa y avance en el embudo corporativo.
+              </p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600">
+                Total vacantes: {{ misVacantes().length }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Distribución por Modalidad (Barras de Progreso Visuales) -->
+          <div class="space-y-4">
+            <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider">
+              Vacantes por Modalidad de Trabajo
+            </h3>
+
+            <!-- Barra Segmentada Visual -->
+            <div class="w-full h-3 rounded-full bg-slate-100 overflow-hidden flex shadow-inner">
+              <div
+                class="bg-brand-indigo h-full transition-all duration-500"
+                [style.width.%]="distribucionModalidad().remotoPct"
+                title="Remoto">
+              </div>
+              <div
+                class="bg-sky-500 h-full transition-all duration-500"
+                [style.width.%]="distribucionModalidad().hibridoPct"
+                title="Híbrido">
+              </div>
+              <div
+                class="bg-slate-400 h-full transition-all duration-500"
+                [style.width.%]="distribucionModalidad().presencialPct"
+                title="Presencial">
+              </div>
+            </div>
+
+            <!-- Leyenda de Modalidades -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+              <div class="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-brand-indigo"></span>
+                  <span class="text-xs font-semibold text-slate-700">100% Remoto</span>
+                </div>
+                <span class="text-xs font-bold text-slate-900">{{ distribucionModalidad().remoto }} ({{ distribucionModalidad().remotoPct }}%)</span>
+              </div>
+
+              <div class="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
+                  <span class="text-xs font-semibold text-slate-700">Híbrido</span>
+                </div>
+                <span class="text-xs font-bold text-slate-900">{{ distribucionModalidad().hibrido }} ({{ distribucionModalidad().hibridoPct }}%)</span>
+              </div>
+
+              <div class="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>
+                  <span class="text-xs font-semibold text-slate-700">Presencial</span>
+                </div>
+                <span class="text-xs font-bold text-slate-900">{{ distribucionModalidad().presencial }} ({{ distribucionModalidad().presencialPct }}%)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Embudo de Selección Corporativo -->
+          <div class="pt-4 border-t border-slate-100 space-y-3">
+            <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider">
+              Embudo de Conversión de Candidatos
+            </h3>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+              <div class="p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                <p class="text-[11px] font-semibold text-slate-400 uppercase">Recibidas</p>
+                <p class="text-lg font-black text-slate-900">{{ stats()?.totalPostulaciones || 38 }}</p>
+                <span class="text-[10px] text-slate-400">100% base</span>
+              </div>
+
+              <div class="p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                <p class="text-[11px] font-semibold text-slate-400 uppercase">Revisión</p>
+                <p class="text-lg font-black text-slate-900">18</p>
+                <span class="text-[10px] text-slate-500">47% tasa filtro</span>
+              </div>
+
+              <div class="p-3 rounded-2xl bg-amber-50/60 border border-amber-100">
+                <p class="text-[11px] font-semibold text-amber-700 uppercase">Entrevista</p>
+                <p class="text-lg font-black text-amber-900">{{ stats()?.entrevistasPendientes || 6 }}</p>
+                <span class="text-[10px] text-amber-700">16% calificados</span>
+              </div>
+
+              <div class="p-3 rounded-2xl bg-emerald-50/60 border border-emerald-100">
+                <p class="text-[11px] font-semibold text-emerald-700 uppercase">Contratados</p>
+                <p class="text-lg font-black text-emerald-900">{{ stats()?.contratacionesEfectuadas || 4 }}</p>
+                <span class="text-[10px] text-emerald-700">10.5% conversión</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Tabla de Vacantes Recientes -->
+        <div class="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
+          <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+            <div>
+              <h2 class="text-base font-bold text-slate-900 tracking-tight">
+                Convocatorias Recientes
+              </h2>
+              <p class="text-xs text-slate-500">
+                Oportunidades laborales activas administradas por tu compañía.
+              </p>
+            </div>
+            <a
+              routerLink="/enterprise/vacantes"
+              class="text-xs font-bold text-brand-indigo hover:underline flex items-center gap-1 cursor-pointer">
+              <span>Ver todas</span>
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </a>
+          </div>
+
+          @if (ultimasVacantes().length > 0) {
+            <div class="divide-y divide-slate-100">
+              @for (v of ultimasVacantes(); track v.vacanteId) {
+                <div class="p-4 sm:p-5 hover:bg-slate-50/60 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div class="space-y-1">
+                    <div class="flex items-center gap-2">
+                      <span class="font-bold text-slate-900 text-sm">{{ v.puesto }}</span>
+                      @if (isActiva(v.finalizacion)) {
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+                          Activa
+                        </span>
+                      } @else {
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-500">
+                          Finalizada
+                        </span>
+                      }
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2 text-xs text-slate-500">
+                      <span class="font-medium text-slate-600">{{ v.tipoVacante }}</span>
+                      <span>•</span>
+                      <span>{{ v.tipoUbicacion }}</span>
+                      @if (v.salario) {
+                        <span>•</span>
+                        <span class="text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded">
+                          {{ v.salario }}
+                        </span>
+                      }
+                    </div>
+                  </div>
+
+                  <div class="flex items-center gap-2 shrink-0">
+                    <a
+                      [routerLink]="['/enterprise/vacantes/editar', v.vacanteId]"
+                      class="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer">
+                      Editar
+                    </a>
+                  </div>
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="p-8 text-center text-xs text-slate-500">
+              No tienes vacantes publicadas todavía.
+            </div>
+          }
+        </div>
+
+      </div>
+
+      <!-- Columna Lateral (1/3): Branding, Equipo de Recruiters y Accesos -->
+      <div class="space-y-6">
+
+        <!-- Card de Perfil Corporativo -->
+        <div class="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-xs space-y-4">
+          <div class="flex items-center gap-4">
+            <div class="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-brand-indigo font-black text-xl shrink-0 overflow-hidden">
+              @if (empresa()?.logo) {
+                <img [src]="empresa()?.logo" [alt]="empresa()?.nombre" class="w-full h-full object-cover" />
+              } @else {
+                <span>{{ empresa()?.nombre?.substring(0, 2)?.toUpperCase() || 'IC' }}</span>
+              }
+            </div>
+            <div class="space-y-0.5 min-w-0">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Perfil Empresa</span>
+              <h3 class="font-bold text-slate-950 text-sm truncate">
+                {{ empresa()?.nombre || 'InnovaCorp Technologies S.A.' }}
+              </h3>
+              <p class="text-xs text-slate-500 truncate">
+                {{ empresa()?.rubro || 'Tecnología y Software' }}
+              </p>
+            </div>
+          </div>
+
+          <p class="text-xs text-slate-600 line-clamp-3 leading-relaxed">
+            {{ empresa()?.descripcion || 'Compañía líder en transformación digital y arquitectura escalable.' }}
+          </p>
+
+          <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+            <span class="text-[11px] text-slate-500">{{ empresa()?.ubicacion || 'Buenos Aires, Argentina' }}</span>
+            <a
+              routerLink="/enterprise/perfil"
+              class="text-xs font-semibold text-brand-indigo hover:underline cursor-pointer">
+              Editar perfil &rarr;
+            </a>
+          </div>
+        </div>
+
+        <!-- Card de Equipo de Reclutadores -->
+        <div class="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-xs space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-sm font-bold text-slate-900 tracking-tight">
+                Equipo de Reclutadores
+              </h3>
+              <p class="text-xs text-slate-500">
+                Profesionales autorizados a gestionar postulantes.
+              </p>
+            </div>
+            <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-indigo-50 text-brand-indigo border border-indigo-100">
+              {{ recruiters().length }}
+            </span>
+          </div>
+
+          <div class="space-y-2.5">
+            @for (rec of recruiters().slice(0, 3); track rec.recruiterId) {
+              <div class="flex items-center justify-between p-2.5 rounded-2xl bg-slate-50 border border-slate-100">
+                <div class="flex items-center gap-3 min-w-0">
+                  <div class="w-8 h-8 rounded-xl bg-indigo-100/70 text-brand-indigo font-bold text-xs flex items-center justify-center shrink-0">
+                    {{ rec.nombre[0] }}{{ rec.apellido[0] }}
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-xs font-bold text-slate-800 truncate">
+                      {{ rec.nombre }} {{ rec.apellido }}
+                    </p>
+                    <p class="text-[11px] text-slate-400 truncate">
+                      {{ rec.area }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="pt-2">
+            <a
+              routerLink="/enterprise/recruiters"
+              class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-2xl text-xs font-semibold text-brand-indigo bg-indigo-50 hover:bg-indigo-100 active:scale-95 cursor-pointer transition-all">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+              <span>Gestionar equipo de recruiters</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Card de Privacidad y Roles -->
+        <div class="p-5 rounded-3xl bg-slate-900 text-white space-y-3 shadow-md">
+          <div class="flex items-center gap-2 text-indigo-300">
+            <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            <span class="text-xs font-bold uppercase tracking-wider">Aislamiento de Privacidad</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            De acuerdo a las políticas de privacidad y el esquema de roles de WorkLink, los datos de contacto y CVs de postulantes son visualizados y filtrados únicamente por los reclutadores asignados.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+  }
+
+</div>

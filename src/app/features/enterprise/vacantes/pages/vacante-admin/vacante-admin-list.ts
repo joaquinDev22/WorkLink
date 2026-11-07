@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms'
 import { RouterLink } from '@angular/router'
 import { VacanteService } from '../../services/vacante'
 import { VacanteResponseDTO } from '../../models/vacante.models'
+import { Auth } from '../../../../../core/auth/services/auth'
 
 @Component({
   selector: 'app-vacante-admin-list',
@@ -14,10 +15,14 @@ import { VacanteResponseDTO } from '../../models/vacante.models'
 })
 export class VacanteAdminList implements OnInit {
   protected vacanteService = inject(VacanteService)
+  protected auth = inject(Auth)
 
   readonly misVacantes = this.vacanteService.misVacantes
   readonly isLoading = this.vacanteService.isLoading
   readonly isMutating = this.vacanteService.isMutating
+
+  // Control de rol: los postulantes solo son gestionados por RECRUITER
+  readonly esRecruiter = computed(() => this.auth.session()?.rol === 'RECRUITER')
 
   searchTerm = signal<string>('')
   selectedModalidad = signal<string>('TODAS')

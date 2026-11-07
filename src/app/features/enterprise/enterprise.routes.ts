@@ -48,7 +48,7 @@ export const routes: Routes = [
   {
     path: 'postulantes',
     canActivate: [roleGuard],
-    data: { roles: ['RECRUITER', 'EMPRESA'] },
+    data: { roles: ['RECRUITER'] },
     loadComponent: () => import('./vacantes/pages/vacante-postulantes/vacante-postulantes').then(m => m.VacantePostulantes)
   },
 
