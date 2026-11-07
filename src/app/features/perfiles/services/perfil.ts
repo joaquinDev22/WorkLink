@@ -25,9 +25,6 @@ export class Perfil {
     const itemsFaltantes: ItemFaltantePerfil[] = []
     let puntos = 0
 
-    if (p.tieneCv) puntos += 20
-    else itemsFaltantes.push({ clave: 'cv', label: 'Adjuntar CV (PDF)' })
-
     if (p.rol === 'EMPRESA') {
       if (p.fotoPerfil || p.logo) puntos += 25
       else itemsFaltantes.push({ clave: 'foto', label: 'Logotipo de la empresa' })
@@ -40,8 +37,23 @@ export class Perfil {
 
       if (p.ubicacion || p.pais) puntos += 25
       else itemsFaltantes.push({ clave: 'ubicacion', label: 'País o sede principal' })
+    } else if (p.rol === 'RECRUITER') {
+      if (p.fotoPerfil) puntos += 25
+      else itemsFaltantes.push({ clave: 'foto', label: 'Foto de perfil' })
+
+      if (p.bannerPerfil) puntos += 25
+      else itemsFaltantes.push({ clave: 'banner', label: 'Banner de portada' })
+
+      if (p.descripcion && p.descripcion.trim().length > 15) puntos += 25
+      else itemsFaltantes.push({ clave: 'descripcion', label: 'Resumen de trayectoria' })
+
+      if (p.telefono) puntos += 25
+      else itemsFaltantes.push({ clave: 'telefono', label: 'Teléfono corporativo' })
     } else {
-      // FREELANCER, POSTULANTE, RECRUITER, CLIENTE
+      // FREELANCER, POSTULANTE
+      if (p.tieneCv) puntos += 20
+      else itemsFaltantes.push({ clave: 'cv', label: 'Adjuntar CV (PDF)' })
+
       if (p.fotoPerfil) puntos += 20
       else itemsFaltantes.push({ clave: 'foto', label: 'Foto de perfil' })
 

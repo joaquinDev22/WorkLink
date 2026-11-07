@@ -1,8 +1,9 @@
-import { Component, inject, OnInit, signal } from '@angular/core'
+import { Component, computed, inject, OnInit, signal } from '@angular/core'
 import { ActivatedRoute, RouterLink } from '@angular/router'
 import { VacanteService } from '../../services/vacante'
 import { PostulacionResponseDTO, VacanteResponseDTO } from '../../models/vacante.models'
 import { PostulacionModal } from '../../components/postulacion-modal/postulacion-modal'
+import { Auth } from '../../../../../core/auth/services/auth'
 
 @Component({
   imports: [RouterLink, PostulacionModal],
@@ -13,6 +14,7 @@ import { PostulacionModal } from '../../components/postulacion-modal/postulacion
 export class VacanteDetail implements OnInit {
   private route = inject(ActivatedRoute)
   protected vacanteService = inject(VacanteService)
+  private auth = inject(Auth)
 
   readonly vacante = signal<VacanteResponseDTO | null>(null)
   readonly isCargando = signal<boolean>(true)
@@ -20,6 +22,11 @@ export class VacanteDetail implements OnInit {
 
   readonly isModalOpen = signal<boolean>(false)
   readonly toastMessage = signal<string | null>(null)
+
+  readonly puedePostular = computed(() => {
+    const rol = this.auth.session()?.rol
+    return rol === 'POSTULANTE' || rol === 'FREELANCER'
+  })
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id')
@@ -53,6 +60,7 @@ export class VacanteDetail implements OnInit {
   }
 
   abrirModal(): void {
+    if (!this.puedePostular()) return
     this.isModalOpen.set(true)
   }
 

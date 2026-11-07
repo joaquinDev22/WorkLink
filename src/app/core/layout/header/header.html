@@ -231,8 +231,19 @@
                                     }
                                 </div>
 
-                                <!-- 4. Separador y Logout -->
-                                <div class="pt-2 border-t border-slate-100">
+                                <!-- 4. Separador, Accesibilidad y Logout -->
+                                <div class="pt-2 border-t border-slate-100 space-y-1">
+                                    <!-- Hooks para accesibilidad y preferencias visuales -->
+                                    <div class="flex items-center justify-between px-3 py-2 rounded-xl text-slate-400 text-xs select-none">
+                                        <div class="flex items-center gap-2.5">
+                                            <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                                            </svg>
+                                            <span class="font-medium">Accesibilidad y tema</span>
+                                        </div>
+                                        <span class="text-[9px] bg-slate-100 text-slate-400 px-1.5 py-0.5 rounded font-mono font-bold tracking-wider">Próximamente</span>
+                                    </div>
+
                                     <button 
                                         type="button"
                                         (click)="auth.logout(); cerrarUserModal()"

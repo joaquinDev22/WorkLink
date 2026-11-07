@@ -6,6 +6,7 @@ import { VacanteCard } from '../../components/vacante-card/vacante-card'
 import { PostulacionModal } from '../../components/postulacion-modal/postulacion-modal'
 import { VacanteService } from '../../services/vacante'
 import { ModalidadTrabajo, PostulacionResponseDTO, VacanteResponseDTO } from '../../models/vacante.models'
+import { Auth } from '../../../../../core/auth/services/auth'
 
 @Component({
   imports: [VacanteCard, PostulacionModal],
@@ -15,7 +16,13 @@ import { ModalidadTrabajo, PostulacionResponseDTO, VacanteResponseDTO } from '..
 })
 export class VacanteCatalogo implements OnInit {
   protected vacanteService = inject(VacanteService)
+  private auth = inject(Auth)
   private destroyRef = inject(DestroyRef)
+
+  readonly puedePostular = computed(() => {
+    const rol = this.auth.session()?.rol
+    return rol === 'POSTULANTE' || rol === 'FREELANCER'
+  })
 
   // Estados reactivos de filtrado
   readonly searchFilter = signal<string>('')
@@ -88,6 +95,7 @@ export class VacanteCatalogo implements OnInit {
   }
 
   abrirModalPostulacion(vacante: VacanteResponseDTO): void {
+    if (!this.puedePostular()) return
     this.selectedVacante.set(vacante)
     this.isModalOpen.set(true)
   }

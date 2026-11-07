@@ -85,28 +85,30 @@
       Ver Detalle
     </a>
 
-    @if (yaPostulado()) {
-      <button
-        type="button"
-        disabled
-        class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-slate-100 text-slate-500 border border-slate-200 cursor-not-allowed opacity-90"
-      >
-        <svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-        </svg>
-        Ya postulado
-      </button>
-    } @else {
-      <button
-        type="button"
-        (click)="onPostular($event)"
-        class="btn-tactile-primary text-xs sm:text-sm px-4 py-2 inline-flex items-center gap-1.5"
-      >
-        <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-        </svg>
-        Postularme
-      </button>
+    @if (puedePostular()) {
+      @if (yaPostulado()) {
+        <button
+          type="button"
+          disabled
+          class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-slate-100 text-slate-500 border border-slate-200 cursor-not-allowed opacity-90"
+        >
+          <svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+          </svg>
+          Ya postulado
+        </button>
+      } @else {
+        <button
+          type="button"
+          (click)="onPostular($event)"
+          class="btn-tactile-primary text-xs sm:text-sm px-4 py-2 inline-flex items-center gap-1.5"
+        >
+          <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+          </svg>
+          Postularme
+        </button>
+      }
     }
   </div>
 </article>
