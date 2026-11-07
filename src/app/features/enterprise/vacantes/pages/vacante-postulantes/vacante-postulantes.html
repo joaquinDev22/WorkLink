@@ -1,1 +1,370 @@
-﻿<p>vacante-postulantes works!</p>
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+  <!-- Toast flotante de confirmación de estado -->
+  @if (toastMessage()) {
+    <div class="fixed top-6 right-6 z-50 rounded-2xl bg-slate-900 text-white px-5 py-3.5 shadow-xl flex items-center gap-3 animate-modal-card border border-slate-700">
+      <svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+      </svg>
+      <span class="text-xs sm:text-sm font-semibold">{{ toastMessage() }}</span>
+    </div>
+  }
+
+  <!-- Encabezado contextual según Rol -->
+  <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+        @if (isRecruiter()) {
+          Pipeline de Candidatos y Postulaciones
+        } @else {
+          Mis Postulaciones Laborales
+        }
+      </h1>
+      <p class="text-sm text-slate-500 mt-1">
+        @if (isRecruiter()) {
+          Supervisa talentos aplicados, revisa cartas de presentación y actualiza las etapas de contratación.
+        } @else {
+          Seguimiento en tiempo real del estado de tus postulaciones en búsquedas abiertas.
+        }
+      </p>
+    </div>
+
+    <div class="inline-flex items-center gap-2 self-start sm:self-auto px-3.5 py-1.5 rounded-xl bg-slate-100 border border-slate-200/90 text-xs font-semibold text-slate-700">
+      <span class="w-2 h-2 rounded-full bg-indigo-600"></span>
+      <span>{{ postulacionesFiltradas().length }} candidaturas registradas</span>
+    </div>
+  </header>
+
+  <!-- Superficie de Tabla Integrada con Toolbar -->
+  <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
+    <!-- Barra de Filtros Superior -->
+    <div class="p-5 border-b border-slate-100 space-y-4 bg-gradient-to-r from-slate-50/50 to-white">
+      <div class="flex flex-col md:flex-row md:items-center gap-4 justify-between">
+        <!-- Buscador -->
+        <div class="relative flex-1 max-w-md">
+          <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <input
+            type="text"
+            [value]="searchFilter()"
+            (input)="searchFilter.set($any($event.target).value)"
+            placeholder="Buscar por candidato, email o puesto..."
+            class="w-full pl-10 pr-4 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 bg-white placeholder-slate-400 text-slate-800 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all shadow-inner"
+          />
+        </div>
+
+        <!-- Filtro por Vacante -->
+        @if (isRecruiter()) {
+          <div class="flex items-center gap-2 shrink-0">
+            <label for="filtro-vacante" class="text-xs font-semibold text-slate-500">Vacante:</label>
+            <select
+              id="filtro-vacante"
+              [value]="vacanteFilter()"
+              (change)="vacanteFilter.set($any($event.target).value === 'TODAS' ? 'TODAS' : +$any($event.target).value)"
+              class="text-xs sm:text-sm rounded-xl border border-slate-200 bg-white px-3 py-2 font-medium text-slate-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+            >
+              <option value="TODAS">Todas las vacantes asignadas</option>
+              @for (v of vacantesDisponibles(); track v.vacanteId) {
+                <option [value]="v.vacanteId">{{ v.puesto }}</option>
+              }
+            </select>
+          </div>
+        }
+      </div>
+
+      <!-- Segmented Control de Estados -->
+      <div class="flex flex-wrap items-center gap-1.5 pt-1">
+        <span class="text-xs font-semibold text-slate-500 mr-2">Estado:</span>
+        <button
+          type="button"
+          (click)="estadoFilter.set('TODOS')"
+          [class]="estadoFilter() === 'TODOS' ? 'tab-tactile-active' : 'tab-tactile-inactive'"
+        >
+          Todos
+        </button>
+        <button
+          type="button"
+          (click)="estadoFilter.set('PENDIENTE')"
+          [class]="estadoFilter() === 'PENDIENTE' ? 'tab-tactile-active' : 'tab-tactile-inactive'"
+        >
+          Pendiente
+        </button>
+        <button
+          type="button"
+          (click)="estadoFilter.set('VISUALIZADO')"
+          [class]="estadoFilter() === 'VISUALIZADO' ? 'tab-tactile-active' : 'tab-tactile-inactive'"
+        >
+          Visualizado
+        </button>
+        <button
+          type="button"
+          (click)="estadoFilter.set('ENTREVISTA_AGENDADA')"
+          [class]="estadoFilter() === 'ENTREVISTA_AGENDADA' ? 'tab-tactile-active' : 'tab-tactile-inactive'"
+        >
+          Entrevista Agendada
+        </button>
+        <button
+          type="button"
+          (click)="estadoFilter.set('RECHAZADO')"
+          [class]="estadoFilter() === 'RECHAZADO' ? 'tab-tactile-active' : 'tab-tactile-inactive'"
+        >
+          Rechazado
+        </button>
+      </div>
+    </div>
+
+    <!-- Tabla de Postulantes -->
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="border-b border-slate-200/80 bg-slate-50/75 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+            <th class="py-3.5 px-6">Candidato</th>
+            <th class="py-3.5 px-6">Búsqueda / Puesto</th>
+            <th class="py-3.5 px-6">Fecha</th>
+            <th class="py-3.5 px-6">Currículum</th>
+            <th class="py-3.5 px-6">Presentación</th>
+            <th class="py-3.5 px-6 text-right">
+              @if (isRecruiter()) {
+                Estado / Actualizar Etapa
+              } @else {
+                Estado
+              }
+            </th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100 text-xs sm:text-sm">
+          @if (vacanteService.isLoading()) {
+            @for (i of [1, 2, 3]; track i) {
+              <tr class="animate-pulse">
+                <td class="py-4 px-6"><div class="h-4 bg-slate-200 rounded w-32"></div></td>
+                <td class="py-4 px-6"><div class="h-4 bg-slate-200 rounded w-44"></div></td>
+                <td class="py-4 px-6"><div class="h-4 bg-slate-100 rounded w-20"></div></td>
+                <td class="py-4 px-6"><div class="h-4 bg-slate-100 rounded w-24"></div></td>
+                <td class="py-4 px-6"><div class="h-4 bg-slate-100 rounded w-16"></div></td>
+                <td class="py-4 px-6 text-right"><div class="h-6 bg-slate-200 rounded w-24 ml-auto"></div></td>
+              </tr>
+            }
+          } @else if (postulacionesFiltradas().length === 0) {
+            <tr>
+              <td colspan="6" class="py-12 px-6 text-center">
+                <div class="w-12 h-12 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
+                  <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                </div>
+                <p class="text-sm font-bold text-slate-800">No se encontraron postulaciones</p>
+                <p class="text-xs text-slate-500 mt-1">
+                  @if (isRecruiter()) {
+                    No hay candidatos que coincidan con los filtros seleccionados.
+                  } @else {
+                    Aún no te has postulado a ninguna vacante laboral.
+                  }
+                </p>
+              </td>
+            </tr>
+          } @else {
+            @for (postulacion of postulacionesFiltradas(); track postulacion.postulacionId) {
+              <tr class="hover:bg-slate-50/80 transition-colors animate-row-enter">
+                <!-- Columna Candidato -->
+                <td class="py-4 px-6">
+                  <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-inner">
+                      {{ postulacion.nombreCandidato.slice(0, 2).toUpperCase() }}
+                    </div>
+                    <div>
+                      <p class="font-bold text-slate-900 leading-tight">{{ postulacion.nombreCandidato }}</p>
+                      <p class="text-xs text-slate-500 leading-tight mt-0.5">{{ postulacion.emailCandidato }}</p>
+                    </div>
+                  </div>
+                </td>
+
+                <!-- Columna Puesto -->
+                <td class="py-4 px-6">
+                  <a
+                    [routerLink]="['/enterprise/vacante', postulacion.vacanteId]"
+                    class="font-semibold text-slate-800 hover:text-indigo-600 transition-colors line-clamp-1"
+                  >
+                    {{ postulacion.puestoVacante }}
+                  </a>
+                </td>
+
+                <!-- Columna Fecha -->
+                <td class="py-4 px-6 text-xs text-slate-600 whitespace-nowrap">
+                  {{ postulacion.fechaPostulacion }}
+                </td>
+
+                <!-- Columna CV -->
+                <td class="py-4 px-6 whitespace-nowrap">
+                  @if (postulacion.tieneCvSubido) {
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                      </svg>
+                      PDF Adjunto
+                    </span>
+                  } @else {
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full bg-slate-100 text-slate-500 border border-slate-200">
+                      Sin CV
+                    </span>
+                  }
+                </td>
+
+                <!-- Columna Carta de Presentación -->
+                <td class="py-4 px-6 whitespace-nowrap">
+                  <button
+                    type="button"
+                    (click)="abrirPreview(postulacion)"
+                    class="btn-tactile-secondary text-xs px-3 py-1.5 inline-flex items-center gap-1.5"
+                  >
+                    <svg class="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    Ver nota
+                  </button>
+                </td>
+
+                <!-- Columna Estado / Selector (Escenario 2 - Gherkin WL-26) -->
+                <td class="py-4 px-6 text-right whitespace-nowrap">
+                  @if (isRecruiter()) {
+                    <select
+                      [value]="postulacion.estado"
+                      (change)="cambiarEstado(postulacion, $event)"
+                      class="text-xs font-bold rounded-xl px-3 py-1.5 border shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-offset-1 cursor-pointer"
+                      [class.bg-amber-50]="postulacion.estado === 'PENDIENTE'"
+                      [class.text-amber-800]="postulacion.estado === 'PENDIENTE'"
+                      [class.border-amber-300]="postulacion.estado === 'PENDIENTE'"
+                      [class.focus:ring-amber-400]="postulacion.estado === 'PENDIENTE'"
+                      [class.bg-sky-50]="postulacion.estado === 'VISUALIZADO'"
+                      [class.text-sky-800]="postulacion.estado === 'VISUALIZADO'"
+                      [class.border-sky-300]="postulacion.estado === 'VISUALIZADO'"
+                      [class.focus:ring-sky-400]="postulacion.estado === 'VISUALIZADO'"
+                      [class.bg-emerald-50]="postulacion.estado === 'ENTREVISTA_AGENDADA'"
+                      [class.text-emerald-800]="postulacion.estado === 'ENTREVISTA_AGENDADA'"
+                      [class.border-emerald-300]="postulacion.estado === 'ENTREVISTA_AGENDADA'"
+                      [class.focus:ring-emerald-400]="postulacion.estado === 'ENTREVISTA_AGENDADA'"
+                      [class.bg-rose-50]="postulacion.estado === 'RECHAZADO'"
+                      [class.text-rose-800]="postulacion.estado === 'RECHAZADO'"
+                      [class.border-rose-300]="postulacion.estado === 'RECHAZADO'"
+                      [class.focus:ring-rose-400]="postulacion.estado === 'RECHAZADO'"
+                    >
+                      <option value="PENDIENTE">PENDIENTE</option>
+                      <option value="VISUALIZADO">VISUALIZADO</option>
+                      <option value="ENTREVISTA_AGENDADA">ENTREVISTA AGENDADA</option>
+                      <option value="RECHAZADO">RECHAZADO</option>
+                    </select>
+                  } @else {
+                    <span
+                      class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border"
+                      [class.bg-amber-50]="postulacion.estado === 'PENDIENTE'"
+                      [class.text-amber-700]="postulacion.estado === 'PENDIENTE'"
+                      [class.border-amber-200]="postulacion.estado === 'PENDIENTE'"
+                      [class.bg-sky-50]="postulacion.estado === 'VISUALIZADO'"
+                      [class.text-sky-700]="postulacion.estado === 'VISUALIZADO'"
+                      [class.border-sky-200]="postulacion.estado === 'VISUALIZADO'"
+                      [class.bg-emerald-50]="postulacion.estado === 'ENTREVISTA_AGENDADA'"
+                      [class.text-emerald-700]="postulacion.estado === 'ENTREVISTA_AGENDADA'"
+                      [class.border-emerald-200]="postulacion.estado === 'ENTREVISTA_AGENDADA'"
+                      [class.bg-rose-50]="postulacion.estado === 'RECHAZADO'"
+                      [class.text-rose-700]="postulacion.estado === 'RECHAZADO'"
+                      [class.border-rose-200]="postulacion.estado === 'RECHAZADO'"
+                    >
+                      {{ postulacion.estado }}
+                    </span>
+                  }
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal de Detalle de Presentación del Candidato -->
+  @if (isPreviewOpen() && previewPostulacion()) {
+    <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-preview-title" role="dialog" aria-modal="true">
+      <div
+        (click)="cerrarPreview()"
+        class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm animate-modal-backdrop transition-opacity"
+      ></div>
+
+      <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+        <div class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-slate-200/90 animate-modal-card">
+          <!-- Encabezado Modal -->
+          <div class="border-b border-slate-100 px-6 py-5 bg-gradient-to-r from-slate-50 to-white flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
+              <div>
+                <h3 id="modal-preview-title" class="text-base font-bold text-slate-900">
+                  {{ previewPostulacion()!.nombreCandidato }}
+                </h3>
+                <p class="text-xs text-slate-500 font-medium">
+                  {{ previewPostulacion()!.puestoVacante }}
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              (click)="cerrarPreview()"
+              class="rounded-lg p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+            >
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Cuerpo Modal -->
+          <div class="p-6 space-y-4">
+            <div>
+              <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Email de Contacto</span>
+              <p class="text-xs sm:text-sm font-medium text-slate-800 mt-0.5">{{ previewPostulacion()!.emailCandidato }}</p>
+            </div>
+
+            <div>
+              <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Carta de Presentación</span>
+              <div class="mt-1.5 p-4 rounded-xl bg-slate-50 border border-slate-200/80 text-xs sm:text-sm text-slate-700 leading-relaxed whitespace-pre-line">
+                {{ previewPostulacion()!.mensaje }}
+              </div>
+            </div>
+
+            <!-- Archivo Adjunto -->
+            <div>
+              <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Currículum Vitae</span>
+              <div class="mt-1.5 flex items-center justify-between p-3 rounded-xl border border-slate-200 bg-white shadow-sm">
+                <div class="flex items-center gap-2.5">
+                  <svg class="w-5 h-5 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                  </svg>
+                  <span class="text-xs font-semibold text-slate-800">
+                    CV_{{ previewPostulacion()!.nombreCandidato.replace(' ', '_') }}.pdf
+                  </span>
+                </div>
+                <span class="text-xs font-semibold text-indigo-600">Verificado</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer Modal -->
+          <div class="border-t border-slate-100 bg-slate-50 px-6 py-4 flex justify-end">
+            <button
+              type="button"
+              (click)="cerrarPreview()"
+              class="btn-tactile-secondary text-xs sm:text-sm px-4 py-2"
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</section>
