@@ -3,9 +3,11 @@ import { RouterLink } from '@angular/router'
 import { Auth } from '../../../../../core/auth/services/auth'
 import { VacanteService } from '../../services/vacante'
 import { EstadoPostulacion, PostulacionResponseDTO, VacanteResponseDTO } from '../../models/vacante.models'
+import { AgendaModal } from '../../../entrevistas/components/agenda-modal/agenda-modal'
+import { EntrevistaResponseDTO } from '../../../entrevistas/models/entrevista.models'
 
 @Component({
-  imports: [RouterLink],
+  imports: [RouterLink, AgendaModal],
   selector: 'app-vacante-postulantes',
   styleUrl: './vacante-postulantes.css',
   templateUrl: './vacante-postulantes.html'
@@ -26,6 +28,10 @@ export class VacantePostulantes implements OnInit {
   // Modal para ver carta de presentación
   readonly previewPostulacion = signal<PostulacionResponseDTO | null>(null)
   readonly isPreviewOpen = signal<boolean>(false)
+
+  // Modal para coordinar entrevista
+  readonly isAgendaModalOpen = signal<boolean>(false)
+  readonly agendaPostulacionId = signal<number | null>(null)
 
   // Toast feedback
   readonly toastMessage = signal<string | null>(null)
@@ -83,6 +89,10 @@ export class VacantePostulantes implements OnInit {
           setTimeout(() => {
             this.toastMessage.set(null)
           }, 3500)
+
+          if (nuevoEstado === 'ENTREVISTA_AGENDADA') {
+            this.abrirAgendarPara(postulacion)
+          }
         },
         error: () => {
           this.toastMessage.set('Error al actualizar el estado de la postulación.')
@@ -91,6 +101,24 @@ export class VacantePostulantes implements OnInit {
           }, 3500)
         }
       })
+  }
+
+  abrirAgendarPara(postulacion: PostulacionResponseDTO): void {
+    this.agendaPostulacionId.set(postulacion.postulacionId)
+    this.isAgendaModalOpen.set(true)
+  }
+
+  cerrarAgendaModal(): void {
+    this.isAgendaModalOpen.set(false)
+    this.agendaPostulacionId.set(null)
+  }
+
+  onEntrevistaAgendada(nueva: EntrevistaResponseDTO): void {
+    this.cerrarAgendaModal()
+    this.toastMessage.set(`¡Entrevista coordinada con ${nueva.candidateName} para el ${nueva.date} a las ${nueva.time} hs!`)
+    setTimeout(() => {
+      this.toastMessage.set(null)
+    }, 4500)
   }
 
   abrirPreview(postulacion: PostulacionResponseDTO): void {

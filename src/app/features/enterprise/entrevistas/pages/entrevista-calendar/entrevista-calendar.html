@@ -1,1 +1,231 @@
-<p>entrevista-calendar works!</p>
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-7">
+  <!-- Toast flotante de confirmación -->
+  @if (toastMessage()) {
+    <div class="fixed top-6 right-6 z-50 rounded-2xl bg-slate-900 text-white px-5 py-3.5 shadow-xl flex items-center gap-3 animate-modal-card border border-slate-700">
+      <svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+      </svg>
+      <span class="text-xs sm:text-sm font-semibold">{{ toastMessage() }}</span>
+    </div>
+  }
+
+  <!-- Encabezado Contextual -->
+  <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+        @if (isRecruiter()) {
+          Agenda de Entrevistas Técnicas
+        } @else {
+          Mis Entrevistas Laborales
+        }
+      </h1>
+      <p class="text-sm text-slate-500 mt-1">
+        @if (isRecruiter()) {
+          Coordina sesiones en vivo con candidatos calificados a través de enlaces directos a Google Meet.
+        } @else {
+          Encuentros virtuales coordinados con los equipos de selección técnica para tus postulaciones.
+        }
+      </p>
+    </div>
+
+    <div class="flex items-center gap-3 shrink-0">
+      @if (isRecruiter()) {
+        <button
+          type="button"
+          (click)="abrirAgendaModal()"
+          class="btn-tactile-primary text-xs sm:text-sm px-5 py-2.5 inline-flex items-center gap-2 cursor-pointer"
+        >
+          <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          <span>Agendar Entrevista</span>
+        </button>
+      }
+    </div>
+  </header>
+
+  <!-- Superficie de Filtro de Estados -->
+  <div class="bg-white rounded-2xl border border-slate-200/90 p-4 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div class="flex items-center gap-2">
+      <span class="text-xs font-semibold text-slate-500">Filtrar por estado:</span>
+      <div class="inline-flex bg-slate-100 p-1 rounded-xl border border-slate-200/80">
+        <button
+          type="button"
+          (click)="filterStatus.set('TODAS')"
+          [class]="filterStatus() === 'TODAS' ? 'tab-tactile-active' : 'tab-tactile-inactive'"
+        >
+          Todas
+        </button>
+        <button
+          type="button"
+          (click)="filterStatus.set('PROGRAMADA')"
+          [class]="filterStatus() === 'PROGRAMADA' ? 'tab-tactile-active' : 'tab-tactile-inactive'"
+        >
+          Programadas
+        </button>
+        <button
+          type="button"
+          (click)="filterStatus.set('COMPLETADA')"
+          [class]="filterStatus() === 'COMPLETADA' ? 'tab-tactile-active' : 'tab-tactile-inactive'"
+        >
+          Completadas
+        </button>
+        <button
+          type="button"
+          (click)="filterStatus.set('CANCELADA')"
+          [class]="filterStatus() === 'CANCELADA' ? 'tab-tactile-active' : 'tab-tactile-inactive'"
+        >
+          Canceladas
+        </button>
+      </div>
+    </div>
+
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-indigo-50 border border-indigo-100/80 text-xs font-semibold text-indigo-700">
+      <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+      <span>{{ activasCount() }} encuentros activos</span>
+    </div>
+  </div>
+
+  <!-- Lista de Citas Cronológicas -->
+  @if (entrevistaService.isLoading()) {
+    <div class="space-y-4">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="bg-white rounded-2xl border border-slate-200/90 p-6 space-y-3 animate-pulse">
+          <div class="h-4 bg-slate-200 rounded w-1/4"></div>
+          <div class="h-6 bg-slate-200 rounded w-1/2"></div>
+          <div class="h-4 bg-slate-100 rounded w-3/4"></div>
+        </div>
+      }
+    </div>
+  } @else if (entrevistasFiltradas().length === 0) {
+    <!-- Estado Vacío -->
+    <div class="bg-white rounded-2xl border border-slate-200/90 p-12 text-center max-w-md mx-auto shadow-sm animate-row-enter">
+      <div class="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto mb-4 border border-indigo-100">
+        <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+      </div>
+      <h3 class="text-base font-bold text-slate-900">No hay entrevistas en este estado</h3>
+      <p class="text-xs sm:text-sm text-slate-500 mt-1">
+        @if (isRecruiter()) {
+          No se registran citas coordinadas bajo los filtros seleccionados. Coordina una nueva con los postulantes activos.
+        } @else {
+          Aún no tienes entrevistas agendadas. Cuando un recruiter coordine un encuentro contigo, aparecerá aquí.
+        }
+      </p>
+      @if (isRecruiter()) {
+        <div class="mt-5">
+          <button
+            type="button"
+            (click)="abrirAgendaModal()"
+            class="btn-tactile-primary text-xs sm:text-sm px-5 py-2 inline-flex items-center gap-2"
+          >
+            <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            <span>Agendar primera entrevista</span>
+          </button>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="space-y-4">
+      @for (e of entrevistasFiltradas(); track e.id) {
+        <article class="bg-white rounded-2xl border border-slate-200/90 p-5 sm:p-6 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col md:flex-row md:items-center justify-between gap-5 animate-row-enter">
+          <!-- Bloque de Fecha, Hora y Participante -->
+          <div class="flex items-start gap-4">
+            <!-- Badge Calendario con Volumen -->
+            <div class="rounded-xl border border-slate-200 bg-slate-50/80 p-3 text-center min-w-[72px] shrink-0 shadow-inner">
+              <span class="block text-[11px] font-bold text-indigo-600 uppercase tracking-wider">
+                {{ e.date.split('-')[1] }}/{{ e.date.split('-')[0] }}
+              </span>
+              <span class="block text-xl font-black text-slate-900 leading-tight">
+                {{ e.date.split('-')[2] }}
+              </span>
+              <span class="block text-[11px] font-semibold text-slate-500 pt-0.5">
+                {{ e.time }} hs
+              </span>
+            </div>
+
+            <!-- Información del Candidato y Búsqueda -->
+            <div class="space-y-1 min-w-0">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="text-xs font-semibold text-slate-500">{{ e.companyName }}</span>
+                <span>•</span>
+                <!-- Badge de Estado -->
+                <span
+                  class="px-2.5 py-0.5 text-[11px] font-bold rounded-full border"
+                  [class.bg-emerald-50]="e.status === 'PROGRAMADA'"
+                  [class.text-emerald-700]="e.status === 'PROGRAMADA'"
+                  [class.border-emerald-200]="e.status === 'PROGRAMADA'"
+                  [class.bg-slate-100]="e.status === 'COMPLETADA'"
+                  [class.text-slate-600]="e.status === 'COMPLETADA'"
+                  [class.border-slate-200]="e.status === 'COMPLETADA'"
+                  [class.bg-rose-50]="e.status === 'CANCELADA'"
+                  [class.text-rose-700]="e.status === 'CANCELADA'"
+                  [class.border-rose-200]="e.status === 'CANCELADA'"
+                >
+                  {{ e.status }}
+                </span>
+              </div>
+
+              <h2 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
+                {{ isRecruiter() ? e.candidateName : e.vacancyTitle }}
+              </h2>
+
+              <p class="text-xs text-slate-600 font-medium">
+                {{ isRecruiter() ? e.vacancyTitle : 'Con equipo de reclutamiento de ' + e.companyName }}
+              </p>
+
+              @if (e.notas) {
+                <p class="text-xs text-slate-500 pt-1 line-clamp-2 max-w-2xl">
+                  {{ e.notas }}
+                </p>
+              }
+            </div>
+          </div>
+
+          <!-- Acciones de la Entrevista -->
+          <div class="flex flex-wrap items-center gap-3 shrink-0 self-start md:self-center">
+            @if (e.status === 'PROGRAMADA') {
+              <a
+                [href]="e.link"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn-tactile-primary text-xs sm:text-sm px-4 py-2.5 inline-flex items-center gap-2 cursor-pointer"
+              >
+                <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+                <span>Unirme a la Reunión</span>
+              </a>
+
+              @if (isRecruiter()) {
+                <button
+                  type="button"
+                  (click)="cancelarCita(e)"
+                  class="btn-tactile-secondary text-xs px-3 py-2 text-rose-600 hover:text-rose-700 cursor-pointer"
+                  title="Cancelar encuentro"
+                >
+                  Cancelar cita
+                </button>
+              }
+            } @else {
+              <span class="text-xs text-slate-400 font-medium">
+                Encuentro finalizado
+              </span>
+            }
+          </div>
+        </article>
+      }
+    </div>
+  }
+
+  <!-- Modal de Coordinación de Agenda -->
+  <app-agenda-modal
+    [isOpen]="isAgendaModalOpen()"
+    [candidatos]="candidatosElegibles()"
+    (close)="cerrarAgendaModal()"
+    (scheduled)="onEntrevistaScheduled($event)"
+  />
+</section>

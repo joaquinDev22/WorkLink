@@ -229,32 +229,48 @@
                 <!-- Columna Estado / Selector (Escenario 2 - Gherkin WL-26) -->
                 <td class="py-4 px-6 text-right whitespace-nowrap">
                   @if (isRecruiter()) {
-                    <select
-                      [value]="postulacion.estado"
-                      (change)="cambiarEstado(postulacion, $event)"
-                      class="text-xs font-bold rounded-xl px-3 py-1.5 border shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-offset-1 cursor-pointer"
-                      [class.bg-amber-50]="postulacion.estado === 'PENDIENTE'"
-                      [class.text-amber-800]="postulacion.estado === 'PENDIENTE'"
-                      [class.border-amber-300]="postulacion.estado === 'PENDIENTE'"
-                      [class.focus:ring-amber-400]="postulacion.estado === 'PENDIENTE'"
-                      [class.bg-sky-50]="postulacion.estado === 'VISUALIZADO'"
-                      [class.text-sky-800]="postulacion.estado === 'VISUALIZADO'"
-                      [class.border-sky-300]="postulacion.estado === 'VISUALIZADO'"
-                      [class.focus:ring-sky-400]="postulacion.estado === 'VISUALIZADO'"
-                      [class.bg-emerald-50]="postulacion.estado === 'ENTREVISTA_AGENDADA'"
-                      [class.text-emerald-800]="postulacion.estado === 'ENTREVISTA_AGENDADA'"
-                      [class.border-emerald-300]="postulacion.estado === 'ENTREVISTA_AGENDADA'"
-                      [class.focus:ring-emerald-400]="postulacion.estado === 'ENTREVISTA_AGENDADA'"
-                      [class.bg-rose-50]="postulacion.estado === 'RECHAZADO'"
-                      [class.text-rose-800]="postulacion.estado === 'RECHAZADO'"
-                      [class.border-rose-300]="postulacion.estado === 'RECHAZADO'"
-                      [class.focus:ring-rose-400]="postulacion.estado === 'RECHAZADO'"
-                    >
-                      <option value="PENDIENTE">PENDIENTE</option>
-                      <option value="VISUALIZADO">VISUALIZADO</option>
-                      <option value="ENTREVISTA_AGENDADA">ENTREVISTA AGENDADA</option>
-                      <option value="RECHAZADO">RECHAZADO</option>
-                    </select>
+                    <div class="flex items-center justify-end gap-2">
+                      <select
+                        [value]="postulacion.estado"
+                        (change)="cambiarEstado(postulacion, $event)"
+                        class="text-xs font-bold rounded-xl px-3 py-1.5 border shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-offset-1 cursor-pointer"
+                        [class.bg-amber-50]="postulacion.estado === 'PENDIENTE'"
+                        [class.text-amber-800]="postulacion.estado === 'PENDIENTE'"
+                        [class.border-amber-300]="postulacion.estado === 'PENDIENTE'"
+                        [class.focus:ring-amber-400]="postulacion.estado === 'PENDIENTE'"
+                        [class.bg-sky-50]="postulacion.estado === 'VISUALIZADO'"
+                        [class.text-sky-800]="postulacion.estado === 'VISUALIZADO'"
+                        [class.border-sky-300]="postulacion.estado === 'VISUALIZADO'"
+                        [class.focus:ring-sky-400]="postulacion.estado === 'VISUALIZADO'"
+                        [class.bg-emerald-50]="postulacion.estado === 'ENTREVISTA_AGENDADA'"
+                        [class.text-emerald-800]="postulacion.estado === 'ENTREVISTA_AGENDADA'"
+                        [class.border-emerald-300]="postulacion.estado === 'ENTREVISTA_AGENDADA'"
+                        [class.focus:ring-emerald-400]="postulacion.estado === 'ENTREVISTA_AGENDADA'"
+                        [class.bg-rose-50]="postulacion.estado === 'RECHAZADO'"
+                        [class.text-rose-800]="postulacion.estado === 'RECHAZADO'"
+                        [class.border-rose-300]="postulacion.estado === 'RECHAZADO'"
+                        [class.focus:ring-rose-400]="postulacion.estado === 'RECHAZADO'"
+                      >
+                        <option value="PENDIENTE">PENDIENTE</option>
+                        <option value="VISUALIZADO">VISUALIZADO</option>
+                        <option value="ENTREVISTA_AGENDADA">ENTREVISTA AGENDADA</option>
+                        <option value="RECHAZADO">RECHAZADO</option>
+                      </select>
+
+                      @if (postulacion.estado === 'ENTREVISTA_AGENDADA') {
+                        <button
+                          type="button"
+                          (click)="abrirAgendarPara(postulacion)"
+                          class="btn-tactile-primary text-xs px-2.5 py-1.5 inline-flex items-center gap-1 cursor-pointer"
+                          title="Agendar o editar entrevista técnica"
+                        >
+                          <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                          <span>Cita</span>
+                        </button>
+                      }
+                    </div>
                   } @else {
                     <span
                       class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border"
@@ -367,4 +383,13 @@
       </div>
     </div>
   }
+
+  <!-- Modal de Coordinación de Agenda -->
+  <app-agenda-modal
+    [isOpen]="isAgendaModalOpen()"
+    [candidatos]="postulacionesFiltradas()"
+    [preselectedPostulacionId]="agendaPostulacionId()"
+    (close)="cerrarAgendaModal()"
+    (scheduled)="onEntrevistaAgendada($event)"
+  />
 </section>
