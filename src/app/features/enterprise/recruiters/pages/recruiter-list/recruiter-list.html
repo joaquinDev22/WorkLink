@@ -44,7 +44,7 @@
       <button
         type="button"
         (click)="abrirModal()"
-        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-brand-indigo hover:bg-brand-indigo-dark active:scale-95 shadow-sm cursor-pointer transition-all">
+        class="btn-tactile-primary w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold cursor-pointer">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
@@ -88,14 +88,14 @@
           <button
             type="button"
             (click)="selectedArea.set('TODAS')"
-            class="px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer whitespace-nowrap {{ selectedArea() === 'TODAS' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900' }}">
+            class="px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap cursor-pointer transition-all {{ selectedArea() === 'TODAS' ? 'tab-tactile-active' : 'tab-tactile-inactive' }}">
             Todas
           </button>
           @for (area of availableAreas(); track area) {
             <button
               type="button"
               (click)="selectedArea.set(area)"
-              class="px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer whitespace-nowrap {{ selectedArea() === area ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900' }}">
+              class="px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap cursor-pointer transition-all {{ selectedArea() === area ? 'tab-tactile-active' : 'tab-tactile-inactive' }}">
               {{ area }}
             </button>
           }
@@ -136,7 +136,7 @@
           </thead>
           <tbody class="divide-y divide-slate-100">
             @for (rec of filteredRecruiters(); track rec.recruiterId) {
-              <tr class="hover:bg-slate-50/70 transition-colors">
+              <tr class="hover:bg-slate-50/70 transition-colors animate-row-enter">
 
                 <!-- Miembro: Avatar + Nombre + Email -->
                 <td class="px-6 py-4">
@@ -200,7 +200,7 @@
       <!-- Tarjetas Móviles (sm:hidden) -->
       <div class="md:hidden divide-y divide-slate-100">
         @for (rec of filteredRecruiters(); track rec.recruiterId) {
-          <div class="p-4 flex items-start justify-between gap-3">
+          <div class="p-4 flex items-start justify-between gap-3 animate-row-enter">
             <div class="flex items-start gap-3 min-w-0">
               <div class="w-9 h-9 rounded-xl bg-slate-900 text-white font-bold text-xs flex items-center justify-center shrink-0">
                 {{ getInitials(rec.nombre, rec.apellido) }}
@@ -250,7 +250,7 @@
           <button
             type="button"
             (click)="searchTerm.set(''); selectedArea.set('TODAS')"
-            class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-brand-indigo bg-indigo-50 hover:bg-indigo-100 cursor-pointer transition-colors">
+            class="btn-tactile-secondary px-3.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
             Limpiar filtros
           </button>
         }
@@ -267,10 +267,10 @@
     (saved)="onRecruiterSaved($event)">
   </app-recruiter-form-modal>
 
-  <!-- Modal de Confirmación de Baja -->
+  <!-- Modal de Confirmación de Baja con Animación Fluida -->
   @if (recruiterToDelete()) {
     <div
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-xs transition-opacity"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/50 backdrop-blur-sm animate-modal-backdrop transition-opacity"
       role="dialog"
       aria-modal="true"
       aria-labelledby="confirm-delete-rec-title"
@@ -278,7 +278,7 @@
 
       <div class="fixed inset-0" (click)="cancelarBaja()"></div>
 
-      <div class="relative w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-200 p-6 z-10 animate-in fade-in zoom-in-95 duration-200 space-y-4">
+      <div class="relative w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-200 p-6 z-10 animate-modal-card space-y-4">
         <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -298,7 +298,7 @@
           <button
             type="button"
             (click)="cancelarBaja()"
-            class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 cursor-pointer transition-colors">
+            class="btn-tactile-secondary px-4 py-2 rounded-xl text-xs font-semibold cursor-pointer">
             Cancelar
           </button>
 
@@ -306,7 +306,7 @@
             type="button"
             (click)="confirmarBaja()"
             [disabled]="isMutating()"
-            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 active:scale-95 disabled:opacity-50 cursor-pointer transition-all">
+            class="btn-tactile-danger inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold cursor-pointer">
             @if (isMutating()) {
               <span>Desvinculando...</span>
             } @else {

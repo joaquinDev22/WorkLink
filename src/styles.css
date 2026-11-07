@@ -239,3 +239,165 @@
     transform: scale(1);
   }
 }
+
+/* ==========================================================
+   5. TACTILE NEUMORPHISM CON VOLUMEN Y PROFUNDIDAD (BOTONES Y TABS)
+   ========================================================== */
+
+/* Botón primario con bisel superior e inferior táctil */
+.btn-tactile-primary {
+  background: linear-gradient(180deg, var(--color-brand-indigo) 0%, var(--color-brand-indigo-dark) 100%);
+  color: #ffffff;
+  box-shadow: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -2px 0 0 rgba(0, 0, 0, 0.25),
+    0 2px 4px 0 rgba(79, 70, 229, 0.25),
+    0 4px 12px 0 rgba(79, 70, 229, 0.15);
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.18s ease;
+  user-select: none;
+}
+
+.btn-tactile-primary:hover:not(:disabled) {
+  transform: translateY(-1.5px);
+  box-shadow: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -2px 0 0 rgba(0, 0, 0, 0.25),
+    0 4px 8px 0 rgba(79, 70, 229, 0.32),
+    0 8px 20px 0 rgba(79, 70, 229, 0.22);
+}
+
+.btn-tactile-primary:active:not(:disabled) {
+  transform: translateY(1px) scale(0.97);
+  box-shadow: 
+    inset 0 3px 6px 0 rgba(0, 0, 0, 0.40),
+    0 1px 2px 0 rgba(79, 70, 229, 0.20);
+}
+
+/* Botón secundario / neutral táctil */
+.btn-tactile-secondary {
+  background: #ffffff;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+  box-shadow: 
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.05),
+    0 1px 2px 0 rgba(15, 23, 42, 0.05);
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s ease;
+  user-select: none;
+}
+
+.btn-tactile-secondary:hover:not(:disabled) {
+  background: #f8fafc;
+  color: #0f172a;
+  transform: translateY(-1px);
+  box-shadow: 
+    inset 0 1px 0 0 rgba(255, 255, 255, 1),
+    0 2px 4px 0 rgba(15, 23, 42, 0.08);
+}
+
+.btn-tactile-secondary:active:not(:disabled) {
+  transform: translateY(1px) scale(0.97);
+  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.08);
+}
+
+/* Botón de peligro / baja táctil */
+.btn-tactile-danger {
+  background: linear-gradient(180deg, #e11d48 0%, #be123c 100%);
+  color: #ffffff;
+  box-shadow: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -2px 0 0 rgba(0, 0, 0, 0.25),
+    0 2px 4px 0 rgba(225, 29, 72, 0.25),
+    0 4px 12px 0 rgba(225, 29, 72, 0.15);
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.btn-tactile-danger:hover:not(:disabled) {
+  transform: translateY(-1.5px);
+  box-shadow: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -2px 0 0 rgba(0, 0, 0, 0.25),
+    0 4px 8px 0 rgba(225, 29, 72, 0.35);
+}
+
+.btn-tactile-danger:active:not(:disabled) {
+  transform: translateY(1px) scale(0.97);
+  box-shadow: inset 0 3px 6px 0 rgba(0, 0, 0, 0.40);
+}
+
+/* Píldora de pestaña segmentada táctil */
+.tab-tactile-active {
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.06),
+    0 1px 3px 0 rgba(15, 23, 42, 0.1);
+  transform: scale(1);
+}
+
+.tab-tactile-inactive {
+  color: #64748b;
+  transition: color 0.15s ease, transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tab-tactile-inactive:hover {
+  color: #0f172a;
+}
+
+.tab-tactile-inactive:active {
+  transform: scale(0.96);
+}
+
+/* ==========================================================
+   6. ANIMACIONES FLUIDAS DE MODALES Y FILTRADO (TRANSITIONS-DEV)
+   ========================================================== */
+
+/* Fondo oscuro / backdrop fluido con blur */
+.animate-modal-backdrop {
+  animation: modalBackdropIn 220ms ease-out both;
+}
+
+@keyframes modalBackdropIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(4px);
+  }
+}
+
+/* Tarjeta de modal con desaceleración orgánica tipo spring */
+.animate-modal-card {
+  animation: modalSpringIn 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes modalSpringIn {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Entrada fluida de filas al cambiar filtros */
+.animate-row-enter {
+  animation: rowSmoothIn 240ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes rowSmoothIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

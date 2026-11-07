@@ -43,7 +43,7 @@
     <div class="flex items-center gap-3 shrink-0">
       <a
         routerLink="/enterprise/vacantes/nueva"
-        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-brand-indigo hover:bg-brand-indigo-dark active:scale-95 shadow-sm cursor-pointer transition-all">
+        class="btn-tactile-primary w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold cursor-pointer">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
@@ -86,25 +86,25 @@
         <button
           type="button"
           (click)="selectedModalidad.set('TODAS')"
-          class="px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer whitespace-nowrap {{ selectedModalidad() === 'TODAS' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900' }}">
+          class="px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap cursor-pointer transition-all {{ selectedModalidad() === 'TODAS' ? 'tab-tactile-active' : 'tab-tactile-inactive' }}">
           Todas
         </button>
         <button
           type="button"
           (click)="selectedModalidad.set('REMOTO')"
-          class="px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer whitespace-nowrap {{ selectedModalidad() === 'REMOTO' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900' }}">
+          class="px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap cursor-pointer transition-all {{ selectedModalidad() === 'REMOTO' ? 'tab-tactile-active' : 'tab-tactile-inactive' }}">
           Remoto
         </button>
         <button
           type="button"
           (click)="selectedModalidad.set('HIBRIDO')"
-          class="px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer whitespace-nowrap {{ selectedModalidad() === 'HIBRIDO' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900' }}">
+          class="px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap cursor-pointer transition-all {{ selectedModalidad() === 'HIBRIDO' ? 'tab-tactile-active' : 'tab-tactile-inactive' }}">
           Híbrido
         </button>
         <button
           type="button"
           (click)="selectedModalidad.set('PRESENCIAL')"
-          class="px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer whitespace-nowrap {{ selectedModalidad() === 'PRESENCIAL' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900' }}">
+          class="px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap cursor-pointer transition-all {{ selectedModalidad() === 'PRESENCIAL' ? 'tab-tactile-active' : 'tab-tactile-inactive' }}">
           Presencial
         </button>
       </div>
@@ -140,7 +140,7 @@
           </thead>
           <tbody class="divide-y divide-slate-100">
             @for (v of filteredVacantes(); track v.vacanteId) {
-              <tr class="hover:bg-slate-50/70 transition-colors">
+              <tr class="hover:bg-slate-50/70 transition-colors animate-row-enter">
 
                 <!-- Puesto & Salario -->
                 <td class="px-6 py-4">
@@ -253,7 +253,7 @@
       <!-- Tarjetas Móviles (sm:hidden) -->
       <div class="md:hidden divide-y divide-slate-100">
         @for (v of filteredVacantes(); track v.vacanteId) {
-          <div class="p-4 space-y-3">
+          <div class="p-4 space-y-3 animate-row-enter">
             <div class="flex items-start justify-between gap-3">
               <div class="space-y-1">
                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider {{ isActiva(v.finalizacion) ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-500' }}">
@@ -318,7 +318,7 @@
           <button
             type="button"
             (click)="searchTerm.set(''); selectedModalidad.set('TODAS')"
-            class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-brand-indigo bg-indigo-50 hover:bg-indigo-100 cursor-pointer transition-colors">
+            class="btn-tactile-secondary px-3.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
             Limpiar filtros
           </button>
         }
@@ -328,10 +328,10 @@
 
   </div>
 
-  <!-- Modal de Confirmación de Baja -->
+  <!-- Modal de Confirmación de Baja con Animación Fluida -->
   @if (vacanteToDelete()) {
     <div
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-xs transition-opacity"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/50 backdrop-blur-sm animate-modal-backdrop transition-opacity"
       role="dialog"
       aria-modal="true"
       aria-labelledby="confirm-delete-vac-title"
@@ -339,7 +339,7 @@
 
       <div class="fixed inset-0" (click)="cancelarBaja()"></div>
 
-      <div class="relative w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-200 p-6 z-10 animate-in fade-in zoom-in-95 duration-200 space-y-4">
+      <div class="relative w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-200 p-6 z-10 animate-modal-card space-y-4">
         <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -359,7 +359,7 @@
           <button
             type="button"
             (click)="cancelarBaja()"
-            class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 cursor-pointer transition-colors">
+            class="btn-tactile-secondary px-4 py-2 rounded-xl text-xs font-semibold cursor-pointer">
             Cancelar
           </button>
 
@@ -367,7 +367,7 @@
             type="button"
             (click)="confirmarBaja()"
             [disabled]="isMutating()"
-            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 active:scale-95 disabled:opacity-50 cursor-pointer transition-all">
+            class="btn-tactile-danger inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold cursor-pointer">
             @if (isMutating()) {
               <span>Eliminando...</span>
             } @else {
