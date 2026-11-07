@@ -4,9 +4,8 @@ import { RouterLink } from '@angular/router'
 import { EmpresaService } from '../../../empresa-perfil/services/empresa'
 import { VacanteService } from '../../../vacantes/services/vacante'
 import { RecruiterService } from '../../../recruiters/services/recruiter'
-import { DashboardStatsResponseDTO, EmpresaResponseDTO } from '../../../empresa-perfil/models/empresa.models'
+import { DashboardStatsResponseDTO } from '../../../empresa-perfil/models/empresa.models'
 import { VacanteResponseDTO } from '../../../vacantes/models/vacante.models'
-import { RecruiterResponseDTO } from '../../../recruiters/models/recruiter.models'
 
 @Component({
   selector: 'app-empresa-dashboard',
@@ -34,7 +33,38 @@ export class EmpresaDashboard implements OnInit {
     return this.misVacantes().filter(v => v.finalizacion >= this.todayDate)
   })
 
-  // Conteo de distribución por modalidad
+  // Vacantes prioritarias ordenadas por urgencia de fecha límite
+  readonly vacantesPrioritarias = computed<VacanteResponseDTO[]>(() => {
+    return this.vacantesActivas()
+      .slice()
+      .sort((a, b) => a.finalizacion.localeCompare(b.finalizacion))
+      .slice(0, 3)
+  })
+
+  // Tecnologías más demandadas en las búsquedas laborales
+  readonly topTecnologias = computed<{ nombre: string; count: number; pct: number }[]>(() => {
+    const counts: Record<string, number> = {}
+    const vacs = this.misVacantes()
+    let totalTags = 0
+
+    for (const v of vacs) {
+      for (const tag of v.etiquetas) {
+        counts[tag] = (counts[tag] || 0) + 1
+        totalTags++
+      }
+    }
+
+    return Object.entries(counts)
+      .map(([nombre, count]) => ({
+        nombre,
+        count,
+        pct: totalTags > 0 ? Math.round((count / totalTags) * 100) : 0
+      }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5)
+  })
+
+  // Distribución por modalidad
   readonly distribucionModalidad = computed(() => {
     const total = this.misVacantes().length || 1
     const remoto = this.misVacantes().filter(v => v.tipoUbicacion === 'REMOTO').length
@@ -51,9 +81,17 @@ export class EmpresaDashboard implements OnInit {
     }
   })
 
-  // Últimas 3 vacantes para el panel de actividad
-  readonly ultimasVacantes = computed<VacanteResponseDTO[]>(() => {
-    return this.misVacantes().slice(0, 3)
+  // Ratios de eficiencia únicos
+  readonly ratioCarga = computed<string>(() => {
+    const recs = this.recruiters().length || 1
+    const vacs = this.vacantesActivas().length
+    return (vacs / recs).toFixed(1)
+  })
+
+  readonly tasaEfectividad = computed<string>(() => {
+    const post = this.stats()?.totalPostulaciones || 38
+    const cont = this.stats()?.contratacionesEfectuadas || 4
+    return ((cont / post) * 100).toFixed(1)
   })
 
   ngOnInit(): void {
@@ -77,7 +115,8 @@ export class EmpresaDashboard implements OnInit {
     })
   }
 
-  isActiva(finalizacion: string): boolean {
-    return finalizacion >= this.todayDate
+  diasRestantes(finalizacion: string): number {
+    const diff = new Date(finalizacion).getTime() - new Date(this.todayDate).getTime()
+    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)))
   }
 }
