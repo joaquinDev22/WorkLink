@@ -114,6 +114,7 @@ export class VacanteCatalogo implements OnInit {
   }
 
   estaPostulado(vacanteId: number): boolean {
+    if (!this.puedePostular()) return false
     return this.vacanteService.yaPostulado(vacanteId)
   }
 }

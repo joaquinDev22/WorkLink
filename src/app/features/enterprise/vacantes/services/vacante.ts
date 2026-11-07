@@ -12,6 +12,7 @@ export class VacanteService {
   readonly misVacantes = signal<VacanteResponseDTO[]>([])
   readonly catalogoVacantes = signal<VacanteResponseDTO[]>([])
   readonly postulaciones = signal<PostulacionResponseDTO[]>([])
+  readonly misPostulacionesIds = signal<number[]>([])
   readonly isLoading = signal<boolean>(false)
   readonly isMutating = signal<boolean>(false)
 
@@ -141,8 +142,8 @@ export class VacanteService {
       vacanteId: 201,
       puestoVacante: 'Senior Frontend Engineer (Angular / TypeScript)',
       employeeId: 302,
-      nombreCandidato: 'Lucía Fernández',
-      emailCandidato: 'lucia.fernandez@tech.io',
+      nombreCandidato: 'Valeria Gómez',
+      emailCandidato: 'valeria.gomez@tech.io',
       fechaPostulacion: '2026-11-05',
       estado: 'VISUALIZADO',
       mensaje: 'Especialista en Design Systems y arquitectura de componentes reutilizables. He liderado migraciones a Standalone Components y optimización de Core Web Vitals.',
@@ -363,7 +364,8 @@ export class VacanteService {
 
   // Verificar si el postulante actual ya aplicó a una vacante
   yaPostulado(vacanteId: number): boolean {
-    return this.postulaciones().some((p) => p.vacanteId === vacanteId)
+    return this.misPostulacionesIds().includes(vacanteId) ||
+      this.postulaciones().some((p) => p.vacanteId === vacanteId && (p.employeeId === 300 || p.nombreCandidato.includes('(Tú)')))
   }
 
   // Diálogo de postulación / enviar candidatura (POST /api/v1/vacantes/{id}/postulaciones/me)
@@ -403,6 +405,7 @@ export class VacanteService {
         delay(300),
         tap((res) => {
           this.postulaciones.update((prev) => [res, ...prev])
+          this.misPostulacionesIds.update((prev) => [...prev, vacanteId])
           this.isMutating.set(false)
         })
       )
@@ -412,6 +415,7 @@ export class VacanteService {
       tap({
         next: (res) => {
           this.postulaciones.update((prev) => [res, ...prev])
+          this.misPostulacionesIds.update((prev) => [...prev, vacanteId])
           this.isMutating.set(false)
         },
         error: () => this.isMutating.set(false)

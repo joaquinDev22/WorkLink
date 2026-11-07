@@ -90,6 +90,18 @@
                 </button>
               }
             </div>
+          } @else {
+            <div class="shrink-0 self-start sm:self-center">
+              <a
+                routerLink="/enterprise/vacantes"
+                class="btn-tactile-secondary text-xs sm:text-sm px-4 py-2.5 inline-flex items-center gap-2"
+              >
+                <svg class="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                <span>Panel de Vacantes</span>
+              </a>
+            </div>
           }
         </div>
 
@@ -140,17 +152,19 @@
         </div>
 
         <!-- Información de Transparencia de Proceso -->
-        <div class="rounded-xl bg-slate-50 border border-slate-200/80 p-4 text-xs text-slate-600 flex items-start gap-3">
-          <svg class="w-5 h-5 text-indigo-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <div class="space-y-1">
-            <p class="font-bold text-slate-800">Proceso de Selección WorkLink</p>
-            <p>
-              Tu postulación será revisada directamente por el recruiter técnico asignado. Podrás seguir el estado de tu proceso en la sección de <a routerLink="/enterprise/mis-postulaciones" class="text-indigo-600 font-semibold underline underline-offset-2">Mis Postulaciones</a>.
-            </p>
+        @if (puedePostular()) {
+          <div class="rounded-xl bg-slate-50 border border-slate-200/80 p-4 text-xs text-slate-600 flex items-start gap-3">
+            <svg class="w-5 h-5 text-indigo-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div class="space-y-1">
+              <p class="font-bold text-slate-800">Proceso de Selección WorkLink</p>
+              <p>
+                Tu postulación será revisada directamente por el recruiter técnico asignado. Podrás seguir el estado de tu proceso en la sección de <a routerLink="/enterprise/mis-postulaciones" class="text-indigo-600 font-semibold underline underline-offset-2">Mis Postulaciones</a>.
+              </p>
+            </div>
           </div>
-        </div>
+        }
       </div>
     </article>
   }

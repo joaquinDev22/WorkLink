@@ -55,6 +55,7 @@ export class VacanteDetail implements OnInit {
   }
 
   estaPostulado(): boolean {
+    if (!this.puedePostular()) return false
     const v = this.vacante()
     return v ? this.vacanteService.yaPostulado(v.vacanteId) : false
   }
