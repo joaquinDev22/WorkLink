@@ -48,16 +48,28 @@ export const routes: Routes = [
   {
     path: 'postulantes',
     canActivate: [roleGuard],
-    data: { roles: ['RECRUITER'] },
+    data: { roles: ['RECRUITER', 'EMPRESA'] },
     loadComponent: () => import('./vacantes/pages/vacante-postulantes/vacante-postulantes').then(m => m.VacantePostulantes)
   },
 
-  // --- ADMINISTRACIÓN DE VACANTES ---
+  // --- ADMINISTRACIÓN DE VACANTES (EMPRESA & RECRUITER) ---
   {
     path: 'vacantes',
     canActivate: [roleGuard],
     data: { roles: ['EMPRESA', 'RECRUITER'] },
     loadComponent: () => import('./vacantes/pages/vacante-admin/vacante-admin-list').then(m => m.VacanteAdminList)
+  },
+  {
+    path: 'vacantes/nueva',
+    canActivate: [roleGuard],
+    data: { roles: ['EMPRESA', 'RECRUITER'] },
+    loadComponent: () => import('./vacantes/pages/vacante-form/vacante-create-edit').then(m => m.VacanteCreateEdit)
+  },
+  {
+    path: 'vacantes/editar/:id',
+    canActivate: [roleGuard],
+    data: { roles: ['EMPRESA', 'RECRUITER'] },
+    loadComponent: () => import('./vacantes/pages/vacante-form/vacante-create-edit').then(m => m.VacanteCreateEdit)
   },
   {
     path: '',

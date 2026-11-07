@@ -1,1 +1,488 @@
-<p>vacante-admin-list works!</p>
+<!-- Contenedor Principal -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+
+  <!-- Toast de Notificación -->
+  @if (toastMsg()) {
+    <div
+      class="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 bg-slate-900 text-white text-xs sm:text-sm font-medium rounded-2xl shadow-xl border border-slate-800 transition-all transform animate-in slide-in-from-bottom-5 duration-300"
+      role="status"
+      aria-live="polite">
+      <div class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+      <span>{{ toastMsg() }}</span>
+      <button
+        type="button"
+        (click)="toastMsg.set(null)"
+        class="ml-2 text-slate-400 hover:text-white cursor-pointer"
+        aria-label="Cerrar notificación">
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  }
+
+  <!-- Header de Sección -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/80 pb-6">
+    <div class="space-y-1">
+      <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-indigo-50 border border-indigo-100/80 text-[11px] font-semibold text-brand-indigo uppercase tracking-wider">
+        <span class="w-1.5 h-1.5 rounded-full bg-brand-indigo animate-pulse"></span>
+        Gestión Corporativa
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+        Mis Vacantes Laborales
+      </h1>
+      <p class="text-xs sm:text-sm text-slate-500 max-w-2xl">
+        Publica y gestiona las oportunidades laborales activas de tu compañía, define perfiles técnicos y evalúa candidatos.
+      </p>
+    </div>
+
+    <!-- Botón Principal: Publicar Vacante -->
+    <div class="flex items-center gap-3 w-full sm:w-auto shrink-0">
+      <a
+        routerLink="/enterprise/vacantes/nueva"
+        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold text-white bg-brand-indigo hover:bg-brand-indigo-dark active:scale-95 shadow-md shadow-brand-indigo/25 cursor-pointer transition-all">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        <span>Publicar Vacante</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Métricas Rápidas -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div class="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs flex items-center gap-4">
+      <div class="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-brand-indigo shrink-0">
+        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+      </div>
+      <div>
+        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Total Vacantes</p>
+        <p class="text-2xl font-black text-slate-900 tracking-tight">{{ misVacantes().length }}</p>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs flex items-center gap-4">
+      <div class="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
+        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <div>
+        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Búsquedas Activas</p>
+        <p class="text-2xl font-black text-slate-900 tracking-tight">{{ vacantesActivasCount() }}</p>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs flex items-center gap-4">
+      <div class="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 shrink-0">
+        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+      </div>
+      <div>
+        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Postulaciones</p>
+        <p class="text-xs font-medium text-slate-700 mt-1">
+          <a routerLink="/enterprise/postulantes" class="text-brand-indigo hover:underline font-bold">Ver candidatos recibidos &rarr;</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtros y Búsqueda -->
+  <div class="bg-white rounded-3xl border border-slate-200/80 p-4 sm:p-5 shadow-xs space-y-3">
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+
+      <!-- Búsqueda por texto -->
+      <div class="relative flex-1">
+        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          placeholder="Buscar por puesto, tecnología, ubicación..."
+          class="w-full pl-10 pr-9 py-2.5 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-all" />
+        @if (searchTerm()) {
+          <button
+            type="button"
+            (click)="searchTerm.set('')"
+            class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
+            aria-label="Limpiar búsqueda">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        }
+      </div>
+
+      <!-- Filtro Móvil Colapsable (sm:hidden) -->
+      <div class="sm:hidden flex items-center gap-2">
+        <button
+          type="button"
+          (click)="isMobileFilterOpen.update(v => !v)"
+          class="w-full inline-flex items-center justify-between px-3.5 py-2.5 rounded-2xl border text-xs font-semibold transition-all cursor-pointer {{ selectedModalidad() !== 'TODAS' ? 'bg-indigo-50 border-brand-indigo/40 text-brand-indigo shadow-xs' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100' }}">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-brand-indigo shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+            </svg>
+            <span>{{ selectedModalidad() === 'TODAS' ? 'Filtrar Modalidad' : 'Modalidad: ' + selectedModalidad() }}</span>
+          </div>
+          <svg class="w-4 h-4 transition-transform duration-200 text-slate-400 shrink-0" [class.rotate-180]="isMobileFilterOpen()" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Selector Móvil Desplegable -->
+      @if (isMobileFilterOpen()) {
+        <div class="sm:hidden p-3.5 bg-slate-50 border border-slate-200/90 rounded-2xl space-y-2 animate-in fade-in zoom-in-95 duration-150">
+          <label for="mobile-mod-select" class="text-[11px] font-bold text-slate-600 uppercase tracking-wider block">
+            Modalidad de Trabajo:
+          </label>
+          <select
+            id="mobile-mod-select"
+            [(ngModel)]="selectedModalidad"
+            (change)="isMobileFilterOpen.set(false)"
+            class="w-full px-3.5 py-2.5 text-xs bg-white border border-slate-200 rounded-xl text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo cursor-pointer transition-all">
+            <option value="TODAS">Todas las modalidades</option>
+            <option value="REMOTO">100% Remoto</option>
+            <option value="HIBRIDO">Híbrido</option>
+            <option value="PRESENCIAL">Presencial</option>
+          </select>
+        </div>
+      }
+
+      <!-- Píldoras Desktop (hidden sm:flex) -->
+      <div class="hidden sm:flex items-center gap-1.5 overflow-x-auto text-xs shrink-0">
+        <button
+          type="button"
+          (click)="selectedModalidad.set('TODAS')"
+          class="px-3 py-1.5 rounded-xl font-semibold transition-all cursor-pointer whitespace-nowrap {{ selectedModalidad() === 'TODAS' ? 'bg-brand-indigo text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+          Todas
+        </button>
+        <button
+          type="button"
+          (click)="selectedModalidad.set('REMOTO')"
+          class="px-3 py-1.5 rounded-xl font-semibold transition-all cursor-pointer whitespace-nowrap {{ selectedModalidad() === 'REMOTO' ? 'bg-brand-indigo text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+          Remoto
+        </button>
+        <button
+          type="button"
+          (click)="selectedModalidad.set('HIBRIDO')"
+          class="px-3 py-1.5 rounded-xl font-semibold transition-all cursor-pointer whitespace-nowrap {{ selectedModalidad() === 'HIBRIDO' ? 'bg-brand-indigo text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+          Híbrido
+        </button>
+        <button
+          type="button"
+          (click)="selectedModalidad.set('PRESENCIAL')"
+          class="px-3 py-1.5 rounded-xl font-semibold transition-all cursor-pointer whitespace-nowrap {{ selectedModalidad() === 'PRESENCIAL' ? 'bg-brand-indigo text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+          Presencial
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Contenedor de Listado / Tabla -->
+  <div class="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
+
+    @if (isLoading()) {
+      <div class="p-8 space-y-4">
+        @for (i of [1, 2, 3]; track i) {
+          <div class="p-4 rounded-2xl border border-slate-100 animate-pulse flex items-center justify-between">
+            <div class="space-y-2">
+              <div class="w-48 h-4 bg-slate-200 rounded"></div>
+              <div class="w-32 h-3 bg-slate-100 rounded"></div>
+            </div>
+            <div class="w-20 h-6 bg-slate-100 rounded-full"></div>
+          </div>
+        }
+      </div>
+    } @else if (filteredVacantes().length > 0) {
+
+      <!-- Tabla Desktop -->
+      <div class="hidden md:block overflow-x-auto">
+        <table class="w-full text-left text-xs sm:text-sm">
+          <thead class="bg-slate-50/75 border-b border-slate-100 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+            <tr>
+              <th scope="col" class="px-6 py-4">Puesto & Compensación</th>
+              <th scope="col" class="px-6 py-4">Modalidad & Ubicación</th>
+              <th scope="col" class="px-6 py-4">Requisitos Clave</th>
+              <th scope="col" class="px-6 py-4">Cierre & Estado</th>
+              <th scope="col" class="px-6 py-4 text-right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            @for (v of filteredVacantes(); track v.vacanteId) {
+              <tr class="hover:bg-slate-50/60 transition-colors">
+
+                <!-- Columna: Puesto & Salario -->
+                <td class="px-6 py-4">
+                  <div class="font-bold text-slate-900 text-sm">
+                    {{ v.puesto }}
+                  </div>
+                  <div class="flex items-center gap-2 pt-0.5 text-xs text-slate-500">
+                    <span class="font-medium text-slate-600">{{ v.tipoVacante || 'Full-time' }}</span>
+                    @if (v.salario) {
+                      <span>•</span>
+                      <span class="text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded-md">
+                        {{ v.salario }}
+                      </span>
+                    }
+                  </div>
+                </td>
+
+                <!-- Columna: Modalidad & Ubicación -->
+                <td class="px-6 py-4">
+                  <div class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">
+                    {{ v.tipoUbicacion || 'REMOTO' }}
+                  </div>
+                  <div class="text-xs text-slate-500 pt-1 flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    </svg>
+                    <span>{{ v.ubicacion || 'Remoto' }}</span>
+                  </div>
+                </td>
+
+                <!-- Columna: Requisitos -->
+                <td class="px-6 py-4">
+                  <div class="flex flex-wrap gap-1 max-w-xs">
+                    @for (tag of v.etiquetas.slice(0, 3); track tag) {
+                      <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-slate-100 text-slate-700">
+                        {{ tag }}
+                      </span>
+                    }
+                    @if (v.etiquetas.length > 3) {
+                      <span class="px-1.5 py-0.5 rounded-md text-[10px] font-semibold text-slate-400 bg-slate-50">
+                        +{{ v.etiquetas.length - 3 }}
+                      </span>
+                    }
+                  </div>
+                </td>
+
+                <!-- Columna: Cierre y Estado -->
+                <td class="px-6 py-4">
+                  <div>
+                    @if (isActiva(v.finalizacion)) {
+                      <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        Activa
+                      </span>
+                    } @else {
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-500">
+                        Finalizada
+                      </span>
+                    }
+                  </div>
+                  <div class="text-[11px] text-slate-400 pt-1">
+                    Hasta {{ v.finalizacion }}
+                  </div>
+                </td>
+
+                <!-- Columna: Acciones -->
+                <td class="px-6 py-4 text-right">
+                  <div class="flex items-center justify-end gap-1.5">
+                    <a
+                      [routerLink]="['/enterprise/vacantes/editar', v.vacanteId]"
+                      class="p-2 rounded-xl text-slate-600 hover:text-brand-indigo hover:bg-slate-100 transition-colors cursor-pointer"
+                      title="Editar vacante"
+                      aria-label="Editar vacante">
+                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    </a>
+
+                    <a
+                      routerLink="/enterprise/postulantes"
+                      class="p-2 rounded-xl text-brand-indigo hover:bg-indigo-50 transition-colors cursor-pointer"
+                      title="Ver candidatos"
+                      aria-label="Ver candidatos">
+                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                      </svg>
+                    </a>
+
+                    <button
+                      type="button"
+                      (click)="solicitarBaja(v)"
+                      class="p-2 rounded-xl text-rose-500 hover:text-rose-700 hover:bg-rose-50 active:scale-95 transition-all cursor-pointer"
+                      title="Eliminar vacante"
+                      aria-label="Eliminar vacante">
+                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Cards Móviles -->
+      <div class="md:hidden divide-y divide-slate-100 p-4 space-y-4">
+        @for (v of filteredVacantes(); track v.vacanteId) {
+          <div class="pt-4 first:pt-0 space-y-3">
+            <div class="flex items-start justify-between gap-3">
+              <div class="space-y-1">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider {{ isActiva(v.finalizacion) ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-500' }}">
+                  {{ isActiva(v.finalizacion) ? 'Activa' : 'Finalizada' }}
+                </span>
+                <h3 class="font-bold text-slate-900 text-sm">
+                  {{ v.puesto }}
+                </h3>
+                <p class="text-xs text-slate-500">
+                  {{ v.tipoVacante }} • {{ v.ubicacion }}
+                </p>
+                @if (v.salario) {
+                  <span class="inline-block text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md mt-1">
+                    {{ v.salario }}
+                  </span>
+                }
+              </div>
+
+              <!-- Acciones móviles -->
+              <div class="flex items-center gap-1 shrink-0">
+                <a
+                  [routerLink]="['/enterprise/vacantes/editar', v.vacanteId]"
+                  class="p-2 rounded-xl text-slate-600 hover:bg-slate-100"
+                  aria-label="Editar">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                </a>
+                <button
+                  type="button"
+                  (click)="solicitarBaja(v)"
+                  class="p-2 rounded-xl text-rose-500 hover:bg-rose-50"
+                  aria-label="Eliminar">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-1">
+              @for (tag of v.etiquetas; track tag) {
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-medium bg-slate-100 text-slate-600">
+                  {{ tag }}
+                </span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+    } @else {
+
+      <!-- Estado Vacío -->
+      <div class="p-12 text-center space-y-3">
+        <div class="w-14 h-14 rounded-3xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
+          <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+        </div>
+        @if (searchTerm() || selectedModalidad() !== 'TODAS') {
+          <h3 class="text-sm sm:text-base font-bold text-slate-800">
+            No se encontraron vacantes
+          </h3>
+          <p class="text-xs text-slate-500 max-w-sm mx-auto">
+            Ninguna oferta coincide con los filtros aplicados. Intenta restablecer los términos de búsqueda.
+          </p>
+          <button
+            type="button"
+            (click)="searchTerm.set(''); selectedModalidad.set('TODAS')"
+            class="mt-2 px-4 py-2 rounded-xl text-xs font-semibold text-brand-indigo bg-indigo-50 hover:bg-indigo-100 cursor-pointer transition-colors">
+            Limpiar filtros
+          </button>
+        } @else {
+          <h3 class="text-sm sm:text-base font-bold text-slate-800">
+            No has publicado vacantes aún
+          </h3>
+          <p class="text-xs text-slate-500 max-w-sm mx-auto">
+            Empieza publicando búsquedas laborales activas para conectar con postulantes calificados en WorkLink.
+          </p>
+          <a
+            routerLink="/enterprise/vacantes/nueva"
+            class="mt-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-brand-indigo hover:bg-brand-indigo-dark cursor-pointer transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            <span>Publicar primera vacante</span>
+          </a>
+        }
+      </div>
+
+    }
+
+  </div>
+
+  <!-- Modal de Confirmación de Baja -->
+  @if (vacanteToDelete()) {
+    <div
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-xs transition-opacity"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="confirm-delete-vac-title"
+      (keydown.escape)="cancelarBaja()">
+
+      <div class="fixed inset-0" (click)="cancelarBaja()"></div>
+
+      <div class="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200/80 p-6 z-10 animate-in fade-in zoom-in-95 duration-200 space-y-4">
+        <div class="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-100 text-rose-600 flex items-center justify-center mx-auto">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        </div>
+
+        <div class="text-center space-y-1">
+          <h3 id="confirm-delete-vac-title" class="text-base font-bold text-slate-900">
+            ¿Dar de baja esta vacante?
+          </h3>
+          <p class="text-xs text-slate-500">
+            Se eliminará la oferta laboral <strong class="text-slate-700">"{{ vacanteToDelete()?.puesto }}"</strong> del catálogo y los postulantes no podrán enviar nuevas aplicaciones.
+          </p>
+        </div>
+
+        <div class="pt-2 flex items-center justify-end gap-3">
+          <button
+            type="button"
+            (click)="cancelarBaja()"
+            class="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 cursor-pointer transition-colors">
+            Cancelar
+          </button>
+
+          <button
+            type="button"
+            (click)="confirmarBaja()"
+            [disabled]="isMutating()"
+            class="inline-flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 active:scale-95 disabled:opacity-50 cursor-pointer shadow-sm transition-all">
+            @if (isMutating()) {
+              <svg class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span>Eliminando...</span>
+            } @else {
+              <span>Sí, dar de baja</span>
+            }
+          </button>
+        </div>
+      </div>
+
+    </div>
+  }
+
+</div>

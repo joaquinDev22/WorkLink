@@ -1,1 +1,417 @@
-<p>vacante-create-edit works!</p>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+
+  <!-- ================================================================= -->
+  <!-- 1. ENCABEZADO Y BREADCRUMB                                       -->
+  <!-- ================================================================= -->
+  <div class="space-y-3 border-b border-slate-200/80 pb-6">
+    <a
+      routerLink="/enterprise/vacantes"
+      class="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-indigo hover:text-brand-indigo-dark transition-colors cursor-pointer">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      </svg>
+      <span>Volver a Mis Vacantes</span>
+    </a>
+
+    <div class="space-y-1">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200/60 text-brand-indigo text-xs font-bold uppercase tracking-wider">
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+        <span>Bolsa de Empleo & Reclutamiento</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+        {{ isEditMode() ? 'Editar Vacante Laboral' : 'Publicar Nueva Vacante' }}
+      </h1>
+      <p class="text-xs sm:text-sm text-slate-500 max-w-2xl">
+        Define el perfil del candidato, condiciones contractuales y tecnologías requeridas para recibir postulaciones de talentos verificados.
+      </p>
+    </div>
+  </div>
+
+  <!-- ================================================================= -->
+  <!-- 2. GRID PRINCIPAL: FORMULARIO + VISTA PREVIA                      -->
+  <!-- ================================================================= -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+    <!-- COLUMNA IZQUIERDA: Formulario (7-8 cols) -->
+    <div class="lg:col-span-7 xl:col-span-8">
+      <form (submit)="onSubmit($event)" class="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-xs space-y-8">
+
+        <!-- BLOQUE 1: Puesto y Condiciones Principales -->
+        <div class="space-y-4">
+          <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2 flex items-center gap-2">
+            <svg class="w-4 h-4 text-brand-indigo" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            <span>Posición y Condiciones</span>
+          </h2>
+
+          <!-- Título del Puesto -->
+          <div class="space-y-1">
+            <label for="vac-puesto" class="text-xs font-semibold text-slate-700">Título del Puesto / Rol Requerido *</label>
+            <input
+              id="vac-puesto"
+              type="text"
+              [formField]="vacanteForm.puesto"
+              placeholder="Ej: Senior Frontend Engineer (Angular / TypeScript)"
+              class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-all" />
+            @if (vacanteForm.puesto().touched() && vacanteForm.puesto().invalid()) {
+              <p class="text-[11px] text-rose-600 font-medium pt-0.5">
+                {{ vacanteForm.puesto().errors()?.[0]?.message }}
+              </p>
+            }
+          </div>
+
+          <!-- Tipo de Jornada y Rango Salarial -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <label for="vac-tipo" class="text-xs font-semibold text-slate-700">Tipo de Jornada *</label>
+              <select
+                id="vac-tipo"
+                [formField]="vacanteForm.tipoVacante"
+                class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo cursor-pointer transition-all">
+                @for (tipo of tiposVacante; track tipo) {
+                  <option [value]="tipo">{{ tipo }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="space-y-1">
+              <label for="vac-salario" class="text-xs font-semibold text-slate-700">Rango Salarial Estimado</label>
+              <input
+                id="vac-salario"
+                type="text"
+                [formField]="vacanteForm.salario"
+                placeholder="Ej: $2.500 - $3.500 USD / mes (opcional)"
+                class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-all" />
+            </div>
+          </div>
+        </div>
+
+        <!-- BLOQUE 2: Modalidad y Ubicación -->
+        <div class="space-y-4">
+          <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2 flex items-center gap-2">
+            <svg class="w-4 h-4 text-brand-indigo" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+            <span>Modalidad de Trabajo y Ubicación</span>
+          </h2>
+
+          <!-- Selector de Modalidad (Cards interactivas) -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            @for (mod of modalidades; track mod.valor) {
+              <button
+                type="button"
+                (click)="seleccionarModalidad(mod.valor)"
+                class="p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-1 {{ vacanteModel().tipoUbicacion === mod.valor ? 'border-brand-indigo bg-indigo-50/70 ring-2 ring-brand-indigo/20 shadow-xs' : 'border-slate-200 hover:border-slate-300 bg-slate-50/50' }}">
+                <span class="text-xs font-bold text-slate-900">{{ mod.label }}</span>
+                <span class="text-[11px] text-slate-500 leading-tight">{{ mod.desc }}</span>
+              </button>
+            }
+          </div>
+
+          <!-- Ubicación física o zona -->
+          <div class="space-y-1">
+            <label for="vac-ubicacion" class="text-xs font-semibold text-slate-700">Zona Geográfica / Sede *</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+              <input
+                id="vac-ubicacion"
+                type="text"
+                [formField]="vacanteForm.ubicacion"
+                placeholder="Ej: Buenos Aires, Argentina o Remoto LATAM"
+                class="w-full pl-10 pr-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-all" />
+            </div>
+            @if (vacanteForm.ubicacion().touched() && vacanteForm.ubicacion().invalid()) {
+              <p class="text-[11px] text-rose-600 font-medium pt-0.5">
+                {{ vacanteForm.ubicacion().errors()?.[0]?.message }}
+              </p>
+            }
+          </div>
+        </div>
+
+        <!-- BLOQUE 3: Vigencia y Plazos (Criterio de Aceptación 1) -->
+        <div class="space-y-4">
+          <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2 flex items-center gap-2">
+            <svg class="w-4 h-4 text-brand-indigo" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span>Vigencia y Cierre de Búsqueda</span>
+          </h2>
+
+          <div class="space-y-1">
+            <label for="vac-fin" class="text-xs font-semibold text-slate-700 flex items-center justify-between">
+              <span>Fecha Límite de Postulación *</span>
+              <span class="text-[11px] text-slate-400 font-normal">No puede ser anterior a hoy</span>
+            </label>
+            <input
+              id="vac-fin"
+              type="date"
+              [min]="todayDate"
+              [formField]="vacanteForm.finalizacion"
+              class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-all cursor-pointer" />
+            @if (vacanteForm.finalizacion().touched() && vacanteForm.finalizacion().invalid()) {
+              <p class="text-[11px] text-rose-600 font-medium pt-0.5">
+                {{ vacanteForm.finalizacion().errors()?.[0]?.message }}
+              </p>
+            }
+          </div>
+        </div>
+
+        <!-- BLOQUE 4: Descripción y Requisitos -->
+        <div class="space-y-4">
+          <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2 flex items-center gap-2">
+            <svg class="w-4 h-4 text-brand-indigo" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <span>Detalle de la Oferta y Requisitos</span>
+          </h2>
+
+          <div class="space-y-1">
+            <div class="flex items-center justify-between">
+              <label for="vac-desc" class="text-xs font-semibold text-slate-700">Descripción de Responsabilidades y Requisitos *</label>
+              <span class="text-[11px] text-slate-400">{{ vacanteModel().descripcion.length || 0 }} / 2500</span>
+            </div>
+            <textarea
+              id="vac-desc"
+              rows="6"
+              [formField]="vacanteForm.descripcion"
+              placeholder="Detalla las responsabilidades del puesto, experiencia mínima requerida, stack técnico que utilizarán en el día a día y beneficios corporativos ofrecidos..."
+              class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-all resize-y"></textarea>
+            @if (vacanteForm.descripcion().touched() && vacanteForm.descripcion().invalid()) {
+              <p class="text-[11px] text-rose-600 font-medium pt-0.5">
+                {{ vacanteForm.descripcion().errors()?.[0]?.message }}
+              </p>
+            }
+          </div>
+        </div>
+
+        <!-- BLOQUE 5: Stack Tecnológico y Etiquetas -->
+        <div class="space-y-4">
+          <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2 flex items-center gap-2">
+            <svg class="w-4 h-4 text-brand-indigo" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+            </svg>
+            <span>Tecnologías y Habilidades Requeridas</span>
+          </h2>
+
+          <!-- Input para agregar tag manual -->
+          <div class="space-y-2">
+            <label for="tag-input" class="text-xs font-semibold text-slate-700">Agregar Etiquetas o Habilidades (Enter para sumar):</label>
+            <div class="flex gap-2">
+              <input
+                id="tag-input"
+                type="text"
+                [value]="tagInput()"
+                (input)="tagInput.set($any($event.target).value)"
+                (keydown)="onTagKeyDown($event)"
+                placeholder="Ej: Angular, TypeScript, AWS..."
+                class="flex-1 px-3.5 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-all" />
+              <button
+                type="button"
+                (click)="agregarTagDesdeInput()"
+                class="px-4 py-2 rounded-xl text-xs font-semibold text-brand-indigo bg-indigo-50 hover:bg-indigo-100 active:scale-95 transition-all cursor-pointer">
+                Agregar
+              </button>
+            </div>
+          </div>
+
+          <!-- Tags Activas -->
+          @if (etiquetas().length > 0) {
+            <div class="flex flex-wrap gap-2 pt-1">
+              @for (tag of etiquetas(); track tag) {
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 border border-indigo-200/70 text-brand-indigo">
+                  <span>{{ tag }}</span>
+                  <button
+                    type="button"
+                    (click)="removerTag(tag)"
+                    class="text-indigo-400 hover:text-indigo-700 cursor-pointer"
+                    aria-label="Remover etiqueta">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </span>
+              }
+            </div>
+          }
+
+          <!-- Sugerencias Rápidas -->
+          <div class="space-y-1.5 pt-2">
+            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">Sugerencias frecuentes:</span>
+            <div class="flex flex-wrap gap-1.5">
+              @for (tec of tecnologiasSugeridas; track tec) {
+                <button
+                  type="button"
+                  (click)="toggleSugerencia(tec)"
+                  class="px-2.5 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer {{ etiquetas().includes(tec) ? 'bg-brand-indigo text-white shadow-2xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+                  {{ etiquetas().includes(tec) ? '✓ ' + tec : '+ ' + tec }}
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- FOOTER: Acción Primaria de Envío (Responsive) -->
+        <div class="pt-6 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <a
+            routerLink="/enterprise/vacantes"
+            class="order-2 sm:order-1 text-center sm:text-left px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer">
+            Cancelar
+          </a>
+
+          <button
+            type="submit"
+            [disabled]="isMutating() || vacanteForm().invalid()"
+            class="order-1 sm:order-2 w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-white bg-brand-indigo hover:bg-brand-indigo-dark active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-brand-indigo/20 cursor-pointer transition-all">
+            @if (isMutating()) {
+              <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span>Procesando...</span>
+            } @else {
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              <span>{{ isEditMode() ? 'Actualizar Vacante' : 'Publicar Vacante Laboral' }}</span>
+            }
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- COLUMNA DERECHA: Vista Previa en Vivo (4-5 cols) -->
+    <div class="lg:col-span-5 xl:col-span-4 space-y-4 lg:sticky lg:top-24">
+      <div class="bg-white rounded-3xl border border-slate-200/90 shadow-md overflow-hidden">
+
+        <div class="px-5 py-3.5 bg-slate-50 border-b border-slate-200/70 flex items-center justify-between">
+          <span class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Vista Previa en Vivo</span>
+          </span>
+          <span class="text-[11px] text-slate-400">Cómo se ve en el Feed</span>
+        </div>
+
+        <div class="p-6 space-y-4">
+          <!-- Empresa y Estado -->
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5">
+              <div class="w-9 h-9 rounded-xl bg-linear-to-br from-brand-indigo to-indigo-800 text-white font-black text-xs flex items-center justify-center shrink-0 shadow-2xs">
+                IC
+              </div>
+              <div>
+                <p class="text-xs font-bold text-slate-900 leading-tight">InnovaCorp Technologies S.A.</p>
+                <p class="text-[11px] text-slate-400">Publicado hoy</p>
+              </div>
+            </div>
+
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+              Activa
+            </span>
+          </div>
+
+          <!-- Título del Puesto -->
+          <div>
+            <h3 class="text-base font-extrabold text-slate-900 leading-tight">
+              {{ vacanteModel().puesto || 'Título del Puesto Laboral' }}
+            </h3>
+          </div>
+
+          <!-- Badges de Modalidad y Jornada -->
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-indigo-50 text-brand-indigo border border-indigo-100">
+              <svg class="w-3 h-3 text-brand-indigo" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+              <span>{{ vacanteModel().tipoUbicacion }}</span>
+            </span>
+
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-700">
+              {{ vacanteModel().tipoVacante }}
+            </span>
+
+            @if (vacanteModel().salario) {
+              <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-100">
+                {{ vacanteModel().salario }}
+              </span>
+            }
+          </div>
+
+          <!-- Ubicación y Cierre -->
+          <div class="space-y-1.5 text-xs text-slate-600 pt-1">
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <span>{{ vacanteModel().ubicacion || 'Ubicación' }}</span>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span>Cierre de postulación: <strong>{{ vacanteModel().finalizacion || 'Pendiente' }}</strong></span>
+            </div>
+          </div>
+
+          <!-- Stack Tags -->
+          @if (etiquetas().length > 0) {
+            <div class="pt-2 border-t border-slate-100 space-y-1.5">
+              <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Requerimientos:</span>
+              <div class="flex flex-wrap gap-1.5">
+                @for (tag of etiquetas(); track tag) {
+                  <span class="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-700">
+                    {{ tag }}
+                  </span>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- Descripción snippet -->
+          <div class="pt-2 border-t border-slate-100">
+            <p class="text-xs text-slate-500 line-clamp-3 leading-relaxed">
+              {{ vacanteModel().descripcion || 'Aquí se mostrará el extracto descriptivo de la vacante para los candidatos.' }}
+            </p>
+          </div>
+
+          <!-- Botón de postulación ficticio para preview -->
+          <div class="pt-3">
+            <button
+              type="button"
+              disabled
+              class="w-full py-2.5 rounded-xl bg-slate-100 text-slate-400 text-xs font-semibold cursor-not-allowed">
+              Postularme a esta vacante
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Card de Ayuda -->
+      <div class="p-4 rounded-2xl bg-indigo-50/60 border border-indigo-100/80 space-y-1.5 text-xs text-slate-600">
+        <span class="font-bold text-slate-900 block flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-brand-indigo" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Recomendación de Publicación
+        </span>
+        <p class="text-[11px] text-slate-500 leading-relaxed">
+          Las vacantes con fecha límite clara, rango salarial transparente y al menos 3 tecnologías clave obtienen hasta un 65% más de postulaciones afines.
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+</div>

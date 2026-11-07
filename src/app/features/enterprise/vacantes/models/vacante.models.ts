@@ -1,4 +1,4 @@
-﻿// Vacante & Postulacion DTO contracts
+// Vacante & Postulacion DTO contracts
 export type ModalidadTrabajo = 'REMOTO' | 'HIBRIDO' | 'PRESENCIAL'
 
 export type EstadoPostulacion =
@@ -37,6 +37,17 @@ export interface VacanteResponseDTO {
   tipoVacante?: string
   salario?: string
   etiquetas: string[]
+}
+
+// Modelo tipado estricto para Angular Signal Forms (evita MaybeFieldTree errors)
+export interface VacanteFormModel {
+  puesto: string
+  descripcion: string
+  finalizacion: string
+  ubicacion: string
+  tipoUbicacion: string
+  tipoVacante: string
+  salario: string
 }
 
 // GET y POST /api/v1/vacantes/{vacanteId}/postulaciones
