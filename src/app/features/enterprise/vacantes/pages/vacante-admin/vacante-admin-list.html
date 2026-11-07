@@ -68,12 +68,13 @@
         <input
           type="text"
           [(ngModel)]="searchTerm"
+          (ngModelChange)="onFilterChange()"
           placeholder="Buscar puesto, tecnología o ubicación..."
           class="w-full pl-10 pr-9 py-2 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-all" />
         @if (searchTerm()) {
           <button
             type="button"
-            (click)="searchTerm.set('')"
+            (click)="searchTerm.set(''); onFilterChange()"
             class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
             aria-label="Limpiar búsqueda">
             ✕
@@ -85,25 +86,25 @@
       <div class="flex flex-wrap items-center gap-1 bg-slate-200/60 p-1 rounded-xl text-xs shrink-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <button
           type="button"
-          (click)="selectedModalidad.set('TODAS')"
+          (click)="selectedModalidad.set('TODAS'); onFilterChange()"
           class="px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap cursor-pointer transition-all {{ selectedModalidad() === 'TODAS' ? 'tab-tactile-active' : 'tab-tactile-inactive' }}">
           Todas
         </button>
         <button
           type="button"
-          (click)="selectedModalidad.set('REMOTO')"
+          (click)="selectedModalidad.set('REMOTO'); onFilterChange()"
           class="px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap cursor-pointer transition-all {{ selectedModalidad() === 'REMOTO' ? 'tab-tactile-active' : 'tab-tactile-inactive' }}">
           Remoto
         </button>
         <button
           type="button"
-          (click)="selectedModalidad.set('HIBRIDO')"
+          (click)="selectedModalidad.set('HIBRIDO'); onFilterChange()"
           class="px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap cursor-pointer transition-all {{ selectedModalidad() === 'HIBRIDO' ? 'tab-tactile-active' : 'tab-tactile-inactive' }}">
           Híbrido
         </button>
         <button
           type="button"
-          (click)="selectedModalidad.set('PRESENCIAL')"
+          (click)="selectedModalidad.set('PRESENCIAL'); onFilterChange()"
           class="px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap cursor-pointer transition-all {{ selectedModalidad() === 'PRESENCIAL' ? 'tab-tactile-active' : 'tab-tactile-inactive' }}">
           Presencial
         </button>
@@ -139,7 +140,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100">
-            @for (v of filteredVacantes(); track v.vacanteId) {
+            @for (v of paginatedVacantes(); track v.vacanteId) {
               <tr class="hover:bg-slate-50/70 transition-colors animate-row-enter">
 
                 <!-- Puesto & Salario -->
@@ -252,7 +253,7 @@
 
       <!-- Tarjetas Móviles (sm:hidden) -->
       <div class="md:hidden divide-y divide-slate-100">
-        @for (v of filteredVacantes(); track v.vacanteId) {
+        @for (v of paginatedVacantes(); track v.vacanteId) {
           <div class="p-4 space-y-3 animate-row-enter">
             <div class="flex items-start justify-between gap-3">
               <div class="space-y-1">
@@ -303,6 +304,76 @@
           </div>
         }
       </div>
+
+      <!-- Barra de Paginación Táctil y Accesible -->
+      @if (filteredVacantes().length > 0) {
+        <div class="border-t border-slate-100 bg-slate-50/60 px-6 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+          <!-- Indicador de Rango -->
+          <div class="text-slate-500 font-medium order-2 sm:order-1 text-center sm:text-left">
+            Mostrando <span class="font-bold text-slate-800">{{ rangeStart() }}</span> a <span class="font-bold text-slate-800">{{ rangeEnd() }}</span> de <span class="font-bold text-slate-800">{{ filteredVacantes().length }}</span> vacantes
+          </div>
+
+          <!-- Controles de Paginación -->
+          <div class="flex items-center gap-2 order-1 sm:order-2">
+            <!-- Selector de Cantidad por Página -->
+            <div class="flex items-center gap-1.5 mr-2">
+              <span class="text-slate-400 font-semibold text-[11px]">Por pág:</span>
+              <div class="inline-flex bg-slate-200/70 p-0.5 rounded-lg text-xs">
+                <button
+                  type="button"
+                  (click)="setPageSize(5)"
+                  class="px-2 py-0.5 rounded-md font-bold transition-all cursor-pointer {{ pageSize() === 5 ? 'tab-tactile-active text-indigo-700' : 'tab-tactile-inactive' }}">
+                  5
+                </button>
+                <button
+                  type="button"
+                  (click)="setPageSize(10)"
+                  class="px-2 py-0.5 rounded-md font-bold transition-all cursor-pointer {{ pageSize() === 10 ? 'tab-tactile-active text-indigo-700' : 'tab-tactile-inactive' }}">
+                  10
+                </button>
+              </div>
+            </div>
+
+            <!-- Botón Anterior -->
+            <button
+              type="button"
+              (click)="prevPage()"
+              [disabled]="currentPage() === 1"
+              class="btn-tactile-secondary px-2.5 py-1.5 rounded-lg font-semibold inline-flex items-center gap-1 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              aria-label="Página anterior">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+              </svg>
+              <span class="hidden sm:inline">Anterior</span>
+            </button>
+
+            <!-- Números de Página -->
+            <div class="flex items-center gap-1">
+              @for (p of pagesList(); track p) {
+                <button
+                  type="button"
+                  (click)="goToPage(p)"
+                  class="w-7 h-7 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center {{ currentPage() === p ? 'tab-tactile-active text-indigo-700' : 'text-slate-600 hover:bg-slate-200/60' }}">
+                  {{ p }}
+                </button>
+              }
+            </div>
+
+            <!-- Botón Siguiente -->
+            <button
+              type="button"
+              (click)="nextPage()"
+              [disabled]="currentPage() === totalPages()"
+              class="btn-tactile-secondary px-2.5 py-1.5 rounded-lg font-semibold inline-flex items-center gap-1 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              aria-label="Página siguiente">
+              <span class="hidden sm:inline">Siguiente</span>
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      }
 
     } @else {
 

@@ -54,6 +54,58 @@ export class RecruiterList implements OnInit {
     return Array.from(areas)
   })
 
+  // Paginación reactiva
+  readonly currentPage = signal<number>(1)
+  readonly pageSize = signal<number>(5)
+
+  readonly totalPages = computed<number>(() => {
+    return Math.max(1, Math.ceil(this.filteredRecruiters().length / this.pageSize()))
+  })
+
+  readonly paginatedRecruiters = computed<RecruiterResponseDTO[]>(() => {
+    const start = (this.currentPage() - 1) * this.pageSize()
+    return this.filteredRecruiters().slice(start, start + this.pageSize())
+  })
+
+  readonly rangeStart = computed<number>(() => {
+    return this.filteredRecruiters().length === 0 ? 0 : (this.currentPage() - 1) * this.pageSize() + 1
+  })
+
+  readonly rangeEnd = computed<number>(() => {
+    return Math.min(this.currentPage() * this.pageSize(), this.filteredRecruiters().length)
+  })
+
+  readonly pagesList = computed<number[]>(() => {
+    return Array.from({ length: this.totalPages() }, (_, i) => i + 1)
+  })
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page)
+    }
+  }
+
+  nextPage(): void {
+    if (this.currentPage() < this.totalPages()) {
+      this.currentPage.update((p) => p + 1)
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage() > 1) {
+      this.currentPage.update((p) => p - 1)
+    }
+  }
+
+  setPageSize(size: number): void {
+    this.pageSize.set(size)
+    this.currentPage.set(1)
+  }
+
+  onFilterChange(): void {
+    this.currentPage.set(1)
+  }
+
   ngOnInit(): void {
     this.recruiterService.getRecruiters().subscribe()
   }

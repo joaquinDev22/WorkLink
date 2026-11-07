@@ -50,6 +50,36 @@ export class RecruiterService {
               area: 'Operaciones y Ventas',
               empresaId: 101,
               nombreEmpresa: 'InnovaCorp Technologies S.A.'
+            },
+            {
+              recruiterId: 104,
+              nombre: 'Santiago',
+              apellido: 'Paz',
+              email: 'santiago.paz@innovacorp.com',
+              fechaNacimiento: '1990-09-12',
+              area: 'Tecnología e Innovación',
+              empresaId: 101,
+              nombreEmpresa: 'InnovaCorp Technologies S.A.'
+            },
+            {
+              recruiterId: 105,
+              nombre: 'Camila',
+              apellido: 'Vega',
+              email: 'camila.vega@innovacorp.com',
+              fechaNacimiento: '1994-01-28',
+              area: 'People & Talent Acquisition',
+              empresaId: 101,
+              nombreEmpresa: 'InnovaCorp Technologies S.A.'
+            },
+            {
+              recruiterId: 106,
+              nombre: 'Federico',
+              apellido: 'Morales',
+              email: 'federico.morales@innovacorp.com',
+              fechaNacimiento: '1987-05-19',
+              area: 'Operaciones y Ventas',
+              empresaId: 101,
+              nombreEmpresa: 'InnovaCorp Technologies S.A.'
             }
           ]
 

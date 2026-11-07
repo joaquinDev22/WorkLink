@@ -55,6 +55,58 @@ export class VacanteAdminList implements OnInit {
     return this.misVacantes().filter((v) => v.finalizacion >= this.todayDate).length
   })
 
+  // Paginación reactiva
+  readonly currentPage = signal<number>(1)
+  readonly pageSize = signal<number>(5)
+
+  readonly totalPages = computed<number>(() => {
+    return Math.max(1, Math.ceil(this.filteredVacantes().length / this.pageSize()))
+  })
+
+  readonly paginatedVacantes = computed<VacanteResponseDTO[]>(() => {
+    const start = (this.currentPage() - 1) * this.pageSize()
+    return this.filteredVacantes().slice(start, start + this.pageSize())
+  })
+
+  readonly rangeStart = computed<number>(() => {
+    return this.filteredVacantes().length === 0 ? 0 : (this.currentPage() - 1) * this.pageSize() + 1
+  })
+
+  readonly rangeEnd = computed<number>(() => {
+    return Math.min(this.currentPage() * this.pageSize(), this.filteredVacantes().length)
+  })
+
+  readonly pagesList = computed<number[]>(() => {
+    return Array.from({ length: this.totalPages() }, (_, i) => i + 1)
+  })
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page)
+    }
+  }
+
+  nextPage(): void {
+    if (this.currentPage() < this.totalPages()) {
+      this.currentPage.update((p) => p + 1)
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage() > 1) {
+      this.currentPage.update((p) => p - 1)
+    }
+  }
+
+  setPageSize(size: number): void {
+    this.pageSize.set(size)
+    this.currentPage.set(1)
+  }
+
+  onFilterChange(): void {
+    this.currentPage.set(1)
+  }
+
   ngOnInit(): void {
     this.vacanteService.getMisVacantes().subscribe()
   }
