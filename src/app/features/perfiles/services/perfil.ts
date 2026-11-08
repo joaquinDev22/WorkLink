@@ -283,7 +283,8 @@ export class Perfil {
       descripcion: (datos.descripcion || current?.descripcion || '').trim(),
       ubicacion: (datos.ubicacion || current?.ubicacion || 'Remoto').trim(),
       sitioWeb: (datos.sitioWeb || current?.sitioWeb || '').trim(),
-      fechaNacimiento: (datos.fechaNacimiento || current?.fechaNacimiento || '1998-01-01').trim()
+      fechaNacimiento: (datos.fechaNacimiento || current?.fechaNacimiento || '1998-01-01').trim(),
+      tieneCv: Boolean(current?.tieneCv)
     }
 
     const actualizado = { ...current, ...payload } as PerfilUsuarioDTO

@@ -53,6 +53,7 @@ export interface EditProfileModel {
   fechaNacimiento: string
   email?: string
   rol?: string
+  tieneCv?: boolean
 }
 export interface ItemFaltantePerfil {
   label: string

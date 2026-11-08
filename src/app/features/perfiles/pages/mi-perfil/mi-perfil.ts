@@ -399,14 +399,21 @@ export class MiPerfil implements OnInit {
       },
       error: (err) => {
         this.isSaving.set(false)
-        console.error('Error al actualizar perfil', err)
-        if (err.error) {
-          console.error('Detalles del error 400 del backend:', err.error)
+        console.error('Error al actualizar perfil (Detalle técnico backend):', err)
+
+        // Mensaje limpio y amigable para el usuario: evitar volcar código o excepciones de deserialización en la UI
+        let userMsg = 'No se pudo actualizar el perfil. Revisa los datos ingresados.'
+        const backendMsg = err.error?.message || err.error?.mensaje
+        const rawDetails = Array.isArray(err.error?.details) ? err.error.details.join(', ') : ''
+        const candidate = rawDetails || backendMsg || ''
+
+        const isTechnicalNoise = /Exception|JSON|parsear|StreamReadFeature|DeserializationFeature|byte offset|reference chain|com\.example|FAIL_ON_NULL/i.test(candidate)
+
+        if (candidate && !isTechnicalNoise) {
+          userMsg = candidate
         }
-        const detalle = (Array.isArray(err.error?.details) && err.error.details.length > 0)
-          ? err.error.details.join(', ')
-          : (err.error?.message || err.error?.mensaje || err.message || 'No se pudo actualizar el perfil')
-        this.showToast(`Error: ${detalle}`, true)
+
+        this.showToast(userMsg, true)
       }
     })
   }
