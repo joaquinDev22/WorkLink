@@ -18,6 +18,19 @@ export class TokenStorage {
         return this.getSession()?.token ?? null;
     }
 
+    getJwtRol(): string | null {
+        const token = this.getToken()
+        if (!token) return null
+        try {
+            const parts = token.split('.')
+            if (parts.length < 2) return null
+            const payload = JSON.parse(atob(parts[1]))
+            return payload.rol || payload.role || payload.authorities?.[0] || payload.scope || null
+        } catch {
+            return null
+        }
+    }
+
     clear() : void{
         localStorage.removeItem(this.SESSION_KEY)
     }

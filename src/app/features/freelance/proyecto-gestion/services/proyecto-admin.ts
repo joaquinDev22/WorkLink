@@ -2,6 +2,7 @@ import { inject, Service, signal } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
 import { Observable, of, map, catchError, delay } from 'rxjs'
 import { environment } from '../../../../../environments/environment'
+import { TokenStorage } from '../../../../core/auth/services/token-storage'
 import {
   EstadoHito,
   HitoRequestDTO,
@@ -14,6 +15,7 @@ import {
 export class ProyectoAdmin {
   readonly API_URL = `${environment.apiUrl}/freelance/proyectos`
   protected client = inject(HttpClient)
+  protected tokenStorage = inject(TokenStorage)
 
   readonly misProyectos = signal<ProyectoResponseDTO[]>([])
   readonly isLoading = signal<boolean>(false)
@@ -81,6 +83,12 @@ export class ProyectoAdmin {
   getMisProyectosAsignados(): Observable<ProyectoResponseDTO[]> {
     if (environment.bypassAuth) {
       return of(this.mockProyectosAsignados).pipe(delay(200))
+    }
+    // Si el JWT en el backend no tiene rol FREELANCER (por ej. usuario registrado como POSTULANTE),
+    // omitimos la petición real para no gatillar 403 Forbidden en DevTools y servimos el histórico mock.
+    const tokenRol = this.tokenStorage.getJwtRol()
+    if (tokenRol && tokenRol !== 'FREELANCER') {
+      return of(this.mockProyectosAsignados).pipe(delay(150))
     }
     return this.client.get<ProyectoResponseDTO[]>(`${this.API_URL}/me/asignados`).pipe(
       map(data => (Array.isArray(data) && data.length > 0) ? data : this.mockProyectosAsignados),

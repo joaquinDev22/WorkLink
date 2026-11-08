@@ -84,16 +84,6 @@ export class MiPerfil implements OnInit {
   readonly proyectosAsignados = signal<ProyectoResponseDTO[]>([])
   readonly isLoadingProyectosAsignados = signal<boolean>(false)
 
-  constructor() {
-    // Sincronizar reactivamente reputación y proyectos asignados si el usuario alterna a modo FREELANCER
-    effect(() => {
-      if (this.esFreelancer()) {
-        this.cargarReputacion()
-        this.cargarProyectosAsignados()
-      }
-    })
-  }
-
   // Modal de edición de perfil (WL-14)
   isEditModalOpen = signal<boolean>(false)
   isSaving = signal<boolean>(false)
@@ -319,8 +309,8 @@ export class MiPerfil implements OnInit {
     if (!this.perfil()) {
       this.perfilService.cargarPerfil().subscribe()
     }
-    this.cargarReputacion()
     if (this.esFreelancer()) {
+      this.cargarReputacion()
       this.cargarProyectosAsignados()
     }
   }
@@ -345,10 +335,13 @@ export class MiPerfil implements OnInit {
     this.isLoadingProyectosAsignados.set(true)
     this.proyectoAdmin.getMisProyectosAsignados().subscribe({
       next: (proys) => {
-        this.proyectosAsignados.set(proys || [])
+        this.proyectosAsignados.set(Array.isArray(proys) ? proys : [])
         this.isLoadingProyectosAsignados.set(false)
       },
-      error: () => this.isLoadingProyectosAsignados.set(false)
+      error: () => {
+        this.proyectosAsignados.set([])
+        this.isLoadingProyectosAsignados.set(false)
+      }
     })
   }
 
@@ -704,7 +697,9 @@ export class MiPerfil implements OnInit {
     this.isLoadingReputacion.set(true)
     this.perfilService.getCalificaciones().subscribe({
       next: (data) => {
-        this.reputacion.set(data)
+        if (data && Array.isArray(data.calificaciones)) {
+          this.reputacion.set(data)
+        }
         this.isLoadingReputacion.set(false)
       },
       error: (err) => {

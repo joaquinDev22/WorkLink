@@ -870,7 +870,7 @@
               </div>
 
               <span class="px-3 py-1 text-xs font-semibold rounded-full bg-indigo-50 border border-indigo-200/70 text-indigo-700 self-start sm:self-auto">
-                {{ proyectosAsignados().length }} proyectos registrados
+                {{ (proyectosAsignados() || []).length }} proyectos registrados
               </span>
             </div>
 
@@ -882,7 +882,7 @@
                 </svg>
                 <span>Cargando historial de proyectos...</span>
               </div>
-            } @else if (proyectosAsignados().length > 0) {
+            } @else if ((proyectosAsignados() || []).length > 0) {
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 @for (p of proyectosAsignados(); track p.proyectoId) {
                   <div class="p-4 rounded-2xl bg-slate-50/70 border border-slate-200/80 hover:border-slate-300 transition-all flex flex-col justify-between gap-3">
@@ -946,10 +946,10 @@
               </svg>
               <span>Reputación y Opiniones</span>
             </h2>
-            @if (reputacion()) {
+            @if (reputacion() && (reputacion()?.totalCalificaciones ?? 0) > 0) {
               <span class="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-full bg-amber-50 border border-amber-200/70 text-amber-800">
-                <span class="font-bold text-amber-900">★ {{ reputacion()!.promedio.toFixed(1) }}</span>
-                <span class="text-amber-600">({{ reputacion()!.totalCalificaciones }} opiniones)</span>
+                <span class="font-bold text-amber-900">★ {{ (reputacion()?.promedio ?? 5.0).toFixed(1) }}</span>
+                <span class="text-amber-600">({{ reputacion()?.totalCalificaciones }} opiniones)</span>
               </span>
             }
           </div>
@@ -962,12 +962,12 @@
               </svg>
               <span>Cargando valoraciones...</span>
             </div>
-          } @else if (reputacion() && reputacion()!.calificaciones.length > 0) {
+          } @else if ((reputacion()?.calificaciones?.length ?? 0) > 0) {
             <!-- Banner Resumen de Calificación -->
             <div class="p-4 sm:p-5 rounded-2xl bg-linear-to-r from-amber-50/70 via-slate-50 to-indigo-50/40 border border-amber-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div class="flex items-center gap-4">
                 <div class="text-4xl font-black text-slate-900 tracking-tight flex items-baseline gap-1">
-                  {{ reputacion()!.promedio.toFixed(1) }}
+                  {{ (reputacion()?.promedio ?? 5.0).toFixed(1) }}
                   <span class="text-xs font-semibold text-slate-400">/ 5.0</span>
                 </div>
                 <div class="space-y-1">
@@ -980,7 +980,7 @@
                     }
                   </div>
                   <p class="text-xs font-medium text-slate-600">
-                    Basado en {{ reputacion()!.totalCalificaciones }} proyectos completados exitosamente
+                    Basado en {{ reputacion()?.totalCalificaciones || 0 }} proyectos completados exitosamente
                   </p>
                 </div>
               </div>

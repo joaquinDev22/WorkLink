@@ -517,154 +517,156 @@ export class Perfil {
     )
   }
 
+  private readonly mockReputacion: ReputacionPerfilDTO = {
+    promedio: 4.9,
+    totalCalificaciones: 14,
+    desglose: {
+      estrellas5: 12,
+      estrellas4: 2,
+      estrellas3: 0,
+      estrellas2: 0,
+      estrellas1: 0
+    },
+    calificaciones: [
+      {
+        id: 1,
+        autorNombre: 'Martín Gómez',
+        autorRol: 'Tech Lead @ InnovaCorp',
+        puntuacion: 5,
+        comentario: 'Excelente profesional. Entregó la aplicación antes del plazo convenido con una arquitectura modular impecable en Angular y cobertura de pruebas robusta.',
+        fecha: 'hace 2 semanas',
+        proyectoNombre: 'Migración a Angular Standalone & Signals'
+      },
+      {
+        id: 2,
+        autorNombre: 'Sofía Herrera',
+        autorRol: 'Product Owner @ SoftSolutions',
+        puntuacion: 5,
+        comentario: 'Gran capacidad de comunicación y resolución de problemas técnicos complejos en backend y bases de datos. Superó nuestras expectativas.',
+        fecha: 'hace 1 mes',
+        proyectoNombre: 'API Rest & Spring Boot Microservicios'
+      },
+      {
+        id: 3,
+        autorNombre: 'Lucas Benítez',
+        autorRol: 'CTO @ FinTech Latam',
+        puntuacion: 5,
+        comentario: 'Muy proactivo y enfocado en la experiencia del usuario y rendimiento. Gran sentido estético y código limpio.',
+        fecha: 'hace 2 meses',
+        proyectoNombre: 'Dashboard Financiero en Tiempo Real'
+      },
+      {
+        id: 4,
+        autorNombre: 'Valeria Morales',
+        autorRol: 'Lead Frontend @ PixelCraft',
+        puntuacion: 5,
+        comentario: 'Gran dominio de Tailwind CSS y animaciones fluidas respetando accesibilidad y tiempos de respuesta impecables.',
+        fecha: 'hace 2 meses',
+        proyectoNombre: 'Rediseño de Design System & Tokens'
+      },
+      {
+        id: 5,
+        autorNombre: 'Alejandro Ruiz',
+        autorRol: 'Engineering Manager @ CloudScale',
+        puntuacion: 5,
+        comentario: 'Excelente código limpio, sin sobreingeniería y siguiendo principios pragmáticos. Cero bugs en QA.',
+        fecha: 'hace 3 meses',
+        proyectoNombre: 'Módulo de Facturación y Suscripciones'
+      },
+      {
+        id: 6,
+        autorNombre: 'Mariana Díaz',
+        autorRol: 'Founder @ EcoMarket',
+        puntuacion: 5,
+        comentario: 'Cumplió con cada requisito al pie de la letra y aportó ideas valiosas que elevaron el nivel de la aplicación.',
+        fecha: 'hace 3 meses',
+        proyectoNombre: 'Marketplace Multi-Vendedor'
+      },
+      {
+        id: 7,
+        autorNombre: 'Carlos Sánchez',
+        autorRol: 'DevOps Lead @ DataPeak',
+        puntuacion: 4,
+        comentario: 'Muy buena integración de Docker y pipelines de CI/CD para despliegues automatizados.',
+        fecha: 'hace 4 meses',
+        proyectoNombre: 'Contenedorización y Deploy en Cloud'
+      },
+      {
+        id: 8,
+        autorNombre: 'Florencia Castro',
+        autorRol: 'Scrum Master @ NexusTech',
+        puntuacion: 5,
+        comentario: 'Puntualidad, compromiso y una comunicación constante en cada sprint. Un placer trabajar en equipo.',
+        fecha: 'hace 4 meses',
+        proyectoNombre: 'Gestor de Tareas Colaborativo'
+      },
+      {
+        id: 9,
+        autorNombre: 'Nicolás Paredes',
+        autorRol: 'Tech Lead @ B2B Solutions',
+        puntuacion: 5,
+        comentario: 'Resolvió incidencias críticas en tiempo récord con soluciones arquitectónicas elegantes y sostenibles.',
+        fecha: 'hace 5 meses',
+        proyectoNombre: 'Optimización de Consultas SQL y Cache'
+      },
+      {
+        id: 10,
+        autorNombre: 'Camila Romero',
+        autorRol: 'UX Director @ StudioDesign',
+        puntuacion: 5,
+        comentario: 'Respetó al 100% los tokens de diseño y las micro-interacciones solicitadas. El producto se siente premium.',
+        fecha: 'hace 6 meses',
+        proyectoNombre: 'Portal de Clientes Autogestión'
+      },
+      {
+        id: 11,
+        autorNombre: 'Gonzalo Fernández',
+        autorRol: 'Backend Architect @ LogistiX',
+        puntuacion: 5,
+        comentario: 'Fácil integración entre frontend y nuestras APIs REST protegidas por JWT e interceptores seguros.',
+        fecha: 'hace 7 meses',
+        proyectoNombre: 'Trazabilidad de Envíos en Tiempo Real'
+      },
+      {
+        id: 12,
+        autorNombre: 'Paula Domínguez',
+        autorRol: 'Product Manager @ SaludPlus',
+        puntuacion: 5,
+        comentario: 'Gran calidad humana y profesional. Adaptabilidad ante cambios de alcance sin perder el foco en la entrega.',
+        fecha: 'hace 8 meses',
+        proyectoNombre: 'Plataforma de Turnos Médicos'
+      },
+      {
+        id: 13,
+        autorNombre: 'Rodrigo Vega',
+        autorRol: 'Tech Consultant @ ApexGlobal',
+        puntuacion: 4,
+        comentario: 'Código bien documentado y estructurado según las mejores prácticas de TypeScript moderno.',
+        fecha: 'hace 9 meses',
+        proyectoNombre: 'Auditoría y Refactorización de Frontend'
+      },
+      {
+        id: 14,
+        autorNombre: 'Esteban Quiroga',
+        autorRol: 'CTO @ SmartAgro',
+        puntuacion: 5,
+        comentario: 'Desarrollo rápido, performante y con excelente atención a la responsividad en dispositivos móviles.',
+        fecha: 'hace 10 meses',
+        proyectoNombre: 'Aplicación PWA para Monitoreo de Campo'
+      }
+    ]
+  }
+
   // 6. Obtener reputación y calificaciones (WL-19: US-12)
   getCalificaciones(perfilId?: number): Observable<ReputacionPerfilDTO> {
     if (environment.bypassAuth) {
-      const mockReputacion: ReputacionPerfilDTO = {
-        promedio: 4.9,
-        totalCalificaciones: 14,
-        desglose: {
-          estrellas5: 12,
-          estrellas4: 2,
-          estrellas3: 0,
-          estrellas2: 0,
-          estrellas1: 0
-        },
-        calificaciones: [
-          {
-            id: 1,
-            autorNombre: 'Martín Gómez',
-            autorRol: 'Tech Lead @ InnovaCorp',
-            puntuacion: 5,
-            comentario: 'Excelente profesional. Entregó la aplicación antes del plazo convenido con una arquitectura modular impecable en Angular y cobertura de pruebas robusta.',
-            fecha: 'hace 2 semanas',
-            proyectoNombre: 'Migración a Angular Standalone & Signals'
-          },
-          {
-            id: 2,
-            autorNombre: 'Sofía Herrera',
-            autorRol: 'Product Owner @ SoftSolutions',
-            puntuacion: 5,
-            comentario: 'Gran capacidad de comunicación y resolución de problemas técnicos complejos en backend y bases de datos. Superó nuestras expectativas.',
-            fecha: 'hace 1 mes',
-            proyectoNombre: 'API Rest & Spring Boot Microservicios'
-          },
-          {
-            id: 3,
-            autorNombre: 'Lucas Benítez',
-            autorRol: 'CTO @ FinTech Latam',
-            puntuacion: 5,
-            comentario: 'Muy proactivo y enfocado en la experiencia del usuario y rendimiento. Gran sentido estético y código limpio.',
-            fecha: 'hace 2 meses',
-            proyectoNombre: 'Dashboard Financiero en Tiempo Real'
-          },
-          {
-            id: 4,
-            autorNombre: 'Valeria Morales',
-            autorRol: 'Lead Frontend @ PixelCraft',
-            puntuacion: 5,
-            comentario: 'Gran dominio de Tailwind CSS y animaciones fluidas respetando accesibilidad y tiempos de respuesta impecables.',
-            fecha: 'hace 2 meses',
-            proyectoNombre: 'Rediseño de Design System & Tokens'
-          },
-          {
-            id: 5,
-            autorNombre: 'Alejandro Ruiz',
-            autorRol: 'Engineering Manager @ CloudScale',
-            puntuacion: 5,
-            comentario: 'Excelente código limpio, sin sobreingeniería y siguiendo principios pragmáticos. Cero bugs en QA.',
-            fecha: 'hace 3 meses',
-            proyectoNombre: 'Módulo de Facturación y Suscripciones'
-          },
-          {
-            id: 6,
-            autorNombre: 'Mariana Díaz',
-            autorRol: 'Founder @ EcoMarket',
-            puntuacion: 5,
-            comentario: 'Cumplió con cada requisito al pie de la letra y aportó ideas valiosas que elevaron el nivel de la aplicación.',
-            fecha: 'hace 3 meses',
-            proyectoNombre: 'Marketplace Multi-Vendedor'
-          },
-          {
-            id: 7,
-            autorNombre: 'Carlos Sánchez',
-            autorRol: 'DevOps Lead @ DataPeak',
-            puntuacion: 4,
-            comentario: 'Muy buena integración de Docker y pipelines de CI/CD para despliegues automatizados.',
-            fecha: 'hace 4 meses',
-            proyectoNombre: 'Contenedorización y Deploy en Cloud'
-          },
-          {
-            id: 8,
-            autorNombre: 'Florencia Castro',
-            autorRol: 'Scrum Master @ NexusTech',
-            puntuacion: 5,
-            comentario: 'Puntualidad, compromiso y una comunicación constante en cada sprint. Un placer trabajar en equipo.',
-            fecha: 'hace 4 meses',
-            proyectoNombre: 'Gestor de Tareas Colaborativo'
-          },
-          {
-            id: 9,
-            autorNombre: 'Nicolás Paredes',
-            autorRol: 'Tech Lead @ B2B Solutions',
-            puntuacion: 5,
-            comentario: 'Resolvió incidencias críticas en tiempo récord con soluciones arquitectónicas elegantes y sostenibles.',
-            fecha: 'hace 5 meses',
-            proyectoNombre: 'Optimización de Consultas SQL y Cache'
-          },
-          {
-            id: 10,
-            autorNombre: 'Camila Romero',
-            autorRol: 'UX Director @ StudioDesign',
-            puntuacion: 5,
-            comentario: 'Respetó al 100% los tokens de diseño y las micro-interacciones solicitadas. El producto se siente premium.',
-            fecha: 'hace 6 meses',
-            proyectoNombre: 'Portal de Clientes Autogestión'
-          },
-          {
-            id: 11,
-            autorNombre: 'Gonzalo Fernández',
-            autorRol: 'Backend Architect @ LogistiX',
-            puntuacion: 5,
-            comentario: 'Fácil integración entre frontend y nuestras APIs REST protegidas por JWT e interceptores seguros.',
-            fecha: 'hace 7 meses',
-            proyectoNombre: 'Trazabilidad de Envíos en Tiempo Real'
-          },
-          {
-            id: 12,
-            autorNombre: 'Paula Domínguez',
-            autorRol: 'Product Manager @ SaludPlus',
-            puntuacion: 5,
-            comentario: 'Gran calidad humana y profesional. Adaptabilidad ante cambios de alcance sin perder el foco en la entrega.',
-            fecha: 'hace 8 meses',
-            proyectoNombre: 'Plataforma de Turnos Médicos'
-          },
-          {
-            id: 13,
-            autorNombre: 'Rodrigo Vega',
-            autorRol: 'Tech Consultant @ ApexGlobal',
-            puntuacion: 4,
-            comentario: 'Código bien documentado y estructurado según las mejores prácticas de TypeScript moderno.',
-            fecha: 'hace 9 meses',
-            proyectoNombre: 'Auditoría y Refactorización de Frontend'
-          },
-          {
-            id: 14,
-            autorNombre: 'Esteban Quiroga',
-            autorRol: 'CTO @ SmartAgro',
-            puntuacion: 5,
-            comentario: 'Desarrollo rápido, performante y con excelente atención a la responsividad en dispositivos móviles.',
-            fecha: 'hace 10 meses',
-            proyectoNombre: 'Aplicación PWA para Monitoreo de Campo'
-          }
-        ]
-      }
-      return of(mockReputacion).pipe(delay(200))
+      return of(this.mockReputacion).pipe(delay(200))
     }
     const targetId = perfilId || 1
     const endpoint = `${this.API_URL}/${targetId}/calificaciones`
     return this.client.get<ReputacionPerfilDTO>(endpoint).pipe(
-      catchError(() => of(mockReputacion))
+      map(data => (data && Array.isArray(data.calificaciones) && data.calificaciones.length > 0) ? data : this.mockReputacion),
+      catchError(() => of(this.mockReputacion))
     )
   }
 
