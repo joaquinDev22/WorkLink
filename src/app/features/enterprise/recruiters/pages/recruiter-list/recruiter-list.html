@@ -16,7 +16,7 @@
       <button
         type="button"
         (click)="toastMsg.set(null)"
-        class="ml-2 text-slate-400 hover:text-white cursor-pointer"
+        class="ml-2 text-slate-400 hover:text-white"
         aria-label="Cerrar notificación">
         ✕
       </button>
@@ -44,7 +44,7 @@
       <button
         type="button"
         (click)="abrirModal()"
-        class="btn-tactile-primary w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold cursor-pointer">
+        class="btn-tactile-primary w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
@@ -76,7 +76,7 @@
           <button
             type="button"
             (click)="searchTerm.set(''); onFilterChange()"
-            class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
+            class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600"
             aria-label="Limpiar búsqueda">
             ✕
           </button>
@@ -89,14 +89,14 @@
           <button
             type="button"
             (click)="selectedArea.set('TODAS'); onFilterChange()"
-            class="px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap cursor-pointer transition-all {{ selectedArea() === 'TODAS' ? 'tab-tactile-active' : 'tab-tactile-inactive' }}">
+            class="px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap transition-all {{ selectedArea() === 'TODAS' ? 'tab-tactile-active' : 'tab-tactile-inactive' }}">
             Todas
           </button>
           @for (area of availableAreas(); track area) {
             <button
               type="button"
               (click)="selectedArea.set(area); onFilterChange()"
-              class="px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap cursor-pointer transition-all {{ selectedArea() === area ? 'tab-tactile-active' : 'tab-tactile-inactive' }}">
+              class="px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap transition-all {{ selectedArea() === area ? 'tab-tactile-active' : 'tab-tactile-inactive' }}">
               {{ area }}
             </button>
           }
@@ -183,7 +183,7 @@
                   <button
                     type="button"
                     (click)="solicitarBaja(rec)"
-                    class="p-2 rounded-lg text-rose-500 hover:bg-rose-50 active:scale-95 transition-all cursor-pointer"
+                    class="p-2 rounded-lg text-rose-500 hover:bg-rose-50 active:scale-95 transition-all"
                     title="Desvincular reclutador"
                     aria-label="Desvincular reclutador">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -227,7 +227,7 @@
             <button
               type="button"
               (click)="solicitarBaja(rec)"
-              class="p-2 rounded-lg text-rose-500 hover:bg-rose-50 shrink-0 cursor-pointer"
+              class="p-2 rounded-lg text-rose-500 hover:bg-rose-50 shrink-0"
               aria-label="Dar de baja">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -254,13 +254,13 @@
                 <button
                   type="button"
                   (click)="setPageSize(5)"
-                  class="px-2 py-0.5 rounded-md font-bold transition-all cursor-pointer {{ pageSize() === 5 ? 'tab-tactile-active text-indigo-700' : 'tab-tactile-inactive' }}">
+                  class="px-2 py-0.5 rounded-md font-bold transition-all {{ pageSize() === 5 ? 'tab-tactile-active text-indigo-700' : 'tab-tactile-inactive' }}">
                   5
                 </button>
                 <button
                   type="button"
                   (click)="setPageSize(10)"
-                  class="px-2 py-0.5 rounded-md font-bold transition-all cursor-pointer {{ pageSize() === 10 ? 'tab-tactile-active text-indigo-700' : 'tab-tactile-inactive' }}">
+                  class="px-2 py-0.5 rounded-md font-bold transition-all {{ pageSize() === 10 ? 'tab-tactile-active text-indigo-700' : 'tab-tactile-inactive' }}">
                   10
                 </button>
               </div>
@@ -271,7 +271,7 @@
               type="button"
               (click)="prevPage()"
               [disabled]="currentPage() === 1"
-              class="btn-tactile-secondary px-2.5 py-1.5 rounded-lg font-semibold inline-flex items-center gap-1 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              class="btn-tactile-secondary px-2.5 py-1.5 rounded-lg font-semibold inline-flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed"
               aria-label="Página anterior">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -285,7 +285,7 @@
                 <button
                   type="button"
                   (click)="goToPage(p)"
-                  class="w-7 h-7 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center {{ currentPage() === p ? 'tab-tactile-active text-indigo-700' : 'text-slate-600 hover:bg-slate-200/60' }}">
+                  class="w-7 h-7 rounded-lg text-xs font-bold transition-all flex items-center justify-center {{ currentPage() === p ? 'tab-tactile-active text-indigo-700' : 'text-slate-600 hover:bg-slate-200/60' }}">
                   {{ p }}
                 </button>
               }
@@ -296,7 +296,7 @@
               type="button"
               (click)="nextPage()"
               [disabled]="currentPage() === totalPages()"
-              class="btn-tactile-secondary px-2.5 py-1.5 rounded-lg font-semibold inline-flex items-center gap-1 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              class="btn-tactile-secondary px-2.5 py-1.5 rounded-lg font-semibold inline-flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed"
               aria-label="Página siguiente">
               <span class="hidden sm:inline">Siguiente</span>
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -321,7 +321,7 @@
           <button
             type="button"
             (click)="searchTerm.set(''); selectedArea.set('TODAS')"
-            class="btn-tactile-secondary px-3.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+            class="btn-tactile-secondary px-3.5 py-1.5 rounded-lg text-xs font-semibold">
             Limpiar filtros
           </button>
         }
@@ -369,7 +369,7 @@
           <button
             type="button"
             (click)="cancelarBaja()"
-            class="btn-tactile-secondary px-4 py-2 rounded-xl text-xs font-semibold cursor-pointer">
+            class="btn-tactile-secondary px-4 py-2 rounded-xl text-xs font-semibold">
             Cancelar
           </button>
 
@@ -377,7 +377,7 @@
             type="button"
             (click)="confirmarBaja()"
             [disabled]="isMutating()"
-            class="btn-tactile-danger inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold cursor-pointer">
+            class="btn-tactile-danger inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold">
             @if (isMutating()) {
               <span>Desvinculando...</span>
             } @else {

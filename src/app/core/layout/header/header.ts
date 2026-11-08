@@ -170,44 +170,30 @@ export class Header implements OnInit {
 
     if (rol === 'EMPRESA') {
       return [
-        { label: 'Dashboard Corporativo', route: '/enterprise/dashboard', icon: 'dashboard' },
-        { label: 'Perfil de la Empresa', route: '/enterprise/perfil', icon: 'building' },
-        { label: 'Gestión de Vacantes', route: '/enterprise/vacantes', icon: 'briefcase' },
-        { label: 'Nómina de Recruiters', route: '/enterprise/recruiters', icon: 'users' },
+        { label: 'Perfil de la Empresa', route: '/enterprise/perfil', icon: 'building' }
       ]
     }
 
     if (rol === 'RECRUITER') {
       return [
-        { label: 'Vacantes Asignadas', route: '/enterprise/vacantes', icon: 'briefcase' },
-        { label: 'Pipeline de Postulantes', route: '/enterprise/postulantes', icon: 'users' },
-        { label: 'Agenda de Entrevistas', route: '/enterprise/entrevistas', icon: 'calendar' },
-        { label: 'Mi Perfil de Reclutador', route: '/perfiles/mi-perfil', icon: 'user' },
+        { label: 'Mi Perfil de Reclutador', route: '/perfiles/mi-perfil', icon: 'user' }
       ]
     }
 
     if (rol === 'POSTULANTE') {
       return [
-        { label: 'Mi Perfil Profesional', route: '/perfiles/mi-perfil', icon: 'user' },
-        { label: 'Catálogo de Vacantes', route: '/enterprise/catalogo', icon: 'search' },
-        { label: 'Mis Postulaciones', route: '/enterprise/mis-postulaciones', icon: 'check' },
-        { label: 'Mis Entrevistas Virtuales', route: '/enterprise/entrevistas', icon: 'calendar' },
+        { label: 'Mi Perfil Profesional', route: '/perfiles/mi-perfil', icon: 'user' }
       ]
     }
 
     if (rol === 'CLIENTE') {
       return [
-        { label: 'Mi Perfil', route: '/perfiles/mi-perfil', icon: 'user' },
-        { label: 'Mis Proyectos Contratados', route: '/freelance/cliente-dashboard', icon: 'briefcase' },
-        { label: 'Publicar Nuevo Proyecto', route: '/freelance/nuevo-proyecto', icon: 'plus' },
+        { label: 'Mi Perfil', route: '/perfiles/mi-perfil', icon: 'user' }
       ]
     }
 
     return [
-      { label: 'Mi Perfil Profesional', route: '/perfiles/mi-perfil', icon: 'user' },
-      { label: 'Explorar Proyectos', route: '/freelance/proyectos', icon: 'search' },
-      { label: 'Mis Trabajos e Hitos', route: '/freelance/mis-trabajos', icon: 'briefcase' },
-      { label: 'Mis Finanzas', route: '/freelance/finanzas', icon: 'credit-card' },
+      { label: 'Mi Perfil Profesional', route: '/perfiles/mi-perfil', icon: 'user' }
     ]
   })
 

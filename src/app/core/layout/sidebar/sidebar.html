@@ -30,7 +30,7 @@
             <button
                 type="button"
                 (click)="togglePostulanteFreelancer()"
-                class="w-full py-2 px-3 rounded-xl text-xs font-semibold bg-white/10 hover:bg-white/20 text-white border border-white/15 flex items-center justify-between cursor-pointer transition-all active:scale-95"
+                class="w-full py-2 px-3 rounded-xl text-xs font-semibold bg-white/10 hover:bg-white/20 text-white border border-white/15 flex items-center justify-between transition-all active:scale-95"
             >
                 <div class="flex items-center gap-2">
                     <span class="w-2 h-2 rounded-full" [class.bg-brand-sky]="auth.session()?.rol === 'POSTULANTE'" [class.bg-purple-400]="auth.session()?.rol === 'FREELANCER'"></span>
@@ -53,7 +53,7 @@
         <!-- Botón de Cerrar Sesión -->
         <button 
             (click)="auth.logout(); cerrar()" 
-            class="w-full py-2.5 px-3 rounded-xl text-sm font-medium text-brand-danger-muted bg-brand-danger/20 border border-brand-danger-muted/30 hover:bg-brand-danger/40 hover:text-white transition-all cursor-pointer">
+            class="w-full py-2.5 px-3 rounded-xl text-sm font-medium text-brand-danger-muted bg-brand-danger/20 border border-brand-danger-muted/30 hover:bg-brand-danger/40 hover:text-white transition-all">
             Cerrar Sesión
         </button>
     </div>

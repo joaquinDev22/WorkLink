@@ -35,12 +35,12 @@
         <!-- Botones con exactamente el mismo estilo y sombras del Header -->
         <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto pt-2">
           <a routerLink="/auth/register" 
-             class="btn-registrarse bg-brand-violet w-full sm:w-auto px-7 py-3.5 rounded-xl font-semibold text-white text-center cursor-pointer active:scale-[0.97]">
+             class="btn-registrarse bg-brand-violet w-full sm:w-auto px-7 py-3.5 rounded-xl font-semibold text-white text-center active:scale-[0.97]">
             Registrarse Gratis
           </a>
           
           <a routerLink="/auth/login" 
-             class="btn-iniciar-sesion w-full sm:w-auto px-7 py-3.5 rounded-xl font-semibold text-white text-center cursor-pointer active:scale-[0.97]">
+             class="btn-iniciar-sesion w-full sm:w-auto px-7 py-3.5 rounded-xl font-semibold text-white text-center active:scale-[0.97]">
             Iniciar Sesión
           </a>
         </div>
@@ -255,7 +255,7 @@
             [class.text-white]="rolFiltro() === f"
             [class.neu-pill-idle]="rolFiltro() !== f"
             [class.text-slate-200]="rolFiltro() !== f"
-            class="px-5 py-2.5 rounded-xl text-xs font-semibold cursor-pointer active:scale-[0.96] transition-transform">
+            class="px-5 py-2.5 rounded-xl text-xs font-semibold active:scale-[0.96] transition-transform">
             {{ f === 'TODOS' ? 'Todos los testimonios' : f }}
           </button>
         }
@@ -304,7 +304,7 @@
 
         <div class="pt-2">
           <a routerLink="/auth/register" 
-             class="btn-registrarse bg-brand-violet inline-block px-8 py-3.5 rounded-xl font-semibold text-white text-base cursor-pointer active:scale-[0.97]">
+             class="btn-registrarse bg-brand-violet inline-block px-8 py-3.5 rounded-xl font-semibold text-white text-base active:scale-[0.97]">
             Registrarse Gratis
           </a>
         </div>

@@ -397,7 +397,6 @@
     inset 0 -1px 0 0 rgba(0, 0, 0, 0.06),
     0 1px 3px 0 rgba(15, 23, 42, 0.1);
   transform: scale(1);
-  cursor: pointer;
 }
 
 .tab-tactile-inactive {
@@ -410,7 +409,6 @@
   align-items: center;
   justify-content: center;
   white-space: nowrap;
-  cursor: pointer;
   transition: color 0.15s ease, transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s ease;
 }
 
