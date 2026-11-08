@@ -43,7 +43,9 @@ export class EntrevistaService {
   ]
 
   constructor() {
-    this.entrevistas.set(this.initialMockEntrevistas)
+    if (environment.bypassAuth) {
+      this.entrevistas.set(this.initialMockEntrevistas)
+    }
   }
 
   getEntrevistas(): Observable<EntrevistaResponseDTO[]> {

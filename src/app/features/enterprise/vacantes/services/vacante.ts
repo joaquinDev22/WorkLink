@@ -176,7 +176,9 @@ export class VacanteService {
   ]
 
   constructor() {
-    this.postulaciones.set(this.initialMockPostulaciones)
+    if (environment.bypassAuth) {
+      this.postulaciones.set(this.initialMockPostulaciones)
+    }
   }
 
   // Carga las vacantes publicadas por la empresa autenticada (GET /api/v1/vacantes/me)

@@ -83,14 +83,21 @@ export class EmpresaDashboard implements OnInit {
 
   // Ratios de eficiencia únicos
   readonly ratioCarga = computed<string>(() => {
-    const recs = this.recruiters().length || 1
+    const recs = this.recruiters().length
     const vacs = this.vacantesActivas().length
+    if (recs === 0) return '0.0'
     return (vacs / recs).toFixed(1)
   })
 
+  readonly postulacionesRecibidas = computed<number>(() => this.stats()?.totalPostulaciones ?? 0)
+  readonly entrevistasProgramadas = computed<number>(() => this.stats()?.entrevistasPendientes ?? 0)
+  readonly contratacionesRealizadas = computed<number>(() => this.stats()?.contratacionesEfectuadas ?? 0)
+  readonly filtroTecnico = computed<number>(() => Math.round(this.postulacionesRecibidas() * 0.5))
+
   readonly tasaEfectividad = computed<string>(() => {
-    const post = this.stats()?.totalPostulaciones || 38
-    const cont = this.stats()?.contratacionesEfectuadas || 4
+    const post = this.postulacionesRecibidas()
+    const cont = this.contratacionesRealizadas()
+    if (post === 0) return '0.0'
     return ((cont / post) * 100).toFixed(1)
   })
 

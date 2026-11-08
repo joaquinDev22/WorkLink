@@ -37,8 +37,27 @@ export class VacanteCatalogo implements OnInit {
   // Subject para debounce reactivo de búsqueda (Escenario 1 - Gherkin WL-24)
   private searchSubject = new Subject<string>()
 
-  // Tags tecnológicas populares para acceso rápido
-  readonly popularTags = ['Angular', 'TypeScript', 'Java', 'Spring Boot', 'Figma', 'Go', 'Python', 'AWS']
+  // Tags tecnológicas reactivas a las vacantes reales cargadas desde la base de datos
+  readonly popularTags = computed<string[]>(() => {
+    const catalogo = this.vacanteService.catalogoVacantes()
+    const counts: Record<string, number> = {}
+
+    for (const v of catalogo) {
+      for (const t of v.etiquetas || []) {
+        const clean = t.trim()
+        if (clean) {
+          counts[clean] = (counts[clean] || 0) + 1
+        }
+      }
+    }
+
+    const sorted = Object.keys(counts).sort((a, b) => counts[b] - counts[a])
+    if (sorted.length > 0) {
+      return sorted.slice(0, 12)
+    }
+
+    return ['Angular', 'TypeScript', 'Java', 'Spring Boot', 'Python', 'Docker', 'AWS']
+  })
 
   // Lista filtrada reactivamente
   readonly vacantesFiltradas = computed(() => {

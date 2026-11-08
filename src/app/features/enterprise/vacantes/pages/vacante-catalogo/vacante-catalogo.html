@@ -82,7 +82,7 @@
     <!-- Fila de Tecnologías Populares -->
     <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100">
       <span class="text-xs font-semibold text-slate-500 mr-1">Filtrar por stack:</span>
-      @for (tag of popularTags; track tag) {
+      @for (tag of popularTags(); track tag) {
         <button
           type="button"
           (click)="toggleTag(tag)"

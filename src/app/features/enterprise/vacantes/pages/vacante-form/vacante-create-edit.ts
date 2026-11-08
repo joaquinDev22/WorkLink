@@ -4,6 +4,8 @@ import { Router, ActivatedRoute, RouterLink } from '@angular/router'
 import { form, minLength, maxLength, required, validate, FormField } from '@angular/forms/signals'
 import { VacanteService } from '../../services/vacante'
 import { VacanteFormModel, VacanteRequestDTO, ModalidadTrabajo } from '../../models/vacante.models'
+import { HttpClient } from '@angular/common/http'
+import { environment } from '../../../../../../environments/environment'
 
 @Component({
   selector: 'app-vacante-create-edit',
@@ -16,6 +18,7 @@ export class VacanteCreateEdit implements OnInit {
   protected vacanteService = inject(VacanteService)
   private router = inject(Router)
   private route = inject(ActivatedRoute)
+  private http = inject(HttpClient)
 
   readonly isMutating = this.vacanteService.isMutating
 
@@ -39,6 +42,18 @@ export class VacanteCreateEdit implements OnInit {
   // Etiquetas interactivas de tecnologías y habilidades requeridas
   etiquetas = signal<string[]>(['Angular', 'TypeScript'])
   tagInput = signal<string>('')
+  catalogoHabilidades = signal<Array<{ id: number; name: string }>>([])
+
+  // Sugerencias en tiempo real filtradas del catálogo verificado mientras se escribe
+  readonly sugerenciasAutocompletado = computed<string[]>(() => {
+    const query = this.tagInput().trim().toLowerCase()
+    if (!query) return []
+    const seleccionadas = this.etiquetas()
+    return this.catalogoHabilidades()
+      .map(h => h.name)
+      .filter(name => name.toLowerCase().includes(query) && !seleccionadas.includes(name))
+      .slice(0, 6)
+  })
 
   // Opciones de configuración
   readonly modalidades: { valor: ModalidadTrabajo; label: string; desc: string }[] = [
@@ -98,6 +113,8 @@ export class VacanteCreateEdit implements OnInit {
   })
 
   ngOnInit(): void {
+    this.cargarCatalogoHabilidades()
+
     const idParam = this.route.snapshot.paramMap.get('id')
     if (idParam) {
       const id = Number(idParam)
@@ -106,6 +123,17 @@ export class VacanteCreateEdit implements OnInit {
         this.cargarVacante(id)
       }
     }
+  }
+
+  private cargarCatalogoHabilidades(): void {
+    this.http.get<Array<{ id: number; name: string }>>(`${environment.apiUrl}/habilidades`).subscribe({
+      next: (data) => this.catalogoHabilidades.set(data || []),
+      error: () => {
+        this.catalogoHabilidades.set(
+          this.tecnologiasSugeridas.map((name, i) => ({ id: i + 1, name }))
+        )
+      }
+    })
   }
 
   private cargarVacante(id: number): void {
@@ -125,21 +153,28 @@ export class VacanteCreateEdit implements OnInit {
     })
   }
 
-  agregarTagDesdeInput(): void {
-    const raw = this.tagInput().trim()
+  agregarTag(nombreTag?: string): void {
+    const raw = (nombreTag || this.tagInput()).trim().replace(/,/g, '')
     if (!raw) return
 
-    const sanitized = raw.replace(/,/g, '').trim()
+    // Normalización: si coincide con una habilidad del catálogo oficial, usa su nombre canónico
+    const match = this.catalogoHabilidades().find(h => h.name.toLowerCase() === raw.toLowerCase())
+    const sanitized = match ? match.name : raw
+
     if (sanitized && !this.etiquetas().includes(sanitized)) {
       this.etiquetas.update((prev) => [...prev, sanitized])
     }
     this.tagInput.set('')
   }
 
+  agregarTagDesdeInput(): void {
+    this.agregarTag()
+  }
+
   onTagKeyDown(e: KeyboardEvent): void {
     if (e.key === 'Enter' || e.key === ',') {
       e.preventDefault()
-      this.agregarTagDesdeInput()
+      this.agregarTag()
     }
   }
 
