@@ -91,8 +91,29 @@ export class Perfil {
 
       if (p.telefono) puntos += 25
       else itemsFaltantes.push({ clave: 'telefono', label: 'Teléfono corporativo', completado: false })
+    } else if (p.rol === 'FREELANCER') {
+      // FREELANCER: NO requiere CV, se evalúa por proyectos, habilidades técnicas, foto, portada y biografía
+      if (p.fotoPerfil) puntos += 25
+      else itemsFaltantes.push({ clave: 'foto', label: 'Foto de perfil', completado: false })
+
+      if (p.bannerPerfil) puntos += 15
+      else itemsFaltantes.push({ clave: 'banner', label: 'Banner de portada', completado: false })
+
+      if (p.descripcion && p.descripcion.trim().length > 15) puntos += 25
+      else itemsFaltantes.push({ clave: 'descripcion', label: 'Biografía profesional freelance', completado: false })
+
+      if (p.habilidades && p.habilidades.length >= 3) puntos += 20
+      else if (p.habilidades && p.habilidades.length > 0) {
+        puntos += 10
+        itemsFaltantes.push({ clave: 'habilidades', label: 'Agrega al menos 3 habilidades', completado: false })
+      } else {
+        itemsFaltantes.push({ clave: 'habilidades', label: 'Habilidades técnicas', completado: false })
+      }
+
+      if (p.proyectos && p.proyectos.length > 0) puntos += 15
+      else itemsFaltantes.push({ clave: 'proyectos', label: 'Portafolio de proyectos', completado: false })
     } else {
-      // FREELANCER, POSTULANTE
+      // POSTULANTE / EMPLOYEE: Requiere CV (PDF)
       if (p.tieneCv) puntos += 20
       else itemsFaltantes.push({ clave: 'cv', label: 'Adjuntar CV (PDF)', completado: false })
 
@@ -202,7 +223,15 @@ export class Perfil {
       return of(mockPerfil).pipe(delay(400))
     }
 
-    return this.client.get<PerfilUsuarioDTO>(`${this.API_URL}/getProfile`)
+    return this.client.get<PerfilUsuarioDTO>(`${this.API_URL}/getProfile`).pipe(
+      map(data => {
+        const sessionRol = this.tokenStorage.getSession()?.rol
+        if (sessionRol && (data.rol === 'EMPLOYEE' || data.rol === 'POSTULANTE' || data.rol === 'FREELANCER')) {
+          return { ...data, rol: sessionRol }
+        }
+        return data
+      })
+    )
   }
 
   uploadPhoto(file: File): Observable<{ fotoUrl: string }> {
@@ -632,8 +661,11 @@ export class Perfil {
       }
       return of(mockReputacion).pipe(delay(200))
     }
-    const endpoint = perfilId ? `${this.API_URL}/${perfilId}/calificaciones` : `${this.API_URL}/calificaciones`
-    return this.client.get<ReputacionPerfilDTO>(endpoint)
+    const targetId = perfilId || 1
+    const endpoint = `${this.API_URL}/${targetId}/calificaciones`
+    return this.client.get<ReputacionPerfilDTO>(endpoint).pipe(
+      catchError(() => of(mockReputacion))
+    )
   }
 
   // 7. Dar de baja lógica la cuenta del usuario autenticado (DELETE /api/v1/perfiles/me)

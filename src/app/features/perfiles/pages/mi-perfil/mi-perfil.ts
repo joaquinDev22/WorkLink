@@ -1,10 +1,16 @@
-import { Component, OnInit, inject, computed, signal } from '@angular/core'
+import { Component, OnInit, inject, computed, signal, effect } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { FormsModule } from '@angular/forms'
+import { RouterLink } from '@angular/router'
 import { Perfil } from '../../services/perfil'
 import { EditProfileModel, ItemFaltantePerfil, NivelHabilidad, PerfilUsuarioDTO, ReputacionPerfilDTO } from '../../models/perfil.models'
 import { form, maxLength, minLength, pattern, required, validate, FormField } from '@angular/forms/signals'
 import { MorphService } from '../../../../core/services/morph'
+import { Auth } from '../../../../core/auth/services/auth'
+import { TokenStorage } from '../../../../core/auth/services/token-storage'
+import { UserRole } from '../../../../core/models/user-role'
+import { ProyectoAdmin } from '../../../freelance/proyecto-gestion/services/proyecto-admin'
+import { ProyectoResponseDTO } from '../../../freelance/proyecto-gestion/models/proyecto.models'
 
 export interface HistorialEmpresaRecruiter {
   id: number
@@ -47,7 +53,7 @@ export const PATTERNS_TELEFONO: Record<string, { regex: RegExp, ejemplo: string 
 }
 
 @Component({
-  imports: [CommonModule, FormsModule, FormField],
+  imports: [CommonModule, FormsModule, FormField, RouterLink],
   selector: 'app-mi-perfil',
   styleUrl: './mi-perfil.css',
   templateUrl: './mi-perfil.html',
@@ -55,11 +61,38 @@ export const PATTERNS_TELEFONO: Record<string, { regex: RegExp, ejemplo: string 
 export class MiPerfil implements OnInit {
   protected perfilService = inject(Perfil)
   protected morph = inject(MorphService)
+  protected auth = inject(Auth)
+  protected tokenStorage = inject(TokenStorage)
+  protected proyectoAdmin = inject(ProyectoAdmin)
   private triggerEl: HTMLElement | null = null
 
   readonly perfil = this.perfilService.perfilActual
   readonly isLoading = this.perfilService.isLoading
   readonly completitud = this.perfilService.completitud
+
+  // Rol activo derivado reactivamente del modo en sesión o del perfil cargado
+  readonly rolActivo = computed<UserRole>(() => {
+    return this.auth.session()?.rol || (this.perfil()?.rol as UserRole) || 'POSTULANTE'
+  })
+  readonly esFreelancer = computed(() => this.rolActivo() === 'FREELANCER')
+  readonly esPostulante = computed(() => this.rolActivo() === 'POSTULANTE')
+  readonly esEmpresa = computed(() => this.rolActivo() === 'EMPRESA')
+  readonly esRecruiter = computed(() => this.rolActivo() === 'RECRUITER')
+  readonly esCandidato = computed(() => this.esFreelancer() || this.esPostulante())
+
+  // Histórico de proyectos freelance asignados / en los que trabajó
+  readonly proyectosAsignados = signal<ProyectoResponseDTO[]>([])
+  readonly isLoadingProyectosAsignados = signal<boolean>(false)
+
+  constructor() {
+    // Sincronizar reactivamente reputación y proyectos asignados si el usuario alterna a modo FREELANCER
+    effect(() => {
+      if (this.esFreelancer()) {
+        this.cargarReputacion()
+        this.cargarProyectosAsignados()
+      }
+    })
+  }
 
   // Modal de edición de perfil (WL-14)
   isEditModalOpen = signal<boolean>(false)
@@ -213,7 +246,7 @@ export class MiPerfil implements OnInit {
     required(f.pais, { message: 'El país es obligatorio' })
 
     validate(f.fechaNacimiento, ({ value }) => {
-      if (this.perfil()?.rol === 'EMPRESA') return null
+      if (this.esEmpresa()) return null
       const fecha = value()?.trim() || ''
       if (!fecha) {
         return { kind: 'required', message: 'La fecha de nacimiento es obligatoria' }
@@ -225,7 +258,7 @@ export class MiPerfil implements OnInit {
     })
 
     validate(f.apellido, ({ value }) => {
-      if (this.perfil()?.rol === 'EMPRESA') return null
+      if (this.esEmpresa()) return null
       const ap = value()?.trim() || ''
       if (!ap) {
         return { kind: 'required', message: 'El apellido es obligatorio' }
@@ -287,6 +320,36 @@ export class MiPerfil implements OnInit {
       this.perfilService.cargarPerfil().subscribe()
     }
     this.cargarReputacion()
+    if (this.esFreelancer()) {
+      this.cargarProyectosAsignados()
+    }
+  }
+
+  toggleModoPostulanteFreelancer(): void {
+    const nuevoRol: UserRole = this.rolActivo() === 'POSTULANTE' ? 'FREELANCER' : 'POSTULANTE'
+    const actual = this.auth.session()
+    if (actual) {
+      const updated = { ...actual, rol: nuevoRol }
+      this.tokenStorage.saveSession(updated)
+      this.auth.session.set(updated)
+    }
+    this.perfilService.perfilActual.update(p => p ? { ...p, rol: nuevoRol } : null)
+    if (nuevoRol === 'FREELANCER') {
+      this.cargarReputacion()
+      this.cargarProyectosAsignados()
+    }
+    this.showToast(`Modo cambiado a ${nuevoRol === 'FREELANCER' ? 'Freelancer' : 'Postulante'}`)
+  }
+
+  cargarProyectosAsignados(): void {
+    this.isLoadingProyectosAsignados.set(true)
+    this.proyectoAdmin.getMisProyectosAsignados().subscribe({
+      next: (proys) => {
+        this.proyectosAsignados.set(proys || [])
+        this.isLoadingProyectosAsignados.set(false)
+      },
+      error: () => this.isLoadingProyectosAsignados.set(false)
+    })
   }
 
   ejecutarActividad(item: ItemFaltantePerfil, ev: Event): void {
@@ -346,7 +409,7 @@ export class MiPerfil implements OnInit {
         sitioWeb: current.sitioWeb || '',
         fechaNacimiento: current.fechaNacimiento || '1998-01-01',
         email: current.email || '',
-        rol: current.rol || 'POSTULANTE'
+        rol: this.rolActivo()
       })
     }
     this.morph.name(this.triggerEl, 'edit-surface')
@@ -379,7 +442,7 @@ export class MiPerfil implements OnInit {
         sitioWeb: current.sitioWeb || '',
         fechaNacimiento: current.fechaNacimiento || '1998-01-01',
         email: current.email || '',
-        rol: current.rol || 'POSTULANTE'
+        rol: this.rolActivo()
       })
     }
     this.isEditModalOpen.update(v => !v)
@@ -390,7 +453,7 @@ export class MiPerfil implements OnInit {
     if (!form.value) return
 
     this.isSaving.set(true)
-    const datos = form.value()
+    const datos = { ...form.value(), rol: this.rolActivo() }
     this.perfilService.updateProfile(datos).subscribe({
       next: () => {
         this.isSaving.set(false)
