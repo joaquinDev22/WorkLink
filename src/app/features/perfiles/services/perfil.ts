@@ -271,13 +271,26 @@ export class Perfil {
 
   updateProfile(datos: EditProfileModel): Observable<PerfilUsuarioDTO> {
     const current = this.perfilActual()
-    const actualizado = { ...current, ...datos } as PerfilUsuarioDTO
+    const esEmpresa = current?.rol === 'EMPRESA'
+
+    const payload: EditProfileModel = {
+      nombre: (datos.nombre || current?.nombre || '').trim(),
+      apellido: (datos.apellido || (esEmpresa ? 'Empresa' : (current?.apellido || ''))).trim(),
+      telefono: (datos.telefono || current?.telefono || '').trim(),
+      pais: (datos.pais || current?.pais || 'Argentina').trim(),
+      descripcion: (datos.descripcion || current?.descripcion || '').trim(),
+      ubicacion: (datos.ubicacion || current?.ubicacion || 'Remoto').trim(),
+      sitioWeb: (datos.sitioWeb || current?.sitioWeb || '').trim(),
+      fechaNacimiento: (datos.fechaNacimiento || current?.fechaNacimiento || '1998-01-01').trim()
+    }
+
+    const actualizado = { ...current, ...payload } as PerfilUsuarioDTO
     this.perfilActual.set(actualizado)
 
     if (environment.bypassAuth) {
       return of(actualizado).pipe(delay(300))
     }
-    return this.client.put<PerfilUsuarioDTO>(`${this.API_URL}/updateProfile`, datos).pipe(
+    return this.client.put<PerfilUsuarioDTO>(`${this.API_URL}/updateProfile`, payload).pipe(
       catchError((err) => {
         this.perfilActual.set(current)
         return throwError(() => err)

@@ -197,7 +197,9 @@ export class MiPerfil implements OnInit {
     descripcion: '',
     telefono: '',
     ubicacion: '',
-    sitioWeb: ''
+    pais: '',
+    sitioWeb: '',
+    fechaNacimiento: ''
   })
 
   editForm = form(this.profileModel, (f) => {
@@ -205,6 +207,20 @@ export class MiPerfil implements OnInit {
     required(f.nombre, { message: 'El nombre es obligatorio' })
     minLength(f.nombre, 2, { message: 'El nombre debe tener al menos 2 caracteres' })
     maxLength(f.nombre, 80, { message: 'El nombre no debe superar los 80 caracteres' })
+
+    required(f.pais, { message: 'El país es obligatorio' })
+
+    validate(f.fechaNacimiento, ({ value }) => {
+      if (this.perfil()?.rol === 'EMPRESA') return null
+      const fecha = value()?.trim() || ''
+      if (!fecha) {
+        return { kind: 'required', message: 'La fecha de nacimiento es obligatoria' }
+      }
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
+        return { kind: 'pattern', message: 'Formato requerido: AAAA-MM-DD' }
+      }
+      return null
+    })
 
     validate(f.apellido, ({ value }) => {
       if (this.perfil()?.rol === 'EMPRESA') return null
@@ -324,7 +340,9 @@ export class MiPerfil implements OnInit {
         descripcion: current.descripcion || '',
         telefono: current.telefono || '',
         ubicacion: current.ubicacion || '',
-        sitioWeb: current.sitioWeb || ''
+        pais: current.pais || 'Argentina',
+        sitioWeb: current.sitioWeb || '',
+        fechaNacimiento: current.fechaNacimiento || '1998-01-01'
       })
     }
     this.morph.name(this.triggerEl, 'edit-surface')
@@ -353,7 +371,9 @@ export class MiPerfil implements OnInit {
         descripcion: current.descripcion || '',
         telefono: current.telefono || '',
         ubicacion: current.ubicacion || '',
-        sitioWeb: current.sitioWeb || ''
+        pais: current.pais || 'Argentina',
+        sitioWeb: current.sitioWeb || '',
+        fechaNacimiento: current.fechaNacimiento || '1998-01-01'
       })
     }
     this.isEditModalOpen.update(v => !v)

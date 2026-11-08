@@ -1075,13 +1075,47 @@
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="space-y-1">
+              <label for="ubicacion" class="text-xs font-semibold text-slate-700">Ubicación / Ciudad</label>
+              <input
+                type="text"
+                id="ubicacion"
+                [formField]="editForm.ubicacion"
+                [class.input-error]="editForm.ubicacion().touched() && editForm.ubicacion().invalid()"
+                placeholder="Ej: Buenos Aires"
+                class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
+              @if (editForm.ubicacion().touched() && editForm.ubicacion().invalid()) {
+                @for (error of editForm.ubicacion().errors(); track error.kind) {
+                  <span class="text-xs text-rose-500 font-medium block pt-1">{{ error.message }}</span>
+                }
+              }
+            </div>
+
+            <div class="space-y-1">
+              <label for="pais" class="text-xs font-semibold text-slate-700">País*</label>
+              <input
+                type="text"
+                id="pais"
+                [formField]="editForm.pais"
+                [class.input-error]="editForm.pais().touched() && editForm.pais().invalid()"
+                placeholder="Ej: Argentina"
+                class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
+              @if (editForm.pais().touched() && editForm.pais().invalid()) {
+                @for (error of editForm.pais().errors(); track error.kind) {
+                  <span class="text-xs text-rose-500 font-medium block pt-1">{{ error.message }}</span>
+                }
+              }
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1" [class.sm:col-span-2]="perfil()?.rol === 'EMPRESA'">
               <label for="telefono" class="text-xs font-semibold text-slate-700">Teléfono</label>
               <input
                 type="tel"
                 id="telefono"
                 [formField]="editForm.telefono"
                 [class.input-error]="editForm.telefono().touched() && editForm.telefono().invalid()"
-                placeholder="+11 2 333 - 4444"
+                placeholder="+54 11 4821 9900"
                 class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
               @if (editForm.telefono().touched() && editForm.telefono().invalid()) {
                 @for (error of editForm.telefono().errors(); track error.kind) {
@@ -1090,21 +1124,22 @@
               }
             </div>
 
-            <div class="space-y-1">
-              <label for="ubicacion" class="text-xs font-semibold text-slate-700">Ubicación</label>
-              <input
-                type="text"
-                id="ubicacion"
-                [formField]="editForm.ubicacion"
-                [class.input-error]="editForm.ubicacion().touched() && editForm.ubicacion().invalid()"
-                placeholder="Provincia, Pais"
-                class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
-              @if (editForm.ubicacion().touched() && editForm.ubicacion().invalid()) {
-                @for (error of editForm.ubicacion().errors(); track error.kind) {
-                  <span class="text-xs text-rose-500 font-medium block pt-1">{{ error.message }}</span>
+            @if (perfil()?.rol !== 'EMPRESA') {
+              <div class="space-y-1">
+                <label for="fechaNacimiento" class="text-xs font-semibold text-slate-700">Fecha de Nacimiento*</label>
+                <input
+                  type="date"
+                  id="fechaNacimiento"
+                  [formField]="editForm.fechaNacimiento"
+                  [class.input-error]="editForm.fechaNacimiento().touched() && editForm.fechaNacimiento().invalid()"
+                  class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
+                @if (editForm.fechaNacimiento().touched() && editForm.fechaNacimiento().invalid()) {
+                  @for (error of editForm.fechaNacimiento().errors(); track error.kind) {
+                    <span class="text-xs text-rose-500 font-medium block pt-1">{{ error.message }}</span>
+                  }
                 }
-              }
-            </div>
+              </div>
+            }
           </div>
 
           <div class="space-y-1">

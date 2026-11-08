@@ -42,15 +42,15 @@ export interface PerfilUsuarioDTO {
   proyectos: PerfilProyectoPortafolioDTO[]
 }
 
-export interface EditProfileModel{
-    nombre: string
-    apellido: string
-    descripcion: string
-    telefono: string
-    ubicacion: string
-    sitioWeb: string
-    pais?: string
-    fechaNacimiento?: string
+export interface EditProfileModel {
+  nombre: string
+  apellido: string
+  telefono: string
+  pais: string
+  descripcion: string
+  ubicacion: string
+  sitioWeb: string
+  fechaNacimiento: string
 }
 export interface ItemFaltantePerfil {
   label: string
