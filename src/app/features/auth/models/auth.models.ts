@@ -1,4 +1,4 @@
-﻿// Auth DTO contracts
+// Auth DTO contracts
 import { UserRole } from '../../../core/models/user-role'
 
 // POST /api/v1/auth/register (PerfilRequestDTO en Backend)
@@ -25,6 +25,7 @@ export interface LoginRequestDTO {
 // POST /api/v1/auth/google
 export interface GoogleLoginRequestDTO {
   idToken: string
+  rol?: UserRole
 }
 
 // Respuesta de /login y /google

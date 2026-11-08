@@ -25,6 +25,7 @@ export class Register {
   private auth = inject(Auth)
 
   errorServidor = signal<string | null>(null)
+  hasSubmitted = signal<boolean>(false)
 
   intencion = signal<'CONTRATAR'|'TRABAJAR'|''>('')
 
@@ -183,10 +184,9 @@ export class Register {
   }// 3. Al elegir un rol, lo actualizamos y cerramos el dropdown
   
   crearCuenta(e: Event) {
-
     e.preventDefault()
-
-    this.errorServidor.set(null); // Limpiamos errores previos
+    this.hasSubmitted.set(true)
+    this.errorServidor.set(null) // Limpiamos errores previos
     if (this.registerForm().invalid()) return
 
     const {confirmPassword, ...payload} = this.registerModel()
