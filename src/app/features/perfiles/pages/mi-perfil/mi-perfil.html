@@ -1212,8 +1212,14 @@
           <div class="relative">
             <input
               id="skillNombre"
+              name="tecnologia-habilidad-selector"
               type="text"
               autocomplete="off"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false"
+              role="combobox"
+              aria-autocomplete="list"
               [value]="skillNombre()"
               (focus)="mostrarDropdownSkills.set(true)"
               (input)="skillNombre.set($any($event.target).value); mostrarDropdownSkills.set(true)"

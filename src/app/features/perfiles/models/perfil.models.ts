@@ -51,6 +51,8 @@ export interface EditProfileModel {
   ubicacion: string
   sitioWeb: string
   fechaNacimiento: string
+  email?: string
+  rol?: string
 }
 export interface ItemFaltantePerfil {
   label: string

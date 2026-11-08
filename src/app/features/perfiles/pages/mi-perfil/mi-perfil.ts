@@ -199,7 +199,9 @@ export class MiPerfil implements OnInit {
     ubicacion: '',
     pais: '',
     sitioWeb: '',
-    fechaNacimiento: ''
+    fechaNacimiento: '',
+    email: '',
+    rol: ''
   })
 
   editForm = form(this.profileModel, (f) => {
@@ -342,7 +344,9 @@ export class MiPerfil implements OnInit {
         ubicacion: current.ubicacion || '',
         pais: current.pais || 'Argentina',
         sitioWeb: current.sitioWeb || '',
-        fechaNacimiento: current.fechaNacimiento || '1998-01-01'
+        fechaNacimiento: current.fechaNacimiento || '1998-01-01',
+        email: current.email || '',
+        rol: current.rol || 'POSTULANTE'
       })
     }
     this.morph.name(this.triggerEl, 'edit-surface')
@@ -373,7 +377,9 @@ export class MiPerfil implements OnInit {
         ubicacion: current.ubicacion || '',
         pais: current.pais || 'Argentina',
         sitioWeb: current.sitioWeb || '',
-        fechaNacimiento: current.fechaNacimiento || '1998-01-01'
+        fechaNacimiento: current.fechaNacimiento || '1998-01-01',
+        email: current.email || '',
+        rol: current.rol || 'POSTULANTE'
       })
     }
     this.isEditModalOpen.update(v => !v)
@@ -384,7 +390,8 @@ export class MiPerfil implements OnInit {
     if (!form.value) return
 
     this.isSaving.set(true)
-    this.perfilService.updateProfile(form.value()).subscribe({
+    const datos = form.value()
+    this.perfilService.updateProfile(datos).subscribe({
       next: () => {
         this.isSaving.set(false)
         this.cerrarEditar().finally(() => this.isEditModalOpen.set(false))
@@ -393,7 +400,13 @@ export class MiPerfil implements OnInit {
       error: (err) => {
         this.isSaving.set(false)
         console.error('Error al actualizar perfil', err)
-        this.showToast('No se pudo actualizar el perfil', true)
+        if (err.error) {
+          console.error('Detalles del error 400 del backend:', err.error)
+        }
+        const detalle = (Array.isArray(err.error?.details) && err.error.details.length > 0)
+          ? err.error.details.join(', ')
+          : (err.error?.message || err.error?.mensaje || err.message || 'No se pudo actualizar el perfil')
+        this.showToast(`Error: ${detalle}`, true)
       }
     })
   }

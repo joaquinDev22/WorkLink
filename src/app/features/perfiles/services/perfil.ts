@@ -276,6 +276,8 @@ export class Perfil {
     const payload: EditProfileModel = {
       nombre: (datos.nombre || current?.nombre || '').trim(),
       apellido: (datos.apellido || (esEmpresa ? 'Empresa' : (current?.apellido || ''))).trim(),
+      email: (datos.email || current?.email || '').trim(),
+      rol: current?.rol || 'POSTULANTE',
       telefono: (datos.telefono || current?.telefono || '').trim(),
       pais: (datos.pais || current?.pais || 'Argentina').trim(),
       descripcion: (datos.descripcion || current?.descripcion || '').trim(),
