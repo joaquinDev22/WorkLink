@@ -119,8 +119,8 @@
 
     <!-- Tabla de Postulantes -->
     <div class="overflow-x-auto">
-      <table class="w-full text-left border-collapse">
-        <thead>
+      <table class="block md:table w-full text-left border-collapse">
+        <thead class="hidden md:table-header-group">
           <tr class="border-b border-slate-200/80 bg-slate-50/75 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
             <th class="py-3.5 px-6">Candidato</th>
             <th class="py-3.5 px-6">Búsqueda / Puesto</th>
@@ -136,21 +136,21 @@
             </th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-slate-100 text-xs sm:text-sm">
+        <tbody class="block md:table-row-group divide-y divide-slate-100 text-xs sm:text-sm">
           @if (vacanteService.isLoading()) {
             @for (i of [1, 2, 3]; track i) {
-              <tr class="animate-pulse">
-                <td class="py-4 px-6"><div class="h-4 bg-slate-200 rounded w-32"></div></td>
-                <td class="py-4 px-6"><div class="h-4 bg-slate-200 rounded w-44"></div></td>
-                <td class="py-4 px-6"><div class="h-4 bg-slate-100 rounded w-20"></div></td>
-                <td class="py-4 px-6"><div class="h-4 bg-slate-100 rounded w-24"></div></td>
-                <td class="py-4 px-6"><div class="h-4 bg-slate-100 rounded w-16"></div></td>
-                <td class="py-4 px-6 text-right"><div class="h-6 bg-slate-200 rounded w-24 ml-auto"></div></td>
+              <tr class="block md:table-row animate-pulse space-y-2 py-3 md:py-0">
+                <td class="block md:table-cell py-2 px-4 md:py-4 md:px-6"><div class="h-4 bg-slate-200 rounded w-32"></div></td>
+                <td class="block md:table-cell py-2 px-4 md:py-4 md:px-6"><div class="h-4 bg-slate-200 rounded w-44"></div></td>
+                <td class="block md:table-cell py-2 px-4 md:py-4 md:px-6"><div class="h-4 bg-slate-100 rounded w-20"></div></td>
+                <td class="block md:table-cell py-2 px-4 md:py-4 md:px-6"><div class="h-4 bg-slate-100 rounded w-24"></div></td>
+                <td class="block md:table-cell py-2 px-4 md:py-4 md:px-6"><div class="h-4 bg-slate-100 rounded w-16"></div></td>
+                <td class="block md:table-cell py-2 px-4 md:py-4 md:px-6 text-right"><div class="h-6 bg-slate-200 rounded w-24 ml-auto"></div></td>
               </tr>
             }
           } @else if (postulacionesFiltradas().length === 0) {
-            <tr>
-              <td colspan="6" class="py-12 px-6 text-center">
+            <tr class="block md:table-row">
+              <td colspan="6" class="block md:table-cell py-12 px-6 text-center">
                 <div class="w-12 h-12 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
                   <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -168,42 +168,42 @@
             </tr>
           } @else {
             @for (postulacion of postulacionesFiltradas(); track postulacion.postulacionId) {
-              <tr class="hover:bg-slate-50/80 transition-colors animate-row-enter">
+              <tr class="block md:table-row py-3 md:py-0 hover:bg-slate-50/80 transition-colors animate-row-enter">
                 <!-- Columna Candidato -->
-                <td class="py-4 px-6">
-                  <div class="flex items-center gap-3">
+                <td class="block md:table-cell py-2 px-4 md:py-4 md:px-6">
+                  <div class="flex items-center gap-3 min-w-0">
                     <div class="w-9 h-9 rounded-xl bg-linear-to-br from-indigo-500 to-indigo-700 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-inner">
                       {{ postulacion.nombreCandidato.slice(0, 2).toUpperCase() }}
                     </div>
-                    <div>
-                      <p class="font-bold text-slate-900 leading-tight">{{ postulacion.nombreCandidato }}</p>
-                      <p class="text-xs text-slate-500 leading-tight mt-0.5">{{ postulacion.emailCandidato }}</p>
+                    <div class="min-w-0">
+                      <p class="font-bold text-slate-900 leading-tight truncate">{{ postulacion.nombreCandidato }}</p>
+                      <p class="text-xs text-slate-500 leading-tight mt-0.5 truncate">{{ postulacion.emailCandidato }}</p>
                     </div>
                   </div>
                 </td>
 
                 <!-- Columna Puesto -->
-                <td class="py-4 px-6">
+                <td data-label="Puesto" class="flex md:table-cell items-center justify-between gap-3 py-2 px-4 md:py-4 md:px-6 before:content-[attr(data-label)] before:text-[11px] before:font-bold before:uppercase before:text-slate-400 md:before:hidden">
                   <a
                     [routerLink]="['/enterprise/vacante', postulacion.vacanteId]"
-                    class="font-semibold text-slate-800 hover:text-indigo-600 transition-colors line-clamp-1"
+                    class="font-semibold text-slate-800 hover:text-indigo-600 transition-colors line-clamp-2 md:line-clamp-1 text-right md:text-left min-w-0"
                   >
                     {{ postulacion.puestoVacante }}
                   </a>
                 </td>
 
                 <!-- Columna Fecha -->
-                <td class="py-4 px-6 text-xs text-slate-600 whitespace-nowrap">
+                <td data-label="Fecha" class="flex md:table-cell items-center justify-between gap-3 py-2 px-4 md:py-4 md:px-6 before:content-[attr(data-label)] before:text-[11px] before:font-bold before:uppercase before:text-slate-400 md:before:hidden text-xs text-slate-600 md:whitespace-nowrap">
                   {{ postulacion.fechaPostulacion }}
                 </td>
 
                 <!-- Columna CV -->
-                <td class="py-4 px-6 whitespace-nowrap">
+                <td data-label="CV" class="flex md:table-cell items-center justify-between gap-3 py-2 px-4 md:py-4 md:px-6 before:content-[attr(data-label)] before:text-[11px] before:font-bold before:uppercase before:text-slate-400 md:before:hidden md:whitespace-nowrap">
                   @if (postulacion.tieneCvSubido) {
                     <button
                       type="button"
                       (click)="verCV(postulacion)"
-                      class="btn-tactile-secondary text-xs px-3 py-1.5 inline-flex items-center gap-1.5 text-slate-800 hover:text-indigo-600 cursor-pointer"
+                      class="btn-tactile-secondary text-xs px-3 py-1.5 inline-flex items-center gap-1.5 text-slate-800 hover:text-indigo-600"
                       title="Ver y descargar CV del postulante"
                     >
                       <svg class="w-4 h-4 text-rose-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -219,7 +219,7 @@
                 </td>
 
                 <!-- Columna Carta de Presentación -->
-                <td class="py-4 px-6 whitespace-nowrap">
+                <td data-label="Presentación" class="flex md:table-cell items-center justify-between gap-3 py-2 px-4 md:py-4 md:px-6 before:content-[attr(data-label)] before:text-[11px] before:font-bold before:uppercase before:text-slate-400 md:before:hidden md:whitespace-nowrap">
                   <button
                     type="button"
                     (click)="abrirPreview(postulacion)"
@@ -234,13 +234,13 @@
                 </td>
 
                 <!-- Columna Estado / Selector (Escenario 2 - Gherkin WL-26) -->
-                <td class="py-4 px-6 text-right whitespace-nowrap">
+                <td data-label="Estado" class="flex md:table-cell items-center justify-between gap-3 py-2 px-4 md:py-4 md:px-6 before:content-[attr(data-label)] before:text-[11px] before:font-bold before:uppercase before:text-slate-400 md:before:hidden md:text-right md:whitespace-nowrap">
                   @if (isRecruiter()) {
-                    <div class="flex items-center justify-end gap-2">
+                    <div class="flex flex-wrap items-center justify-end gap-2 min-w-0">
                       <select
                         [value]="postulacion.estado"
                         (change)="cambiarEstado(postulacion, $event)"
-                        class="text-xs font-bold rounded-xl px-3 py-1.5 border shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-offset-1 cursor-pointer"
+                        class="text-xs font-bold rounded-xl px-3 py-1.5 border shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-offset-1"
                         [class.bg-amber-50]="postulacion.estado === 'PENDIENTE'"
                         [class.text-amber-800]="postulacion.estado === 'PENDIENTE'"
                         [class.border-amber-300]="postulacion.estado === 'PENDIENTE'"
@@ -268,7 +268,7 @@
                         <button
                           type="button"
                           (click)="abrirAgendarPara(postulacion)"
-                          class="btn-tactile-primary text-xs px-2.5 py-1.5 inline-flex items-center gap-1 cursor-pointer"
+                          class="btn-tactile-primary text-xs px-2.5 py-1.5 inline-flex items-center gap-1"
                           title="Agendar o editar entrevista técnica"
                         >
                           <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -419,7 +419,7 @@
             <button
               type="button"
               (click)="cerrarCvModal()"
-              class="rounded-xl p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors cursor-pointer"
+              class="rounded-xl p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
               aria-label="Cerrar modal"
             >
               ✕
@@ -461,14 +461,14 @@
             <button
               type="button"
               (click)="cerrarCvModal()"
-              class="btn-tactile-secondary w-full sm:w-auto text-xs px-4 py-2 cursor-pointer"
+              class="btn-tactile-secondary w-full sm:w-auto text-xs px-4 py-2"
             >
               Cerrar
             </button>
             <button
               type="button"
               (click)="descargarCV(cvPostulacion()!)"
-              class="btn-tactile-primary w-full sm:w-auto text-xs px-4 py-2 inline-flex items-center justify-center gap-2 cursor-pointer"
+              class="btn-tactile-primary w-full sm:w-auto text-xs px-4 py-2 inline-flex items-center justify-center gap-2"
             >
               <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
