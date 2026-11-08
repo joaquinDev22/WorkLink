@@ -154,7 +154,7 @@ export class GoogleButton implements OnInit, AfterViewInit {
       },
       error: (err) => {
         this.isSubmitting.set(false)
-        const msg = err?.error?.mensajes?.[0] || err?.error?.mensaje || 'Error al autenticar con Google. Por favor, intenta nuevamente.'
+        const msg = err?.error?.details?.[0] || err?.error?.message || err?.error?.mensaje || 'Error al autenticar con Google. Por favor, intenta nuevamente.'
         this.errorGoogle.set(msg)
       }
     })
