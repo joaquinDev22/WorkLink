@@ -3,7 +3,7 @@ import { inject, Service, signal, computed, effect } from '@angular/core'
 import { environment } from '../../../../environments/environment'
 import { HttpClient } from '@angular/common/http'
 import { PerfilUsuarioDTO, PerfilCompletitud, ItemFaltantePerfil, EditProfileModel, PerfilHabilidadDTO, NivelHabilidad, HabilidadCatalogoDTO, PerfilProyectoPortafolioDTO, ReputacionPerfilDTO } from '../models/perfil.models'
-import { Observable, of, tap, delay, finalize, catchError, throwError } from 'rxjs'
+import { Observable, of, tap, delay, finalize, catchError, throwError, map } from 'rxjs'
 
 @Service()
 export class Perfil {
@@ -337,31 +337,40 @@ export class Perfil {
       })
     )
   }
-  // 1. Obtener catálogo sugerido de habilidades
+  // 1. Obtener catálogo sugerido de habilidades (GET /api/v1/habilidades)
   getHabilidadesCatalogo(): Observable<HabilidadCatalogoDTO[]> {
     if (environment.bypassAuth) {
       return of([
-        { id: 1, name: 'Angular' },
-        { id: 2, name: 'TypeScript' },
-        { id: 3, name: 'Spring Boot' },
-        { id: 4, name: 'Java' },
-        { id: 5, name: 'Docker' },
-        { id: 6, name: 'PostgreSQL' },
-        { id: 7, name: 'Tailwind CSS' },
-        { id: 8, name: 'React' },
-        { id: 9, name: 'Node.js' },
-        { id: 10, name: 'AWS' }
+        { id: 1, name: 'Angular', habilidadId: 1, nombreHabilidad: 'Angular' },
+        { id: 2, name: 'TypeScript', habilidadId: 2, nombreHabilidad: 'TypeScript' },
+        { id: 3, name: 'Spring Boot', habilidadId: 3, nombreHabilidad: 'Spring Boot' },
+        { id: 4, name: 'Java', habilidadId: 4, nombreHabilidad: 'Java' },
+        { id: 5, name: 'Docker', habilidadId: 5, nombreHabilidad: 'Docker' },
+        { id: 6, name: 'PostgreSQL', habilidadId: 6, nombreHabilidad: 'PostgreSQL' },
+        { id: 7, name: 'Tailwind CSS', habilidadId: 7, nombreHabilidad: 'Tailwind CSS' },
+        { id: 8, name: 'React', habilidadId: 8, nombreHabilidad: 'React' },
+        { id: 9, name: 'Node.js', habilidadId: 9, nombreHabilidad: 'Node.js' },
+        { id: 10, name: 'AWS', habilidadId: 10, nombreHabilidad: 'AWS' }
       ]).pipe(delay(150))
     }
-    return this.client.get<HabilidadCatalogoDTO[]>(`${environment.apiUrl}/habilidades`)
+    return this.client.get<any[]>(`${environment.apiUrl}/habilidades`).pipe(
+      map(items => (items || []).map(h => ({
+        id: h.habilidadId ?? h.id,
+        name: h.nombreHabilidad ?? h.name ?? '',
+        habilidadId: h.habilidadId ?? h.id,
+        nombreHabilidad: h.nombreHabilidad ?? h.name ?? ''
+      })))
+    )
   }
   // 2. Agregar una habilidad al perfil del usuario autenticado
   addMySkill(nombre: string, nivel: NivelHabilidad): Observable<PerfilHabilidadDTO> {
+    const nivelNormalizado = Math.min(4, Math.max(1, nivel))
+
     if (environment.bypassAuth) {
       const nueva: PerfilHabilidadDTO = {
         habilidadId: Date.now(),
         nombre,
-        nivel
+        nivel: nivelNormalizado as NivelHabilidad
       }
 
       this.perfilActual.update(p => {
@@ -379,7 +388,7 @@ export class Perfil {
     return this.client.post<PerfilHabilidadDTO>(
       `${this.API_URL}/addMySkill`,
       null,
-      { params: { nombre, nivel: nivel.toString() } }
+      { params: { nombre, nivel: nivelNormalizado.toString() } }
     ).pipe(
       tap(nueva => {
         this.perfilActual.update(p => p ? { ...p, habilidades: [...(p.habilidades || []), nueva] } : null)
@@ -607,7 +616,18 @@ export class Perfil {
       }
       return of(mockReputacion).pipe(delay(200))
     }
-    const endpoint = perfilId ? `${environment.apiUrl}/api/v1/perfiles/${perfilId}/calificaciones` : `${this.API_URL}/calificaciones`
+    const endpoint = perfilId ? `${this.API_URL}/${perfilId}/calificaciones` : `${this.API_URL}/calificaciones`
     return this.client.get<ReputacionPerfilDTO>(endpoint)
+  }
+
+  // 7. Dar de baja lógica la cuenta del usuario autenticado (DELETE /api/v1/perfiles/me)
+  darDeBajaMiCuenta(): Observable<void> {
+    if (environment.bypassAuth) {
+      this.perfilActual.set(null)
+      return of(undefined).pipe(delay(200))
+    }
+    return this.client.delete<void>(`${this.API_URL}/me`).pipe(
+      tap(() => this.perfilActual.set(null))
+    )
   }
 }

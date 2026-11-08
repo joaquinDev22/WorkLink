@@ -111,8 +111,14 @@ export class Auth {
             this.guardarSesion(mockRes)
             return of(mockRes)
         }
-        return this.http.post<LoginResponseDTO>(`${this.apiUrl}/register`, cuenta).pipe(
-            tap((res) => this.guardarSesion(res))
+        return this.http.post<any>(`${this.apiUrl}/register`, cuenta).pipe(
+            tap((res) => {
+                if (res?.token) {
+                    this.guardarSesion(res)
+                } else {
+                    this.router.navigate(['/auth/login'])
+                }
+            })
         )
     }
 }

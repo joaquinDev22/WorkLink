@@ -103,7 +103,10 @@ export class EntrevistaService {
       )
     }
 
-    return this.client.post<EntrevistaResponseDTO>(this.API_URL, datos).pipe(
+    const horaNormalizada = datos.hora && datos.hora.length === 5 ? `${datos.hora}:00` : datos.hora
+    const payload: EntrevistaRequestDTO = { ...datos, hora: horaNormalizada }
+
+    return this.client.post<EntrevistaResponseDTO>(this.API_URL, payload).pipe(
       tap({
         next: (res) => {
           this.entrevistas.update((prev) => [res, ...prev])

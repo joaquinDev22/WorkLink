@@ -10,6 +10,8 @@ export interface PerfilHabilidadDTO {
 export interface HabilidadCatalogoDTO {
   id: number
   name: string
+  habilidadId?: number
+  nombreHabilidad?: string
 }
 
 export interface PerfilProyectoPortafolioDTO {
@@ -47,6 +49,8 @@ export interface EditProfileModel{
     telefono: string
     ubicacion: string
     sitioWeb: string
+    pais?: string
+    fechaNacimiento?: string
 }
 export interface ItemFaltantePerfil {
   label: string

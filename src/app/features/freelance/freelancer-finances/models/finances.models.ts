@@ -1,9 +1,10 @@
-﻿// FreelancerFinances & Transaction DTO contracts
+// FreelancerFinances & Transaction DTO contracts
 // GET /api/v1/freelancer/finances
 export interface FreelancerFinancesResponseDTO {
   balance: number
   pending: number
-  withdrawn: number
+  withdrawn?: number
+  totalEarnings?: number
 }
 
 // GET /api/v1/freelancer/transactions

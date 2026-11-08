@@ -51,6 +51,15 @@ export class EmpresaService {
     )
   }
 
+  // Obtener perfil público de una empresa (GET /api/v1/empresas/{id} o /uuid/{uuid})
+  getEmpresaById(idOrUuid: number | string): Observable<EmpresaResponseDTO> {
+    if (environment.bypassAuth) {
+      return this.getMiEmpresa()
+    }
+    const path = typeof idOrUuid === 'string' && idOrUuid.startsWith('uuid/') ? idOrUuid : idOrUuid
+    return this.client.get<EmpresaResponseDTO>(`${this.API_URL}/${path}`)
+  }
+
   // Crear o actualizar datos comerciales de la empresa (POST / PUT)
   guardarEmpresa(datos: EmpresaRequestDTO): Observable<EmpresaResponseDTO> {
     const actual = this.empresaActual()

@@ -371,7 +371,7 @@ export class VacanteService {
   }
 
   // Diálogo de postulación / enviar candidatura (POST /api/v1/vacantes/{id}/postulaciones/me)
-  postularse(vacanteId: number, mensaje: string): Observable<PostulacionResponseDTO> {
+  postularse(vacanteId: number, mensaje: string, cvFile?: File): Observable<PostulacionResponseDTO> {
     this.isMutating.set(true)
 
     // Validar si ya se encuentra postulado (Escenario 2 - Gherkin WL-25)
@@ -400,7 +400,7 @@ export class VacanteService {
         fechaPostulacion: new Date().toISOString().split('T')[0],
         estado: 'PENDIENTE',
         mensaje: mensaje.trim(),
-        tieneCvSubido: true
+        tieneCvSubido: !!cvFile || true
       }
 
       return of(nuevaPostulacion).pipe(
@@ -413,7 +413,13 @@ export class VacanteService {
       )
     }
 
-    return this.client.post<PostulacionResponseDTO>(`${this.API_URL}/${vacanteId}/postulaciones/me`, { mensaje }).pipe(
+    const formData = new FormData()
+    formData.append('mensaje', mensaje.trim())
+    if (cvFile) {
+      formData.append('cv', cvFile)
+    }
+
+    return this.client.post<PostulacionResponseDTO>(`${this.API_URL}/${vacanteId}/postulaciones/me`, formData).pipe(
       tap({
         next: (res) => {
           this.postulaciones.update((prev) => [res, ...prev])

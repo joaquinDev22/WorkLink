@@ -1,4 +1,4 @@
-﻿// Proyecto & PostulacionProyecto DTO contracts
+// Proyecto & PostulacionProyecto DTO contracts
 export type EstadoProyecto =
   | 'BUSCANDO_TALENTO'
   | 'EN_PROGRESO'
@@ -7,6 +7,7 @@ export type EstadoProyecto =
 
 // POST /api/v1/freelance/proyectos, POST /me y PUT /{id}
 export interface ProyectoRequestDTO {
+  nombreProyecto?: string
   area: string
   descripcion: string
   presupuestoMax: number
@@ -21,6 +22,7 @@ export interface ProyectoRequestDTO {
 export interface ProyectoResponseDTO {
   proyectoId: number
   uuid: string
+  nombreProyecto?: string
   area: string
   descripcion: string
   fechaPublicacion: string // YYYY-MM-DD
@@ -51,4 +53,38 @@ export interface PostulacionProyectoResponseDTO {
   empleadoId: number
   nombreEmpleado: string
   proyectoId: number
+}
+
+// Hitos: GET / POST / PUT /api/v1/freelance/proyectos/{proyectoId}/hitos
+export type EstadoHito = 'PENDIENTE' | 'COMPLETADO' | 'PAGADO'
+
+export interface HitoRequestDTO {
+  titulo: string
+  descripcion: string
+  monto: number
+  fechaLimite: string // YYYY-MM-DD
+}
+
+export interface HitoResponseDTO {
+  hitoId: number
+  titulo: string
+  descripcion: string
+  monto: number
+  fechaLimite: string
+  estado: EstadoHito
+  proyectoId: number
+}
+
+// Calificaciones: POST /api/v1/freelance/proyectos/{proyectoId}/calificar
+export interface CalificacionProyectoRequestDTO {
+  puntaje: number // 1..5
+  comentario: string
+}
+
+export interface CalificacionProyectoResponseDTO {
+  id: number
+  puntaje: number
+  comentario: string
+  proyectoId?: number
+  fecha?: string
 }

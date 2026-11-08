@@ -126,8 +126,14 @@ export class VacanteCreateEdit implements OnInit {
   }
 
   private cargarCatalogoHabilidades(): void {
-    this.http.get<Array<{ id: number; name: string }>>(`${environment.apiUrl}/habilidades`).subscribe({
-      next: (data) => this.catalogoHabilidades.set(data || []),
+    this.http.get<any[]>(`${environment.apiUrl}/habilidades`).subscribe({
+      next: (data) => {
+        const mapped = (data || []).map((h) => ({
+          id: h.habilidadId ?? h.id,
+          name: h.nombreHabilidad ?? h.name ?? ''
+        }))
+        this.catalogoHabilidades.set(mapped)
+      },
       error: () => {
         this.catalogoHabilidades.set(
           this.tecnologiasSugeridas.map((name, i) => ({ id: i + 1, name }))
