@@ -87,7 +87,7 @@
         <button
           type="button"
           (click)="bannerInput.click()"
-          class="absolute bottom-3 right-3 z-30 px-3 py-1.5 rounded-xl bg-slate-900/85 hover:bg-slate-900 text-white text-xs font-semibold backdrop-blur-md border border-white/20 cursor-pointer shadow-md flex items-center gap-1.5 active:scale-95 transition-all"
+          class="absolute bottom-3 right-3 z-30 px-3 py-1.5 rounded-xl bg-slate-900/85 hover:bg-slate-900 text-white text-xs font-semibold backdrop-blur-md border border-white/20 shadow-inner shadow-slate-500 flex items-center gap-1.5 active:scale-95 transition-all"
           title="Cambiar portada"
           aria-label="Cambiar portada">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -123,7 +123,7 @@
             <button
               type="button"
               (click)="fotoInput.click()"
-              class="absolute bottom-0 right-0 z-30 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-900 hover:bg-slate-800 text-white flex items-center justify-center cursor-pointer shadow-lg ring-2 ring-white active:scale-95 transition-all"
+              class="absolute bottom-0 right-0 z-30 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-900 hover:bg-slate-800 text-white flex items-center justify-center shadow-inner shadow-slate-100 ring-2 ring-white active:scale-95 transition-all"
               title="Cambiar foto de perfil"
               aria-label="Cambiar foto de perfil">
               <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -138,7 +138,7 @@
             <button
               type="button"
               (click)="abrirEditar($event)"
-              class="vt-morph inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold shadow-sm hover:shadow active:scale-95 transition-all duration-300 cursor-pointer">
+              class="vt-morph inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold shadow-inner shadow-slate-200 active:scale-95 transition-all duration-300">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
               </svg>
@@ -148,7 +148,7 @@
         </div>
 
         <div class="space-y-3 pt-1">
-          <div class="flex flex-wrap items-center gap-2.5">
+          <div class="flex flex-wrap mx-auto items-center gap-2.5">
             <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               {{ perfil()?.nombre }} {{ perfil()?.apellido || '' }}
             </h1>
@@ -226,30 +226,20 @@
         <!-- Checklist de faltantes -->
         <div class="flex flex-wrap items-center gap-2">
           @for (item of completitud().itemsFaltantes; track item.clave) {
-            @if (item.clave === 'foto') {
-              <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-white hover:bg-slate-50 text-brand-indigo border border-brand-indigo/30 shadow-2xs cursor-pointer active:scale-95 transition-all">
-                <input type="file" accept="image/png, image/jpeg" class="hidden" (change)="onFotoSelected($event)">
-                <span>+ {{ item.label }}</span>
-              </label>
-            } @else if (item.clave === 'banner') {
-              <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-white hover:bg-slate-50 text-brand-indigo border border-brand-indigo/30 shadow-2xs cursor-pointer active:scale-95 transition-all">
-                <input type="file" accept="image/png, image/jpeg" class="hidden" (change)="onBannerSelected($event)">
-                <span>+ {{ item.label }}</span>
-              </label>
-            } @else if (item.clave === 'cv') {
-              <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-white hover:bg-slate-50 text-brand-indigo border border-brand-indigo/30 shadow-2xs cursor-pointer active:scale-95 transition-all">
-                <input type="file" accept="application/pdf" class="hidden" (change)="onCvSelected($event)">
-                <span>+ {{ item.label }}</span>
-              </label>
-            } @else {
-              <button
-                type="button"
-                (click)="cerrarEditar()"
-                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 shadow-2xs cursor-pointer active:scale-95 transition-all">
-                <span class="text-amber-500 font-bold">+</span>
-                {{ item.label }}
-              </button>
-            }
+            <label 
+              (click)="ejecutarActividad(item, $event)"
+              [class.completado]="item.completado"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-white text-brand-indigo border border-brand-indigo/30 shadow-2xs active:scale-95 transition-all select-none">
+              <span> 
+                @if (!item.completado) {
+                  + {{ item.label }}
+                } @else {
+                  <!-- Aquí renderiza el SVG inline solo cuando está completado -->
+                  <svg xmlns="http://w3.org" viewBox="0 0 24 24" width="16" height="16" style="display: inline-block; vertical-align: middle; margin-right: 4px;">
+                    <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 12l5 5L20 7"/>
+                  </svg>
+                }</span>
+            </label>           
           }
         </div>
       </div>
@@ -268,7 +258,7 @@
             <span>Contacto y Enlaces</span>
           </h2>
 
-          <div class="space-y-3.5 text-xs sm:text-sm divide-y divide-slate-100">
+          <div class="space-y-3.5 text-xs sm:text-sm">
             <div class="pt-2">
               <span class="block text-slate-400 text-[11px] font-semibold uppercase">Correo Electrónico</span>
               <a [href]="'mailto:' + perfil()?.email" class="font-medium text-slate-800 hover:text-brand-indigo transition-colors break-all">
@@ -318,7 +308,7 @@
 
             <div class="p-4 rounded-2xl bg-teal-50/60 border border-teal-100 space-y-3">
               <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-teal-700 text-white font-black text-sm flex items-center justify-center shrink-0 shadow-inner">
+                <div class="w-10 h-10 rounded-xl bg-linear-to-br from-teal-500 to-teal-700 text-white font-black text-sm flex items-center justify-center shrink-0 shadow-inner">
                   IC
                 </div>
                 <div class="min-w-0">
@@ -385,7 +375,7 @@
                   <button
                     type="button"
                     (click)="verCV()"
-                    class="p-2 text-slate-600 hover:text-brand-indigo hover:bg-white rounded-xl border border-transparent hover:border-slate-200 cursor-pointer transition-all"
+                    class="p-2 text-slate-600 hover:text-brand-indigo hover:bg-white rounded-xl border border-transparent hover:border-slate-200 transition-all"
                     title="Previsualizar CV"
                     aria-label="Previsualizar CV">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -397,7 +387,7 @@
                   <button
                     type="button"
                     (click)="descargarCV()"
-                    class="p-2 text-slate-600 hover:text-brand-indigo hover:bg-white rounded-xl border border-transparent hover:border-slate-200 cursor-pointer transition-all"
+                    class="p-2 text-slate-600 hover:text-brand-indigo hover:bg-white rounded-xl border border-transparent hover:border-slate-200 transition-all"
                     title="Descargar archivo PDF"
                     aria-label="Descargar CV">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -405,7 +395,7 @@
                     </svg>
                   </button>
 
-                  <label class="p-2 text-slate-600 hover:text-brand-indigo hover:bg-white rounded-xl border border-transparent hover:border-slate-200 cursor-pointer transition-all" title="Reemplazar archivo">
+                  <label class="p-2 text-slate-600 hover:text-brand-indigo hover:bg-white rounded-xl border border-transparent hover:border-slate-200 transition-all" title="Reemplazar archivo">
                     <input type="file" accept="application/pdf" class="hidden" (change)="onCvSelected($event)">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
@@ -415,7 +405,7 @@
               </div>
             } @else {
               <!-- Sin CV cargado -->
-              <label class="flex flex-col items-center justify-center p-5 border-2 border-dashed border-slate-200 hover:border-brand-indigo/50 rounded-2xl bg-slate-50/50 hover:bg-indigo-50/20 cursor-pointer transition-all group">
+              <label class="flex flex-col items-center justify-center p-5 border-2 border-dashed border-slate-200 hover:border-brand-indigo/50 rounded-2xl bg-slate-50/50 hover:bg-indigo-50/20 transition-all group">
                 <input type="file" accept="application/pdf" class="hidden" (change)="onCvSelected($event)">
 
                 @if (isUploadingCv()) {
@@ -462,17 +452,17 @@
               <button
                 type="button"
                 (click)="abrirSkillModal()"
-                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-2xs active:scale-95 transition-all cursor-pointer">
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:scale-[1.05] text-white text-xs font-semibold shadow-inner shadow-slate-200 active:scale-95 transition-all">
                 <span>+</span>
                 <span>Agregar</span>
               </button>
             </div>
 
-            @if (perfil()?.habilidades && perfil()!.habilidades.length > 0) {
+            @if ((perfil()?.habilidades?.length ?? 0) > 0) {
               <div class="flex flex-wrap gap-2.5">
                 @for (hab of perfil()!.habilidades; track hab.habilidadId) {
                   @let info = getNivelInfo(hab.nivel);
-                  <div class="group/chip inline-flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-xl border {{ info.colorClass }} text-xs font-semibold shadow-2xs transition-all">
+                  <div class="group/chip inline-flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-xl border {{ info.colorClass }} text-xs font-semibold transition-all">
                     <span>{{ hab.nombre }}</span>
                     <span class="w-1.5 h-1.5 rounded-full bg-current opacity-60"></span>
                     <span class="text-[11px] font-normal opacity-90">{{ info.label }}</span>
@@ -480,7 +470,7 @@
                     <button
                       type="button"
                       (click)="eliminarSkill(hab.habilidadId)"
-                      class="ml-1 p-0.5 text-slate-400 hover:text-rose-500 rounded-md transition-colors cursor-pointer"
+                      class="ml-1 p-0.5 text-slate-400 hover:text-rose-500 rounded-md transition-colors"
                       title="Eliminar habilidad"
                       [attr.aria-label]="'Eliminar habilidad ' + hab.nombre">
                       <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -510,19 +500,21 @@
               </h2>
               <div class="flex items-center gap-2.5">
                 <span class="text-xs text-slate-400 font-medium">{{ perfil()?.proyectos?.length || 0 }} proyectos</span>
-                <button
+                @if ((perfil()?.proyectos?.length ?? 0) > 0) {
+                  <button
                   type="button"
                   (click)="abrirProjectModal()"
-                  class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl text-brand-indigo bg-brand-indigo/10 hover:bg-brand-indigo/20 active:scale-95 transition-all cursor-pointer shadow-xs">
-                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                  </svg>
-                  <span>Agregar Proyecto</span>
-                </button>
+                  class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl text-brand-indigo bg-brand-indigo/10 hover:bg-brand-indigo/20 active:scale-95 transition-all shadow-inner shadow-indigo-300">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    <span>Agregar Proyecto</span>
+                  </button>
+                }
               </div>
             </div>
 
-            @if (perfil()?.proyectos && perfil()!.proyectos.length > 0) {
+            @if ((perfil()?.proyectos?.length ?? 0) > 0) {
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 @for (proy of perfil()!.proyectos; track proy.id) {
                   <div class="bg-slate-50/70 hover:bg-slate-50 border border-slate-200/80 rounded-2xl p-4.5 space-y-2.5 transition-all hover:shadow-xs group flex flex-col justify-between">
@@ -548,7 +540,7 @@
                             type="button"
                             (click)="eliminarProyecto(proy.id)"
                             [disabled]="deletingProjectId() === proy.id"
-                            class="p-1 text-slate-400 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors cursor-pointer disabled:opacity-40"
+                            class="p-1 text-slate-400 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-40"
                             title="Eliminar proyecto"
                             [attr.aria-label]="'Eliminar proyecto ' + proy.nombre">
                             @if (deletingProjectId() === proy.id) {
@@ -583,7 +575,7 @@
                 <button
                   type="button"
                   (click)="abrirProjectModal()"
-                  class="mt-2 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold text-white bg-brand-indigo hover:bg-brand-indigo-dark active:scale-95 transition-all shadow-sm cursor-pointer">
+                  class="mt-2 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold text-white bg-brand-indigo hover:bg-brand-indigo-dark active:scale-95 transition-all shadow-inner shadow-brand-indigo-light">
                   <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                   </svg>
@@ -661,7 +653,7 @@
               <button
                 type="button"
                 (click)="abrirHistorialModal()"
-                class="btn-tactile-primary text-xs font-semibold px-4 py-2 inline-flex items-center gap-2 cursor-pointer self-start sm:self-auto shrink-0"
+                class="btn-tactile-primary text-xs font-semibold px-4 py-2 inline-flex items-center gap-2 self-start sm:self-auto shrink-0"
               >
                 <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -707,7 +699,7 @@
                         <button
                           type="button"
                           (click)="abrirHistorialModal(item)"
-                          class="p-1.5 text-slate-400 hover:text-brand-indigo hover:bg-white rounded-lg transition-colors cursor-pointer border border-transparent hover:border-slate-200"
+                          class="p-1.5 text-slate-400 hover:text-brand-indigo hover:bg-white rounded-lg transition-colors border border-transparent hover:border-slate-200"
                           title="Editar empresa"
                           aria-label="Editar empresa">
                           <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -717,7 +709,7 @@
                         <button
                           type="button"
                           (click)="eliminarHistorial(item.id)"
-                          class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-white rounded-lg transition-colors cursor-pointer border border-transparent hover:border-slate-200"
+                          class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-white rounded-lg transition-colors border border-transparent hover:border-slate-200"
                           title="Eliminar empresa"
                           aria-label="Eliminar empresa">
                           <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -777,7 +769,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <a
                 routerLink="/enterprise/vacantes"
-                class="p-4 rounded-2xl bg-slate-50 hover:bg-slate-100/90 border border-slate-200/80 transition-all cursor-pointer group flex flex-col justify-between"
+                class="p-4 rounded-2xl bg-slate-50 hover:bg-slate-100/90 border border-slate-200/80 transition-all group flex flex-col justify-between"
               >
                 <div>
                   <div class="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center mb-3">
@@ -796,7 +788,7 @@
 
               <a
                 routerLink="/enterprise/postulantes"
-                class="p-4 rounded-2xl bg-slate-50 hover:bg-slate-100/90 border border-slate-200/80 transition-all cursor-pointer group flex flex-col justify-between"
+                class="p-4 rounded-2xl bg-slate-50 hover:bg-slate-100/90 border border-slate-200/80 transition-all group flex flex-col justify-between"
               >
                 <div>
                   <div class="w-9 h-9 rounded-xl bg-teal-50 border border-teal-100 text-teal-600 flex items-center justify-center mb-3">
@@ -815,7 +807,7 @@
 
               <a
                 routerLink="/enterprise/entrevistas"
-                class="p-4 rounded-2xl bg-slate-50 hover:bg-slate-100/90 border border-slate-200/80 transition-all cursor-pointer group flex flex-col justify-between"
+                class="p-4 rounded-2xl bg-slate-50 hover:bg-slate-100/90 border border-slate-200/80 transition-all group flex flex-col justify-between"
               >
                 <div>
                   <div class="w-9 h-9 rounded-xl bg-sky-50 border border-sky-100 text-sky-600 flex items-center justify-center mb-3">
@@ -952,7 +944,7 @@
                     type="button"
                     (click)="cambiarPaginaResenas(-1)"
                     [disabled]="paginaResenas() === 1"
-                    class="p-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                    class="p-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                     title="Página anterior"
                     aria-label="Página anterior">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -966,7 +958,7 @@
                         <button
                           type="button"
                           (click)="cambiarPaginaResenas(p, true)"
-                          class="w-8 h-8 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center {{ paginaResenas() === p ? 'bg-brand-indigo text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100 border border-slate-200' }}">
+                          class="w-8 h-8 rounded-xl text-xs font-bold transition-all flex items-center justify-center {{ paginaResenas() === p ? 'bg-brand-indigo text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100 border border-slate-200' }}">
                           {{ p }}
                         </button>
                       }
@@ -977,7 +969,7 @@
                     type="button"
                     (click)="cambiarPaginaResenas(1)"
                     [disabled]="paginaResenas() === totalPaginasResenas()"
-                    class="p-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                    class="p-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                     title="Página siguiente"
                     aria-label="Página siguiente">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1020,7 +1012,7 @@
           <button
             type="button"
             (click)="cerrarEditar()"
-            class="text-slate-400 hover:text-slate-600 p-1 rounded-lg cursor-pointer"
+            class="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
             aria-label="Cerrar">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -1072,6 +1064,7 @@
               rows="3"
               [formField]="editForm.descripcion"
               [class.input-error]="editForm.descripcion().touched() && editForm.descripcion().invalid()"
+              placeholder="Apasionado por mi trabajo..."
               class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all resize-none"></textarea>
             @if (editForm.descripcion().touched() && editForm.descripcion().invalid()) {
               @for (error of editForm.descripcion().errors(); track error.kind) {
@@ -1088,6 +1081,7 @@
                 id="telefono"
                 [formField]="editForm.telefono"
                 [class.input-error]="editForm.telefono().touched() && editForm.telefono().invalid()"
+                placeholder="+11 2 333 - 4444"
                 class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
               @if (editForm.telefono().touched() && editForm.telefono().invalid()) {
                 @for (error of editForm.telefono().errors(); track error.kind) {
@@ -1103,6 +1097,7 @@
                 id="ubicacion"
                 [formField]="editForm.ubicacion"
                 [class.input-error]="editForm.ubicacion().touched() && editForm.ubicacion().invalid()"
+                placeholder="Provincia, Pais"
                 class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
               @if (editForm.ubicacion().touched() && editForm.ubicacion().invalid()) {
                 @for (error of editForm.ubicacion().errors(); track error.kind) {
@@ -1132,13 +1127,13 @@
             <button
               type="button"
               (click)="cerrarEditar()"
-              class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl cursor-pointer">
+              class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl">
               Cancelar
             </button>
             <button
               type="submit"
               [disabled]="isSaving() || editForm().invalid()"
-              class="px-5 py-2 text-xs font-semibold bg-brand-indigo hover:bg-brand-indigo-dark text-white rounded-xl shadow-xs active:scale-95 disabled:opacity-50 transition-all disabled:pointer-events-none disabled:cursor-not-allowed cursor-pointer inline-flex items-center gap-2">
+              class="px-5 py-2 text-xs font-semibold bg-brand-indigo hover:bg-brand-indigo-dark text-white rounded-xl shadow-inner shadow-brand-indigo-light active:scale-95 disabled:opacity-50 transition-all disabled:pointer-events-none disabled:cursor-not-allowed inline-flex items-center gap-2">
               @if (isSaving()) {
                 <svg class="animate-spin w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" aria-hidden="true">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -1172,36 +1167,73 @@
           <button
             type="button"
             (click)="cerrarSkillModal()"
-            class="text-slate-400 hover:text-slate-600 p-1 rounded-lg cursor-pointer"
+            class="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
             aria-label="Cerrar">✕</button>
         </div>
 
-        <!-- Input con sugerencias -->
+        <!-- Input de habilidad técnica con autocompletado verificado -->
         <div class="space-y-2">
           <label for="skillNombre" class="text-xs font-bold text-slate-700 uppercase">Tecnología o Habilidad</label>
-          <input
-            id="skillNombre"
-            type="text"
-            [value]="skillNombre()"
-            (input)="skillNombre.set($any($event.target).value)"
-            (keydown.enter)="$event.preventDefault(); guardarSkill()"
-            placeholder="Ej: Angular, Docker, Python..."
-            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo"
-          />
+          <div class="relative">
+            <input
+              id="skillNombre"
+              type="text"
+              autocomplete="off"
+              [value]="skillNombre()"
+              (focus)="mostrarDropdownSkills.set(true)"
+              (input)="skillNombre.set($any($event.target).value); mostrarDropdownSkills.set(true)"
+              (keydown.enter)="$event.preventDefault(); guardarSkill()"
+              placeholder="Buscar o escribir habilidad (ej: Angular, Docker, Spring Boot)..."
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200/90 bg-white text-slate-900 text-sm shadow-inner shadow-slate-200/70 focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-all"
+            />
 
-          <div class="flex flex-wrap gap-1.5 pt-1">
-            @for (sug of catalogoHabilidades(); track sug.id) {
-              <button
-                type="button"
-                (click)="seleccionarSugerencia(sug.name)"
-                class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-indigo-50 text-[11px] font-medium text-slate-600 hover:text-brand-indigo transition-colors cursor-pointer">
-                + {{ sug.name }}
-              </button>
+            <!-- Menú de Autocompletado con Habilidades Válidas del Catálogo -->
+            @if (mostrarDropdownSkills() && skillNombre().trim().length > 0) {
+              <div class="absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200/90 rounded-2xl shadow-xl z-30 overflow-hidden divide-y divide-slate-100 max-h-52 overflow-y-auto animate-fade-in">
+                <div class="px-3.5 py-1.5 bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+                  <span>Habilidades válidas en catálogo</span>
+                  <button type="button" (click)="mostrarDropdownSkills.set(false)" class="text-slate-400 hover:text-slate-600 text-xs p-0.5">✕</button>
+                </div>
+                @for (sug of sugerenciasSkill(); track sug.id) {
+                  <button
+                    type="button"
+                    (click)="seleccionarSugerencia(sug.name)"
+                    class="w-full px-4 py-2.5 text-left text-xs font-semibold text-slate-700 hover:bg-brand-indigo/10 hover:text-brand-indigo flex items-center justify-between transition-colors">
+                    <span class="flex items-center gap-2">
+                      <span class="w-1.5 h-1.5 rounded-full bg-brand-indigo"></span>
+                      {{ sug.name }}
+                    </span>
+                    <span class="text-[10px] text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full font-bold">
+                      ✓ Válida
+                    </span>
+                  </button>
+                }
+                @if (sugerenciasSkill().length === 0) {
+                  <div class="px-4 py-3 text-xs text-slate-500 italic text-center">
+                    No se encontró en el catálogo oficial. Puedes guardarla como personalizada.
+                  </div>
+                }
+              </div>
             }
           </div>
+
+          <!-- Sugerencias de acceso rápido -->
+          @if (sugerenciasSkill().length > 0) {
+            <div class="flex flex-wrap items-center gap-1.5 pt-1">
+              <span class="text-[11px] font-medium text-slate-400 self-center">Sugerencias:</span>
+              @for (sug of sugerenciasSkill(); track sug.id) {
+                <button
+                  type="button"
+                  (click)="seleccionarSugerencia(sug.name)"
+                  class="px-2.5 py-1 rounded-xl bg-slate-100/90 hover:bg-indigo-50 border border-slate-200/80 shadow-2xs text-[11px] font-semibold text-slate-600 hover:text-brand-indigo active:scale-95 transition-all">
+                  + {{ sug.name }}
+                </button>
+              }
+            </div>
+          }
         </div>
 
-        <!-- Selector de 5 niveles -->
+        <!-- Selector de 5 niveles con volumen y neumorfismo táctil -->
         <div class="space-y-2">
           <div class="flex items-center justify-between">
             <span class="text-xs font-bold text-slate-700 uppercase">Nivel de Dominio</span>
@@ -1210,65 +1242,68 @@
             </span>
           </div>
 
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs font-semibold">
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs font-semibold">
             <button
               type="button"
               (click)="skillNivel.set(1)"
-              class="py-2.5 px-3 rounded-xl border transition-all cursor-pointer text-center"
+              class="py-2.5 px-3 rounded-xl border text-center transition-all duration-150 active:scale-95"
               [ngClass]="skillNivel() === 1
-                ? 'bg-slate-900 text-white border-slate-900 shadow-xs hover:bg-slate-800'
-                : 'border-slate-200 text-slate-700 bg-white hover:bg-slate-100 hover:border-slate-300'">
+                ? 'bg-linear-to-b from-slate-800 to-slate-950 text-white border-slate-950 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.35),inset_0_-2px_0_0_rgba(0,0,0,0.4),0_3px_6px_0_rgba(15,23,42,0.25)] ring-2 ring-slate-700 ring-offset-1'
+                : 'bg-white text-slate-700 border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,1),inset_0_-1px_0_0_rgba(0,0,0,0.06),0_1px_3px_0_rgba(15,23,42,0.08)] hover:bg-slate-50 hover:border-slate-300 hover:shadow-[0_2px_4px_0_rgba(15,23,42,0.1)] active:shadow-inner'">
               1. Básico
             </button>
             <button
               type="button"
               (click)="skillNivel.set(2)"
-              class="py-2.5 px-3 rounded-xl border transition-all cursor-pointer text-center"
+              class="py-2.5 px-3 rounded-xl border text-center transition-all duration-150 active:scale-95"
               [ngClass]="skillNivel() === 2
-                ? 'bg-teal-700 text-white border-teal-700 shadow-xs hover:bg-teal-800'
-                : 'border-slate-200 text-slate-700 bg-white hover:bg-slate-100 hover:border-slate-300'">
+                ? 'bg-linear-to-b from-teal-600 to-teal-800 text-white border-teal-800 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.35),inset_0_-2px_0_0_rgba(0,0,0,0.3),0_3px_6px_0_rgba(13,148,136,0.3)] ring-2 ring-teal-500 ring-offset-1'
+                : 'bg-white text-slate-700 border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,1),inset_0_-1px_0_0_rgba(0,0,0,0.06),0_1px_3px_0_rgba(15,23,42,0.08)] hover:bg-slate-50 hover:border-slate-300 hover:shadow-[0_2px_4px_0_rgba(15,23,42,0.1)] active:shadow-inner'">
               2. Básico / Intermedio
             </button>
             <button
               type="button"
               (click)="skillNivel.set(3)"
-              class="py-2.5 px-3 rounded-xl border transition-all cursor-pointer text-center"
+              class="py-2.5 px-3 rounded-xl border text-center transition-all duration-150 active:scale-95"
               [ngClass]="skillNivel() === 3
-                ? 'bg-sky-600 text-white border-sky-600 shadow-xs hover:bg-sky-700'
-                : 'border-slate-200 text-slate-700 bg-white hover:bg-slate-100 hover:border-slate-300'">
+                ? 'bg-linear-to-b from-sky-500 to-sky-700 text-white border-sky-700 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.35),inset_0_-2px_0_0_rgba(0,0,0,0.3),0_3px_6px_0_rgba(2,132,199,0.3)] ring-2 ring-sky-400 ring-offset-1'
+                : 'bg-white text-slate-700 border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,1),inset_0_-1px_0_0_rgba(0,0,0,0.06),0_1px_3px_0_rgba(15,23,42,0.08)] hover:bg-slate-50 hover:border-slate-300 hover:shadow-[0_2px_4px_0_rgba(15,23,42,0.1)] active:shadow-inner'">
               3. Intermedio
             </button>
             <button
               type="button"
               (click)="skillNivel.set(4)"
-              class="py-2.5 px-3 rounded-xl border transition-all cursor-pointer text-center"
+              class="py-2.5 px-3 rounded-xl border text-center transition-all duration-150 active:scale-95"
               [ngClass]="skillNivel() === 4
-                ? 'bg-brand-indigo text-white border-brand-indigo shadow-xs hover:bg-brand-indigo-dark'
-                : 'border-slate-200 text-slate-700 bg-white hover:bg-slate-100 hover:border-slate-300'">
+                ? 'bg-linear-to-b from-indigo-500 to-indigo-700 text-white border-indigo-700 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.35),inset_0_-2px_0_0_rgba(0,0,0,0.3),0_3px_6px_0_rgba(79,70,229,0.35)] ring-2 ring-indigo-400 ring-offset-1'
+                : 'bg-white text-slate-700 border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,1),inset_0_-1px_0_0_rgba(0,0,0,0.06),0_1px_3px_0_rgba(15,23,42,0.08)] hover:bg-slate-50 hover:border-slate-300 hover:shadow-[0_2px_4px_0_rgba(15,23,42,0.1)] active:shadow-inner'">
               4. Intermedio / Avanzado
             </button>
             <button
               type="button"
               (click)="skillNivel.set(5)"
-              class="py-2.5 px-3 rounded-xl border transition-all cursor-pointer text-center col-span-2 sm:col-span-1"
+              class="py-2.5 px-3 rounded-xl border text-center transition-all duration-150 active:scale-95 col-span-2 sm:col-span-1"
               [ngClass]="skillNivel() === 5
-                ? 'bg-purple-700 text-white border-purple-700 shadow-xs hover:bg-purple-800'
-                : 'border-slate-200 text-slate-700 bg-white hover:bg-slate-100 hover:border-slate-300'">
+                ? 'bg-linear-to-b from-purple-600 to-purple-800 text-white border-purple-800 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.35),inset_0_-2px_0_0_rgba(0,0,0,0.3),0_3px_6px_0_rgba(147,51,234,0.35)] ring-2 ring-purple-500 ring-offset-1'
+                : 'bg-white text-slate-700 border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,1),inset_0_-1px_0_0_rgba(0,0,0,0.06),0_1px_3px_0_rgba(15,23,42,0.08)] hover:bg-slate-50 hover:border-slate-300 hover:shadow-[0_2px_4px_0_rgba(15,23,42,0.1)] active:shadow-inner'">
               5. Avanzado
             </button>
           </div>
         </div>
 
-        <!-- Botones de acción -->
+        <!-- Botones de acción táctiles con volumen -->
         <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
-          <button type="button" (click)="cerrarSkillModal()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 cursor-pointer">
+          <button
+            type="button"
+            (click)="cerrarSkillModal()"
+            class="btn-tactile-secondary text-xs sm:text-sm px-4 py-2">
             Cancelar
           </button>
           <button
             type="button"
             (click)="guardarSkill()"
             [disabled]="!skillNombre().trim() || isSavingSkill()"
-            class="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-brand-indigo hover:bg-brand-indigo-dark disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-sm">
+            class="btn-tactile-primary text-xs sm:text-sm px-5 py-2.5 inline-flex items-center gap-2">
             {{ isSavingSkill() ? 'Guardando...' : 'Agregar Habilidad' }}
           </button>
         </div>
@@ -1298,7 +1333,7 @@
           <button
             type="button"
             (click)="cerrarProjectModal()"
-            class="text-slate-400 hover:text-slate-600 p-1 rounded-lg cursor-pointer transition-colors"
+            class="text-slate-400 hover:text-slate-600 p-1 rounded-lg transition-colors"
             aria-label="Cerrar modal">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -1359,7 +1394,7 @@
                 <button
                   type="button"
                   (click)="quitarImagenProyecto()"
-                  class="absolute top-2 right-2 p-1.5 rounded-full bg-slate-900/80 text-white hover:bg-slate-900 transition-all cursor-pointer shadow-md"
+                  class="absolute top-2 right-2 p-1.5 rounded-full bg-slate-900/80 text-white hover:bg-slate-900 transition-all shadow-md"
                   title="Quitar imagen">
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -1370,7 +1405,7 @@
               <button
                 type="button"
                 (click)="projImgInput.click()"
-                class="w-full border-2 border-dashed border-slate-200 hover:border-brand-indigo/50 rounded-2xl p-4 flex flex-col items-center justify-center gap-1.5 text-slate-500 hover:text-brand-indigo bg-slate-50/50 hover:bg-indigo-50/20 transition-all cursor-pointer">
+                class="w-full border-2 border-dashed border-slate-200 hover:border-brand-indigo/50 rounded-2xl p-4 flex flex-col items-center justify-center gap-1.5 text-slate-500 hover:text-brand-indigo bg-slate-50/50 hover:bg-indigo-50/20 transition-all">
                 <svg class="w-6 h-6 text-slate-400 group-hover:text-brand-indigo" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
@@ -1385,13 +1420,13 @@
             <button
               type="button"
               (click)="cerrarProjectModal()"
-              class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer">
+              class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors">
               Cancelar
             </button>
             <button
               type="submit"
               [disabled]="!projectNombre().trim() || !projectDescripcion().trim() || isSavingProject()"
-              class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-white bg-brand-indigo hover:bg-brand-indigo-dark disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-sm active:scale-95 transition-all">
+              class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-white bg-brand-indigo hover:bg-brand-indigo-dark disabled:opacity-50 disabled:cursor-not-allowed shadow-sm active:scale-95 transition-all">
               @if (isSavingProject()) {
                 <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -1440,7 +1475,7 @@
           <button
             type="button"
             (click)="cerrarHistorialModal()"
-            class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+            class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition-colors"
             aria-label="Cerrar modal">
             ✕
           </button>
@@ -1489,7 +1524,7 @@
               <select
                 [(ngModel)]="empresaHistorialTipo"
                 name="empresaTipo"
-                class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all cursor-pointer">
+                class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
                 <option value="HÍBRIDO">Híbrido</option>
                 <option value="REMOTO">Remoto</option>
                 <option value="PRESENCIAL">Presencial</option>
@@ -1509,12 +1544,12 @@
                 class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
             </div>
 
-            <label class="flex items-center gap-2 cursor-pointer text-xs font-medium text-slate-700 select-none">
+            <label class="flex items-center gap-2 text-xs font-medium text-slate-700 select-none">
               <input
                 type="checkbox"
                 [(ngModel)]="empresaHistorialEsActual"
                 name="empresaEsActual"
-                class="size-4 rounded-md text-brand-indigo focus:ring-brand-indigo border-slate-300 cursor-pointer">
+                class="size-4 rounded-md text-brand-indigo focus:ring-brand-indigo border-slate-300">
               <span>Esta es mi empresa o vinculación laboral actual</span>
             </label>
           </div>
@@ -1557,12 +1592,12 @@
             <button
               type="button"
               (click)="cerrarHistorialModal()"
-              class="btn-tactile-secondary text-xs px-4 py-2 cursor-pointer font-semibold">
+              class="btn-tactile-secondary text-xs px-4 py-2 font-semibold">
               Cancelar
             </button>
             <button
               type="submit"
-              class="btn-tactile-primary text-xs px-5 py-2 inline-flex items-center gap-1.5 cursor-pointer font-semibold">
+              class="btn-tactile-primary text-xs px-5 py-2 inline-flex items-center gap-1.5 font-semibold">
               <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
               </svg>
@@ -1580,12 +1615,20 @@
   <!-- ================================================================= -->
   @if (toastMsg()) {
     <div
+      [class.ring-1]="toastError()"
+      [class.ring-rose-400]="toastError()"
       class="fixed bottom-6 right-6 z-50 bg-slate-900 text-white text-xs sm:text-sm font-semibold px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2.5 animate-in slide-in-from-bottom-5 duration-200"
       role="status"
       aria-live="polite">
-      <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-      </svg>
+      @if (toastError()) {
+        <svg class="w-4 h-4 text-rose-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      } @else {
+        <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+      }
       <span>{{ toastMsg() }}</span>
     </div>
   }

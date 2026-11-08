@@ -1,9 +1,9 @@
 import { TokenStorage } from './../../../core/auth/services/token-storage'
-import { inject, Service, signal, computed } from '@angular/core'
+import { inject, Service, signal, computed, effect } from '@angular/core'
 import { environment } from '../../../../environments/environment'
 import { HttpClient } from '@angular/common/http'
 import { PerfilUsuarioDTO, PerfilCompletitud, ItemFaltantePerfil, EditProfileModel, PerfilHabilidadDTO, NivelHabilidad, HabilidadCatalogoDTO, PerfilProyectoPortafolioDTO, ReputacionPerfilDTO } from '../models/perfil.models'
-import { Observable, of, tap, delay, finalize } from 'rxjs'
+import { Observable, of, tap, delay, finalize, catchError, throwError } from 'rxjs'
 
 @Service()
 export class Perfil {
@@ -15,6 +15,111 @@ export class Perfil {
   readonly perfilActual = signal<PerfilUsuarioDTO | null>(null)
   readonly isLoading = signal<boolean>(false)
 
+  private completadosRecientes = signal<ItemFaltantePerfil[]>([])
+  private ultimoPerfil: PerfilUsuarioDTO | null = null
+
+  constructor() {
+    effect(() => {
+      const p = this.perfilActual()
+      if (!p) return
+
+      if (this.ultimoPerfil) {
+        const { items: prevFaltantes } = this.calcularFaltantes(this.ultimoPerfil)
+        const { items: currFaltantes } = this.calcularFaltantes(p)
+        const currClaves = new Set(currFaltantes.map(i => i.clave))
+
+        // Detectar actividades completadas: estaban incompletas y ahora están completas
+        const recienCompletados = prevFaltantes
+          .filter(i => !currClaves.has(i.clave))
+          .map(i => ({ ...i, completado: true }))
+
+        if (recienCompletados.length > 0) {
+          this.completadosRecientes.update(prev => {
+            const keysExistentes = new Set(prev.map(x => x.clave))
+            const nuevos = recienCompletados.filter(x => !keysExistentes.has(x.clave))
+            return [...prev, ...nuevos]
+          })
+
+          setTimeout(() => {
+            const clavesARemover = new Set(recienCompletados.map(x => x.clave))
+            this.completadosRecientes.update(prev => prev.filter(x => !clavesARemover.has(x.clave)))
+          }, 1500)
+        }
+      }
+
+      this.ultimoPerfil = p
+    })
+  }
+
+  marcarActividadCompletada(clave: string, label?: string): void {
+    const item: ItemFaltantePerfil = {
+      clave,
+      label: label || clave,
+      completado: true
+    }
+    this.completadosRecientes.update(prev => [...prev.filter(x => x.clave !== clave), item])
+    setTimeout(() => {
+      this.completadosRecientes.update(prev => prev.filter(x => x.clave !== clave))
+    }, 1500)
+  }
+
+  private calcularFaltantes(p: PerfilUsuarioDTO): { puntos: number, items: ItemFaltantePerfil[] } {
+    const itemsFaltantes: ItemFaltantePerfil[] = []
+    let puntos = 0
+
+    if (p.rol === 'EMPRESA') {
+      if (p.fotoPerfil || p.logo) puntos += 25
+      else itemsFaltantes.push({ clave: 'foto', label: 'Logotipo de la empresa', completado: false })
+
+      if (p.descripcion && p.descripcion.trim().length > 10) puntos += 25
+      else itemsFaltantes.push({ clave: 'descripcion', label: 'Descripción corporativa', completado: false })
+
+      if (p.sitioWeb && p.sitioWeb.trim().length > 4) puntos += 25
+      else itemsFaltantes.push({ clave: 'sitioWeb', label: 'Sitio web oficial', completado: false })
+
+      if (p.ubicacion || p.pais) puntos += 25
+      else itemsFaltantes.push({ clave: 'ubicacion', label: 'País o sede principal', completado: false })
+    } else if (p.rol === 'RECRUITER') {
+      if (p.fotoPerfil) puntos += 25
+      else itemsFaltantes.push({ clave: 'foto', label: 'Foto de perfil', completado: false })
+
+      if (p.bannerPerfil) puntos += 25
+      else itemsFaltantes.push({ clave: 'banner', label: 'Banner de portada', completado: false })
+
+      if (p.descripcion && p.descripcion.trim().length > 15) puntos += 25
+      else itemsFaltantes.push({ clave: 'descripcion', label: 'Resumen de trayectoria', completado: false })
+
+      if (p.telefono) puntos += 25
+      else itemsFaltantes.push({ clave: 'telefono', label: 'Teléfono corporativo', completado: false })
+    } else {
+      // FREELANCER, POSTULANTE
+      if (p.tieneCv) puntos += 20
+      else itemsFaltantes.push({ clave: 'cv', label: 'Adjuntar CV (PDF)', completado: false })
+
+      if (p.fotoPerfil) puntos += 20
+      else itemsFaltantes.push({ clave: 'foto', label: 'Foto de perfil', completado: false })
+
+      if (p.bannerPerfil) puntos += 15
+      else itemsFaltantes.push({ clave: 'banner', label: 'Banner de portada', completado: false })
+
+      if (p.descripcion && p.descripcion.trim().length > 15) puntos += 20
+      else itemsFaltantes.push({ clave: 'descripcion', label: 'Biografía profesional', completado: false })
+
+      if (p.habilidades && p.habilidades.length >= 3) puntos += 25
+      else if (p.habilidades && p.habilidades.length > 0) {
+        puntos += 15
+        itemsFaltantes.push({ clave: 'habilidades', label: 'Agrega al menos 3 habilidades', completado: false })
+      } else {
+        itemsFaltantes.push({ clave: 'habilidades', label: 'Habilidades técnicas', completado: false })
+      }
+
+      if (p.proyectos && p.proyectos.length > 0) puntos += 20
+      else itemsFaltantes.push({ clave: 'proyectos', label: 'Proyectos de portafolio', completado: false })
+    }
+
+    return { puntos, items: itemsFaltantes }
+  }
+
   // Medidor reactivo de completitud del perfil con checklist de faltantes
   readonly completitud = computed<PerfilCompletitud>(() => {
     const p = this.perfilActual()
@@ -22,64 +127,15 @@ export class Perfil {
       return { porcentaje: 0, completado: false, itemsFaltantes: [] }
     }
 
-    const itemsFaltantes: ItemFaltantePerfil[] = []
-    let puntos = 0
-
-    if (p.rol === 'EMPRESA') {
-      if (p.fotoPerfil || p.logo) puntos += 25
-      else itemsFaltantes.push({ clave: 'foto', label: 'Logotipo de la empresa' })
-
-      if (p.descripcion && p.descripcion.trim().length > 10) puntos += 25
-      else itemsFaltantes.push({ clave: 'descripcion', label: 'Descripción corporativa' })
-
-      if (p.sitioWeb && p.sitioWeb.trim().length > 4) puntos += 25
-      else itemsFaltantes.push({ clave: 'sitioWeb', label: 'Sitio web oficial' })
-
-      if (p.ubicacion || p.pais) puntos += 25
-      else itemsFaltantes.push({ clave: 'ubicacion', label: 'País o sede principal' })
-    } else if (p.rol === 'RECRUITER') {
-      if (p.fotoPerfil) puntos += 25
-      else itemsFaltantes.push({ clave: 'foto', label: 'Foto de perfil' })
-
-      if (p.bannerPerfil) puntos += 25
-      else itemsFaltantes.push({ clave: 'banner', label: 'Banner de portada' })
-
-      if (p.descripcion && p.descripcion.trim().length > 15) puntos += 25
-      else itemsFaltantes.push({ clave: 'descripcion', label: 'Resumen de trayectoria' })
-
-      if (p.telefono) puntos += 25
-      else itemsFaltantes.push({ clave: 'telefono', label: 'Teléfono corporativo' })
-    } else {
-      // FREELANCER, POSTULANTE
-      if (p.tieneCv) puntos += 20
-      else itemsFaltantes.push({ clave: 'cv', label: 'Adjuntar CV (PDF)' })
-
-      if (p.fotoPerfil) puntos += 20
-      else itemsFaltantes.push({ clave: 'foto', label: 'Foto de perfil' })
-
-      if (p.bannerPerfil) puntos += 15
-      else itemsFaltantes.push({ clave: 'banner', label: 'Banner de portada' })
-
-      if (p.descripcion && p.descripcion.trim().length > 15) puntos += 20
-      else itemsFaltantes.push({ clave: 'descripcion', label: 'Biografía profesional' })
-
-      if (p.habilidades && p.habilidades.length >= 3) puntos += 25
-      else if (p.habilidades && p.habilidades.length > 0) {
-        puntos += 15
-        itemsFaltantes.push({ clave: 'habilidades', label: 'Agrega al menos 3 habilidades' })
-      } else {
-        itemsFaltantes.push({ clave: 'habilidades', label: 'Habilidades técnicas' })
-      }
-
-      if (p.proyectos && p.proyectos.length > 0) puntos += 20
-      else itemsFaltantes.push({ clave: 'proyectos', label: 'Proyectos de portafolio' })
-    }
+    const { puntos, items: incompletos } = this.calcularFaltantes(p)
+    const incompletosClaves = new Set(incompletos.map(i => i.clave))
+    const completados = this.completadosRecientes().filter(c => !incompletosClaves.has(c.clave))
 
     const porcentaje = Math.min(100, Math.max(0, puntos))
     return {
       porcentaje,
-      completado: porcentaje === 100,
-      itemsFaltantes
+      completado: porcentaje === 100 && completados.length === 0,
+      itemsFaltantes: [...incompletos, ...completados]
     }
   })
 
@@ -221,7 +277,12 @@ export class Perfil {
     if (environment.bypassAuth) {
       return of(actualizado).pipe(delay(300))
     }
-    return this.client.put<PerfilUsuarioDTO>(`${this.API_URL}/updateProfile`, datos)
+    return this.client.put<PerfilUsuarioDTO>(`${this.API_URL}/updateProfile`, datos).pipe(
+      catchError((err) => {
+        this.perfilActual.set(current)
+        return throwError(() => err)
+      })
+    )
   }
 
   // 1. Descargar o previsualizar el CV en streaming binario
@@ -389,7 +450,7 @@ export class Perfil {
       })
       return of(undefined).pipe(delay(150))
     }
-    return this.client.delete<void>(`${this.API_URL}/removeMyProject/`).pipe(
+    return this.client.delete<void>(`${this.API_URL}/removeMyProject/${proyectoId}`).pipe(
       tap(() => {
         this.perfilActual.update(p => {
           if (!p) return null

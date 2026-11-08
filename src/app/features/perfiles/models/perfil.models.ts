@@ -51,6 +51,7 @@ export interface EditProfileModel{
 export interface ItemFaltantePerfil {
   label: string
   clave: string
+  completado: boolean
 }
 
 export interface PerfilCompletitud {

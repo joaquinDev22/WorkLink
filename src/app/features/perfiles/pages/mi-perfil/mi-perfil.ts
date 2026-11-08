@@ -2,7 +2,7 @@ import { Component, OnInit, inject, computed, signal } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { FormsModule } from '@angular/forms'
 import { Perfil } from '../../services/perfil'
-import { EditProfileModel, NivelHabilidad, PerfilUsuarioDTO, ReputacionPerfilDTO } from '../../models/perfil.models'
+import { EditProfileModel, ItemFaltantePerfil, NivelHabilidad, PerfilUsuarioDTO, ReputacionPerfilDTO } from '../../models/perfil.models'
 import { form, maxLength, minLength, pattern, required, validate, FormField } from '@angular/forms/signals'
 import { MorphService } from '../../../../core/services/morph'
 
@@ -65,6 +65,7 @@ export class MiPerfil implements OnInit {
   isEditModalOpen = signal<boolean>(false)
   isSaving = signal<boolean>(false)
   toastMsg = signal<string | null>(null)
+  toastError = signal<boolean>(false)
 
   isUploadingCv = signal<boolean>(false)
   cvError = signal<string | null>(null)
@@ -74,6 +75,7 @@ export class MiPerfil implements OnInit {
   skillNivel = signal<NivelHabilidad>(3)
   catalogoHabilidades = signal<Array<{ id: number; name: string }>>([])
   isSavingSkill = signal(false)
+  mostrarDropdownSkills = signal(false)
   
   // Modal de proyectos (WL-18)
   isProjectModalOpen = signal<boolean>(false)
@@ -269,6 +271,27 @@ export class MiPerfil implements OnInit {
     this.cargarReputacion()
   }
 
+  ejecutarActividad(item: ItemFaltantePerfil, ev: Event): void {
+    if (item.completado) return
+
+    if (item.clave === 'foto') {
+      const input = document.getElementById('fotoInput') as HTMLInputElement || document.querySelector('input[type="file"][accept*="image"]') as HTMLInputElement
+      if (input) input.click()
+    } else if (item.clave === 'banner') {
+      const input = document.getElementById('bannerInput') as HTMLInputElement || document.querySelector('input[type="file"][accept*="image"]') as HTMLInputElement
+      if (input) input.click()
+    } else if (item.clave === 'cv') {
+      const input = document.querySelector('input[type="file"][accept*="pdf"]') as HTMLInputElement
+      if (input) input.click()
+    } else if (item.clave === 'habilidades') {
+      this.abrirSkillModal()
+    } else if (item.clave === 'proyectos') {
+      this.abrirProjectModal()
+    } else {
+      this.toggleEditModal()
+    }
+  }
+
   onFotoSelected(event: Event): void {
     const input = event.target as HTMLInputElement
     if (input.files && input.files.length > 0) {
@@ -344,17 +367,19 @@ export class MiPerfil implements OnInit {
     this.perfilService.updateProfile(form.value()).subscribe({
       next: () => {
         this.isSaving.set(false)
-        this.cerrarEditar()
+        this.cerrarEditar().finally(() => this.isEditModalOpen.set(false))
         this.showToast('Perfil actualizado con éxito')
       },
       error: (err) => {
         this.isSaving.set(false)
         console.error('Error al actualizar perfil', err)
+        this.showToast('No se pudo actualizar el perfil', true)
       }
     })
   }
 
-  showToast(msg: string): void {
+  showToast(msg: string, esError = false): void {
+    this.toastError.set(esError)
     this.toastMsg.set(msg)
     setTimeout(() => {
       this.toastMsg.set(null)
@@ -427,9 +452,22 @@ export class MiPerfil implements OnInit {
     })
   }
 
+  // Sugerencias reactivas filtradas del catálogo verificado mientras se escribe
+  readonly sugerenciasSkill = computed<Array<{ id: number; name: string }>>(() => {
+    const q = this.skillNombre().trim().toLowerCase()
+    const actuales = (this.perfil()?.habilidades || []).map(h => h.nombre.toLowerCase())
+    const catalogo = this.catalogoHabilidades().filter(h => !actuales.includes(h.name.toLowerCase()))
+
+    if (!q) {
+      return catalogo.slice(0, 8)
+    }
+    return catalogo.filter(h => h.name.toLowerCase().includes(q)).slice(0, 8)
+  })
+
   abrirSkillModal(): void {
     this.skillNombre.set('')
     this.skillNivel.set(3)
+    this.mostrarDropdownSkills.set(false)
     this.isSkillModalOpen.set(true)
     this.perfilService.getHabilidadesCatalogo().subscribe({
       next: (skills) => this.catalogoHabilidades.set(skills)
@@ -437,13 +475,20 @@ export class MiPerfil implements OnInit {
   }
   cerrarSkillModal(): void {
     this.isSkillModalOpen.set(false)
+    this.mostrarDropdownSkills.set(false)
   }
   seleccionarSugerencia(nombre: string): void {
     this.skillNombre.set(nombre)
+    this.mostrarDropdownSkills.set(false)
   }
   guardarSkill(): void {
-    const nombre = this.skillNombre().trim()
-    if (!nombre) return
+    const raw = this.skillNombre().trim()
+    if (!raw) return
+
+    // Normalización: si coincide con una habilidad del catálogo oficial, usa su nombre canónico
+    const match = this.catalogoHabilidades().find(h => h.name.toLowerCase() === raw.toLowerCase())
+    const nombre = match ? match.name : raw
+
     this.isSavingSkill.set(true)
     this.perfilService.addMySkill(nombre, this.skillNivel()).subscribe({
       next: () => {
@@ -451,12 +496,16 @@ export class MiPerfil implements OnInit {
         this.cerrarSkillModal()
         this.showToast('Habilidad agregada al perfil')
       },
-      error: () => this.isSavingSkill.set(false)
+      error: () => {
+        this.isSavingSkill.set(false)
+        this.showToast('No se pudo agregar la habilidad', true)
+      }
     })
   }
   eliminarSkill(habilidadId: number): void {
     this.perfilService.removeMySkill(habilidadId).subscribe({
-      next: () => this.showToast('Habilidad eliminada')
+      next: () => this.showToast('Habilidad eliminada'),
+      error: () => this.showToast('No se pudo eliminar la habilidad', true)
     })
   }
 
@@ -479,11 +528,11 @@ export class MiPerfil implements OnInit {
     if (input.files && input.files[0]) {
       const file = input.files[0]
       if (!file.type.startsWith('image/')) {
-        this.showToast('Solo se permiten imágenes (PNG, JPG, WebP)')
+        this.showToast('Solo se permiten imágenes (PNG, JPG, WebP)', true)
         return
       }
       if (file.size > 5 * 1024 * 1024) {
-        this.showToast('La imagen no debe superar los 5 MB')
+        this.showToast('La imagen no debe superar los 5 MB', true)
         return
       }
       this.projectImagenFile.set(file)
@@ -500,11 +549,11 @@ export class MiPerfil implements OnInit {
     const nombre = this.projectNombre().trim()
     const descripcion = this.projectDescripcion().trim()
     if (!nombre) {
-      this.showToast('El título del proyecto es obligatorio')
+      this.showToast('El título del proyecto es obligatorio', true)
       return
     }
     if (!descripcion) {
-      this.showToast('La descripción del proyecto es obligatoria')
+      this.showToast('La descripción del proyecto es obligatoria', true)
       return
     }
 
@@ -528,7 +577,7 @@ export class MiPerfil implements OnInit {
       error: (err) => {
         this.isSavingProject.set(false)
         console.error('Error al agregar proyecto', err)
-        this.showToast('No se pudo guardar el proyecto. Intenta nuevamente')
+        this.showToast('No se pudo guardar el proyecto. Intenta nuevamente', true)
       }
     })
   }
@@ -543,7 +592,7 @@ export class MiPerfil implements OnInit {
       error: (err) => {
         this.deletingProjectId.set(null)
         console.error('Error al eliminar proyecto', err)
-        this.showToast('Error al eliminar el proyecto')
+        this.showToast('Error al eliminar el proyecto', true)
       }
     })
   }
