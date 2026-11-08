@@ -1,6 +1,6 @@
 import { inject, Service, signal } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
-import { Observable, of, tap, delay, throwError } from 'rxjs'
+import { Observable, of, tap, delay, throwError, catchError } from 'rxjs'
 import { environment } from '../../../../../environments/environment'
 import { EstadoPostulacion, PostulacionResponseDTO, VacanteRequestDTO, VacanteResponseDTO } from '../models/vacante.models'
 
@@ -431,7 +431,7 @@ export class VacanteService {
     )
   }
 
-  // Obtener postulaciones (por vacante o todas para recruiter) (GET /api/v1/vacantes/{id}/postulaciones)
+  // Obtener postulaciones por vacante (GET /api/v1/vacantes/{id}/postulaciones)
   getPostulacionesPorVacante(vacanteId?: number): Observable<PostulacionResponseDTO[]> {
     this.isLoading.set(true)
 
@@ -445,9 +445,14 @@ export class VacanteService {
       )
     }
 
-    const endpoint = vacanteId
-      ? `${this.API_URL}/${vacanteId}/postulaciones`
-      : `${this.API_URL}/postulaciones`
+    // El backend requiere obligatoriamente vacanteId (/api/v1/vacantes/{vacanteId}/postulaciones).
+    // Si no se proporciona vacanteId, evitamos invocar una URL malformada que arroje 400 Bad Request.
+    if (!vacanteId) {
+      this.isLoading.set(false)
+      return of(this.postulaciones())
+    }
+
+    const endpoint = `${this.API_URL}/${vacanteId}/postulaciones`
 
     return this.client.get<PostulacionResponseDTO[]>(endpoint).pipe(
       tap({
@@ -456,6 +461,10 @@ export class VacanteService {
           this.isLoading.set(false)
         },
         error: () => this.isLoading.set(false)
+      }),
+      catchError(() => {
+        this.isLoading.set(false)
+        return of([])
       })
     )
   }

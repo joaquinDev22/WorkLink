@@ -63,7 +63,9 @@ export class EntrevistaCalendar implements OnInit {
 
   ngOnInit(): void {
     this.entrevistaService.getEntrevistas().subscribe()
-    this.vacanteService.getPostulacionesPorVacante().subscribe()
+    if (this.isRecruiter()) {
+      this.vacanteService.getPostulacionesPorVacante().subscribe()
+    }
   }
 
   abrirAgendaModal(): void {

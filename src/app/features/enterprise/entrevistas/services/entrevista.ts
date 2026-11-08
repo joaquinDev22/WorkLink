@@ -1,13 +1,15 @@
 import { inject, Service, signal } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
-import { Observable, of, tap, delay } from 'rxjs'
+import { Observable, of, tap, delay, catchError } from 'rxjs'
 import { environment } from '../../../../../environments/environment'
 import { EntrevistaRequestDTO, EntrevistaResponseDTO } from '../models/entrevista.models'
+import { TokenStorage } from '../../../../core/auth/services/token-storage'
 
 @Service()
 export class EntrevistaService {
   readonly API_URL = `${environment.apiUrl}/recruiter/entrevistas`
   protected client = inject(HttpClient)
+  private tokenStorage = inject(TokenStorage)
 
   readonly entrevistas = signal<EntrevistaResponseDTO[]>([])
   readonly isLoading = signal<boolean>(false)
@@ -51,15 +53,16 @@ export class EntrevistaService {
   getEntrevistas(): Observable<EntrevistaResponseDTO[]> {
     this.isLoading.set(true)
 
-    if (environment.bypassAuth) {
+    const session = this.tokenStorage.getSession()
+    const esRecruiterOEmpresa = session?.rol === 'RECRUITER' || session?.rol === 'EMPRESA'
+
+    // Si es POSTULANTE o modo bypass, no invocamos la ruta exclusiva /api/v1/recruiter/entrevistas (403 Forbidden).
+    // Usamos la agenda propia del postulante / estado mock seguro.
+    if (!esRecruiterOEmpresa || environment.bypassAuth) {
       const list = this.entrevistas().length > 0 ? this.entrevistas() : this.initialMockEntrevistas
-      return of(list).pipe(
-        delay(200),
-        tap((data) => {
-          this.entrevistas.set(data)
-          this.isLoading.set(false)
-        })
-      )
+      this.entrevistas.set(list)
+      this.isLoading.set(false)
+      return of(list)
     }
 
     return this.client.get<EntrevistaResponseDTO[]>(this.API_URL).pipe(
@@ -69,6 +72,10 @@ export class EntrevistaService {
           this.isLoading.set(false)
         },
         error: () => this.isLoading.set(false)
+      }),
+      catchError(() => {
+        this.isLoading.set(false)
+        return of(this.entrevistas())
       })
     )
   }
