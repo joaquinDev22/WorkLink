@@ -53,12 +53,7 @@ export class EntrevistaService {
   getEntrevistas(): Observable<EntrevistaResponseDTO[]> {
     this.isLoading.set(true)
 
-    const session = this.tokenStorage.getSession()
-    const esRecruiterOEmpresa = session?.rol === 'RECRUITER' || session?.rol === 'EMPRESA'
-
-    // Si es POSTULANTE o modo bypass, no invocamos la ruta exclusiva /api/v1/recruiter/entrevistas (403 Forbidden).
-    // Usamos la agenda propia del postulante / estado mock seguro.
-    if (!esRecruiterOEmpresa || environment.bypassAuth) {
+    if (environment.bypassAuth) {
       const list = this.entrevistas().length > 0 ? this.entrevistas() : this.initialMockEntrevistas
       this.entrevistas.set(list)
       this.isLoading.set(false)

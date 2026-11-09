@@ -39,14 +39,9 @@ export class EntrevistaCalendar implements OnInit {
     const list = this.entrevistaService.entrevistas()
     const status = this.filterStatus()
 
-    // Si es postulante, solo visualiza sus entrevistas personales
-    const roleFiltered = this.isPostulante()
-      ? list.filter((e) => e.candidateName.includes('Joaquín') || e.candidateEmail?.includes('joaquin'))
-      : list
-
     const statusFiltered = status === 'TODAS'
-      ? roleFiltered
-      : roleFiltered.filter((e) => e.status === status)
+      ? list
+      : list.filter((e) => (e.status || 'PROGRAMADA') === status)
 
     // Ordenar cronológicamente por fecha y hora
     return [...statusFiltered].sort((a, b) => {
@@ -58,7 +53,7 @@ export class EntrevistaCalendar implements OnInit {
 
   // Conteo de entrevistas activas programadas
   readonly activasCount = computed(() => {
-    return this.entrevistasFiltradas().filter((e) => e.status === 'PROGRAMADA').length
+    return this.entrevistasFiltradas().filter((e) => (e.status || 'PROGRAMADA') === 'PROGRAMADA').length
   })
 
   ngOnInit(): void {
