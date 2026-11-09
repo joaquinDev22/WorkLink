@@ -445,14 +445,9 @@ export class VacanteService {
       )
     }
 
-    // El backend requiere obligatoriamente vacanteId (/api/v1/vacantes/{vacanteId}/postulaciones).
-    // Si no se proporciona vacanteId, evitamos invocar una URL malformada que arroje 400 Bad Request.
-    if (!vacanteId) {
-      this.isLoading.set(false)
-      return of(this.postulaciones())
-    }
-
-    const endpoint = `${this.API_URL}/${vacanteId}/postulaciones`
+    const endpoint = vacanteId
+      ? `${this.API_URL}/${vacanteId}/postulaciones`
+      : `${this.API_URL}/postulaciones`
 
     return this.client.get<PostulacionResponseDTO[]>(endpoint).pipe(
       tap({
