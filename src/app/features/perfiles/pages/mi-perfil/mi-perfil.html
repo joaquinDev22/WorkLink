@@ -332,31 +332,41 @@
               <span>Empresa Asignada</span>
             </h2>
 
-            <div class="p-4 rounded-2xl bg-teal-50/60 border border-teal-100 space-y-3">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-linear-to-br from-teal-500 to-teal-700 text-white font-black text-sm flex items-center justify-center shrink-0 shadow-inner">
-                  {{ (empresa()?.nombre || 'InnovaCorp Technologies S.A.').slice(0, 2).toUpperCase() }}
+            @if (empresa(); as emp) {
+              <div class="p-4 rounded-2xl bg-teal-50/60 border border-teal-100 space-y-3">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-linear-to-br from-teal-500 to-teal-700 text-white font-black text-sm flex items-center justify-center shrink-0 shadow-inner">
+                    {{ emp.nombre.slice(0, 2).toUpperCase() }}
+                  </div>
+                  <div class="min-w-0">
+                    <h3 class="font-bold text-slate-900 text-sm truncate">
+                      {{ emp.nombre }}
+                    </h3>
+                    <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-teal-700">
+                      <span class="w-1.5 h-1.5 rounded-full bg-teal-500"></span>
+                      Reclutador Oficial Activo
+                    </span>
+                  </div>
                 </div>
-                <div class="min-w-0">
-                  <h3 class="font-bold text-slate-900 text-sm truncate">
-                    {{ empresa()?.nombre || 'InnovaCorp Technologies S.A.' }}
-                  </h3>
-                  <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-teal-700">
-                    <span class="w-1.5 h-1.5 rounded-full bg-teal-500"></span>
-                    Reclutador Oficial Activo
-                  </span>
-                </div>
-              </div>
 
-              <p class="text-xs text-slate-600 leading-relaxed">
-                {{ empresa()?.descripcion || 'Autorizada para la supervisión de vacantes, preselección técnica de candidatos y gestión de entrevistas virtuales.' }}
-              </p>
+                @if (emp.descripcion) {
+                  <p class="text-xs text-slate-600 leading-relaxed">
+                    {{ emp.descripcion }}
+                  </p>
+                }
 
-              <div class="pt-2 border-t border-teal-100 flex items-center justify-between text-xs font-semibold">
-                <span class="text-slate-500">Sede Corporativa</span>
-                <span class="text-slate-800">{{ empresa()?.ubicacion || 'Buenos Aires, AR' }}</span>
+                @if (emp.ubicacion || emp.direccion) {
+                  <div class="pt-2 border-t border-teal-100 flex items-center justify-between text-xs font-semibold">
+                    <span class="text-slate-500">Sede Corporativa</span>
+                    <span class="text-slate-800">{{ emp.ubicacion || emp.direccion }}</span>
+                  </div>
+                }
               </div>
-            </div>
+            } @else {
+              <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 text-center">
+                <p class="text-xs text-slate-500 font-medium">Aún no tienes una empresa vinculada a tu cuenta.</p>
+              </div>
+            }
 
             <!-- Especialidades de Cobertura IT -->
             <div class="space-y-2 pt-1">
@@ -635,30 +645,30 @@
               </span>
             </div>
 
-            <!-- Grid de Métricas Táctiles con Relieve Neumórfico -->
+            <!-- Grid de Métricas Táctiles con Relieve Neumórfico (Datos reales de la API) -->
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
               <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-200/80 space-y-1 text-center sm:text-left transition-all hover:bg-white hover:shadow-sm">
                 <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Contrataciones</span>
-                <p class="text-2xl font-black text-slate-900 tracking-tight">+{{ metricasRecruiter().contratacionesTotales }}</p>
-                <span class="text-[11px] text-emerald-600 font-semibold">Talentos IT incorporados</span>
+                <p class="text-2xl font-black text-slate-900 tracking-tight">{{ metricasRecruiter().contratacionesTotales }}</p>
+                <span class="text-[11px] text-emerald-600 font-semibold">Talentos incorporados</span>
               </div>
 
               <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-200/80 space-y-1 text-center sm:text-left transition-all hover:bg-white hover:shadow-sm">
-                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Lead Time Medio</span>
-                <p class="text-2xl font-black text-slate-900 tracking-tight">{{ metricasRecruiter().tiempoPromedioCierre }}</p>
-                <span class="text-[11px] text-teal-600 font-semibold">Apertura hasta oferta</span>
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Vacantes</span>
+                <p class="text-2xl font-black text-slate-900 tracking-tight">{{ metricasRecruiter().vacantesActivas }}</p>
+                <span class="text-[11px] text-teal-600 font-semibold">Búsquedas asignadas</span>
               </div>
 
               <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-200/80 space-y-1 text-center sm:text-left transition-all hover:bg-white hover:shadow-sm">
-                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Retención Anual</span>
-                <p class="text-2xl font-black text-slate-900 tracking-tight">{{ metricasRecruiter().retencionAnual }}</p>
-                <span class="text-[11px] text-indigo-600 font-semibold">Tasa permanencia > 1 año</span>
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Postulaciones</span>
+                <p class="text-2xl font-black text-slate-900 tracking-tight">{{ metricasRecruiter().postulacionesTotales }}</p>
+                <span class="text-[11px] text-indigo-600 font-semibold">Candidatos en pipeline</span>
               </div>
 
               <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-200/80 space-y-1 text-center sm:text-left transition-all hover:bg-white hover:shadow-sm">
-                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Trayectoria</span>
-                <p class="text-2xl font-black text-slate-900 tracking-tight">{{ metricasRecruiter().empresasHistorico }}</p>
-                <span class="text-[11px] text-slate-500 font-semibold">Empresas en histórico</span>
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Entrevistas</span>
+                <p class="text-2xl font-black text-slate-900 tracking-tight">{{ metricasRecruiter().entrevistasPendientes }}</p>
+                <span class="text-[11px] text-slate-500 font-semibold">Entrevistas pendientes</span>
               </div>
             </div>
           </div>
@@ -690,99 +700,119 @@
               </button>
             </div>
 
-            <!-- Timeline Vertical de Experiencias Laborales -->
-            <div class="space-y-6 relative before:absolute before:inset-y-0 before:left-5 before:w-0.5 before:bg-slate-200/70">
-              @for (item of historialRecruiter(); track item.id) {
-                <div class="relative flex items-start gap-4 sm:gap-6 group">
-                  <!-- Monograma Timeline -->
-                  <div class="relative z-10 w-10 h-10 rounded-2xl bg-white border-2 border-slate-200 text-brand-indigo font-black text-sm flex items-center justify-center shrink-0 shadow-sm group-hover:border-brand-indigo group-hover:scale-105 transition-all">
-                    {{ item.empresa.slice(0, 2).toUpperCase() }}
-                  </div>
-
-                  <!-- Contenedor de la Experiencia -->
-                  <div class="flex-1 bg-slate-50/70 hover:bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3.5 transition-all shadow-xs">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/60 pb-3">
-                      <div>
-                        <div class="flex flex-wrap items-center gap-2">
-                          <h3 class="font-bold text-slate-900 text-sm sm:text-base">{{ item.rolPuesto }}</h3>
-                          @if (item.esActual) {
-                            <span class="px-2 py-0.5 text-[10px] font-bold rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 uppercase tracking-wider">
-                              Empresa Actual
-                            </span>
-                          }
-                          <span class="px-2 py-0.5 text-[10px] font-semibold rounded-md bg-slate-200/70 text-slate-700">
-                            {{ item.tipoUbicacion }}
-                          </span>
-                        </div>
-                        <p class="text-xs font-semibold text-brand-indigo mt-0.5">
-                          {{ item.empresa }} · <span class="text-slate-500 font-normal">{{ item.ubicacion }}</span>
-                        </p>
-                      </div>
-
-                      <div class="flex items-center gap-2 self-start sm:self-auto">
-                        <span class="text-xs font-medium text-slate-500 whitespace-nowrap bg-white px-2.5 py-1 rounded-lg border border-slate-200/70 shadow-2xs">
-                          {{ item.periodo }}
-                        </span>
-                        <!-- Botones de Acción Táctiles -->
-                        <button
-                          type="button"
-                          (click)="abrirHistorialModal(item)"
-                          class="p-1.5 text-slate-400 hover:text-brand-indigo hover:bg-white rounded-lg transition-colors border border-transparent hover:border-slate-200"
-                          title="Editar empresa"
-                          aria-label="Editar empresa">
-                          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                          </svg>
-                        </button>
-                        <button
-                          type="button"
-                          (click)="eliminarHistorial(item.id)"
-                          class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-white rounded-lg transition-colors border border-transparent hover:border-slate-200"
-                          title="Eliminar empresa"
-                          aria-label="Eliminar empresa">
-                          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                        </button>
-                      </div>
+            @if (historialRecruiter().length > 0) {
+              <!-- Timeline Vertical de Experiencias Laborales -->
+              <div class="space-y-6 relative before:absolute before:inset-y-0 before:left-5 before:w-0.5 before:bg-slate-200/70">
+                @for (item of historialRecruiter(); track item.id) {
+                  <div class="relative flex items-start gap-4 sm:gap-6 group">
+                    <!-- Monograma Timeline -->
+                    <div class="relative z-10 w-10 h-10 rounded-2xl bg-white border-2 border-slate-200 text-brand-indigo font-black text-sm flex items-center justify-center shrink-0 shadow-sm group-hover:border-brand-indigo group-hover:scale-105 transition-all">
+                      {{ item.empresa.slice(0, 2).toUpperCase() }}
                     </div>
 
-                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                      {{ item.descripcion }}
-                    </p>
+                    <!-- Contenedor de la Experiencia -->
+                    <div class="flex-1 bg-slate-50/70 hover:bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3.5 transition-all shadow-xs">
+                      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/60 pb-3">
+                        <div>
+                          <div class="flex flex-wrap items-center gap-2">
+                            <h3 class="font-bold text-slate-900 text-sm sm:text-base">{{ item.rolPuesto }}</h3>
+                            @if (item.esActual) {
+                              <span class="px-2 py-0.5 text-[10px] font-bold rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 uppercase tracking-wider">
+                                Empresa Actual
+                              </span>
+                            }
+                            <span class="px-2 py-0.5 text-[10px] font-semibold rounded-md bg-slate-200/70 text-slate-700">
+                              {{ item.tipoUbicacion }}
+                            </span>
+                          </div>
+                          <p class="text-xs font-semibold text-brand-indigo mt-0.5">
+                            {{ item.empresa }} · <span class="text-slate-500 font-normal">{{ item.ubicacion }}</span>
+                          </p>
+                        </div>
 
-                    <!-- Logros Clave Cuantitativos -->
-                    @if (item.logros && item.logros.length > 0) {
-                      <div class="space-y-1.5 pt-1">
-                        <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Logros e Impacto Cuantitativo:</span>
-                        <ul class="space-y-1">
-                          @for (logro of item.logros; track logro) {
-                            <li class="flex items-start gap-2 text-xs text-slate-700">
-                              <svg class="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-                              </svg>
-                              <span>{{ logro }}</span>
-                            </li>
-                          }
-                        </ul>
-                      </div>
-                    }
-
-                    <!-- Perfiles y Tecnologías Reclutadas -->
-                    @if (item.perfilesReclutados && item.perfilesReclutados.length > 0) {
-                      <div class="pt-2 border-t border-slate-200/50 flex flex-wrap items-center gap-1.5">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mr-1">Perfiles Clave Reclutados:</span>
-                        @for (tag of item.perfilesReclutados; track tag) {
-                          <span class="px-2 py-0.5 text-[11px] font-medium rounded-md bg-white text-slate-700 border border-slate-200/80 shadow-2xs">
-                            {{ tag }}
+                        <div class="flex items-center gap-2 self-start sm:self-auto">
+                          <span class="text-xs font-medium text-slate-500 whitespace-nowrap bg-white px-2.5 py-1 rounded-lg border border-slate-200/70 shadow-2xs">
+                            {{ item.periodo }}
                           </span>
-                        }
+                          <!-- Botones de Acción Táctiles -->
+                          <button
+                            type="button"
+                            (click)="abrirHistorialModal(item)"
+                            class="p-1.5 text-slate-400 hover:text-brand-indigo hover:bg-white rounded-lg transition-colors border border-transparent hover:border-slate-200"
+                            title="Editar empresa"
+                            aria-label="Editar empresa">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                            </svg>
+                          </button>
+                          <button
+                            type="button"
+                            (click)="eliminarHistorial(item.id)"
+                            class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-white rounded-lg transition-colors border border-transparent hover:border-slate-200"
+                            title="Eliminar empresa"
+                            aria-label="Eliminar empresa">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </div>
                       </div>
-                    }
+
+                      <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                        {{ item.descripcion }}
+                      </p>
+
+                      <!-- Logros Clave Cuantitativos -->
+                      @if (item.logros && item.logros.length > 0) {
+                        <div class="space-y-1.5 pt-1">
+                          <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Logros e Impacto Cuantitativo:</span>
+                          <ul class="space-y-1">
+                            @for (logro of item.logros; track logro) {
+                              <li class="flex items-start gap-2 text-xs text-slate-700">
+                                <svg class="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                                </svg>
+                                <span>{{ logro }}</span>
+                              </li>
+                            }
+                          </ul>
+                        </div>
+                      }
+
+                      <!-- Perfiles y Tecnologías Reclutadas -->
+                      @if (item.perfilesReclutados && item.perfilesReclutados.length > 0) {
+                        <div class="pt-2 border-t border-slate-200/50 flex flex-wrap items-center gap-1.5">
+                          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mr-1">Perfiles Clave Reclutados:</span>
+                          @for (tag of item.perfilesReclutados; track tag) {
+                            <span class="px-2 py-0.5 text-[11px] font-medium rounded-md bg-white text-slate-700 border border-slate-200/80 shadow-2xs">
+                              {{ tag }}
+                            </span>
+                          }
+                        </div>
+                      }
+                    </div>
                   </div>
-                </div>
-              }
-            </div>
+                }
+              </div>
+            } @else {
+              <div class="py-8 px-4 text-center border-2 border-dashed border-slate-200 rounded-2xl space-y-2">
+                <p class="text-slate-500 text-xs sm:text-sm font-medium">
+                  Aún no has registrado empresas en tu historial laboral.
+                </p>
+                <p class="text-slate-400 text-xs max-w-sm mx-auto">
+                  Agrega tus experiencias previas como reclutador para enriquecer tu trayectoria profesional.
+                </p>
+                <button
+                  type="button"
+                  (click)="abrirHistorialModal()"
+                  class="mt-2 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold text-white bg-brand-indigo hover:bg-brand-indigo-dark active:scale-95 transition-all">
+                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                  </svg>
+                  <span>Agregar primera empresa</span>
+                </button>
+              </div>
+            }
           </div>
 
           <!-- 3.3 Accesos Rápidos de Gestión para Recruiter -->

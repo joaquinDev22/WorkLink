@@ -28,65 +28,15 @@ export interface HistorialEmpresaRecruiter {
   perfilesReclutados: string[]
 }
 
-const HISTORIAL_RECRUITER_DEFAULT: HistorialEmpresaRecruiter[] = [
-  {
-    id: 1,
-    empresa: 'InnovaCorp Technologies S.A.',
-    rolPuesto: 'Senior IT Talent Acquisition Lead',
-    periodo: 'Mar 2023 - Presente · 3 años',
-    esActual: true,
-    ubicacion: 'Buenos Aires, Argentina',
-    tipoUbicacion: 'HÍBRIDO',
-    descripcion: 'Liderazgo integral del ciclo de selección (End-to-End) para squads de ingeniería corporativa, arquitectura cloud y plataformas frontend reactivas. Alianza directa con Engineering Managers y C-Level.',
-    logros: [
-      '+54 contrataciones efectivas en perfiles Senior Angular, Java Spring Boot y Cloud',
-      'Reducción del Lead Time de contratación técnica de 32 a 18 días hábiles',
-      '94% de retención de talento tecnológico tras el primer año de incorporación'
-    ],
-    perfilesReclutados: ['Angular v22', 'TypeScript', 'Spring Boot 3', 'AWS Cloud', 'DevOps & CI/CD', 'QA Automation']
-  },
-  {
-    id: 2,
-    empresa: 'GlobalTalent HR Solutions',
-    rolPuesto: 'Technical Recruiter & Headhunter IT',
-    periodo: 'Ene 2021 - Feb 2023 · 2 años 2 meses',
-    esActual: false,
-    ubicacion: 'Latam & Estados Unidos',
-    tipoUbicacion: 'REMOTO',
-    descripcion: 'Headhunting y sourcing internacional de perfiles Tech Senior y Staff para empresas de producto y startups Serie A/B. Negociación salarial en USD y validación de fit cultural.',
-    logros: [
-      '+72 posiciones cubiertas con satisfacción de clientes del 98%',
-      'Diseño de funnel de captación inbound para desarrolladores Full Stack',
-      'Organización de live-coding sessions con evaluadores técnicos'
-    ],
-    perfilesReclutados: ['Full Stack Devs', 'React / Next.js', 'Node.js', 'Python / Django', 'Data Engineering']
-  },
-  {
-    id: 3,
-    empresa: 'CloudPeak Systems Latam',
-    rolPuesto: 'Junior IT Talent Sourcer & People Ops',
-    periodo: 'Jun 2019 - Dic 2020 · 1 año 7 meses',
-    esActual: false,
-    ubicacion: 'Córdoba, Argentina',
-    tipoUbicacion: 'PRESENCIAL',
-    descripcion: 'Screening curricular, entrevistas telefónicas iniciales, gestión de bases de talento en ATS y coordinación de programas de Jóvenes Profesionales IT.',
-    logros: [
-      '+38 contrataciones en programas de pasantías y perfiles junior/semi-senior',
-      'Incremento del 60% en la base de datos de candidatos activos'
-    ],
-    perfilesReclutados: ['Junior Developers', 'QA Manual', 'Soporte Cloud', 'UI Designers']
-  }
-]
-
 function cargarHistorialPersistido(): HistorialEmpresaRecruiter[] {
   try {
     const raw = localStorage.getItem('worklink_recruiter_historial')
     if (raw) {
       const parsed = JSON.parse(raw)
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed
+      if (Array.isArray(parsed)) return parsed
     }
   } catch {}
-  return HISTORIAL_RECRUITER_DEFAULT
+  return []
 }
 
 export const PATTERNS_TELEFONO: Record<string, { regex: RegExp, ejemplo: string }> = {
@@ -213,12 +163,11 @@ export class MiPerfil implements OnInit {
   readonly metricasRecruiter = computed(() => {
     const stats = this.statsEmpresa()
     return {
-      contratacionesTotales: stats?.contratacionesEfectuadas ?? 54,
-      tiempoPromedioCierre: '18 días',
-      retencionAnual: '94%',
-      empresasHistorico: this.historialRecruiter().length,
-      vacantesActivas: stats?.totalVacantes ?? 6,
-      postulacionesTotales: stats?.totalPostulaciones ?? 128
+      contratacionesTotales: stats?.contratacionesEfectuadas ?? 0,
+      vacantesActivas: stats?.totalVacantes ?? 0,
+      postulacionesTotales: stats?.totalPostulaciones ?? 0,
+      entrevistasPendientes: stats?.entrevistasPendientes ?? 0,
+      empresasHistorico: this.historialRecruiter().length
     }
   })
 
