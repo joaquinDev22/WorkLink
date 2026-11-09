@@ -7,12 +7,14 @@ import { GoogleLoginRequestDTO, LoginRequestDTO, LoginResponseDTO, RegisterReque
 import { of, tap } from 'rxjs'
 import { environment } from '../../../../environments/environment'
 import { UserRole } from '../../models/user-role'
+import { Perfil } from '../../../features/perfiles/services/perfil'
 
 @Service()
 export class Auth {
     private http = inject(HttpClient)
     private router = inject(Router)
     private tokenStorage = inject(TokenStorage)
+    private perfilService = inject(Perfil)
     private readonly apiUrl = `${environment.apiUrl}/auth`
 
     // Signal con tu Session tipada
@@ -87,6 +89,8 @@ export class Auth {
             rol: res.rol
         }
 
+        // Descarta el perfil en memoria de la sesión anterior (foto, banner, datos)
+        this.perfilService.perfilActual.set(null)
         this.tokenStorage.saveSession(session)
         this.session.set(session)
 
@@ -96,6 +100,7 @@ export class Auth {
     
     logout(): void {
         this.tokenStorage.clear()
+        this.perfilService.perfilActual.set(null)
         this.session.set(null)
         this.router.navigate(['/auth/login'])
     }
