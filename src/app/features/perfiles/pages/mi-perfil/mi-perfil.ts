@@ -11,19 +11,9 @@ import { TokenStorage } from '../../../../core/auth/services/token-storage'
 import { UserRole } from '../../../../core/models/user-role'
 import { ProyectoAdmin } from '../../../freelance/proyecto-gestion/services/proyecto-admin'
 import { ProyectoResponseDTO } from '../../../freelance/proyecto-gestion/models/proyecto.models'
-
-export interface HistorialEmpresaRecruiter {
-  id: number
-  empresa: string
-  rolPuesto: string
-  periodo: string
-  esActual: boolean
-  ubicacion: string
-  tipoUbicacion: 'HÍBRIDO' | 'REMOTO' | 'PRESENCIAL'
-  descripcion: string
-  logros: string[]
-  perfilesReclutados: string[]
-}
+import { EmpresaService } from '../../../enterprise/empresa-perfil/services/empresa'
+import { DashboardStatsResponseDTO } from '../../../enterprise/empresa-perfil/models/empresa.models'
+import { catchError, of } from 'rxjs'
 
 export const PATTERNS_TELEFONO: Record<string, { regex: RegExp, ejemplo: string }> = {
   AR: {
@@ -136,81 +126,16 @@ export class MiPerfil implements OnInit {
   projectImagenFile = signal<File | null>(null)
   projectImagenPreview = signal<string | null>(null)
 
-  // Histórico de empresas para las que trabajó el Recruiter
-  readonly historialRecruiter = signal<HistorialEmpresaRecruiter[]>([
-    {
-      id: 1,
-      empresa: 'InnovaCorp Technologies S.A.',
-      rolPuesto: 'Senior IT Talent Acquisition Lead',
-      periodo: 'Mar 2023 - Presente · 3 años',
-      esActual: true,
-      ubicacion: 'Buenos Aires, Argentina',
-      tipoUbicacion: 'HÍBRIDO',
-      descripcion: 'Liderazgo integral del ciclo de selección (End-to-End) para squads de ingeniería corporativa, arquitectura cloud y plataformas frontend reactivas. Alianza directa con Engineering Managers y C-Level.',
-      logros: [
-        '+54 contrataciones efectivas en perfiles Senior Angular, Java Spring Boot y Cloud',
-        'Reducción del Lead Time de contratación técnica de 32 a 18 días hábiles',
-        '94% de retención de talento tecnológico tras el primer año de incorporación'
-      ],
-      perfilesReclutados: ['Angular v22', 'TypeScript', 'Spring Boot 3', 'AWS Cloud', 'DevOps & CI/CD', 'QA Automation']
-    },
-    {
-      id: 2,
-      empresa: 'GlobalTalent HR Solutions',
-      rolPuesto: 'Technical Recruiter & Headhunter IT',
-      periodo: 'Ene 2021 - Feb 2023 · 2 años 2 meses',
-      esActual: false,
-      ubicacion: 'Latam & Estados Unidos',
-      tipoUbicacion: 'REMOTO',
-      descripcion: 'Headhunting y sourcing internacional de perfiles Tech Senior y Staff para empresas de producto y startups Serie A/B. Negociación salarial en USD y validación de fit cultural.',
-      logros: [
-        '+72 posiciones cubiertas con satisfacción de clientes del 98%',
-        'Diseño de funnel de captación inbound para desarrolladores Full Stack',
-        'Organización de live-coding sessions con evaluadores técnicos'
-      ],
-      perfilesReclutados: ['Full Stack Devs', 'React / Next.js', 'Node.js', 'Python / Django', 'Data Engineering']
-    },
-    {
-      id: 3,
-      empresa: 'CloudPeak Systems Latam',
-      rolPuesto: 'Junior IT Talent Sourcer & People Ops',
-      periodo: 'Jun 2019 - Dic 2020 · 1 año 7 meses',
-      esActual: false,
-      ubicacion: 'Córdoba, Argentina',
-      tipoUbicacion: 'PRESENCIAL',
-      descripcion: 'Screening curricular, entrevistas telefónicas iniciales, gestión de bases de talento en ATS y coordinación de programas de Jóvenes Profesionales IT.',
-      logros: [
-        '+38 contrataciones en programas de pasantías y perfiles junior/semi-senior',
-        'Incremento del 60% en la base de datos de candidatos activos'
-      ],
-      perfilesReclutados: ['Junior Developers', 'QA Manual', 'Soporte Cloud', 'UI Designers']
-    }
-  ])
+  // Datos reales del recruiter: empresa vinculada y métricas (GET /empresas/my y /empresas/dashboard)
+  protected empresaService = inject(EmpresaService)
+  readonly empresa = this.empresaService.empresaActual
+  readonly statsEmpresa = signal<DashboardStatsResponseDTO | null>(null)
 
-  readonly metricasRecruiter = computed(() => {
-    return {
-      contratacionesTotales: 164,
-      tiempoPromedioCierre: '18 días',
-      retencionAnual: '94%',
-      empresasHistorico: this.historialRecruiter().length,
-      vacantesActivas: 6
-    }
-  })
+  private cargarDatosRecruiter(): void {
+    this.empresaService.getMiEmpresa().pipe(catchError(() => of(null))).subscribe()
+    this.empresaService.getDashboardStats().pipe(catchError(() => of(null))).subscribe(s => this.statsEmpresa.set(s))
+  }
 
-  // Modal para agregar/editar experiencia en el histórico
-  isHistorialModalOpen = signal<boolean>(false)
-  isEditingHistorial = signal<boolean>(false)
-  editingHistorialId = signal<number | null>(null)
-
-  empresaHistorialNombre = signal('')
-  empresaHistorialPuesto = signal('')
-  empresaHistorialPeriodo = signal('')
-  empresaHistorialUbicacion = signal('')
-  empresaHistorialTipo = signal<'HÍBRIDO' | 'REMOTO' | 'PRESENCIAL'>('REMOTO')
-  empresaHistorialEsActual = signal(false)
-  empresaHistorialDescripcion = signal('')
-  empresaHistorialLogrosText = signal('')
-  empresaHistorialTagsText = signal('')
 
 
   // Modelo de formulario de edición
@@ -312,6 +237,9 @@ export class MiPerfil implements OnInit {
     if (this.esFreelancer()) {
       this.cargarReputacion()
       this.cargarProyectosAsignados()
+    }
+    if (this.esRecruiter()) {
+      this.cargarDatosRecruiter()
     }
   }
 
@@ -720,98 +648,5 @@ export class MiPerfil implements OnInit {
     if (nueva >= 1 && nueva <= this.totalPaginasResenas()) {
       this.paginaResenas.set(nueva)
     }
-  }
-
-  // --- MÉTODOS DE HISTORIAL DE EMPRESAS (RECRUITER) ---
-  abrirHistorialModal(item?: HistorialEmpresaRecruiter): void {
-    if (item) {
-      this.isEditingHistorial.set(true)
-      this.editingHistorialId.set(item.id)
-      this.empresaHistorialNombre.set(item.empresa)
-      this.empresaHistorialPuesto.set(item.rolPuesto)
-      this.empresaHistorialPeriodo.set(item.periodo)
-      this.empresaHistorialUbicacion.set(item.ubicacion)
-      this.empresaHistorialTipo.set(item.tipoUbicacion)
-      this.empresaHistorialEsActual.set(item.esActual)
-      this.empresaHistorialDescripcion.set(item.descripcion)
-      this.empresaHistorialLogrosText.set(item.logros.join('\n'))
-      this.empresaHistorialTagsText.set(item.perfilesReclutados.join(', '))
-    } else {
-      this.isEditingHistorial.set(false)
-      this.editingHistorialId.set(null)
-      this.empresaHistorialNombre.set('')
-      this.empresaHistorialPuesto.set('')
-      this.empresaHistorialPeriodo.set('')
-      this.empresaHistorialUbicacion.set('')
-      this.empresaHistorialTipo.set('REMOTO')
-      this.empresaHistorialEsActual.set(false)
-      this.empresaHistorialDescripcion.set('')
-      this.empresaHistorialLogrosText.set('')
-      this.empresaHistorialTagsText.set('')
-    }
-    this.isHistorialModalOpen.set(true)
-  }
-
-  cerrarHistorialModal(): void {
-    this.isHistorialModalOpen.set(false)
-  }
-
-  guardarHistorial(): void {
-    const nombre = this.empresaHistorialNombre().trim()
-    const puesto = this.empresaHistorialPuesto().trim()
-    if (!nombre || !puesto) {
-      this.showToast('Por favor completa el nombre de la empresa y el puesto')
-      return
-    }
-
-    const logros = this.empresaHistorialLogrosText()
-      .split('\n')
-      .map(l => l.trim())
-      .filter(l => l.length > 0)
-
-    const tags = this.empresaHistorialTagsText()
-      .split(',')
-      .map(t => t.trim())
-      .filter(t => t.length > 0)
-
-    if (this.isEditingHistorial()) {
-      const id = this.editingHistorialId()
-      this.historialRecruiter.update(items =>
-        items.map(item => item.id === id ? {
-          ...item,
-          empresa: nombre,
-          rolPuesto: puesto,
-          periodo: this.empresaHistorialPeriodo().trim() || item.periodo,
-          ubicacion: this.empresaHistorialUbicacion().trim() || item.ubicacion,
-          tipoUbicacion: this.empresaHistorialTipo(),
-          esActual: this.empresaHistorialEsActual(),
-          descripcion: this.empresaHistorialDescripcion().trim() || item.descripcion,
-          logros: logros.length > 0 ? logros : item.logros,
-          perfilesReclutados: tags.length > 0 ? tags : item.perfilesReclutados
-        } : item)
-      )
-      this.showToast('Experiencia laboral actualizada con éxito')
-    } else {
-      const nuevo: HistorialEmpresaRecruiter = {
-        id: Date.now(),
-        empresa: nombre,
-        rolPuesto: puesto,
-        periodo: this.empresaHistorialPeriodo().trim() || '2024 - Presente',
-        ubicacion: this.empresaHistorialUbicacion().trim() || 'Buenos Aires, Argentina',
-        tipoUbicacion: this.empresaHistorialTipo(),
-        esActual: this.empresaHistorialEsActual(),
-        descripcion: this.empresaHistorialDescripcion().trim() || 'Gestión y coordinación de talento técnico IT.',
-        logros: logros.length > 0 ? logros : ['Cobertura integral de posiciones técnicas'],
-        perfilesReclutados: tags.length > 0 ? tags : ['IT Recruiting', 'Talent Acquisition']
-      }
-      this.historialRecruiter.update(items => [nuevo, ...items])
-      this.showToast('Nueva empresa agregada al historial de reclutamiento')
-    }
-    this.cerrarHistorialModal()
-  }
-
-  eliminarHistorial(id: number): void {
-    this.historialRecruiter.update(items => items.filter(item => item.id !== id))
-    this.showToast('Empresa eliminada del historial')
   }
 }
