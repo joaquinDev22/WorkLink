@@ -44,8 +44,8 @@
     <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs divide-y lg:divide-y-0 lg:divide-x divide-slate-100 grid grid-cols-2 lg:grid-cols-4 overflow-hidden">
       
       <!-- Métrica 1: Búsquedas Activas -->
-      <div class="p-6 space-y-1">
-        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Búsquedas Activas</p>
+      <div class="dash-kpi p-6 space-y-1">
+        <p class="text-xs font-semibold text-slate-500">Búsquedas Activas</p>
         <div class="flex items-baseline gap-2">
           <span class="text-3xl font-black text-slate-900 tracking-tight">{{ vacantesActivas().length }}</span>
           <span class="text-xs font-semibold text-slate-400">/ {{ misVacantes().length }} totales</span>
@@ -57,8 +57,8 @@
       </div>
 
       <!-- Métrica 2: Tasa de Efectividad -->
-      <div class="p-6 space-y-1">
-        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Tasa de Efectividad</p>
+      <div class="dash-kpi p-6 space-y-1">
+        <p class="text-xs font-semibold text-slate-500">Tasa de Efectividad</p>
         <div class="flex items-baseline gap-2">
           <span class="text-3xl font-black text-slate-900 tracking-tight">{{ tasaEfectividad() }}%</span>
           <span class="text-xs font-semibold text-slate-400">conversión</span>
@@ -69,8 +69,8 @@
       </div>
 
       <!-- Métrica 3: Carga del Equipo -->
-      <div class="p-6 space-y-1">
-        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Carga de Selección</p>
+      <div class="dash-kpi p-6 space-y-1">
+        <p class="text-xs font-semibold text-slate-500">Carga de Selección</p>
         <div class="flex items-baseline gap-2">
           <span class="text-3xl font-black text-slate-900 tracking-tight">{{ ratioCarga() }}</span>
           <span class="text-xs font-semibold text-slate-400">vacantes / recruiter</span>
@@ -81,8 +81,8 @@
       </div>
 
       <!-- Métrica 4: Tiempo Promedio de Contratación -->
-      <div class="p-6 space-y-1">
-        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Tiempo Estimado Ciclo</p>
+      <div class="dash-kpi p-6 space-y-1">
+        <p class="text-xs font-semibold text-slate-500">Tiempo Estimado Ciclo</p>
         <div class="flex items-baseline gap-2">
           <span class="text-3xl font-black text-slate-900 tracking-tight">{{ vacantesActivas().length > 0 ? '14' : '0' }}</span>
           <span class="text-xs font-semibold text-slate-400">días promedio</span>

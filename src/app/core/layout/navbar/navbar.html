@@ -1,28 +1,22 @@
-<nav class="relative flex gap-15 md:gap-1 lg:gap-8 items-center" (mouseleave)="ocultarPildora()">
-  <!-- LA PÍLDORA FÍSICA QUE VIAJA POR DETRÁS -->
-  <div 
+<nav class="relative flex gap-6 lg:gap-8 items-center" (mouseleave)="ocultarPildora()">
+  <!-- Píldora física GPU-composited -->
+  <div
     class="pildora-deslizante"
-    [style.left.px]="pildoraX()"
+    [style.transform]="'translate3d(' + pildoraX() + 'px, 0, 0)'"
     [style.width.px]="pildoraW()"
-    [style.opacity]="pildoraVisible() ? 1 : 0">
+    [style.opacity]="pildoraVisible() ? 1 : 0"
+    aria-hidden="true">
   </div>
 
-  <!-- ENLACES DINÁMICOS POR ROL -->
+  <!-- Enlaces dinámicos por rol -->
   @for (item of navItems(); track item.route) {
-    <a 
-      [routerLink]="item.route" 
+    <a
+      [routerLink]="item.route"
       routerLinkActive="text-brand-sky-light font-semibold"
-      (mouseenter)="moverPildora($event)" 
-      class="relative z-10 px-3.5 py-1 text-sm font-medium text-white transition-colors">
+      (mouseenter)="moverPildora($event)"
+      (focus)="moverPildora($event)"
+      class="relative z-10 px-3.5 py-1.5 text-sm font-medium text-white rounded-full hover:text-brand-sky-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky transition-colors">
       {{ item.label }}
     </a>
   }
-
-  <a 
-    [routerLink]="" 
-    routerLinkActive="text-brand-sky-light font-semibold"
-    (mouseenter)="moverPildora($event)" 
-    class="relative z-10 px-3.5 py-1 text-sm font-medium text-white transition-colors">
-    Ayuda
-  </a>
 </nav>

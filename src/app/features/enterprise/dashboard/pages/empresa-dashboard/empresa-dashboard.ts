@@ -1,6 +1,7 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core'
+import { Component, ElementRef, OnDestroy, OnInit, inject, signal, computed } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { RouterLink } from '@angular/router'
+import gsap from 'gsap'
 import { EmpresaService } from '../../../empresa-perfil/services/empresa'
 import { VacanteService } from '../../../vacantes/services/vacante'
 import { RecruiterService } from '../../../recruiters/services/recruiter'
@@ -14,7 +15,9 @@ import { VacanteResponseDTO } from '../../../vacantes/models/vacante.models'
   templateUrl: './empresa-dashboard.html',
   styleUrl: './empresa-dashboard.css'
 })
-export class EmpresaDashboard implements OnInit {
+export class EmpresaDashboard implements OnInit, OnDestroy {
+  private host = inject(ElementRef<HTMLElement>)
+  private gsapCtx?: gsap.Context
   protected empresaService = inject(EmpresaService)
   protected vacanteService = inject(VacanteService)
   protected recruiterService = inject(RecruiterService)
@@ -115,11 +118,35 @@ export class EmpresaDashboard implements OnInit {
       next: (data) => {
         this.stats.set(data)
         this.isLoading.set(false)
+        this.animateKpis()
       },
       error: () => {
         this.isLoading.set(false)
       }
     })
+  }
+
+  private animateKpis(): void {
+    requestAnimationFrame(() => {
+      this.gsapCtx?.revert()
+      this.gsapCtx = gsap.context(() => {
+        const mm = gsap.matchMedia()
+        mm.add('(prefers-reduced-motion: no-preference)', () => {
+          gsap.from('.dash-kpi', {
+            y: 12,
+            opacity: 0,
+            duration: 0.35,
+            stagger: 0.06,
+            ease: 'power3.out',
+            clearProps: 'transform,opacity'
+          })
+        })
+      }, this.host.nativeElement)
+    })
+  }
+
+  ngOnDestroy(): void {
+    this.gsapCtx?.revert()
   }
 
   diasRestantes(finalizacion: string): number {

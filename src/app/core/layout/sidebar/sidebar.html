@@ -1,60 +1,66 @@
-<!-- Fondo oscuro difuminado (al hacer clic afuera, se cierra con fade-in / fade-out) -->
-<div 
-  class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity duration-300"
+<div
+  class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-40 transition-opacity duration-200 motion-reduce:transition-none"
   [class.opacity-100]="isOpen()"
   [class.opacity-0]="!isOpen()"
   [class.pointer-events-none]="!isOpen()"
-  (click)="cerrar()">
+  (click)="cerrar()"
+  aria-hidden="true">
 </div>
 
-<!-- Panel lateral deslizante (exclusivo para usuarios autenticados en móvil) -->
-<aside 
-  class="fixed top-0 right-0 h-dvh w-[80vw] max-w-xs bg-brand-indigo-dark/95 backdrop-blur-2xl gap-4 border-l border-glass-border z-40 p-6 pt-24 flex flex-col shadow-2xl transition-transform duration-300 ease-in-out"
+<aside
+  class="fixed top-0 right-0 h-dvh w-[80vw] max-w-xs bg-brand-indigo-dark/95 backdrop-blur-2xl gap-4 border-l border-glass-border z-40 p-6 pt-24 flex flex-col shadow-2xl transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none"
   [class.translate-x-0]="isOpen()"
-  [class.translate-x-full]="!isOpen()">
+  [class.translate-x-full]="!isOpen()"
+  [attr.aria-hidden]="!isOpen()">
 
-    <div class="flex flex-col gap-6">
-        <!-- Ficha de Usuario -->
-        <div class="flex items-center gap-3 pb-4 border-b border-glass-border">
-            <div class="size-10 rounded-full bg-brand-indigo/40 border border-brand-indigo-light/50 flex items-center justify-center text-white font-bold text-sm shadow-inner-indigo">
-                {{ userInitial() }}
-            </div>
-            <div class="flex flex-col overflow-hidden">
-                <span class="text-xs text-slate-300">Conectado como</span>
-                <span class="text-white text-sm font-semibold truncate">{{ userDisplayName() }}</span>
-            </div>
-        </div>
-
-        <!-- Switch de Rol Móvil para Postulante <-> Freelancer -->
-        @if (isCandidato()) {
-            <button
-                type="button"
-                (click)="togglePostulanteFreelancer()"
-                class="w-full py-2 px-3 rounded-xl text-xs font-semibold bg-white/10 hover:bg-white/20 text-white border border-white/15 flex items-center justify-between transition-all active:scale-95"
-            >
-                <div class="flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full" [class.bg-brand-sky]="auth.session()?.rol === 'POSTULANTE'" [class.bg-purple-400]="auth.session()?.rol === 'FREELANCER'"></span>
-                    <span>Modo: {{ auth.session()?.rol }}</span>
-                </div>
-                <span class="text-[10px] text-brand-sky font-bold">
-                    Cambiar ⇄
-                </span>
-            </button>
-        }
-        @for (item of navItems(); track item.route) {
-            <a 
-            [routerLink]="item.route"
-            (click)="cerrar()"
-            routerLinkActive="text-brand-sky-light font-semibold"
-            class="relative z-10 px-3.5 py-1 text-sm font-medium text-white transition-colors">
-            {{ item.label }}
-            </a>
-        }
-        <!-- Botón de Cerrar Sesión -->
-        <button 
-            (click)="auth.logout(); cerrar()" 
-            class="w-full py-2.5 px-3 rounded-xl text-sm font-medium text-brand-danger-muted bg-brand-danger/20 border border-brand-danger-muted/30 hover:bg-brand-danger/40 hover:text-white transition-all">
-            Cerrar Sesión
-        </button>
+  <div class="flex flex-col gap-5">
+    <!-- Ficha de Usuario -->
+    <div class="flex items-center gap-3 pb-4 border-b border-glass-border">
+      <div class="size-10 rounded-full bg-brand-indigo/40 border border-brand-indigo-light/50 flex items-center justify-center text-white font-bold text-sm shadow-inner-indigo shrink-0">
+        {{ userInitial() }}
+      </div>
+      <div class="flex flex-col overflow-hidden">
+        <span class="text-xs text-slate-300">Conectado como</span>
+        <span class="text-white text-sm font-semibold truncate">{{ userDisplayName() }}</span>
+      </div>
     </div>
+
+    <!-- Switch de Rol Móvil -->
+    @if (isCandidato()) {
+      <button
+        type="button"
+        (click)="togglePostulanteFreelancer()"
+        class="w-full min-h-[44px] py-2.5 px-3.5 rounded-xl text-xs font-semibold bg-white/10 hover:bg-white/20 text-white border border-white/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] flex items-center justify-between transition-[transform,background-color] duration-150 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky cursor-pointer">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full" [class.bg-brand-sky]="auth.session()?.rol === 'POSTULANTE'" [class.bg-purple-400]="auth.session()?.rol === 'FREELANCER'"></span>
+          <span>Modo: {{ auth.session()?.rol }}</span>
+        </div>
+        <span class="inline-flex items-center gap-1 text-[11px] text-brand-sky-light font-bold">
+          <span>Cambiar</span>
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+          </svg>
+        </span>
+      </button>
+    }
+
+    <nav class="flex flex-col gap-1.5" aria-label="Menú móvil">
+      @for (item of navItems(); track item.route) {
+        <a
+          [routerLink]="item.route"
+          (click)="cerrar()"
+          routerLinkActive="bg-white/15 text-brand-sky-light font-semibold border-white/20"
+          class="min-h-[44px] px-3.5 py-2.5 text-sm font-medium text-white rounded-xl border border-transparent hover:bg-white/10 flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky transition-colors">
+          {{ item.label }}
+        </a>
+      }
+    </nav>
+
+    <button
+      type="button"
+      (click)="auth.logout(); cerrar()"
+      class="btn-tactile-danger w-full min-h-[44px] py-2.5 px-4 text-sm cursor-pointer">
+      Cerrar Sesión
+    </button>
+  </div>
 </aside>

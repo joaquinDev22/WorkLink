@@ -67,7 +67,7 @@ export class Navbar {
     return []
   })
 
-  moverPildora(e: MouseEvent) {
+  moverPildora(e: Event) {
     const el = e.currentTarget as HTMLElement
     this.pildoraX.set(el.offsetLeft)
     this.pildoraW.set(el.offsetWidth)

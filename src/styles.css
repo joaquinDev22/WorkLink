@@ -123,12 +123,20 @@
   box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4);
 }
 
+.btn-registrarse:focus-visible,
+.btn-iniciar-sesion:focus-visible {
+  outline: 2px solid var(--color-brand-sky);
+  outline-offset: 2px;
+}
+
 .btn-iniciar-sesion {
+  box-shadow: var(--shadow-inner-white);
   transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1);
   user-select: none;
 }
 
 .btn-iniciar-sesion:hover {
+  transform: translateY(-1px);
   box-shadow: var(--shadow-inner-white), var(--shadow-glow-white);
 }
 
@@ -275,11 +283,24 @@
     0 1px 2px 0 rgba(79, 70, 229, 0.20);
 }
 
-.btn-tactile-primary:disabled {
+.btn-tactile-primary:disabled,
+.btn-tactile-secondary:disabled,
+.btn-tactile-dark:disabled,
+.btn-tactile-danger:disabled {
   opacity: 0.55;
   cursor: not-allowed;
   box-shadow: none;
   transform: none;
+}
+
+.btn-tactile-primary:focus-visible,
+.btn-tactile-secondary:focus-visible,
+.btn-tactile-dark:focus-visible,
+.btn-tactile-danger:focus-visible,
+.tab-tactile-active:focus-visible,
+.tab-tactile-inactive:focus-visible {
+  outline: 2px solid var(--color-brand-sky);
+  outline-offset: 2px;
 }
 
 /* Botón secundario / neutral táctil */
@@ -425,35 +446,66 @@
    6. ANIMACIONES FLUIDAS DE MODALES Y FILTRADO (TRANSITIONS-DEV)
    ========================================================== */
 
-/* Fondo oscuro / backdrop fluido con blur */
+/* Fondo oscuro / backdrop fluido composited-only */
 .animate-modal-backdrop {
-  animation: modalBackdropIn 220ms ease-out both;
+  animation: modalBackdropIn 200ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @keyframes modalBackdropIn {
   from {
     opacity: 0;
-    backdrop-filter: blur(0px);
   }
   to {
     opacity: 1;
-    backdrop-filter: blur(4px);
   }
 }
 
 /* Tarjeta de modal con desaceleración orgánica tipo spring */
 .animate-modal-card {
-  animation: modalSpringIn 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: modalSpringIn 280ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @keyframes modalSpringIn {
   from {
     opacity: 0;
-    transform: scale(0.94) translateY(14px);
+    transform: translate3d(0, 12px, 0) scale(0.96);
   }
   to {
     opacity: 1;
-    transform: scale(1) translateY(0);
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+/* Popover / dropdown flotante (reemplazo real de animate-in zoom-in-95) */
+.animate-popover-in {
+  animation: popoverSpringIn 180ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: top right;
+}
+
+@keyframes popoverSpringIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -6px, 0) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+/* Toast flotante inferior (reemplazo real de animate-in slide-in-from-bottom-5) */
+.animate-toast-in {
+  animation: toastSlideIn 240ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
   }
 }
 
@@ -468,5 +520,44 @@
   }
   to {
     opacity: 1;
+  }
+}
+
+/* Degradación elegante para usuarios que prefieren movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+  .btn-registrarse,
+  .btn-iniciar-sesion,
+  .btn-tactile-primary,
+  .btn-tactile-secondary,
+  .btn-tactile-dark,
+  .btn-tactile-danger,
+  .tab-tactile-inactive {
+    transition: background-color 120ms ease-out, border-color 120ms ease-out !important;
+  }
+  .btn-registrarse:hover,
+  .btn-registrarse:active,
+  .btn-iniciar-sesion:hover,
+  .btn-iniciar-sesion:active,
+  .btn-tactile-primary:hover,
+  .btn-tactile-primary:active,
+  .btn-tactile-secondary:hover,
+  .btn-tactile-secondary:active,
+  .btn-tactile-dark:hover,
+  .btn-tactile-dark:active,
+  .btn-tactile-danger:hover,
+  .btn-tactile-danger:active {
+    transform: none !important;
+  }
+  .animate-shine::after {
+    animation: none !important;
+    display: none;
+  }
+  .animate-modal-card,
+  .animate-popover-in,
+  .animate-toast-in {
+    animation: fadeIn 120ms ease-out both !important;
+  }
+  .input-error {
+    animation: none !important;
   }
 }

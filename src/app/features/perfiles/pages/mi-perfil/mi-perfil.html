@@ -214,7 +214,7 @@
 
     <!-- ANILLO DE PROGRESO (visible si el perfil no está al 100% y es Freelancer o Postulante) -->
     @if (!completitud().completado && rolActivo() !== 'EMPRESA' && rolActivo() !== 'RECRUITER') {
-      <div class="bg-linear-to-r from-indigo-50 via-sky-50 to-white rounded-3xl border border-indigo-100/80 p-5 sm:p-6 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+      <div class="bg-slate-50/90 rounded-3xl border border-slate-200/80 p-5 sm:p-6 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
         <div class="flex items-center gap-4">
           <div class="relative w-16 h-16 shrink-0 flex items-center justify-center">
             <svg class="w-16 h-16 -rotate-90" viewBox="0 0 48 48" aria-hidden="true">
@@ -613,7 +613,7 @@
                 <button
                   type="button"
                   (click)="abrirProjectModal()"
-                  class="mt-2 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold text-white bg-brand-indigo hover:bg-brand-indigo-dark active:scale-95 transition-all shadow-inner shadow-brand-indigo-light">
+                  class="btn-tactile-primary mt-2 inline-flex items-center gap-1.5 px-4 py-2 min-h-[40px] text-xs cursor-pointer">
                   <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                   </svg>
@@ -807,7 +807,7 @@
                 <button
                   type="button"
                   (click)="abrirHistorialModal()"
-                  class="mt-2 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold text-white bg-brand-indigo hover:bg-brand-indigo-dark active:scale-95 transition-all">
+                  class="btn-tactile-primary mt-2 inline-flex items-center gap-1.5 px-4 py-2 min-h-[40px] text-xs cursor-pointer">
                   <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                   </svg>
@@ -829,15 +829,15 @@
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <a
                 routerLink="/enterprise/vacantes"
-                class="p-4 rounded-2xl bg-slate-50 hover:bg-slate-100/90 border border-slate-200/80 transition-all group flex flex-col justify-between"
+                class="p-4 rounded-2xl bg-slate-50 hover:bg-slate-100/90 border border-slate-200/80 transition-[background-color,border-color] group flex flex-col justify-between"
               >
                 <div>
-                  <div class="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center mb-3">
+                  <div class="w-9 h-9 rounded-xl bg-brand-indigo/10 border border-brand-indigo/20 text-brand-indigo flex items-center justify-center mb-3">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                     </svg>
                   </div>
-                  <h3 class="font-bold text-slate-900 text-sm group-hover:text-indigo-600 transition-colors">Vacantes Asignadas</h3>
+                  <h3 class="font-bold text-slate-900 text-sm group-hover:text-brand-indigo transition-colors">Vacantes Asignadas</h3>
                   <p class="text-xs text-slate-500 mt-1">Supervisa búsquedas de tu área</p>
                 </div>
                 <span class="text-xs font-semibold text-indigo-600 inline-flex items-center gap-1 mt-4">
@@ -998,7 +998,7 @@
             </div>
           } @else if ((reputacion()?.calificaciones?.length ?? 0) > 0) {
             <!-- Banner Resumen de Calificación -->
-            <div class="p-4 sm:p-5 rounded-2xl bg-linear-to-r from-amber-50/70 via-slate-50 to-indigo-50/40 border border-amber-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div class="flex items-center gap-4">
                 <div class="text-4xl font-black text-slate-900 tracking-tight flex items-baseline gap-1">
                   {{ (reputacion()?.promedio ?? 5.0).toFixed(1) }}
@@ -1101,7 +1101,7 @@
                         <button
                           type="button"
                           (click)="cambiarPaginaResenas(p, true)"
-                          class="w-8 h-8 rounded-xl text-xs font-bold transition-all flex items-center justify-center {{ paginaResenas() === p ? 'bg-brand-indigo text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100 border border-slate-200' }}">
+                          class="min-w-[40px] min-h-[40px] px-2 rounded-xl text-xs font-bold transition-[background-color,color,transform] flex items-center justify-center cursor-pointer {{ paginaResenas() === p ? 'bg-brand-indigo text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100 border border-slate-200' }}">
                           {{ p }}
                         </button>
                       }
@@ -1311,7 +1311,7 @@
             <button
               type="submit"
               [disabled]="isSaving() || editForm().invalid()"
-              class="px-5 py-2 text-xs font-semibold bg-brand-indigo hover:bg-brand-indigo-dark text-white rounded-xl shadow-inner shadow-brand-indigo-light active:scale-95 disabled:opacity-50 transition-all disabled:pointer-events-none disabled:cursor-not-allowed inline-flex items-center gap-2">
+              class="btn-tactile-primary px-5 py-2.5 min-h-[44px] text-xs inline-flex items-center gap-2 cursor-pointer">
               @if (isSaving()) {
                 <svg class="animate-spin w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" aria-hidden="true">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -1610,7 +1610,7 @@
             <button
               type="submit"
               [disabled]="!projectNombre().trim() || !projectDescripcion().trim() || isSavingProject()"
-              class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-white bg-brand-indigo hover:bg-brand-indigo-dark disabled:opacity-50 disabled:cursor-not-allowed shadow-sm active:scale-95 transition-all">
+              class="btn-tactile-primary inline-flex items-center gap-2 px-5 py-2.5 min-h-[44px] text-xs cursor-pointer">
               @if (isSavingProject()) {
                 <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -1633,12 +1633,12 @@
   <!-- ================================================================= -->
   @if (isHistorialModalOpen()) {
     <div
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-modal-backdrop"
       (click)="cerrarHistorialModal()"
       role="dialog"
       aria-modal="true">
       <div
-        class="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 sm:p-7 space-y-5 animate-in zoom-in-95 duration-200"
+        class="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 sm:p-7 space-y-5 animate-modal-card"
         (click)="$event.stopPropagation()">
 
         <!-- Encabezado Modal -->
@@ -1801,7 +1801,7 @@
     <div
       [class.ring-1]="toastError()"
       [class.ring-rose-400]="toastError()"
-      class="fixed bottom-6 right-6 z-50 bg-slate-900 text-white text-xs sm:text-sm font-semibold px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2.5 animate-in slide-in-from-bottom-5 duration-200"
+      class="fixed bottom-6 right-6 z-50 bg-slate-900 text-white text-xs sm:text-sm font-semibold px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2.5 animate-toast-in"
       role="status"
       aria-live="polite">
       @if (toastError()) {

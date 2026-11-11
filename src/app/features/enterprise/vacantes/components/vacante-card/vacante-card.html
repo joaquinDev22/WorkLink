@@ -1,10 +1,10 @@
-<article class="bg-white rounded-2xl border border-slate-200/90 p-5 sm:p-6 shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-200 flex flex-col justify-between group h-full">
+<article class="bg-white rounded-2xl border border-slate-200/90 p-5 sm:p-6 shadow-sm hover:shadow-md hover:border-slate-300 transition-[box-shadow,border-color] duration-200 flex flex-col justify-between group h-full">
   <!-- Encabezado de la Tarjeta -->
   <div class="space-y-3.5">
     <div class="flex items-start justify-between gap-4">
       <div class="flex items-center gap-3.5 min-w-0">
         <!-- Logo / Monograma de Empresa -->
-        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 text-white font-bold text-lg flex items-center justify-center shrink-0 shadow-inner">
+        <div class="w-12 h-12 rounded-xl bg-brand-indigo text-white font-bold text-lg flex items-center justify-center shrink-0 shadow-(--shadow-inner-indigo)">
           {{ vacante().nombreEmpresa.slice(0, 2).toUpperCase() }}
         </div>
         <div class="min-w-0">

@@ -1,130 +1,126 @@
 <div class="relative w-full overflow-hidden text-slate-100">
 
-  <!-- =========================================================================
-       1. HERO SECTION (Neumorfismo Táctil + Sin Badges Cliché)
-       ========================================================================= -->
-  <section class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-20 lg:pt-8 lg:pb-32">
-    <!-- Luces volumétricas difusas de fondo -->
+  <!-- 1. HERO SECTION (Glassmorphism + Neumorfismo Táctil de Marca) -->
+  <section class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-20 lg:pt-10 lg:pb-28">
     <div class="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-brand-indigo/20 rounded-full blur-3xl pointer-events-none animate-glow-subtle -z-10"></div>
-    <div class="absolute top-1/3 right-10 w-96 h-96 bg-brand-sky/15 rounded-full blur-3xl pointer-events-none animate-glow-subtle -z-10" style="animation-delay: 4.5s;"></div>
+    <div class="absolute top-1/3 right-10 w-96 h-96 bg-brand-sky/15 rounded-full blur-3xl pointer-events-none animate-glow-subtle -z-10" style="animation-delay: 4s;"></div>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-      
-      <!-- COLUMNA IZQUIERDA: COPYWRITING SÓLIDO Y CTAs CON ESTILO DEL HEADER -->
-      <div class="lg:col-span-6 flex flex-col items-center lg:items-start text-center lg:text-left space-y-7">
-        
-        <!-- Indicador sobrio sin animación cliché de ping -->
-        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 bg-brand-indigo/80 border border-brand-indigo-light/30 shadow-inner shadow-brand-indigo-light/50 rounded-full text-xs font-medium text-slate-200">
-          <span class="w-2 h-2 rounded-full bg-brand-sky animate-pulse"></span>
+
+      <!-- Copywriting + CTAs con volumen -->
+      <div class="lg:col-span-6 flex flex-col items-center lg:items-start text-center lg:text-left space-y-6">
+        <div class="hero-stagger inline-flex items-center gap-2 px-3.5 py-1.5 bg-brand-indigo/80 border border-brand-indigo-light/30 shadow-inner shadow-brand-indigo-light/50 rounded-full text-xs font-medium text-slate-100">
+          <span class="w-2 h-2 rounded-full bg-brand-sky"></span>
           <span>Plataforma Dual: Trabajo Independiente y Empleo Formal</span>
         </div>
 
-        <!-- Título Principal en Blanco Nítido con Acento Sky -->
-        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-[1.1] tracking-tight text-balance">
+        <h1 class="hero-stagger text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-[1.08] tracking-tight text-balance">
           Proyectos freelance protegidos.
           <span class="block text-brand-sky pt-1">
             Vacantes directas sin rodeos.
           </span>
         </h1>
 
-        <!-- Subtítulo Explicativo con Pretty Wrap -->
-        <p class="text-base sm:text-lg text-slate-200 max-w-xl leading-relaxed font-normal text-pretty">
+        <p class="hero-stagger text-base sm:text-lg text-slate-200 max-w-xl leading-relaxed font-normal text-pretty">
           WorkLink combina la seguridad de fondos en custodia para hitos freelance con un portal de selección ágil para empresas de tecnología.
         </p>
 
-        <!-- Botones con exactamente el mismo estilo y sombras del Header -->
-        <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto pt-2">
-          <a routerLink="/auth/register" 
-             class="btn-registrarse bg-brand-violet w-full sm:w-auto px-7 py-3.5 rounded-xl font-semibold text-white text-center active:scale-[0.97]">
+        <div class="hero-stagger flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto pt-2">
+          <a
+            routerLink="/auth/register"
+            class="btn-registrarse bg-brand-violet w-full sm:w-auto min-h-[44px] px-7 py-3.5 rounded-xl font-semibold text-white text-center inline-flex items-center justify-center">
             Registrarse Gratis
           </a>
-          
-          <a routerLink="/auth/login" 
-             class="btn-iniciar-sesion w-full sm:w-auto px-7 py-3.5 rounded-xl font-semibold text-white text-center active:scale-[0.97]">
+
+          <a
+            routerLink="/auth/login"
+            class="btn-iniciar-sesion w-full sm:w-auto min-h-[44px] px-7 py-3.5 rounded-xl font-semibold text-white border border-white/25 text-center inline-flex items-center justify-center">
             Iniciar Sesión
           </a>
         </div>
       </div>
 
-      <!-- COLUMNA DERECHA: VENTANA DE PRODUCTO ESCULPIDA EN CRISTAL 3D -->
-      <div class="lg:col-span-6 relative flex justify-center items-center">
+      <!-- Showcase Glass-Neumorph 3D -->
+      <div class="hero-showcase lg:col-span-6 relative flex justify-center items-center">
         <div class="w-full max-w-lg space-y-4">
-          
+
           <div class="glass-neu-window rounded-3xl p-6 space-y-5">
-            
-            <!-- Barra superior del Workspace -->
+            <!-- Barra superior -->
             <div class="flex items-center justify-between pb-3 border-b border-white/10">
               <div class="flex items-center gap-2">
                 <span class="w-3 h-3 rounded-full bg-rose-500/80 inline-block shadow-sm"></span>
                 <span class="w-3 h-3 rounded-full bg-amber-500/80 inline-block shadow-sm"></span>
                 <span class="w-3 h-3 rounded-full bg-emerald-500/80 inline-block shadow-sm"></span>
-                <span class="ml-2 text-xs font-mono text-slate-300">worklink.app/panel</span>
+                <span class="ml-2 text-xs font-mono text-slate-200">worklink.app/panel</span>
               </div>
-              <span class="px-2.5 py-0.5 rounded-md glass-neu-inset text-shadow text-shadow-emerald-600 text-emerald-400 text-[11px] font-semibold">
-                ● Activo
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md glass-neu-inset text-emerald-300 text-[11px] font-semibold">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                <span>Activo</span>
               </span>
             </div>
 
-            <!-- Módulo 1: Contrato Freelance con Hitos -->
+            <!-- Módulo 1: Contrato Freelance por Hitos -->
             <div class="cursor-default glass-neu-card rounded-2xl p-4 space-y-3">
-              <div class="flex items-start justify-between">
+              <div class="flex items-start justify-between gap-2">
                 <div>
-                  <span class="text-[11px] font-semibold text-brand-sky uppercase tracking-wider">Contrato Freelance por Hitos</span>
-                  <h4 class="text-sm font-bold text-white">Refactor de Microservicios Spring Boot & JWT</h4>
+                  <span class="text-[11px] font-semibold text-brand-sky">Contrato Freelance por Hitos</span>
+                  <h2 class="text-sm font-bold text-white mt-0.5">Refactor de Microservicios Spring Boot & JWT</h2>
                 </div>
-                <span class="px-2.5 py-1 rounded-lg bg-brand-indigo/50 text-white font-mono text-xs font-bold shadow-inner">
+                <span class="px-2.5 py-1 rounded-lg bg-brand-indigo/60 border border-white/15 text-white font-mono text-xs font-bold shadow-inner tabular-nums shrink-0">
                   $1,200 USD
                 </span>
               </div>
 
-              <!-- Hitos en relieve hundido -->
               <div class="space-y-2 pt-1">
                 <div class="flex items-center justify-between text-xs p-2.5 rounded-xl glass-neu-inset">
                   <span class="flex items-center gap-2 text-slate-100">
-                    <span class="text-emerald-400 font-bold">✓</span> Hito 1: Arquitectura y Dockerfile
+                    <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>Hito 1: Arquitectura y Dockerfile</span>
                   </span>
-                  <span class="text-emerald-400 text-[11px] font-medium">Fondos Liberados</span>
+                  <span class="text-emerald-300 text-[11px] font-medium shrink-0">Fondos Liberados</span>
                 </div>
                 <div class="flex items-center justify-between text-xs p-2.5 rounded-xl glass-neu-inset">
                   <span class="flex items-center gap-2 text-slate-100">
-                    <span class="w-2 h-2 rounded-full bg-amber-400"></span> Hito 2: Endpoints Auth & Tests
+                    <span class="w-2 h-2 rounded-full bg-amber-400 shrink-0 ml-1 mr-1"></span>
+                    <span>Hito 2: Endpoints Auth & Tests</span>
                   </span>
-                  <span class="text-amber-300 text-[11px] font-medium">En Revisión</span>
+                  <span class="text-amber-300 text-[11px] font-medium shrink-0">En Revisión</span>
                 </div>
               </div>
             </div>
 
-            <!-- Módulo 2: Vacante Tech Corporativa -->
+            <!-- Módulo 2: Vacante Corporativa -->
             <div class="cursor-default glass-neu-card rounded-2xl p-4 space-y-2">
-              <div class="flex items-center justify-between">
+              <div class="flex items-center justify-between gap-2">
                 <div>
-                  <span class="text-[11px] font-semibold text-purple-300 uppercase tracking-wider">Vacante Corporativa</span>
-                  <h4 class="text-sm font-bold text-white">Senior Angular & Signals Architect</h4>
+                  <span class="text-[11px] font-semibold text-purple-300">Vacante Corporativa</span>
+                  <h2 class="text-sm font-bold text-white mt-0.5">Senior Angular & Signals Architect</h2>
                 </div>
-                <span class="text-xs text-slate-300 font-medium">Remoto · Full-time</span>
+                <span class="text-xs text-slate-200 font-medium shrink-0">Remoto · Full-time</span>
               </div>
-              <div class="flex items-center gap-2 pt-1">
-                <span class="px-2.5 py-1 rounded-lg glass-neu-inset text-[11px] font-medium text-slate-200">Angular v22</span>
-                <span class="px-2.5 py-1 rounded-lg glass-neu-inset text-[11px] font-medium text-slate-200">TypeScript</span>
-                <span class="px-2.5 py-1 rounded-lg glass-neu-inset text-[11px] font-medium text-slate-200">Spring Boot</span>
+              <div class="flex flex-wrap items-center gap-2 pt-1">
+                <span class="px-2.5 py-1 rounded-lg glass-neu-inset text-[11px] font-medium text-slate-100">Angular 22</span>
+                <span class="px-2.5 py-1 rounded-lg glass-neu-inset text-[11px] font-medium text-slate-100">TypeScript</span>
+                <span class="px-2.5 py-1 rounded-lg glass-neu-inset text-[11px] font-medium text-slate-100">Spring Boot</span>
               </div>
             </div>
-
           </div>
 
-          <!-- Métricas Rápidas con Relieve Táctil Hundido y Conteo Progresivo -->
+          <!-- Métricas en relieve hundido -->
           <div class="grid glass-neu-inset rounded-2xl grid-cols-3 gap-3 p-2 w-full max-w-md mx-auto">
             <div class="rounded-xl p-3 text-center">
               <span class="block text-2xl font-bold text-white tabular-nums">{{ talentosTexto() }}</span>
-              <span class="text-xs text-slate-300 font-medium">Talentos</span>
+              <span class="text-xs text-slate-200 font-medium">Talentos</span>
             </div>
             <div class="rounded-xl p-3 text-center">
               <span class="block text-2xl font-bold text-brand-sky tabular-nums">{{ custodiaTexto() }}</span>
-              <span class="text-xs text-slate-300 font-medium">En Custodia</span>
+              <span class="text-xs text-slate-200 font-medium">En Custodia</span>
             </div>
             <div class="rounded-xl p-3 text-center">
               <span class="block text-2xl font-bold text-white tabular-nums">{{ empresasTexto() }}</span>
-              <span class="text-xs text-slate-300 font-medium">Empresas</span>
+              <span class="text-xs text-slate-200 font-medium">Empresas</span>
             </div>
           </div>
 
@@ -134,18 +130,16 @@
     </div>
   </section>
 
-  <!-- =========================================================================
-       2. BANNER DE EMPRESAS (Marquee Continuo Activo a 60fps con Fade Mask)
-       ========================================================================= -->
+  <!-- 2. BANNER DE EMPRESAS (Marquee Continuo GPU con Fade Mask) -->
   <section class="py-8 overflow-hidden select-none glass-neu-inset">
-    <p class="text-xs uppercase tracking-widest text-slate-300 font-semibold text-center mb-5">
+    <p class="text-xs font-semibold text-slate-200 text-center mb-5 tracking-wide">
       Organizaciones y empresas que construyen equipos en WorkLink
     </p>
 
     <div class="overflow-hidden w-full marquee-container">
       <div class="marquee-track">
         @for (emp of [...empresas, ...empresas, ...empresas, ...empresas]; track $index) {
-          <span class="mx-10 text-lg font-bold text-slate-300 hover:text-white transition-colors cursor-default tracking-wide">
+          <span class="mx-10 text-lg font-bold text-slate-200 hover:text-white transition-colors cursor-default tracking-wide">
             {{ emp.nombre }}
           </span>
         }
@@ -153,147 +147,192 @@
     </div>
   </section>
 
-  <!-- =========================================================================
-       3. DOS PILARES DE NEGOCIO (Slabs Neumórficos con Volumen)
-       ========================================================================= -->
-  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-    <div class="max-w-2xl mb-16 space-y-3">
-      <span class="text-xs font-semibold text-brand-sky uppercase tracking-wider">Dos modalidades, una plataforma</span>
+  <!-- 3. DOS PILARES DE NEGOCIO (Slabs Glass-Neumórficos) -->
+  <section class="pilares-section max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+    <div class="max-w-2xl mb-14 space-y-2">
       <h2 class="text-3xl sm:text-4xl font-bold text-white tracking-tight text-balance">
         Construido tanto para el trabajo independiente como para contrataciones formales.
       </h2>
+      <p class="text-sm sm:text-base text-slate-200">
+        Dos flujos operativos diseñados sobre una misma cuenta verificada.
+      </p>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      
+
       <!-- Pilar Freelance -->
-      <div class="glass-neu-card rounded-3xl p-8 space-y-6 flex flex-col justify-between group">
+      <article class="pilar-card glass-neu-card rounded-3xl p-8 space-y-6 flex flex-col justify-between group">
         <div class="space-y-4">
-          <div class="w-12 h-12 rounded-2xl glass-neu-inset flex items-center justify-center text-brand-sky text-xl font-bold">
-            ⚡
+          <div class="w-12 h-12 rounded-2xl glass-neu-inset flex items-center justify-center text-brand-sky">
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
           </div>
           <h3 class="text-2xl font-bold text-white">Ecosistema Freelance</h3>
           <p class="text-slate-200 text-sm leading-relaxed text-pretty">
             Elimina la incertidumbre del cobro y entrega de software con nuestro sistema de pagos por hitos protegidos en custodia.
           </p>
 
-          <ul class="space-y-3 pt-2 text-sm text-slate-200">
+          <ul class="space-y-3 pt-2 text-sm text-slate-100">
             <li class="flex items-center gap-3">
-              <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+              <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                </svg>
+              </span>
               <span>Fondos retenidos de forma segura antes de iniciar el trabajo.</span>
             </li>
             <li class="flex items-center gap-3">
-              <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+              <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                </svg>
+              </span>
               <span>Liberación contra criterios de aceptación y entregables validados.</span>
             </li>
             <li class="flex items-center gap-3">
-              <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
-              <span>Cero comisiones sorpresa ni penalizaciones abusivas.</span>
+              <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                </svg>
+              </span>
+              <span>Sin comisiones ocultas ni penalizaciones al liquidar hitos.</span>
             </li>
           </ul>
         </div>
 
         <div class="pt-6 border-t border-white/10">
-          <a routerLink="/auth/register" class="text-sm font-semibold text-brand-sky hover:text-white transition-colors inline-flex items-center gap-1.5 group-hover:translate-x-1 duration-150">
-            Explorar proyectos freelance <span>→</span>
+          <a
+            routerLink="/auth/register"
+            class="text-sm font-semibold text-brand-sky hover:text-white transition-colors inline-flex items-center gap-1.5 group-hover:translate-x-1 duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky rounded px-1 py-1">
+            <span>Explorar proyectos freelance</span>
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
           </a>
         </div>
-      </div>
+      </article>
 
       <!-- Pilar Corporativo -->
-      <div class="glass-neu-card rounded-3xl p-8 space-y-6 flex flex-col justify-between group">
+      <article class="pilar-card glass-neu-card rounded-3xl p-8 space-y-6 flex flex-col justify-between group">
         <div class="space-y-4">
-          <div class="w-12 h-12 rounded-2xl glass-neu-inset flex items-center justify-center text-purple-300 text-xl font-bold">
-            🏢
+          <div class="w-12 h-12 rounded-2xl glass-neu-inset flex items-center justify-center text-purple-300">
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
           </div>
           <h3 class="text-2xl font-bold text-white">Portal de Empleo & Empresas</h3>
           <p class="text-slate-200 text-sm leading-relaxed text-pretty">
             Publica vacantes de relación de dependencia o contratación a largo plazo con candidatos pre-calificados y etapas visibles.
           </p>
 
-          <ul class="space-y-3 pt-2 text-sm text-slate-200">
+          <ul class="space-y-3 pt-2 text-sm text-slate-100">
             <li class="flex items-center gap-3">
-              <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+              <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                </svg>
+              </span>
               <span>Filtros técnicos específicos por stack tecnológico y experiencia.</span>
             </li>
             <li class="flex items-center gap-3">
-              <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+              <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                </svg>
+              </span>
               <span>Trazabilidad en tiempo real del estado de cada postulación laboral.</span>
             </li>
             <li class="flex items-center gap-3">
-              <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+              <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                </svg>
+              </span>
               <span>Agendamiento directo de entrevistas técnicas sin fricción.</span>
             </li>
           </ul>
         </div>
 
         <div class="pt-6 border-t border-white/10">
-          <a routerLink="/auth/register" class="text-sm font-semibold text-purple-300 hover:text-white transition-colors inline-flex items-center gap-1.5 group-hover:translate-x-1 duration-150">
-            Publicar vacante corporativa <span>→</span>
+          <a
+            routerLink="/auth/register"
+            class="text-sm font-semibold text-purple-300 hover:text-white transition-colors inline-flex items-center gap-1.5 group-hover:translate-x-1 duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky rounded px-1 py-1">
+            <span>Publicar vacante corporativa</span>
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
           </a>
         </div>
-      </div>
+      </article>
 
     </div>
   </section>
 
-  <!-- =========================================================================
-       4. TESTIMONIOS INTERACTIVOS (Píldoras Neumórficas Reactivas)
-       ========================================================================= -->
+  <!-- 4. TESTIMONIOS INTERACTIVOS (Píldoras Neumórficas Reactivas) -->
   <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
     <div class="text-center space-y-4 mb-10">
       <h2 class="text-3xl sm:text-4xl font-extrabold text-white text-balance">Experiencias reales de la comunidad</h2>
       <p class="text-slate-200 text-sm sm:text-base">Historias directas de desarrolladores, empresas y clientes.</p>
 
-      <!-- Selector con efecto de botones táctiles -->
-      <div class="flex flex-wrap items-center justify-center gap-2.5 pt-4">
-        @for (f of ['TODOS', 'FREELANCER', 'CLIENTE', 'EMPRESA']; track f) {
-          <button 
+      <div class="flex flex-wrap items-center justify-center gap-2.5 pt-4" role="tablist" aria-label="Filtrar testimonios por rol">
+        @for (f of filtrosRol; track f) {
+          <button
             type="button"
-            (click)="cambiarFiltro($any(f))"
+            role="tab"
+            [attr.aria-selected]="rolFiltro() === f"
+            (click)="cambiarFiltro(f)"
             [class.neu-pill-active]="rolFiltro() === f"
             [class.text-white]="rolFiltro() === f"
             [class.neu-pill-idle]="rolFiltro() !== f"
-            [class.text-slate-200]="rolFiltro() !== f"
-            class="px-5 py-2.5 rounded-xl text-xs font-semibold active:scale-[0.96] transition-transform">
+            [class.text-slate-100]="rolFiltro() !== f"
+            class="px-5 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold cursor-pointer">
             {{ f === 'TODOS' ? 'Todos los testimonios' : f }}
           </button>
         }
       </div>
     </div>
 
-    <!-- Grilla de Testimonios -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       @for (testimonio of testimoniosFiltrados(); track testimonio.id) {
-        <div class="glass-neu-card rounded-2xl p-6 flex flex-col justify-between space-y-4 hover:translate-y-0.5">
+        <article class="testimonio-card glass-neu-card rounded-2xl p-6 flex flex-col justify-between space-y-4">
           <div class="space-y-3">
-            <span class="text-[10px] font-bold text-brand-sky px-2.5 py-1 rounded-md glass-neu-inset inline-block">
+            <span class="text-[11px] font-bold text-brand-sky px-2.5 py-1 rounded-md glass-neu-inset inline-block">
               {{ testimonio.rol }}
             </span>
-            <p class="text-slate-200 text-xs leading-relaxed text-pretty">
+            <p class="text-slate-100 text-xs sm:text-sm leading-relaxed text-pretty">
               "{{ testimonio.comentario }}"
             </p>
           </div>
 
           <div class="flex items-center gap-3 pt-3 border-t border-white/10">
-            <img [src]="testimonio.avatar" [alt]="testimonio.nombre" class="w-9 h-9 rounded-full object-cover ring-2 ring-white/15 shadow-sm">
-            <div>
-              <span class="block text-sm font-semibold text-white leading-tight">{{ testimonio.nombre }}</span>
-              <span class="block text-[11px] text-slate-300 leading-tight">
+            @if (!brokenAvatars()[testimonio.id]) {
+              <img
+                [src]="testimonio.avatar"
+                [alt]="testimonio.nombre"
+                loading="lazy"
+                (error)="onAvatarError(testimonio.id)"
+                class="w-9 h-9 rounded-full object-cover ring-2 ring-white/20 shadow-sm shrink-0">
+            } @else {
+              <div class="w-9 h-9 rounded-full glass-neu-inset text-white font-bold text-xs flex items-center justify-center shrink-0">
+                {{ testimonio.nombre.charAt(0) }}
+              </div>
+            }
+            <div class="min-w-0">
+              <span class="block text-sm font-semibold text-white leading-tight truncate">{{ testimonio.nombre }}</span>
+              <span class="block text-[11px] text-slate-300 leading-tight truncate">
                 {{ testimonio.empresaOStack }}
               </span>
             </div>
           </div>
-        </div>
+        </article>
       }
     </div>
   </section>
 
-  <!-- =========================================================================
-       5. CTA FINAL (Slab Esculpido con Botón Unificado)
-       ========================================================================= -->
+  <!-- 5. CTA FINAL (Slab Glass-Neumórfico) -->
   <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-    <div class="glass-neu-card rounded-3xl p-8 sm:p-14 text-center relative overflow-hidden">
+    <div class="cta-slab glass-neu-card rounded-3xl p-8 sm:p-14 text-center relative overflow-hidden">
       <div class="relative z-10 space-y-6 max-w-xl mx-auto">
         <h2 class="text-3xl sm:text-4xl font-bold text-white tracking-tight text-balance">
           Comienza a trabajar o contratar hoy mismo.
@@ -303,8 +342,9 @@
         </p>
 
         <div class="pt-2">
-          <a routerLink="/auth/register" 
-             class="btn-registrarse bg-brand-violet inline-block px-8 py-3.5 rounded-xl font-semibold text-white text-base active:scale-[0.97]">
+          <a
+            routerLink="/auth/register"
+            class="btn-registrarse bg-brand-violet inline-flex items-center justify-center min-h-[44px] px-8 py-3.5 rounded-xl font-semibold text-white text-base">
             Registrarse Gratis
           </a>
         </div>
