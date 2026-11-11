@@ -471,6 +471,61 @@
             }
           </div>
         }
+
+        <!-- ACCESO RÁPIDO WL-40 / WL-43: Finanzas y Datos de Cobro (Freelancer) -->
+        @if (rolActivo() === 'FREELANCER') {
+          <div class="bg-white rounded-3xl border border-slate-200/90 p-6 shadow-sm space-y-3.5">
+            <div class="flex items-start justify-between gap-2">
+              <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                <svg class="w-5 h-5 text-brand-indigo shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                </svg>
+                <span>Finanzas y Cobros</span>
+              </h2>
+              <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-800 border border-amber-200 shrink-0">
+                Cobros: pendiente backend
+              </span>
+            </div>
+
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Consultá tu balance acreditado, historial de transacciones y estado de configuración de cuenta receptora.
+            </p>
+
+            <a
+              routerLink="/freelance/finanzas"
+              class="btn-tactile-secondary w-full py-2.5 px-4 min-h-[44px] text-xs sm:text-sm inline-flex items-center justify-center gap-2">
+              <span>Ir a Mis Finanzas</span>
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </a>
+          </div>
+        }
+
+        <!-- ACCESO RÁPIDO WL-39 / WL-41: Pagos de Proyectos (Cliente) -->
+        @if (rolActivo() === 'CLIENTE') {
+          <div class="bg-white rounded-3xl border border-slate-200/90 p-6 shadow-sm space-y-3.5">
+            <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+              <svg class="w-5 h-5 text-brand-indigo shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+              </svg>
+              <span>Pagos y Medios Habilitados</span>
+            </h2>
+
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Cada proyecto en curso admite pagos por <strong>MercadoPago Checkout Pro</strong>, <strong>Billetera virtual</strong> o <strong>Tarjeta</strong> por operación (sin tarjetas guardadas en servidor).
+            </p>
+
+            <a
+              routerLink="/freelance/mis-proyectos"
+              class="btn-tactile-secondary w-full py-2.5 px-4 min-h-[44px] text-xs sm:text-sm inline-flex items-center justify-center gap-2">
+              <span>Gestionar Pagos por Proyecto</span>
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </a>
+          </div>
+        }
       </div>
 
       <!-- COLUMNA DERECHA: Habilidades y Portafolio -->

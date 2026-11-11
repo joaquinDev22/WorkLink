@@ -137,11 +137,22 @@
                     class="btn-tactile-primary px-3 py-2 min-h-[40px] text-xs inline-flex items-center">
                     Ver propuestas
                   </a>
-                } @else {
+                } @else if (p.estado === 'EN_PROGRESO' || p.estado === 'FINALIZADO') {
+                  <a
+                    [routerLink]="['/freelance/proyecto', p.proyectoId, 'pagos']"
+                    class="btn-tactile-primary px-3 py-2 min-h-[40px] text-xs inline-flex items-center">
+                    Pagos
+                  </a>
                   <a
                     routerLink="/freelance/mis-proyectos"
                     class="btn-tactile-secondary px-3 py-2 min-h-[40px] text-xs inline-flex items-center">
                     Hitos
+                  </a>
+                } @else {
+                  <a
+                    [routerLink]="['/freelance/proyecto', p.uuid || p.proyectoId]"
+                    class="btn-tactile-secondary px-3 py-2 min-h-[40px] text-xs inline-flex items-center">
+                    Ver detalle
                   </a>
                 }
               </div>
