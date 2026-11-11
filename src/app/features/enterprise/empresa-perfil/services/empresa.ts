@@ -1,8 +1,9 @@
-import { inject, Service, signal } from '@angular/core'
+import { computed, inject, Service, signal } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
 import { Observable, of, tap, delay } from 'rxjs'
 import { environment } from '../../../../../environments/environment'
 import { EmpresaRequestDTO, EmpresaResponseDTO, DashboardStatsResponseDTO } from '../models/empresa.models'
+import { PerfilCompletitud, calcularCompletitudPorRol } from '../../../perfiles/models/perfil.models'
 
 @Service()
 export class EmpresaService {
@@ -11,6 +12,21 @@ export class EmpresaService {
 
   readonly empresaActual = signal<EmpresaResponseDTO | null>(null)
   readonly isLoading = signal<boolean>(false)
+
+  readonly completitud = computed<PerfilCompletitud>(() => {
+    const emp = this.empresaActual()
+    if (!emp) {
+      return { porcentaje: 0, completado: false, itemsFaltantes: [] }
+    }
+    return calcularCompletitudPorRol('EMPRESA', {
+      logo: emp.logo,
+      bannerPerfil: emp.banner,
+      descripcion: emp.descripcion,
+      ubicacion: emp.ubicacion,
+      sitioWeb: emp.sitio_web,
+      telefono: emp.telefono
+    })
+  })
 
   // Cargar perfil corporativo de la empresa autenticada
   getMiEmpresa(): Observable<EmpresaResponseDTO> {
