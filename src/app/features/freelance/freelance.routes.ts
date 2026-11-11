@@ -33,6 +33,10 @@ export const routes: Routes = [
     loadComponent: () => import('./proyecto-gestion/pages/proyecto-edit/proyecto-edit').then(m => m.ProyectoEdit)
   },
   {
+    path: 'proyecto/:id/editar',
+    loadComponent: () => import('./proyecto-gestion/pages/proyecto-edit/proyecto-edit').then(m => m.ProyectoEdit)
+  },
+  {
     path: 'proyecto/:id/propuestas',
     loadComponent: () => import('./proyecto-gestion/pages/proyecto-propuestas/proyecto-propuestas').then(m => m.ProyectoPropuestas)
   },
