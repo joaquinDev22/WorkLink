@@ -1,4 +1,4 @@
-﻿<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 pb-14">
+<div class="page-enter max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 pb-14">
 
   <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/80 pb-5">
     <div class="space-y-1">
@@ -53,9 +53,9 @@
           type="button"
           (click)="filtroEstado.set(est)"
           [class]="active
-            ? 'bg-brand-indigo text-white border-brand-indigo font-semibold'
-            : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50 font-medium'"
-          class="px-3.5 py-2 min-h-[40px] rounded-xl text-xs border transition-colors cursor-pointer">
+            ? 'btn-tactile-primary font-semibold'
+            : 'btn-tactile-secondary text-slate-700 font-medium'"
+          class="px-3.5 py-2 min-h-[40px] rounded-xl text-xs">
           {{ labelEstado(est) }}
         </button>
       }
@@ -76,9 +76,9 @@
               type="button"
               (click)="proyectoActivoId.set(p.proyectoId)"
               [class]="selected
-                ? 'border-brand-indigo bg-indigo-50/40 ring-2 ring-brand-indigo/15'
-                : 'border-slate-200/80 bg-white hover:border-slate-300'"
-              class="w-full text-left p-4 rounded-2xl border transition-all space-y-2 cursor-pointer">
+                ? 'border-brand-indigo bg-indigo-50/40 ring-2 ring-brand-indigo/15 shadow-[inset_0_1px_0_rgba(255,255,255,0.85),0_2px_6px_rgba(79,70,229,0.1)]'
+                : 'border-slate-200/80 bg-white hover:border-slate-300 shadow-xs'"
+              class="w-full text-left p-4 rounded-2xl border transition-[border-color,background-color,box-shadow,transform] duration-150 active:scale-[0.99] space-y-2 cursor-pointer">
               <div class="flex items-center justify-between gap-2">
                 <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-semibold {{ cfg.badgeClass }}">
                   {{ cfg.label }}

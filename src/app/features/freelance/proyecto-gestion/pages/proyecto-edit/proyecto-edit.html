@@ -1,10 +1,10 @@
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 pb-14">
+<div class="page-enter max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 pb-14">
 
   <!-- Encabezado y Retorno -->
   <header class="space-y-3 border-b border-slate-200 pb-5">
     <a
       routerLink="/freelance/cliente-dashboard"
-      class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-slate-600 hover:text-brand-indigo focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky rounded-lg px-2 py-1 -ml-2 transition-colors">
+      class="btn-tactile-secondary inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-slate-700 hover:text-brand-indigo focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky rounded-xl px-3.5 py-2">
       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
       </svg>
@@ -205,7 +205,7 @@
               <button
                 type="button"
                 (click)="agregarSkill(sug)"
-                class="px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100 cursor-pointer">
+                class="btn-tactile-icon px-2.5 py-1 min-h-[34px] rounded-lg text-xs font-medium text-slate-600">
                 + {{ sug }}
               </button>
             }

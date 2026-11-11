@@ -1,4 +1,4 @@
-<div class="max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-6 space-y-6">
+<div class="max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-6 space-y-6 page-enter">
 
   <!-- ================================================================= -->
   <!-- 1. VISTA DE CARGA CON SKELETONS Y EFECTO SHINE (isLoading = true)  -->
@@ -87,7 +87,7 @@
         <button
           type="button"
           (click)="bannerInput.click()"
-          class="absolute bottom-3 right-3 z-30 px-3 py-1.5 rounded-xl bg-slate-900/85 hover:bg-slate-900 text-white text-xs font-semibold backdrop-blur-md border border-white/20 shadow-inner shadow-slate-500 flex items-center gap-1.5 active:scale-95 transition-all"
+          class="btn-tactile-ghost-dark absolute bottom-3 right-3 z-30 px-3 py-1.5 min-h-[36px] text-xs flex items-center gap-1.5"
           title="Cambiar portada"
           aria-label="Cambiar portada">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -123,7 +123,7 @@
             <button
               type="button"
               (click)="fotoInput.click()"
-              class="absolute bottom-0 right-0 z-30 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-900 hover:bg-slate-800 text-white flex items-center justify-center shadow-inner shadow-slate-100 ring-2 ring-white active:scale-95 transition-all"
+              class="btn-tactile-dark absolute bottom-0 right-0 z-30 w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center ring-2 ring-white"
               title="Cambiar foto de perfil"
               aria-label="Cambiar foto de perfil">
               <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -138,7 +138,7 @@
             <button
               type="button"
               (click)="abrirEditar($event)"
-              class="vt-morph inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold shadow-inner shadow-slate-200 active:scale-95 transition-all duration-300">
+              class="vt-morph btn-tactile-dark inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 text-xs sm:text-sm">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
               </svg>
@@ -183,7 +183,7 @@
               <button
                 type="button"
                 (click)="toggleModoPostulanteFreelancer()"
-                class="btn-tactile-secondary text-xs px-3 py-1 inline-flex items-center gap-1.5 font-bold text-brand-indigo hover:text-brand-indigo-dark active:scale-95 transition-all"
+                class="btn-tactile-secondary text-xs px-3 py-1 inline-flex items-center gap-1.5 font-bold text-brand-indigo hover:text-brand-indigo-dark"
                 title="Alternar entre modo Postulante y Freelancer">
                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
@@ -226,7 +226,7 @@
               />
               <circle
                 cx="24" cy="24" r="19"
-                class="stroke-brand-indigo transition-all duration-1000 ease-out"
+                class="stroke-brand-indigo transition-[stroke-dashoffset] duration-1000 ease-out"
                 stroke-width="4"
                 stroke-linecap="round"
                 fill="transparent"
@@ -255,7 +255,7 @@
             <label 
               (click)="ejecutarActividad(item, $event)"
               [class.completado]="item.completado"
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-white text-brand-indigo border border-brand-indigo/30 shadow-2xs active:scale-95 transition-all select-none">
+              class="btn-tactile-icon inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-brand-indigo select-none">
               <span> 
                 @if (!item.completado) {
                   + {{ item.label }}
@@ -413,7 +413,7 @@
                   <button
                     type="button"
                     (click)="verCV()"
-                    class="p-2 text-slate-600 hover:text-brand-indigo hover:bg-white rounded-xl border border-transparent hover:border-slate-200 transition-all"
+                    class="btn-tactile-icon w-9 h-9 rounded-xl flex items-center justify-center hover:text-brand-indigo"
                     title="Previsualizar CV"
                     aria-label="Previsualizar CV">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -425,7 +425,7 @@
                   <button
                     type="button"
                     (click)="descargarCV()"
-                    class="p-2 text-slate-600 hover:text-brand-indigo hover:bg-white rounded-xl border border-transparent hover:border-slate-200 transition-all"
+                    class="btn-tactile-icon w-9 h-9 rounded-xl flex items-center justify-center hover:text-brand-indigo"
                     title="Descargar archivo PDF"
                     aria-label="Descargar CV">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -433,7 +433,7 @@
                     </svg>
                   </button>
 
-                  <label class="p-2 text-slate-600 hover:text-brand-indigo hover:bg-white rounded-xl border border-transparent hover:border-slate-200 transition-all" title="Reemplazar archivo">
+                  <label class="btn-tactile-icon w-9 h-9 rounded-xl flex items-center justify-center hover:text-brand-indigo" title="Reemplazar archivo">
                     <input type="file" accept="application/pdf" class="hidden" (change)="onCvSelected($event)">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
@@ -443,7 +443,7 @@
               </div>
             } @else {
               <!-- Sin CV cargado -->
-              <label class="flex flex-col items-center justify-center p-5 border-2 border-dashed border-slate-200 hover:border-brand-indigo/50 rounded-2xl bg-slate-50/50 hover:bg-indigo-50/20 transition-all group">
+              <label class="flex flex-col items-center justify-center p-5 border-2 border-dashed border-slate-200 hover:border-brand-indigo/50 rounded-2xl bg-slate-50/50 hover:bg-indigo-50/20 transition-colors cursor-pointer group">
                 <input type="file" accept="application/pdf" class="hidden" (change)="onCvSelected($event)">
 
                 @if (isUploadingCv()) {
@@ -490,7 +490,7 @@
               <button
                 type="button"
                 (click)="abrirSkillModal()"
-                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:scale-[1.05] text-white text-xs font-semibold shadow-inner shadow-slate-200 active:scale-95 transition-all">
+                class="btn-tactile-dark inline-flex items-center gap-1.5 px-3 py-1.5 text-xs">
                 <span>+</span>
                 <span>Agregar</span>
               </button>
@@ -500,7 +500,7 @@
               <div class="flex flex-wrap gap-2.5">
                 @for (hab of perfil()!.habilidades; track hab.habilidadId) {
                   @let info = getNivelInfo(hab.nivel);
-                  <div class="group/chip inline-flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-xl border {{ info.colorClass }} text-xs font-semibold transition-all">
+                  <div class="group/chip inline-flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-xl border {{ info.colorClass }} text-xs font-semibold transition-colors">
                     <span>{{ hab.nombre }}</span>
                     <span class="w-1.5 h-1.5 rounded-full bg-current opacity-60"></span>
                     <span class="text-[11px] font-normal opacity-90">{{ info.label }}</span>
@@ -542,7 +542,7 @@
                   <button
                   type="button"
                   (click)="abrirProjectModal()"
-                  class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl text-brand-indigo bg-brand-indigo/10 hover:bg-brand-indigo/20 active:scale-95 transition-all shadow-inner shadow-indigo-300">
+                  class="btn-tactile-secondary inline-flex items-center gap-1.5 px-3 py-1.5 text-xs text-brand-indigo">
                     <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
@@ -555,7 +555,7 @@
             @if ((perfil()?.proyectos?.length ?? 0) > 0) {
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 @for (proy of perfil()!.proyectos; track proy.id) {
-                  <div class="bg-slate-50/70 hover:bg-slate-50 border border-slate-200/80 rounded-2xl p-4.5 space-y-2.5 transition-all hover:shadow-xs group flex flex-col justify-between">
+                  <div class="bg-slate-50/70 hover:bg-slate-50 border border-slate-200/80 rounded-2xl p-4.5 space-y-2.5 transition-[background-color,box-shadow] hover:shadow-xs group flex flex-col justify-between">
                     <div class="space-y-2.5">
                       @if (proy.imagen) {
                         <div class="w-full h-36 rounded-xl overflow-hidden bg-slate-100 border border-slate-200/60">
@@ -568,7 +568,7 @@
                         </h3>
                         <div class="flex items-center gap-1 shrink-0">
                           @if (proy.link) {
-                            <a [href]="proy.link" target="_blank" rel="noopener noreferrer" class="p-1 text-slate-400 hover:text-brand-indigo rounded-lg hover:bg-indigo-50 transition-colors" [attr.aria-label]="'Abrir proyecto ' + proy.nombre">
+                            <a [href]="proy.link" target="_blank" rel="noopener noreferrer" class="btn-tactile-icon w-8 h-8 rounded-lg flex items-center justify-center hover:text-brand-indigo" [attr.aria-label]="'Abrir proyecto ' + proy.nombre">
                               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                               </svg>
@@ -578,7 +578,7 @@
                             type="button"
                             (click)="eliminarProyecto(proy.id)"
                             [disabled]="deletingProjectId() === proy.id"
-                            class="p-1 text-slate-400 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-40"
+                            class="btn-tactile-icon w-8 h-8 rounded-lg flex items-center justify-center text-rose-500 hover:text-rose-600 hover:bg-rose-50 disabled:opacity-40"
                             title="Eliminar proyecto"
                             [attr.aria-label]="'Eliminar proyecto ' + proy.nombre">
                             @if (deletingProjectId() === proy.id) {
@@ -646,26 +646,26 @@
             </div>
 
             <!-- Grid de Métricas Táctiles con Relieve Neumórfico (Datos reales de la API) -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-              <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-200/80 space-y-1 text-center sm:text-left transition-all hover:bg-white hover:shadow-sm">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+              <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-200/80 space-y-1 text-center sm:text-left transition-[background-color,box-shadow] hover:bg-white hover:shadow-sm">
                 <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Contrataciones</span>
                 <p class="text-2xl font-black text-slate-900 tracking-tight">{{ metricasRecruiter().contratacionesTotales }}</p>
                 <span class="text-[11px] text-emerald-600 font-semibold">Talentos incorporados</span>
               </div>
 
-              <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-200/80 space-y-1 text-center sm:text-left transition-all hover:bg-white hover:shadow-sm">
+              <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-200/80 space-y-1 text-center sm:text-left transition-[background-color,box-shadow] hover:bg-white hover:shadow-sm">
                 <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Vacantes</span>
                 <p class="text-2xl font-black text-slate-900 tracking-tight">{{ metricasRecruiter().vacantesActivas }}</p>
                 <span class="text-[11px] text-teal-600 font-semibold">Búsquedas asignadas</span>
               </div>
 
-              <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-200/80 space-y-1 text-center sm:text-left transition-all hover:bg-white hover:shadow-sm">
+              <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-200/80 space-y-1 text-center sm:text-left transition-[background-color,box-shadow] hover:bg-white hover:shadow-sm">
                 <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Postulaciones</span>
                 <p class="text-2xl font-black text-slate-900 tracking-tight">{{ metricasRecruiter().postulacionesTotales }}</p>
                 <span class="text-[11px] text-indigo-600 font-semibold">Candidatos en pipeline</span>
               </div>
 
-              <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-200/80 space-y-1 text-center sm:text-left transition-all hover:bg-white hover:shadow-sm">
+              <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-200/80 space-y-1 text-center sm:text-left transition-[background-color,box-shadow] hover:bg-white hover:shadow-sm">
                 <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Entrevistas</span>
                 <p class="text-2xl font-black text-slate-900 tracking-tight">{{ metricasRecruiter().entrevistasPendientes }}</p>
                 <span class="text-[11px] text-slate-500 font-semibold">Entrevistas pendientes</span>
@@ -708,12 +708,12 @@
                 @for (item of historialRecruiter(); track item.id) {
                   <div class="relative flex items-start gap-4 sm:gap-6 group">
                     <!-- Monograma Timeline -->
-                    <div class="relative z-10 w-10 h-10 rounded-2xl bg-white border-2 border-slate-200 text-brand-indigo font-black text-sm flex items-center justify-center shrink-0 shadow-sm group-hover:border-brand-indigo group-hover:scale-105 transition-all">
+                    <div class="relative z-10 w-10 h-10 rounded-2xl bg-white border-2 border-slate-200 text-brand-indigo font-black text-sm flex items-center justify-center shrink-0 shadow-sm group-hover:border-brand-indigo group-hover:scale-105 transition-[border-color,transform]">
                       {{ item.empresa.slice(0, 2).toUpperCase() }}
                     </div>
 
                     <!-- Contenedor de la Experiencia -->
-                    <div class="flex-1 bg-slate-50/70 hover:bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3.5 transition-all shadow-xs">
+                    <div class="flex-1 bg-slate-50/70 hover:bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-3.5 transition-colors shadow-xs">
                       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/60 pb-3">
                         <div>
                           <div class="flex flex-wrap items-center gap-2">
@@ -740,7 +740,7 @@
                           <button
                             type="button"
                             (click)="abrirHistorialModal(item)"
-                            class="p-1.5 text-slate-400 hover:text-brand-indigo hover:bg-white rounded-lg transition-colors border border-transparent hover:border-slate-200"
+                            class="btn-tactile-icon w-8 h-8 rounded-lg flex items-center justify-center hover:text-brand-indigo"
                             title="Editar empresa"
                             aria-label="Editar empresa">
                             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -750,7 +750,7 @@
                           <button
                             type="button"
                             (click)="eliminarHistorial(item.id)"
-                            class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-white rounded-lg transition-colors border border-transparent hover:border-slate-200"
+                            class="btn-tactile-icon w-8 h-8 rounded-lg flex items-center justify-center text-rose-500 hover:text-rose-600 hover:bg-rose-50"
                             title="Eliminar empresa"
                             aria-label="Eliminar empresa">
                             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -848,7 +848,7 @@
 
               <a
                 routerLink="/enterprise/postulantes"
-                class="p-4 rounded-2xl bg-slate-50 hover:bg-slate-100/90 border border-slate-200/80 transition-all group flex flex-col justify-between"
+                class="p-4 rounded-2xl bg-slate-50 hover:bg-slate-100/90 border border-slate-200/80 transition-[background-color,border-color] group flex flex-col justify-between"
               >
                 <div>
                   <div class="w-9 h-9 rounded-xl bg-teal-50 border border-teal-100 text-teal-600 flex items-center justify-center mb-3">
@@ -867,7 +867,7 @@
 
               <a
                 routerLink="/enterprise/entrevistas"
-                class="p-4 rounded-2xl bg-slate-50 hover:bg-slate-100/90 border border-slate-200/80 transition-all group flex flex-col justify-between"
+                class="p-4 rounded-2xl bg-slate-50 hover:bg-slate-100/90 border border-slate-200/80 transition-[background-color,border-color] group flex flex-col justify-between"
               >
                 <div>
                   <div class="w-9 h-9 rounded-xl bg-sky-50 border border-sky-100 text-sky-600 flex items-center justify-center mb-3">
@@ -919,7 +919,7 @@
             } @else if ((proyectosAsignados() || []).length > 0) {
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 @for (p of proyectosAsignados(); track p.proyectoId) {
-                  <div class="p-4 rounded-2xl bg-slate-50/70 border border-slate-200/80 hover:border-slate-300 transition-all flex flex-col justify-between gap-3">
+                  <div class="p-4 rounded-2xl bg-slate-50/70 border border-slate-200/80 hover:border-slate-300 transition-colors flex flex-col justify-between gap-3">
                     <div class="space-y-2">
                       <div class="flex items-start justify-between gap-2">
                         <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-600">
@@ -1027,7 +1027,7 @@
             <!-- Lista de Reseñas Históricas Paginadas con altura fija -->
             <div class="space-y-3.5 pt-1 min-h-107.5 flex flex-col justify-start">
               @for (rev of resenasPaginadas(); track rev.id) {
-                <div class="p-4 rounded-2xl bg-slate-50/70 border border-slate-200/80 hover:border-slate-300 transition-all space-y-2.5 min-h-32 flex flex-col justify-between">
+                <div class="p-4 rounded-2xl bg-slate-50/70 border border-slate-200/80 hover:border-slate-300 transition-colors space-y-2.5 min-h-32 flex flex-col justify-between">
                   <div class="flex items-start justify-between gap-2">
                     <div class="flex items-center gap-3">
                       <div class="w-8 h-8 rounded-full bg-indigo-100 text-brand-indigo font-bold text-xs flex items-center justify-center shrink-0">
@@ -1087,7 +1087,7 @@
                     type="button"
                     (click)="cambiarPaginaResenas(-1)"
                     [disabled]="paginaResenas() === 1"
-                    class="p-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    class="btn-tactile-icon w-10 h-10 rounded-xl flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed"
                     title="Página anterior"
                     aria-label="Página anterior">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1101,7 +1101,7 @@
                         <button
                           type="button"
                           (click)="cambiarPaginaResenas(p, true)"
-                          class="min-w-[40px] min-h-[40px] px-2 rounded-xl text-xs font-bold transition-[background-color,color,transform] flex items-center justify-center cursor-pointer {{ paginaResenas() === p ? 'bg-brand-indigo text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100 border border-slate-200' }}">
+                          class="min-w-[40px] min-h-[40px] px-2 rounded-xl text-xs font-bold flex items-center justify-center cursor-pointer {{ paginaResenas() === p ? 'tab-tactile-active text-indigo-700' : 'btn-tactile-icon' }}">
                           {{ p }}
                         </button>
                       }
@@ -1112,7 +1112,7 @@
                     type="button"
                     (click)="cambiarPaginaResenas(1)"
                     [disabled]="paginaResenas() === totalPaginasResenas()"
-                    class="p-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    class="btn-tactile-icon w-10 h-10 rounded-xl flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed"
                     title="Página siguiente"
                     aria-label="Página siguiente">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1144,20 +1144,20 @@
   <!-- ================================================================= -->
   @if (isEditModalOpen()) {
     <div
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/45 animate-fade-in"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/45 backdrop-blur-xs animate-modal-backdrop"
       role="dialog"
       aria-modal="true"
       aria-labelledby="edit-modal-title">
-      <div class="vt-morph bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-lg p-6 sm:p-8 space-y-5" style="view-transition-name: edit-surface">
+      <div class="vt-morph bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-lg max-h-[90vh] overflow-y-auto p-6 sm:p-8 space-y-5 animate-modal-card" style="view-transition-name: edit-surface">
 
         <div class="flex items-center justify-between pb-3 border-b border-slate-100">
           <h2 id="edit-modal-title" class="text-lg font-bold text-slate-900">Editar Datos de Perfil</h2>
           <button
             type="button"
             (click)="cerrarEditar()"
-            class="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+            class="btn-tactile-icon w-9 h-9 rounded-xl flex items-center justify-center"
             aria-label="Cerrar">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
@@ -1174,7 +1174,7 @@
                 id="nombre"
                 [formField]="editForm.nombre"
                 [class.input-error]="editForm.nombre().touched() && editForm.nombre().invalid()"
-                class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
+                class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow]">
               @if (editForm.nombre().touched() && editForm.nombre().invalid()) {
                 @for (error of editForm.nombre().errors(); track error.kind) {
                   <span class="text-xs text-rose-500 font-medium block pt-1">{{ error.message }}</span>
@@ -1190,7 +1190,7 @@
                   id="apellido"
                   [formField]="editForm.apellido"
                   [class.input-error]="editForm.apellido().touched() && editForm.apellido().invalid()"
-                  class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
+                  class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow]">
                 @if (editForm.apellido().touched() && editForm.apellido().invalid()) {
                   @for (error of editForm.apellido().errors(); track error.kind) {
                     <span class="text-xs text-rose-500 font-medium block pt-1">{{ error.message }}</span>
@@ -1208,7 +1208,7 @@
               [formField]="editForm.descripcion"
               [class.input-error]="editForm.descripcion().touched() && editForm.descripcion().invalid()"
               placeholder="Apasionado por mi trabajo..."
-              class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all resize-none"></textarea>
+              class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow] resize-none"></textarea>
             @if (editForm.descripcion().touched() && editForm.descripcion().invalid()) {
               @for (error of editForm.descripcion().errors(); track error.kind) {
                 <span class="text-xs text-rose-500 font-medium block pt-1">{{ error.message }}</span>
@@ -1225,7 +1225,7 @@
                 [formField]="editForm.ubicacion"
                 [class.input-error]="editForm.ubicacion().touched() && editForm.ubicacion().invalid()"
                 placeholder="Ej: Buenos Aires"
-                class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
+                class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow]">
               @if (editForm.ubicacion().touched() && editForm.ubicacion().invalid()) {
                 @for (error of editForm.ubicacion().errors(); track error.kind) {
                   <span class="text-xs text-rose-500 font-medium block pt-1">{{ error.message }}</span>
@@ -1241,7 +1241,7 @@
                 [formField]="editForm.pais"
                 [class.input-error]="editForm.pais().touched() && editForm.pais().invalid()"
                 placeholder="Ej: Argentina"
-                class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
+                class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow]">
               @if (editForm.pais().touched() && editForm.pais().invalid()) {
                 @for (error of editForm.pais().errors(); track error.kind) {
                   <span class="text-xs text-rose-500 font-medium block pt-1">{{ error.message }}</span>
@@ -1259,7 +1259,7 @@
                 [formField]="editForm.telefono"
                 [class.input-error]="editForm.telefono().touched() && editForm.telefono().invalid()"
                 placeholder="+54 11 4821 9900"
-                class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
+                class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow]">
               @if (editForm.telefono().touched() && editForm.telefono().invalid()) {
                 @for (error of editForm.telefono().errors(); track error.kind) {
                   <span class="text-xs text-rose-500 font-medium block pt-1">{{ error.message }}</span>
@@ -1275,7 +1275,7 @@
                   id="fechaNacimiento"
                   [formField]="editForm.fechaNacimiento"
                   [class.input-error]="editForm.fechaNacimiento().touched() && editForm.fechaNacimiento().invalid()"
-                  class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
+                  class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow]">
                 @if (editForm.fechaNacimiento().touched() && editForm.fechaNacimiento().invalid()) {
                   @for (error of editForm.fechaNacimiento().errors(); track error.kind) {
                     <span class="text-xs text-rose-500 font-medium block pt-1">{{ error.message }}</span>
@@ -1293,7 +1293,7 @@
               [formField]="editForm.sitioWeb"
               [class.input-error]="editForm.sitioWeb().touched() && editForm.sitioWeb().invalid()"
               placeholder="https://..."
-              class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
+              class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow]">
             @if (editForm.sitioWeb().touched() && editForm.sitioWeb().invalid()) {
               @for (error of editForm.sitioWeb().errors(); track error.kind) {
                 <span class="text-xs text-rose-500 font-medium block pt-1">{{ error.message }}</span>
@@ -1305,7 +1305,7 @@
             <button
               type="button"
               (click)="cerrarEditar()"
-              class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl">
+              class="btn-tactile-secondary px-4 py-2 text-xs">
               Cancelar
             </button>
             <button
@@ -1334,19 +1334,23 @@
   <!-- ================================================================= -->
   @if (isSkillModalOpen()) {
     <div
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/45 animate-fade-in"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/45 backdrop-blur-xs animate-modal-backdrop"
       role="dialog"
       aria-modal="true"
       aria-labelledby="skill-modal-title">
-      <div class="w-full max-w-lg bg-white rounded-3xl border border-slate-200 p-6 shadow-2xl space-y-5 animate-scale-in">
+      <div class="w-full max-w-lg max-h-[90vh] overflow-y-auto bg-white rounded-3xl border border-slate-200 p-6 shadow-2xl space-y-5 animate-modal-card">
 
         <div class="flex items-center justify-between pb-3 border-b border-slate-100">
           <h3 id="skill-modal-title" class="text-base font-bold text-slate-900">Agregar Habilidad Técnica</h3>
           <button
             type="button"
             (click)="cerrarSkillModal()"
-            class="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
-            aria-label="Cerrar">✕</button>
+            class="btn-tactile-icon w-9 h-9 rounded-xl flex items-center justify-center"
+            aria-label="Cerrar">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
 
         <!-- Input de habilidad técnica con autocompletado verificado -->
@@ -1368,12 +1372,12 @@
               (input)="skillNombre.set($any($event.target).value); mostrarDropdownSkills.set(true)"
               (keydown.enter)="$event.preventDefault(); guardarSkill()"
               placeholder="Buscar o escribir habilidad (ej: Angular, Docker, Spring Boot)..."
-              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200/90 bg-white text-slate-900 text-sm shadow-inner shadow-slate-200/70 focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-all"
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200/90 bg-white text-slate-900 text-sm shadow-inner shadow-slate-200/70 focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-[border-color,box-shadow]"
             />
 
             <!-- Menú de Autocompletado con Habilidades Válidas del Catálogo -->
             @if (mostrarDropdownSkills() && skillNombre().trim().length > 0) {
-              <div class="absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200/90 rounded-2xl shadow-xl z-30 overflow-hidden divide-y divide-slate-100 max-h-52 overflow-y-auto animate-fade-in">
+              <div class="absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200/90 rounded-2xl shadow-xl z-30 overflow-hidden divide-y divide-slate-100 max-h-52 overflow-y-auto animate-popover-in">
                 <div class="px-3.5 py-1.5 bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
                   <span>Habilidades válidas en catálogo</span>
                   <button type="button" (click)="mostrarDropdownSkills.set(false)" class="text-slate-400 hover:text-slate-600 text-xs p-0.5">✕</button>
@@ -1409,7 +1413,7 @@
                 <button
                   type="button"
                   (click)="seleccionarSugerencia(sug.name)"
-                  class="px-2.5 py-1 rounded-xl bg-slate-100/90 hover:bg-indigo-50 border border-slate-200/80 shadow-2xs text-[11px] font-semibold text-slate-600 hover:text-brand-indigo active:scale-95 transition-all">
+                  class="btn-tactile-icon px-2.5 py-1 text-[11px] font-semibold hover:text-brand-indigo">
                   + {{ sug.name }}
                 </button>
               }
@@ -1426,11 +1430,11 @@
             </span>
           </div>
 
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs font-semibold">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs font-semibold">
             <button
               type="button"
               (click)="skillNivel.set(1)"
-              class="py-2.5 px-3 rounded-xl border text-center transition-all duration-150 active:scale-95"
+              class="py-2.5 px-3 rounded-xl border text-center transition-[transform,box-shadow,background-color] duration-150 active:scale-95"
               [ngClass]="skillNivel() === 1
                 ? 'bg-linear-to-b from-slate-800 to-slate-950 text-white border-slate-950 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.35),inset_0_-2px_0_0_rgba(0,0,0,0.4),0_3px_6px_0_rgba(15,23,42,0.25)] ring-2 ring-slate-700 ring-offset-1'
                 : 'bg-white text-slate-700 border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,1),inset_0_-1px_0_0_rgba(0,0,0,0.06),0_1px_3px_0_rgba(15,23,42,0.08)] hover:bg-slate-50 hover:border-slate-300 hover:shadow-[0_2px_4px_0_rgba(15,23,42,0.1)] active:shadow-inner'">
@@ -1439,7 +1443,7 @@
             <button
               type="button"
               (click)="skillNivel.set(2)"
-              class="py-2.5 px-3 rounded-xl border text-center transition-all duration-150 active:scale-95"
+              class="py-2.5 px-3 rounded-xl border text-center transition-[transform,box-shadow,background-color] duration-150 active:scale-95"
               [ngClass]="skillNivel() === 2
                 ? 'bg-linear-to-b from-teal-600 to-teal-800 text-white border-teal-800 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.35),inset_0_-2px_0_0_rgba(0,0,0,0.3),0_3px_6px_0_rgba(13,148,136,0.3)] ring-2 ring-teal-500 ring-offset-1'
                 : 'bg-white text-slate-700 border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,1),inset_0_-1px_0_0_rgba(0,0,0,0.06),0_1px_3px_0_rgba(15,23,42,0.08)] hover:bg-slate-50 hover:border-slate-300 hover:shadow-[0_2px_4px_0_rgba(15,23,42,0.1)] active:shadow-inner'">
@@ -1448,7 +1452,7 @@
             <button
               type="button"
               (click)="skillNivel.set(3)"
-              class="py-2.5 px-3 rounded-xl border text-center transition-all duration-150 active:scale-95"
+              class="py-2.5 px-3 rounded-xl border text-center transition-[transform,box-shadow,background-color] duration-150 active:scale-95"
               [ngClass]="skillNivel() === 3
                 ? 'bg-linear-to-b from-sky-500 to-sky-700 text-white border-sky-700 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.35),inset_0_-2px_0_0_rgba(0,0,0,0.3),0_3px_6px_0_rgba(2,132,199,0.3)] ring-2 ring-sky-400 ring-offset-1'
                 : 'bg-white text-slate-700 border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,1),inset_0_-1px_0_0_rgba(0,0,0,0.06),0_1px_3px_0_rgba(15,23,42,0.08)] hover:bg-slate-50 hover:border-slate-300 hover:shadow-[0_2px_4px_0_rgba(15,23,42,0.1)] active:shadow-inner'">
@@ -1457,7 +1461,7 @@
             <button
               type="button"
               (click)="skillNivel.set(4)"
-              class="py-2.5 px-3 rounded-xl border text-center transition-all duration-150 active:scale-95"
+              class="py-2.5 px-3 rounded-xl border text-center transition-[transform,box-shadow,background-color] duration-150 active:scale-95"
               [ngClass]="skillNivel() === 4
                 ? 'bg-linear-to-b from-indigo-500 to-indigo-700 text-white border-indigo-700 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.35),inset_0_-2px_0_0_rgba(0,0,0,0.3),0_3px_6px_0_rgba(79,70,229,0.35)] ring-2 ring-indigo-400 ring-offset-1'
                 : 'bg-white text-slate-700 border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,1),inset_0_-1px_0_0_rgba(0,0,0,0.06),0_1px_3px_0_rgba(15,23,42,0.08)] hover:bg-slate-50 hover:border-slate-300 hover:shadow-[0_2px_4px_0_rgba(15,23,42,0.1)] active:shadow-inner'">
@@ -1466,7 +1470,7 @@
             <button
               type="button"
               (click)="skillNivel.set(5)"
-              class="py-2.5 px-3 rounded-xl border text-center transition-all duration-150 active:scale-95 col-span-2 sm:col-span-1"
+              class="py-2.5 px-3 rounded-xl border text-center transition-[transform,box-shadow,background-color] duration-150 active:scale-95 sm:col-span-1"
               [ngClass]="skillNivel() === 5
                 ? 'bg-linear-to-b from-purple-600 to-purple-800 text-white border-purple-800 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.35),inset_0_-2px_0_0_rgba(0,0,0,0.3),0_3px_6px_0_rgba(147,51,234,0.35)] ring-2 ring-purple-500 ring-offset-1'
                 : 'bg-white text-slate-700 border-slate-200/90 shadow-[inset_0_1px_0_0_rgba(255,255,255,1),inset_0_-1px_0_0_rgba(0,0,0,0.06),0_1px_3px_0_rgba(15,23,42,0.08)] hover:bg-slate-50 hover:border-slate-300 hover:shadow-[0_2px_4px_0_rgba(15,23,42,0.1)] active:shadow-inner'">
@@ -1501,11 +1505,11 @@
   <!-- ================================================================= -->
   @if (isProjectModalOpen()) {
     <div
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/45 animate-fade-in"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/45 backdrop-blur-xs animate-modal-backdrop"
       role="dialog"
       aria-modal="true"
       aria-labelledby="project-modal-title">
-      <div class="w-full max-w-lg bg-white rounded-3xl border border-slate-200 p-6 sm:p-7 shadow-2xl space-y-5 animate-scale-in max-h-[90vh] overflow-y-auto">
+      <div class="w-full max-w-lg bg-white rounded-3xl border border-slate-200 p-6 sm:p-7 shadow-2xl space-y-5 animate-modal-card max-h-[90vh] overflow-y-auto">
 
         <div class="flex items-center justify-between pb-3 border-b border-slate-100">
           <h2 id="project-modal-title" class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
@@ -1517,9 +1521,9 @@
           <button
             type="button"
             (click)="cerrarProjectModal()"
-            class="text-slate-400 hover:text-slate-600 p-1 rounded-lg transition-colors"
+            class="btn-tactile-icon w-9 h-9 rounded-xl flex items-center justify-center"
             aria-label="Cerrar modal">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
@@ -1535,7 +1539,7 @@
               [value]="projectNombre()"
               (input)="projectNombre.set($any($event.target).value)"
               placeholder="Ej: E-Commerce con Microservicios"
-              class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
+              class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow]">
           </div>
 
           <!-- Descripción -->
@@ -1547,7 +1551,7 @@
               [value]="projectDescripcion()"
               (input)="projectDescripcion.set($any($event.target).value)"
               placeholder="Describe las tecnologías aplicadas, tu rol y el impacto o funcionalidades destacadas..."
-              class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all resize-none"></textarea>
+              class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow] resize-none"></textarea>
           </div>
 
           <!-- Enlace -->
@@ -1559,7 +1563,7 @@
               [value]="projectLink()"
               (input)="projectLink.set($any($event.target).value)"
               placeholder="https://github.com/usuario/proyecto o https://midemo.com"
-              class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
+              class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow]">
           </div>
 
           <!-- Imagen de Portada -->
@@ -1578,8 +1582,9 @@
                 <button
                   type="button"
                   (click)="quitarImagenProyecto()"
-                  class="absolute top-2 right-2 p-1.5 rounded-full bg-slate-900/80 text-white hover:bg-slate-900 transition-all shadow-md"
-                  title="Quitar imagen">
+                  class="btn-tactile-ghost-dark absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center shadow-md"
+                  title="Quitar imagen"
+                  aria-label="Quitar imagen">
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                   </svg>
@@ -1589,7 +1594,7 @@
               <button
                 type="button"
                 (click)="projImgInput.click()"
-                class="w-full border-2 border-dashed border-slate-200 hover:border-brand-indigo/50 rounded-2xl p-4 flex flex-col items-center justify-center gap-1.5 text-slate-500 hover:text-brand-indigo bg-slate-50/50 hover:bg-indigo-50/20 transition-all">
+                class="w-full border-2 border-dashed border-slate-200 hover:border-brand-indigo/50 rounded-2xl p-4 flex flex-col items-center justify-center gap-1.5 text-slate-500 hover:text-brand-indigo bg-slate-50/50 hover:bg-indigo-50/20 transition-colors cursor-pointer">
                 <svg class="w-6 h-6 text-slate-400 group-hover:text-brand-indigo" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
@@ -1604,7 +1609,7 @@
             <button
               type="button"
               (click)="cerrarProjectModal()"
-              class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors">
+              class="btn-tactile-secondary px-4 py-2 text-xs">
               Cancelar
             </button>
             <button
@@ -1659,9 +1664,11 @@
           <button
             type="button"
             (click)="cerrarHistorialModal()"
-            class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition-colors"
+            class="btn-tactile-icon w-9 h-9 rounded-xl flex items-center justify-center"
             aria-label="Cerrar modal">
-            ✕
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
         </div>
 
@@ -1675,7 +1682,7 @@
               [(ngModel)]="empresaHistorialNombre"
               name="empresaNombre"
               placeholder="Ej. InnovaCorp Technologies S.A."
-              class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all"
+              class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow]"
               required>
           </div>
 
@@ -1687,7 +1694,7 @@
               [(ngModel)]="empresaHistorialPuesto"
               name="empresaPuesto"
               placeholder="Ej. Senior IT Talent Acquisition Lead"
-              class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all"
+              class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow]"
               required>
           </div>
 
@@ -1700,7 +1707,7 @@
                 [(ngModel)]="empresaHistorialPeriodo"
                 name="empresaPeriodo"
                 placeholder="Ej. Mar 2023 - Presente"
-                class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
+                class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow]">
             </div>
 
             <div class="space-y-1">
@@ -1708,7 +1715,7 @@
               <select
                 [(ngModel)]="empresaHistorialTipo"
                 name="empresaTipo"
-                class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
+                class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow]">
                 <option value="HÍBRIDO">Híbrido</option>
                 <option value="REMOTO">Remoto</option>
                 <option value="PRESENCIAL">Presencial</option>
@@ -1725,7 +1732,7 @@
                 [(ngModel)]="empresaHistorialUbicacion"
                 name="empresaUbicacion"
                 placeholder="Ej. Buenos Aires, Argentina"
-                class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
+                class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow]">
             </div>
 
             <label class="flex items-center gap-2 text-xs font-medium text-slate-700 select-none">
@@ -1746,7 +1753,7 @@
               name="empresaDesc"
               rows="3"
               placeholder="Describe tus principales responsabilidades y el enfoque de las búsquedas IT..."
-              class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all resize-none"></textarea>
+              class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow] resize-none"></textarea>
           </div>
 
           <!-- Logros Cuantitativos (uno por línea) -->
@@ -1757,7 +1764,7 @@
               name="empresaLogros"
               rows="3"
               placeholder="+50 contrataciones efectivas&#10;Lead time promedio de 18 días&#10;94% retención al primer año"
-              class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all resize-none"></textarea>
+              class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow] resize-none"></textarea>
           </div>
 
           <!-- Perfiles Reclutados (separados por coma) -->
@@ -1768,7 +1775,7 @@
               [(ngModel)]="empresaHistorialTagsText"
               name="empresaTags"
               placeholder="Angular, Spring Boot, DevOps, Cloud AWS"
-              class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
+              class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow]">
           </div>
 
           <!-- Botones de Acción Táctiles -->

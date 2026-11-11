@@ -11,7 +11,7 @@
 
     <!-- Modal Content Card -->
     <div
-      class="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden transform z-10 animate-modal-card">
+      class="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-white rounded-2xl shadow-2xl border border-slate-200 transform z-10 animate-modal-card">
 
       <!-- Header con gradiente sutil -->
       <div class="px-6 py-5 border-b border-slate-100 bg-linear-to-r from-slate-50 via-white to-indigo-50/30 flex items-center justify-between">
@@ -34,7 +34,7 @@
         <button
           type="button"
           (click)="cerrar()"
-          class="p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+          class="btn-tactile-icon w-9 h-9 rounded-xl flex items-center justify-center"
           aria-label="Cerrar modal">
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -63,7 +63,7 @@
               type="text"
               [formField]="recruiterForm.nombre"
               placeholder="Ej: Lucía"
-              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-all" />
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-[border-color,box-shadow]" />
             @if (recruiterForm.nombre().touched() && recruiterForm.nombre().invalid()) {
               <p class="text-[11px] text-rose-600">
                 {{ recruiterForm.nombre().errors()?.[0]?.message }}
@@ -78,7 +78,7 @@
               type="text"
               [formField]="recruiterForm.apellido"
               placeholder="Ej: Fernández"
-              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-all" />
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-[border-color,box-shadow]" />
             @if (recruiterForm.apellido().touched() && recruiterForm.apellido().invalid()) {
               <p class="text-[11px] text-rose-600">
                 {{ recruiterForm.apellido().errors()?.[0]?.message }}
@@ -101,7 +101,7 @@
               type="email"
               [formField]="recruiterForm.email"
               placeholder="lucia.fernandez@empresa.com"
-              class="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-all" />
+              class="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-[border-color,box-shadow]" />
           </div>
           @if (recruiterForm.email().touched() && recruiterForm.email().invalid()) {
             <p class="text-[11px] text-rose-600">
@@ -118,7 +118,7 @@
               id="modal-nacimiento"
               type="date"
               [formField]="recruiterForm.fechaNacimiento"
-              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-all" />
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-[border-color,box-shadow]" />
             @if (recruiterForm.fechaNacimiento().touched() && recruiterForm.fechaNacimiento().invalid()) {
               <p class="text-[11px] text-rose-600">
                 {{ recruiterForm.fechaNacimiento().errors()?.[0]?.message }}
@@ -131,7 +131,7 @@
             <select
               id="modal-area"
               [formField]="recruiterForm.area"
-              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo bg-white transition-all">
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo bg-white transition-[border-color,box-shadow]">
               @for (area of areasDisponibles; track area) {
                 <option [value]="area">{{ area }}</option>
               }

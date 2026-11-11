@@ -1,10 +1,10 @@
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 page-enter">
 
   <!-- Encabezado y Navegación -->
   <div class="space-y-3 border-b border-slate-200 pb-6">
     <a
       routerLink="/enterprise/vacantes"
-      class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors">
+      class="btn-tactile-secondary inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold">
       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
       </svg>
@@ -41,7 +41,7 @@
           type="text"
           [formField]="vacanteForm.puesto"
           placeholder="Ej: Senior Frontend Engineer (Angular / TypeScript)"
-          class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-all" />
+          class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-[background-color,border-color,box-shadow]" />
         @if (vacanteForm.puesto().touched() && vacanteForm.puesto().invalid()) {
           <p class="text-[11px] text-rose-600 font-medium pt-0.5">
             {{ vacanteForm.puesto().errors()?.[0]?.message }}
@@ -56,7 +56,7 @@
           <select
             id="vac-tipo"
             [formField]="vacanteForm.tipoVacante"
-            class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-all">
+            class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-[background-color,border-color,box-shadow]">
             @for (tipo of tiposVacante; track tipo) {
               <option [value]="tipo">{{ tipo }}</option>
             }
@@ -70,7 +70,7 @@
             type="text"
             [formField]="vacanteForm.salario"
             placeholder="Ej: $2.500 - $3.500 USD / mes (opcional)"
-            class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-all" />
+            class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-[background-color,border-color,box-shadow]" />
         </div>
       </div>
     </div>
@@ -90,7 +90,7 @@
           <button
             type="button"
             (click)="seleccionarModalidad(mod.valor)"
-            class="p-3.5 rounded-xl border text-left transition-all flex flex-col justify-between gap-1 {{ vacanteModel().tipoUbicacion === mod.valor ? 'border-brand-indigo bg-indigo-50/70 ring-2 ring-brand-indigo/20 shadow-xs' : 'border-slate-200 hover:border-slate-300 bg-slate-50/50' }}">
+            class="p-3.5 rounded-xl border text-left transition-[border-color,background-color,box-shadow,transform] duration-150 active:scale-[0.98] flex flex-col justify-between gap-1 {{ vacanteModel().tipoUbicacion === mod.valor ? 'border-brand-indigo bg-indigo-50/80 ring-2 ring-brand-indigo/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.85),0_4px_10px_-2px_rgba(79,70,229,0.2)]' : 'border-slate-200 hover:border-slate-300 bg-slate-50/70 shadow-[inset_0_1px_0_rgba(255,255,255,0.85),0_2px_4px_rgba(15,23,42,0.05)]' }}">
             <span class="text-xs font-bold text-slate-900">{{ mod.label }}</span>
             <span class="text-[11px] text-slate-500 leading-tight">{{ mod.desc }}</span>
           </button>
@@ -106,7 +106,7 @@
             type="text"
             [formField]="vacanteForm.ubicacion"
             placeholder="Ej: Buenos Aires, Argentina (o Remoto LATAM)"
-            class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-all" />
+            class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-[background-color,border-color,box-shadow]" />
           @if (vacanteForm.ubicacion().touched() && vacanteForm.ubicacion().invalid()) {
             <p class="text-[11px] text-rose-600 font-medium pt-0.5">
               {{ vacanteForm.ubicacion().errors()?.[0]?.message }}
@@ -122,7 +122,7 @@
             type="date"
             [min]="todayDate"
             [formField]="vacanteForm.finalizacion"
-            class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-all" />
+            class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-[background-color,border-color,box-shadow]" />
           @if (vacanteForm.finalizacion().touched() && vacanteForm.finalizacion().invalid()) {
             <p class="text-[11px] text-rose-600 font-medium pt-0.5">
               {{ vacanteForm.finalizacion().errors()?.[0]?.message }}
@@ -153,7 +153,7 @@
               (input)="tagInput.set($any($event.target).value)"
               (keydown)="onTagKeyDown($event)"
               placeholder="Buscar o escribir tecnología (ej: Angular, Docker, Spring Boot)..."
-              class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-all" />
+              class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-[background-color,border-color,box-shadow]" />
 
             <datalist id="catalogo-habilidades-vacante">
               @for (hab of catalogoHabilidades(); track hab.id) {
@@ -163,7 +163,7 @@
 
             <!-- Dropdown flotante con coincidencias verificadas mientras escribe -->
             @if (sugerenciasAutocompletado().length > 0) {
-              <div class="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-30 overflow-hidden divide-y divide-slate-100 animate-fade-in">
+              <div class="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-30 overflow-hidden divide-y divide-slate-100 animate-popover-in">
                 @for (sug of sugerenciasAutocompletado(); track sug) {
                   <button
                     type="button"
@@ -213,7 +213,7 @@
             <button
               type="button"
               (click)="toggleSugerencia(tec)"
-              class="px-2.5 py-1 rounded-lg text-xs font-medium transition-colors {{ etiquetas().includes(tec) ? 'bg-brand-indigo text-white shadow-2xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+              class="{{ etiquetas().includes(tec) ? 'btn-tactile-primary px-3 py-1.5 text-xs' : 'btn-tactile-icon px-3 py-1.5 text-xs font-medium' }}">
               {{ etiquetas().includes(tec) ? '✓ ' + tec : '+ ' + tec }}
             </button>
           }
@@ -240,7 +240,7 @@
           rows="7"
           [formField]="vacanteForm.descripcion"
           placeholder="Describe las principales responsabilidades del puesto, proyectos a liderar, requisitos excluyentes, beneficios y rango de experiencia esperado..."
-          class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo leading-relaxed transition-all resize-y"></textarea>
+          class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo leading-relaxed transition-[background-color,border-color,box-shadow] resize-y"></textarea>
         @if (vacanteForm.descripcion().touched() && vacanteForm.descripcion().invalid()) {
           <p class="text-[11px] text-rose-600 font-medium pt-0.5">
             {{ vacanteForm.descripcion().errors()?.[0]?.message }}

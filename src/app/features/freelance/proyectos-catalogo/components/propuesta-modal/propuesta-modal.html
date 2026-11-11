@@ -1,4 +1,4 @@
-﻿<div
+<div
   class="fixed inset-0 bg-slate-900/55 backdrop-blur-xs z-50 transition-opacity duration-200 ease-out"
   [class.opacity-100]="isOpen()"
   [class.opacity-0]="!isOpen()"
@@ -36,7 +36,7 @@
       <button
         type="button"
         (click)="cerrar()"
-        class="w-11 h-11 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-800 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky transition-colors cursor-pointer -mr-2"
+        class="btn-tactile-icon w-11 h-11 rounded-full text-slate-500 hover:text-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky -mr-2"
         aria-label="Cerrar modal de propuesta">
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -113,9 +113,9 @@
                   (click)="seleccionarTiempo(opcion)"
                   [attr.aria-pressed]="tiempoEntrega() === opcion"
                   [class]="tiempoEntrega() === opcion
-                    ? 'bg-indigo-50 text-brand-indigo border-brand-indigo font-bold'
-                    : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100 font-medium'"
-                  class="py-2 px-2.5 min-h-[44px] text-xs text-center rounded-xl border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky cursor-pointer">
+                    ? 'btn-tactile-secondary border-brand-indigo text-brand-indigo font-bold'
+                    : 'btn-tactile-icon text-slate-600 font-medium'"
+                  class="py-2 px-2.5 min-h-[44px] text-xs text-center rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky">
                   {{ opcion }}
                 </button>
               }

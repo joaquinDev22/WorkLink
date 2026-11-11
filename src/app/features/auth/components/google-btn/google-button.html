@@ -6,7 +6,7 @@
   @if (!isGoogleReady()) {
     <button 
       (click)="iniciarConGoogle()"
-      class="w-full text-center py-3 px-4 bg-white hover:bg-slate-50 text-slate-800 rounded-full shadow-md active:scale-[0.98] transition-all duration-200 flex justify-center items-center gap-3 font-semibold text-sm border border-slate-300" 
+      class="w-full min-h-[44px] text-center py-3 px-4 bg-white hover:bg-slate-50 text-slate-800 rounded-full shadow-[inset_0_1px_0_rgba(255,255,255,0.95),inset_0_-2px_0_rgba(0,0,0,0.08),0_2px_6px_rgba(15,23,42,0.12)] active:scale-[0.98] transition-[transform,box-shadow,background-color] duration-150 flex justify-center items-center gap-3 font-semibold text-sm border border-slate-300 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky" 
       type="button"
     >
       <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -21,21 +21,21 @@
 
   <!-- Modal: Selector de Rol para Google Login -->
   @if (isRoleModalOpen()) {
-    <div class="fixed inset-0 z-50 flex items-center justify-center animate-fade-in" (click)="cerrarModalRol()">
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs animate-modal-backdrop" (click)="cerrarModalRol()" role="dialog" aria-modal="true">
       <div 
-        class="bg-slate-900 border border-glass-border-strong rounded-3xl w-full p-5 sm:p-7 shadow-2xl space-y-5 text-white relative animate-scale-in min-h-full"
+        class="bg-slate-900 border border-glass-border-strong rounded-3xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-5 sm:p-7 shadow-2xl space-y-5 text-white relative animate-modal-card"
         (click)="$event.stopPropagation()">
         
         <!-- Cabecera -->
         <div class="flex items-center justify-between pb-3 border-b border-glass-border/30">
           <div class="space-y-0.5">
-            <span class="text-xs uppercase font-bold text-brand-sky tracking-wider">Paso final de acceso</span>
+            <span class="text-xs font-semibold text-brand-sky">Paso final de acceso</span>
             <h3 class="text-xl font-bold tracking-tight">¿Cómo deseas usar WorkLink?</h3>
           </div>
           <button 
             type="button" 
             (click)="cerrarModalRol()"
-            class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors"
+            class="btn-tactile-ghost-dark min-w-[40px] min-h-[40px] p-2 flex items-center justify-center"
             aria-label="Cerrar modal">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -50,7 +50,11 @@
         @if (errorGoogle()) {
           <div class="bg-red-500/20 border border-red-500/50 text-red-200 text-xs sm:text-sm rounded-xl p-3 flex items-center justify-between animate-fade-in">
             <span>{{ errorGoogle() }}</span>
-            <button type="button" (click)="errorGoogle.set(null)" class="text-red-300 hover:text-white text-base leading-none ml-2" aria-label="Cerrar aviso">&times;</button>
+            <button type="button" (click)="errorGoogle.set(null)" class="text-red-300 hover:text-white p-1.5 rounded-lg ml-2 cursor-pointer" aria-label="Cerrar aviso">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
           </div>
         }
 
@@ -61,12 +65,12 @@
               type="button"
               (click)="seleccionarRolYCompletar(opcion.rol)"
               [disabled]="isSubmitting()"
-              class="group flex flex-col items-start p-2 rounded-2xl bg-white/5 hover:bg-brand-indigo/20 border border-white/10 hover:border-brand-sky/60 text-left transition-all duration-200 active:scale-[0.98] disabled:opacity-50"
+              class="btn-tactile-ghost-dark group flex flex-col items-start p-4 min-h-[44px] rounded-2xl text-left disabled:opacity-50"
             >
-              <div class="flex items-center md:gap-2.5 mb-2">
+              <div class="flex items-center md:gap-2.5 mb-1">
                 <span class="font-bold text-sm text-white group-hover:text-brand-sky transition-colors">{{ opcion.titulo }}</span>
               </div>
-              <p class="text-xs text-slate-400 group-hover:text-slate-200 transition-colors leading-relaxed">
+              <p class="text-xs text-slate-300 group-hover:text-slate-100 transition-colors leading-relaxed font-normal">
                 {{ opcion.desc }}
               </p>
             </button>

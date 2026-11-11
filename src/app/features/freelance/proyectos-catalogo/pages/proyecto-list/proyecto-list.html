@@ -1,4 +1,4 @@
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+<div class="page-enter max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
 
   <!-- Encabezado y Buscador Desktop -->
   <header class="flex flex-col lg:flex-row lg:items-end justify-between gap-4 border-b border-slate-200/80 pb-5">
@@ -55,7 +55,7 @@
         (click)="mostrarBuscadorMobile.update(v => !v)"
         [attr.aria-expanded]="mostrarBuscadorMobile()"
         aria-label="Mostrar u ocultar buscador de proyectos"
-        class="min-w-[44px] min-h-[44px] inline-flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky cursor-pointer">
+        class="btn-tactile-icon w-11 h-11 rounded-xl text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky">
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
         </svg>
@@ -65,7 +65,7 @@
 
   <!-- Buscador colapsable Mobile -->
   <div
-    class="grid transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] lg:hidden motion-reduce:transition-none"
+    class="grid transition-[grid-template-rows,opacity] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] lg:hidden motion-reduce:transition-none"
     [class.grid-rows-[1fr]]="mostrarBuscadorMobile()"
     [class.opacity-100]="mostrarBuscadorMobile()"
     [class.grid-rows-[0fr]]="!mostrarBuscadorMobile()"
@@ -178,7 +178,7 @@
         <div class="grid grid-cols-1 gap-4">
           @for (p of proyectosPaginados(); track p.proyectoId) {
             @let estado = estadoConfig[p.estado];
-            <article class="proyecto-card bg-white border border-slate-200/80 hover:border-brand-indigo/40 rounded-2xl p-5 sm:p-6 shadow-xs hover:shadow-md transition-all space-y-4">
+            <article class="proyecto-card bg-white border border-slate-200/80 hover:border-brand-indigo/40 rounded-2xl p-5 sm:p-6 shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-[border-color,box-shadow,transform] duration-200 space-y-4">
               <!-- Cabecera asimétrica: Título + Presupuesto tabular -->
               <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                 <div class="space-y-1.5 min-w-0">
@@ -298,9 +298,9 @@
         type="button"
         (click)="seleccionarArea('TODOS')"
         [class]="filtroArea() === 'TODOS'
-          ? 'bg-indigo-50 text-brand-indigo border-brand-indigo/30 font-bold'
-          : 'text-slate-600 hover:bg-slate-50 border-transparent font-medium'"
-        class="text-left text-xs px-3 py-2 min-h-[38px] rounded-xl border transition-colors cursor-pointer">
+          ? 'bg-indigo-50 text-brand-indigo border-brand-indigo/30 font-bold shadow-[inset_0_1px_0_rgba(255,255,255,0.85),0_1px_2px_rgba(79,70,229,0.1)]'
+          : 'text-slate-600 hover:bg-slate-50 border-transparent hover:border-slate-200/80 font-medium'"
+        class="text-left text-xs px-3 py-2 min-h-[38px] rounded-xl border transition-[background-color,border-color,color,transform] duration-150 active:scale-[0.98] cursor-pointer">
         Todas las áreas
       </button>
       @for (area of areasDisponibles(); track area) {
@@ -308,9 +308,9 @@
           type="button"
           (click)="seleccionarArea(area)"
           [class]="filtroArea().toLowerCase() === area.toLowerCase()
-            ? 'bg-indigo-50 text-brand-indigo border-brand-indigo/30 font-bold'
-            : 'text-slate-600 hover:bg-slate-50 border-transparent font-medium'"
-          class="text-left text-xs px-3 py-2 min-h-[38px] rounded-xl border transition-colors cursor-pointer">
+            ? 'bg-indigo-50 text-brand-indigo border-brand-indigo/30 font-bold shadow-[inset_0_1px_0_rgba(255,255,255,0.85),0_1px_2px_rgba(79,70,229,0.1)]'
+            : 'text-slate-600 hover:bg-slate-50 border-transparent hover:border-slate-200/80 font-medium'"
+          class="text-left text-xs px-3 py-2 min-h-[38px] rounded-xl border transition-[background-color,border-color,color,transform] duration-150 active:scale-[0.98] cursor-pointer">
           {{ area }}
         </button>
       }
@@ -320,7 +320,7 @@
   <!-- Rango de Presupuesto -->
   <fieldset class="space-y-2.5 pt-2 border-t border-slate-100">
     <legend class="text-xs font-bold text-slate-700">Presupuesto (USD)</legend>
-    <div class="grid grid-cols-2 gap-2">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
       <div class="space-y-1">
         <label for="filtroMinUsd" class="text-[11px] font-medium text-slate-500">Mínimo</label>
         <input
@@ -362,9 +362,9 @@
             (click)="toggleSkill(skill)"
             [attr.aria-pressed]="active"
             [class]="active
-              ? 'bg-brand-indigo text-white border-brand-indigo font-semibold'
-              : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 font-medium'"
-            class="px-2.5 py-1.5 rounded-lg text-xs border transition-colors cursor-pointer">
+              ? 'btn-tactile-primary font-semibold'
+              : 'btn-tactile-icon font-medium'"
+            class="px-2.5 py-1.5 rounded-lg text-xs">
             {{ skill }}
           </button>
         }
@@ -376,14 +376,14 @@
 <!-- Drawer Mobile de Filtros -->
 @if (mostrarFiltrosModal()) {
   <div class="fixed inset-0 z-50 lg:hidden flex">
-    <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs" (click)="mostrarFiltrosModal.set(false)" aria-hidden="true"></div>
-    <div class="relative bg-white w-80 max-w-[85vw] h-full p-5 overflow-y-auto space-y-6 shadow-2xl z-10">
+    <div class="animate-modal-backdrop fixed inset-0 bg-slate-900/50 backdrop-blur-xs" (click)="mostrarFiltrosModal.set(false)" aria-hidden="true"></div>
+    <div class="animate-modal-card relative bg-white w-80 max-w-[85vw] h-full p-5 overflow-y-auto space-y-6 shadow-2xl z-10">
       <div class="flex items-center justify-between">
         <span class="text-sm font-bold text-slate-900">Filtros</span>
         <button
           type="button"
           (click)="mostrarFiltrosModal.set(false)"
-          class="w-11 h-11 rounded-full flex items-center justify-center text-slate-500 hover:bg-slate-100 cursor-pointer"
+          class="btn-tactile-icon w-11 h-11 rounded-full text-slate-500"
           aria-label="Cerrar filtros">
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />

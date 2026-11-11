@@ -9,13 +9,13 @@
     <!-- Contenedor centrado -->
     <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
       <div
-        class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg border border-slate-200/90 animate-modal-card"
+        class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl sm:my-8 w-full sm:max-w-lg border border-slate-200/90 animate-modal-card"
       >
         <!-- Encabezado del Modal -->
-        <div class="border-b border-slate-100 px-6 py-5 bg-gradient-to-r from-slate-50 to-white">
+        <div class="border-b border-slate-100 px-6 py-5 bg-slate-50/70">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
+              <div class="w-10 h-10 rounded-xl bg-brand-indigo/10 border border-brand-indigo/20 flex items-center justify-center text-brand-indigo">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
@@ -33,7 +33,7 @@
             <button
               type="button"
               (click)="onClose()"
-              class="rounded-lg p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+              class="btn-tactile-icon min-w-[40px] min-h-[40px] p-2 flex items-center justify-center"
               aria-label="Cerrar modal"
             >
               <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -101,7 +101,7 @@
               [value]="mensaje()"
               (input)="onInputMensaje($event)"
               placeholder="Explica brevemente por qué eres la persona indicada para este rol, tus logros principales o proyectos relevantes..."
-              class="w-full rounded-xl border border-slate-300 p-3 text-xs sm:text-sm text-slate-800 placeholder-slate-400 shadow-inner focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all resize-none"
+              class="w-full rounded-xl border border-slate-300 p-3 text-xs sm:text-sm text-slate-800 placeholder-slate-400 shadow-inner focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-[border-color,box-shadow] resize-none"
             ></textarea>
             <p class="text-[11px] text-slate-400">
               Mínimo 15 caracteres. Este texto será leído por el recruiter a cargo de la búsqueda.

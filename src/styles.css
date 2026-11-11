@@ -523,6 +523,93 @@
   }
 }
 
+/* Botón icónico / paginación / chip táctil con volumen */
+.btn-tactile-icon {
+  background: #ffffff;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.06),
+    0 1px 2px 0 rgba(15, 23, 42, 0.06);
+  transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.16s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  user-select: none;
+  cursor: pointer;
+}
+
+.btn-tactile-icon:hover:not(:disabled) {
+  background: #f8fafc;
+  color: var(--color-brand-indigo);
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 0 #ffffff,
+    0 2px 5px 0 rgba(15, 23, 42, 0.08);
+}
+
+.btn-tactile-icon:active:not(:disabled) {
+  transform: translateY(1px) scale(0.95);
+  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.10);
+}
+
+.btn-tactile-icon:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.btn-tactile-icon:focus-visible,
+.btn-tactile-ghost-dark:focus-visible {
+  outline: 2px solid var(--color-brand-sky);
+  outline-offset: 2px;
+}
+
+/* Botón táctil translúcido sobre fondos oscuros / glassmorphism */
+.btn-tactile-ghost-dark {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f1f5f9;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 0.75rem;
+  font-weight: 600;
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.22),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.25),
+    0 2px 6px 0 rgba(15, 23, 42, 0.2);
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s ease, border-color 0.15s ease;
+  user-select: none;
+  cursor: pointer;
+}
+
+.btn-tactile-ghost-dark:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(56, 189, 248, 0.5);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.btn-tactile-ghost-dark:active:not(:disabled) {
+  transform: translateY(1px) scale(0.97);
+  box-shadow: inset 0 2px 5px 0 rgba(0, 0, 0, 0.35);
+}
+
+/* Entrada sutil GPU-only para vistas internas y contenedores */
+.page-enter {
+  animation: pageFadeRise 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes pageFadeRise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
 /* Degradación elegante para usuarios que prefieren movimiento reducido */
 @media (prefers-reduced-motion: reduce) {
   .btn-registrarse,
@@ -531,6 +618,8 @@
   .btn-tactile-secondary,
   .btn-tactile-dark,
   .btn-tactile-danger,
+  .btn-tactile-icon,
+  .btn-tactile-ghost-dark,
   .tab-tactile-inactive {
     transition: background-color 120ms ease-out, border-color 120ms ease-out !important;
   }
@@ -545,7 +634,11 @@
   .btn-tactile-dark:hover,
   .btn-tactile-dark:active,
   .btn-tactile-danger:hover,
-  .btn-tactile-danger:active {
+  .btn-tactile-danger:active,
+  .btn-tactile-icon:hover,
+  .btn-tactile-icon:active,
+  .btn-tactile-ghost-dark:hover,
+  .btn-tactile-ghost-dark:active {
     transform: none !important;
   }
   .animate-shine::after {
@@ -554,7 +647,8 @@
   }
   .animate-modal-card,
   .animate-popover-in,
-  .animate-toast-in {
+  .animate-toast-in,
+  .page-enter {
     animation: fadeIn 120ms ease-out both !important;
   }
   .input-error {

@@ -1,10 +1,10 @@
-﻿<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 pb-14">
+<div class="page-enter max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 pb-14">
 
   <!-- Navegación de regreso -->
   <div class="flex items-center justify-between">
     <a
       routerLink="/freelance/mis-proyectos"
-      class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-slate-600 hover:text-brand-indigo focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky rounded-lg px-2 py-1.5 -ml-2 transition-colors">
+      class="btn-tactile-secondary inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-slate-700 hover:text-brand-indigo focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky rounded-xl px-3.5 py-2">
       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
       </svg>
@@ -127,7 +127,7 @@
 @if (candidaturaAConfirmar(); as cand) {
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
     <div
-      class="fixed inset-0 bg-slate-900/55 backdrop-blur-xs"
+      class="animate-modal-backdrop fixed inset-0 bg-slate-900/55 backdrop-blur-xs"
       (click)="!isAssigning() && candidaturaAConfirmar.set(null)"
       aria-hidden="true"></div>
 
@@ -135,7 +135,7 @@
       role="dialog"
       aria-modal="true"
       aria-labelledby="assign-modal-title"
-      class="relative z-10 w-full max-w-md bg-white rounded-2xl border border-slate-200 p-6 shadow-2xl space-y-4">
+      class="animate-modal-card relative z-10 w-full max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-2xl border border-slate-200 p-6 shadow-2xl space-y-4">
       <div class="space-y-1.5">
         <h2 id="assign-modal-title" class="text-lg font-bold text-slate-900">Confirmar adjudicación</h2>
         <p class="text-sm text-slate-600 leading-relaxed">

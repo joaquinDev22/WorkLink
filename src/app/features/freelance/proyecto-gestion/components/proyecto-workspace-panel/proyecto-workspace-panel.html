@@ -107,7 +107,7 @@
         </div>
         <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
           <div
-            class="h-full bg-brand-indigo transition-all duration-300"
+            class="h-full bg-brand-indigo transition-[width] duration-300"
             [style.width.%]="porcentajeAvance()">
           </div>
         </div>
@@ -203,7 +203,7 @@
       <div class="space-y-2.5">
         @for (h of hitos(); track h.hitoId) {
           @let hEstado = estadoHitoConfig[h.estado];
-          <div class="hito-row p-4 rounded-xl border border-slate-200/80 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="animate-row-enter hito-row p-4 rounded-xl border border-slate-200/80 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div class="space-y-1 min-w-0">
               <div class="flex flex-wrap items-center gap-2">
                 <span class="font-bold text-sm text-slate-900">{{ h.titulo }}</span>
@@ -337,7 +337,7 @@
 @if (mostrarModalCancelar()) {
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
     <div
-      class="fixed inset-0 bg-slate-900/55 backdrop-blur-xs"
+      class="animate-modal-backdrop fixed inset-0 bg-slate-900/55 backdrop-blur-xs"
       (click)="!isMutating() && mostrarModalCancelar.set(false)"
       aria-hidden="true"></div>
 
@@ -345,7 +345,7 @@
       role="alertdialog"
       aria-modal="true"
       aria-labelledby="cancel-title"
-      class="relative z-10 w-full max-w-md bg-white rounded-2xl border border-slate-200 p-6 shadow-2xl space-y-4">
+      class="animate-modal-card relative z-10 w-full max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-2xl border border-slate-200 p-6 shadow-2xl space-y-4">
       <div class="flex items-start gap-3">
         <div class="w-10 h-10 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center shrink-0 border border-rose-200">
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -372,7 +372,7 @@
           type="button"
           [disabled]="isMutating()"
           (click)="confirmarCancelacion()"
-          class="px-4 py-2.5 min-h-[44px] rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs sm:text-sm transition-colors cursor-pointer">
+          class="btn-tactile-danger px-4 py-2.5 min-h-[44px] rounded-xl font-bold text-xs sm:text-sm">
           {{ isMutating() ? 'Cancelando...' : 'Confirmar cancelación' }}
         </button>
       </div>

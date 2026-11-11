@@ -1,7 +1,7 @@
-<section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+<section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 page-enter">
   <!-- Toast flotante de confirmación -->
   @if (toastMessage()) {
-    <div class="fixed top-6 right-6 z-50 rounded-2xl bg-emerald-600 text-white px-5 py-3.5 shadow-xl flex items-center gap-3 animate-modal-card border border-emerald-500">
+    <div class="fixed top-6 right-6 z-50 rounded-2xl bg-emerald-600 text-white px-5 py-3.5 shadow-xl flex items-center gap-3 animate-toast-in border border-emerald-500">
       <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
       </svg>
@@ -13,7 +13,7 @@
   <div>
     <a
       routerLink="/enterprise/catalogo"
-      class="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-600 hover:text-indigo-600 transition-colors"
+      class="btn-tactile-secondary inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold"
     >
       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -106,7 +106,7 @@
         </div>
 
         <!-- Franja de Parámetros Clave -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 pt-6 border-t border-slate-200/70">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-8 pt-6 border-t border-slate-200/70">
           <div class="space-y-0.5">
             <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Modalidad</span>
             <p class="text-xs sm:text-sm font-bold text-slate-800">{{ vacante()!.tipoUbicacion || 'Remoto' }}</p>

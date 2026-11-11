@@ -1,5 +1,5 @@
 <!-- Dashboard Corporativo - Vista Ejecutiva -->
-<div class="w-full max-w-full 2xl:max-w-[1720px] mx-auto space-y-8 pb-10">
+<div class="w-full max-w-full 2xl:max-w-[1720px] mx-auto space-y-8 pb-10 page-enter">
 
   <!-- Header Superior con Acción Principal -->
   <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-6">
@@ -41,7 +41,7 @@
   } @else {
 
     <!-- Franja Unificada de Métricas Ejecutivas (KPI Strip Sin Duplicación) -->
-    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs divide-y lg:divide-y-0 lg:divide-x divide-slate-100 grid grid-cols-2 lg:grid-cols-4 overflow-hidden">
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs divide-y sm:divide-y-0 sm:divide-x divide-slate-100 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 overflow-hidden">
       
       <!-- Métrica 1: Búsquedas Activas -->
       <div class="dash-kpi p-6 space-y-1">
@@ -180,7 +180,7 @@
                 </div>
                 <div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
                   <div
-                    class="bg-brand-indigo h-full rounded-full transition-all duration-300"
+                    class="bg-brand-indigo h-full rounded-full transition-[width] duration-300"
                     [style.width.%]="tec.pct * 3">
                   </div>
                 </div>

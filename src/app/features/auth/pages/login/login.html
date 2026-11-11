@@ -22,7 +22,7 @@
             <label class="text-white font-medium text-sm" for="usuario">Usuario:</label>
             <input 
                 id="usuario"
-                class="w-full bg-white text-slate-900 py-2.5 px-3.5 rounded-xl text-sm font-medium placeholder:text-slate-400 border border-transparent focus:outline-none focus:ring-2 focus:ring-brand-sky focus:border-brand-sky shadow-inner shadow-slate-400/40 transition-all duration-150" 
+                class="w-full bg-white text-slate-900 py-2.5 px-3.5 rounded-xl text-sm font-medium placeholder:text-slate-400 border border-transparent focus:outline-none focus:ring-2 focus:ring-brand-sky focus:border-brand-sky shadow-inner shadow-slate-400/40 transition-[border-color,box-shadow] duration-150" 
                 type="text" 
                 placeholder="usuario3312" 
                 [formField]="loginForm.usuario"
@@ -41,7 +41,7 @@
             <div class="relative w-full flex items-center">
                 <input 
                     id="password"
-                    class="w-full bg-white text-slate-900 py-2.5 px-3.5 pr-11 rounded-xl text-sm font-medium placeholder:text-slate-400 border border-transparent focus:outline-none focus:ring-2 focus:ring-brand-sky focus:border-brand-sky shadow-inner shadow-slate-400/40 transition-all duration-150" 
+                    class="w-full bg-white text-slate-900 py-2.5 px-3.5 pr-11 rounded-xl text-sm font-medium placeholder:text-slate-400 border border-transparent focus:outline-none focus:ring-2 focus:ring-brand-sky focus:border-brand-sky shadow-inner shadow-slate-400/40 transition-[border-color,box-shadow] duration-150" 
                     [type]="showPassword() ? 'text' : 'password'" 
                     placeholder="••••••••" 
                     [formField]="loginForm.password"
@@ -50,7 +50,7 @@
                 <button 
                     type="button" 
                     (click)="showPassword.set(!showPassword())"
-                    class="absolute right-2 p-1.5 flex items-center justify-center opacity-60 hover:opacity-100 active:scale-90 transition-all"
+                    class="absolute right-2 min-w-[36px] min-h-[36px] p-1.5 rounded-lg flex items-center justify-center opacity-70 hover:opacity-100 active:scale-90 transition-[opacity,transform] duration-150 cursor-pointer"
                     aria-label="Alternar visibilidad de contraseña">
                     <img 
                         [src]="showPassword() ? '/eye.svg' : '/eye-off.svg'" 
@@ -68,19 +68,19 @@
 
         <!-- Opciones de Sesión -->
         <fieldset class="flex items-center justify-between pt-1">
-            <label class="flex items-center gap-2 text-slate-200 font-medium text-xs sm:text-sm select-none">
+            <label class="flex items-center gap-2 text-slate-200 font-medium text-xs sm:text-sm select-none cursor-pointer">
                 <input 
                     type="checkbox" 
                     id="rememberMe"
                     [checked]="rememberMe()"
                     (change)="toggleRememberMe($event)"
-                    class="custom-checkbox size-4 rounded-md appearance-none border border-glass-border-strong bg-white/20 backdrop-blur-sm checked:bg-brand-indigo checked:border-brand-indigo-light focus:outline-none focus:ring-2 focus:ring-brand-sky/50 transition-all">
+                    class="custom-checkbox size-4 rounded-md appearance-none border border-glass-border-strong bg-white/20 backdrop-blur-sm checked:bg-brand-indigo checked:border-brand-indigo-light focus:outline-none focus:ring-2 focus:ring-brand-sky/50 transition-[background-color,border-color] duration-150">
                 <span>Recuérdame</span>
             </label>
             <button 
                 type="button"
                 (click)="abrirForgotPassword($event)"
-                class="text-xs sm:text-sm font-semibold text-brand-sky hover:text-white underline transition-colors bg-transparent border-0 p-0">
+                class="text-xs sm:text-sm font-semibold text-brand-sky hover:text-white underline transition-colors bg-transparent border-0 p-1 cursor-pointer">
                 ¿Olvidaste tu contraseña?
             </button>
         </fieldset>
@@ -88,7 +88,7 @@
         <!-- Botón de Envío -->
         <div class="pt-1">
             <button 
-                class="btn-registrarse bg-brand-violet w-full py-3.5 px-4 rounded-xl font-semibold text-white text-sm tracking-wide text-center active:scale-[0.97]" 
+                class="btn-registrarse bg-brand-violet w-full min-h-[44px] py-3.5 px-4 rounded-xl font-semibold text-white text-sm tracking-wide text-center cursor-pointer" 
                 type="submit"
                 [disabled]="isLoading()"
                 >
@@ -119,9 +119,9 @@
 
     <!-- Modal: Recuperación de Contraseña -->
     @if (isForgotModalOpen()) {
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-fade-in" (click)="cerrarForgotPassword()">
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs animate-modal-backdrop" (click)="cerrarForgotPassword()" role="dialog" aria-modal="true">
             <div 
-                class="bg-slate-900 border border-glass-border-strong rounded-2xl w-full max-w-md p-6 sm:p-7 shadow-2xl space-y-4 text-white relative animate-scale-in"
+                class="bg-slate-900 border border-glass-border-strong rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto p-6 sm:p-7 shadow-2xl space-y-4 text-white relative animate-modal-card"
                 (click)="$event.stopPropagation()">
                 
                 <!-- Encabezado del Modal -->
@@ -137,7 +137,7 @@
                     <button 
                         type="button" 
                         (click)="cerrarForgotPassword()"
-                        class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors"
+                        class="btn-tactile-ghost-dark min-w-[40px] min-h-[40px] p-2 flex items-center justify-center"
                         aria-label="Cerrar modal">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -160,7 +160,7 @@
                                 name="recoveryEmail"
                                 placeholder="tu.correo@ejemplo.com"
                                 required
-                                class="w-full bg-slate-800 text-white py-2.5 px-3.5 rounded-xl text-sm font-medium placeholder:text-slate-500 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-sky focus:border-brand-sky transition-all"
+                                class="w-full bg-slate-800 text-white py-2.5 px-3.5 rounded-xl text-sm font-medium placeholder:text-slate-500 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-sky focus:border-brand-sky transition-[border-color,box-shadow] duration-150"
                             >
                         </div>
 
@@ -168,13 +168,13 @@
                             <button 
                                 type="button" 
                                 (click)="cerrarForgotPassword()"
-                                class="py-2.5 px-4 rounded-xl text-xs sm:text-sm font-medium text-slate-300 hover:text-white hover:bg-white/10 transition-all">
+                                class="btn-tactile-ghost-dark min-h-[44px] py-2.5 px-4 rounded-xl text-xs sm:text-sm">
                                 Cancelar
                             </button>
                             <button 
                                 type="submit"
                                 [disabled]="forgotLoading() || !forgotEmail()"
-                                class="btn-registrarse bg-brand-violet py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold text-white tracking-wide transition-all disabled:opacity-50 disabled:pointer-events-none">
+                                class="btn-registrarse bg-brand-violet min-h-[44px] py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold text-white tracking-wide disabled:opacity-50 disabled:pointer-events-none cursor-pointer">
                                 {{ forgotLoading() ? 'Enviando...' : 'Enviar instrucciones' }}
                             </button>
                         </div>

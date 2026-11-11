@@ -1,7 +1,7 @@
-<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-7">
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-7 page-enter">
   <!-- Toast flotante de confirmación -->
   @if (toastMessage()) {
-    <div class="fixed top-6 right-6 z-50 rounded-2xl bg-emerald-600 text-white px-5 py-3.5 shadow-xl flex items-center gap-3 animate-modal-card border border-emerald-500">
+    <div class="fixed top-6 right-6 z-50 rounded-2xl bg-emerald-600 text-white px-5 py-3.5 shadow-xl flex items-center gap-3 animate-toast-in border border-emerald-500">
       <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
       </svg>
@@ -42,12 +42,12 @@
           [value]="searchFilter()"
           (input)="onSearchInput($event)"
           placeholder="Buscar por puesto, empresa, o stack (ej. Angular, Go, AWS)..."
-          class="w-full pl-10 pr-4 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50/70 placeholder-slate-400 text-slate-800 focus:bg-white focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all shadow-inner"
+          class="w-full pl-10 pr-4 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50/70 placeholder-slate-400 text-slate-800 focus:bg-white focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-[background-color,border-color,box-shadow] shadow-inner"
         />
       </div>
 
       <!-- Segmented Control Táctil de Modalidad -->
-      <div class="inline-flex p-1 bg-slate-100 rounded-xl border border-slate-200/80 shrink-0 self-start lg:self-auto">
+      <div class="inline-flex flex-wrap gap-1 p-1 bg-slate-100 rounded-xl border border-slate-200/80 shrink-0 self-start lg:self-auto">
         <button
           type="button"
           (click)="setModalidad('TODAS')"
@@ -86,15 +86,7 @@
         <button
           type="button"
           (click)="toggleTag(tag)"
-          class="px-2.5 py-1 text-xs font-medium rounded-lg border transition-all duration-150"
-          [class.bg-indigo-600]="selectedTag() === tag"
-          [class.text-white]="selectedTag() === tag"
-          [class.border-indigo-700]="selectedTag() === tag"
-          [class.shadow-sm]="selectedTag() === tag"
-          [class.bg-slate-50]="selectedTag() !== tag"
-          [class.text-slate-600]="selectedTag() !== tag"
-          [class.border-slate-200]="selectedTag() !== tag"
-          [class.hover:bg-slate-100]="selectedTag() !== tag"
+          class="{{ selectedTag() === tag ? 'btn-tactile-primary px-3 py-1.5 text-xs' : 'btn-tactile-icon px-3 py-1.5 text-xs font-medium' }}"
         >
           {{ tag }}
         </button>
@@ -103,7 +95,7 @@
         <button
           type="button"
           (click)="selectedTag.set(null)"
-          class="text-xs text-rose-600 hover:text-rose-700 font-semibold underline underline-offset-2 ml-1"
+          class="btn-tactile-secondary px-2.5 py-1 text-xs text-rose-600 ml-1"
         >
           Limpiar filtro
         </button>
@@ -151,9 +143,10 @@
       </div>
     </div>
   } @else {
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-row-enter">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       @for (vacante of vacantesFiltradas(); track vacante.vacanteId) {
         <app-vacante-card
+          class="vacante-card-item block"
           [vacante]="vacante"
           [yaPostulado]="estaPostulado(vacante.vacanteId)"
           (postular)="abrirModalPostulacion($event)"

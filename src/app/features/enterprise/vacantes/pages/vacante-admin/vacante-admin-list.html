@@ -1,5 +1,5 @@
 <!-- Mesa de Gestión de Vacantes Laborales -->
-<div class="w-full max-w-full 2xl:max-w-[1720px] mx-auto space-y-6 pb-10">
+<div class="w-full max-w-full 2xl:max-w-[1720px] mx-auto space-y-6 pb-10 page-enter">
 
   <!-- Toast de Notificación -->
   @if (toastMsg()) {
@@ -74,14 +74,16 @@
           [(ngModel)]="searchTerm"
           (ngModelChange)="onFilterChange()"
           placeholder="Buscar puesto, tecnología o ubicación..."
-          class="w-full pl-10 pr-9 py-2.5 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-all shadow-inner" />
+          class="w-full pl-10 pr-10 py-2.5 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-[border-color,box-shadow] shadow-inner" />
         @if (searchTerm()) {
           <button
             type="button"
             (click)="searchTerm.set(''); onFilterChange()"
-            class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600"
+            class="btn-tactile-icon absolute inset-y-1.5 right-1.5 w-7 h-7 rounded-lg flex items-center justify-center"
             aria-label="Limpiar búsqueda">
-            ✕
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
         }
       </div>
@@ -217,7 +219,7 @@
                     <!-- Ver Detalle Público -->
                     <a
                       [routerLink]="['/enterprise/vacante', v.vacanteId]"
-                      class="p-2 rounded-xl text-slate-500 hover:text-brand-indigo hover:bg-slate-100 transition-colors"
+                      class="btn-tactile-icon w-9 h-9 rounded-xl inline-flex items-center justify-center hover:text-brand-indigo"
                       title="Ver detalle público"
                       aria-label="Ver detalle público">
                       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -230,7 +232,7 @@
                     @if (esRecruiter()) {
                       <a
                         routerLink="/enterprise/postulantes"
-                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 text-brand-indigo hover:bg-indigo-100 transition-colors"
+                        class="btn-tactile-secondary inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-brand-indigo"
                         title="Ver pipeline de candidatos"
                         aria-label="Ver pipeline de candidatos">
                         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -244,7 +246,7 @@
                     @if (esEmpresa()) {
                       <a
                         [routerLink]="['/enterprise/vacantes/editar', v.vacanteId]"
-                        class="p-2 rounded-xl text-slate-500 hover:text-brand-indigo hover:bg-slate-100 active:scale-95 transition-all"
+                        class="btn-tactile-icon w-9 h-9 rounded-xl inline-flex items-center justify-center hover:text-brand-indigo"
                         title="Editar vacante"
                         aria-label="Editar vacante">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -255,7 +257,7 @@
                       <button
                         type="button"
                         (click)="solicitarBaja(v)"
-                        class="p-2 rounded-xl text-rose-500 hover:bg-rose-50 active:scale-95 transition-all"
+                        class="btn-tactile-icon w-9 h-9 rounded-xl inline-flex items-center justify-center text-rose-500 hover:text-rose-600 hover:bg-rose-50"
                         title="Eliminar vacante"
                         aria-label="Eliminar vacante">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -294,10 +296,10 @@
                 }
               </div>
 
-              <div class="flex items-center gap-1 shrink-0">
+              <div class="flex items-center gap-1.5 shrink-0">
                 <a
                   [routerLink]="['/enterprise/vacante', v.vacanteId]"
-                  class="p-2 rounded-xl text-slate-500 hover:bg-slate-100"
+                  class="btn-tactile-icon w-10 h-10 rounded-xl flex items-center justify-center"
                   aria-label="Ver detalle">
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -307,7 +309,7 @@
                 @if (esRecruiter()) {
                   <a
                     routerLink="/enterprise/postulantes"
-                    class="p-2 rounded-xl text-brand-indigo hover:bg-indigo-50 font-semibold text-xs inline-flex items-center gap-1"
+                    class="btn-tactile-icon w-10 h-10 rounded-xl flex items-center justify-center text-brand-indigo"
                     aria-label="Ver candidatos">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -317,7 +319,7 @@
                 @if (esEmpresa()) {
                   <a
                     [routerLink]="['/enterprise/vacantes/editar', v.vacanteId]"
-                    class="p-2 rounded-xl text-slate-600 hover:bg-slate-100"
+                    class="btn-tactile-icon w-10 h-10 rounded-xl flex items-center justify-center"
                     aria-label="Editar">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -326,7 +328,7 @@
                   <button
                     type="button"
                     (click)="solicitarBaja(v)"
-                    class="p-2 rounded-xl text-rose-500 hover:bg-rose-50"
+                    class="btn-tactile-icon w-10 h-10 rounded-xl flex items-center justify-center text-rose-500 hover:text-rose-600 hover:bg-rose-50"
                     aria-label="Eliminar">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -364,13 +366,13 @@
                 <button
                   type="button"
                   (click)="setPageSize(5)"
-                  class="px-2 py-0.5 rounded-md font-bold transition-all {{ pageSize() === 5 ? 'tab-tactile-active text-indigo-700' : 'tab-tactile-inactive' }}">
+                  class="{{ pageSize() === 5 ? 'tab-tactile-active text-indigo-700' : 'tab-tactile-inactive' }} px-2.5 py-1">
                   5
                 </button>
                 <button
                   type="button"
                   (click)="setPageSize(10)"
-                  class="px-2 py-0.5 rounded-md font-bold transition-all {{ pageSize() === 10 ? 'tab-tactile-active text-indigo-700' : 'tab-tactile-inactive' }}">
+                  class="{{ pageSize() === 10 ? 'tab-tactile-active text-indigo-700' : 'tab-tactile-inactive' }} px-2.5 py-1">
                   10
                 </button>
               </div>
@@ -395,7 +397,7 @@
                 <button
                   type="button"
                   (click)="goToPage(p)"
-                  class="w-7 h-7 rounded-lg text-xs font-bold transition-all flex items-center justify-center {{ currentPage() === p ? 'tab-tactile-active text-indigo-700' : 'text-slate-600 hover:bg-slate-200/60' }}">
+                  class="w-9 h-9 rounded-xl text-xs font-bold flex items-center justify-center {{ currentPage() === p ? 'tab-tactile-active text-indigo-700' : 'btn-tactile-icon' }}">
                   {{ p }}
                 </button>
               }
@@ -452,7 +454,7 @@
 
       <div class="fixed inset-0" (click)="cancelarBaja()"></div>
 
-      <div class="relative w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-200 p-6 z-10 animate-modal-card space-y-4">
+      <div class="relative w-full max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-2xl shadow-2xl border border-slate-200 p-6 z-10 animate-modal-card space-y-4">
         <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />

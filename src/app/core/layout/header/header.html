@@ -17,7 +17,7 @@
             <div class="md:h-14 md:w-16 h-16 w-16 bg-glass-surface rounded-2xl flex px-2.5 justify-center items-center border border-white/15">
                 <img src="/worklink logo.svg" alt="WorkLink" class="w-full h-full">
             </div>
-            <span class="font-bold text-2xl md:text-3xl text-white tracking-tight group-hover:text-shadow-glow-white transition-all">Work<span class="text-brand-sky">Link</span></span>
+            <span class="font-bold text-2xl md:text-3xl text-white tracking-tight group-hover:text-shadow-glow-white transition-colors duration-150">Work<span class="text-brand-sky">Link</span></span>
         </a>
 
         @if (!isMinWidth()) {
@@ -39,7 +39,7 @@
                             type="button"
                             (click)="toggleUserModal()"
                             aria-label="Abrir menú de usuario"
-                            class="flex justify-center items-center w-11 h-11 bg-brand-sky text-white text-base font-bold rounded-full hover:ring-2 hover:ring-white/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white active:scale-95 transition-[transform,box-shadow] duration-150 shadow-md overflow-hidden cursor-pointer">
+                            class="flex justify-center items-center w-11 h-11 bg-brand-sky text-white text-base font-bold rounded-full hover:ring-2 hover:ring-white/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white active:scale-95 transition-[transform,box-shadow] duration-150 shadow-[inset_0_1px_1px_rgba(255,255,255,0.45),inset_0_-2px_0_rgba(0,0,0,0.2),0_3px_8px_rgba(15,23,42,0.25)] overflow-hidden cursor-pointer">
                             @if (userDisplay().avatarUrl) {
                                 <img [src]="userDisplay().avatarUrl" [alt]="userDisplay().nombre" class="w-full h-full object-cover">
                             } @else {
@@ -100,7 +100,7 @@
                                                 />
                                                 <circle 
                                                     cx="24" cy="24" r="19" 
-                                                    class="stroke-brand-indigo transition-all duration-700 ease-out" 
+                                                    class="stroke-brand-indigo transition-[stroke-dashoffset] duration-700 ease-out" 
                                                     stroke-width="4" 
                                                     stroke-linecap="round"
                                                     fill="transparent" 
@@ -154,7 +154,7 @@
                                         <a 
                                             [routerLink]="link.route" 
                                             (click)="cerrarUserModal()"
-                                            class="flex items-center justify-between px-3 py-2 rounded-xl text-slate-700 hover:bg-slate-100 hover:text-brand-indigo active:scale-[0.99] transition-all group">
+                                            class="flex items-center justify-between px-3 py-2.5 min-h-[40px] rounded-xl text-slate-700 hover:bg-slate-100 hover:text-brand-indigo active:scale-[0.99] transition-[background-color,color,transform] duration-150 group">
                                             <div class="flex items-center gap-2.5">
                                                 @if (link.icon === 'dashboard') {
                                                     <svg class="w-4 h-4 text-slate-400 group-hover:text-brand-indigo" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -220,7 +220,7 @@
                                     <button 
                                         type="button"
                                         (click)="auth.logout(); cerrarUserModal()"
-                                        class="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-xl active:scale-[0.98] transition-colors border border-rose-100">
+                                        class="btn-tactile-danger w-full flex items-center justify-center gap-2 px-3 py-2.5 text-xs font-semibold rounded-xl min-h-[40px]">
                                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                                         </svg>

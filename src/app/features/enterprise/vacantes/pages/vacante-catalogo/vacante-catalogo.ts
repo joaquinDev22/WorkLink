@@ -1,7 +1,8 @@
-import { Component, computed, inject, OnInit, signal, DestroyRef } from '@angular/core'
+import { Component, ElementRef, OnDestroy, OnInit, computed, effect, inject, signal, DestroyRef } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { Subject } from 'rxjs'
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
+import gsap from 'gsap'
 import { VacanteCard } from '../../components/vacante-card/vacante-card'
 import { PostulacionModal } from '../../components/postulacion-modal/postulacion-modal'
 import { VacanteService } from '../../services/vacante'
@@ -14,10 +15,24 @@ import { Auth } from '../../../../../core/auth/services/auth'
   styleUrl: './vacante-catalogo.css',
   templateUrl: './vacante-catalogo.html'
 })
-export class VacanteCatalogo implements OnInit {
+export class VacanteCatalogo implements OnInit, OnDestroy {
+  private host = inject(ElementRef<HTMLElement>)
+  private gsapCtx?: gsap.Context
+  private hasAnimatedCards = false
   protected vacanteService = inject(VacanteService)
   private auth = inject(Auth)
   private destroyRef = inject(DestroyRef)
+
+  constructor() {
+    effect(() => {
+      const loading = this.vacanteService.isLoading()
+      const total = this.vacantesFiltradas().length
+      if (!loading && total > 0 && !this.hasAnimatedCards) {
+        this.hasAnimatedCards = true
+        this.animateCards()
+      }
+    })
+  }
 
   readonly puedePostular = computed(() => {
     const rol = this.auth.session()?.rol
@@ -135,5 +150,28 @@ export class VacanteCatalogo implements OnInit {
   estaPostulado(vacanteId: number): boolean {
     if (!this.puedePostular()) return false
     return this.vacanteService.yaPostulado(vacanteId)
+  }
+
+  private animateCards(): void {
+    requestAnimationFrame(() => {
+      this.gsapCtx?.revert()
+      this.gsapCtx = gsap.context(() => {
+        const mm = gsap.matchMedia()
+        mm.add('(prefers-reduced-motion: no-preference)', () => {
+          gsap.from('.vacante-card-item', {
+            y: 16,
+            autoAlpha: 0,
+            duration: 0.4,
+            stagger: { each: 0.04, from: 'start' },
+            ease: 'power3.out',
+            clearProps: 'transform,opacity,visibility'
+          })
+        })
+      }, this.host.nativeElement)
+    })
+  }
+
+  ngOnDestroy(): void {
+    this.gsapCtx?.revert()
   }
 }

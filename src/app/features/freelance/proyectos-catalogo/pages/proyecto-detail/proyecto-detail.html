@@ -1,10 +1,10 @@
-﻿<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 pb-14">
+<div class="page-enter max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 pb-14">
 
   <!-- Barra de retorno contextual -->
   <div class="flex items-center justify-between">
     <a
       [routerLink]="isCliente() ? '/freelance/mis-proyectos' : '/freelance/proyectos'"
-      class="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-brand-indigo focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky rounded-lg px-2 py-1.5 -ml-2 transition-colors">
+      class="btn-tactile-secondary inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-700 hover:text-brand-indigo focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky rounded-xl px-3.5 py-2">
       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
       </svg>
@@ -74,7 +74,7 @@
         </h1>
 
         <!-- Ficha técnica resumida -->
-        <dl class="grid grid-cols-2 sm:grid-cols-3 gap-4 py-4 border-y border-slate-100">
+        <dl class="grid grid-cols-1 sm:grid-cols-3 gap-4 py-4 border-y border-slate-100">
           <div>
             <dt class="text-xs font-medium text-slate-500">Duración estimada</dt>
             <dd class="text-sm font-bold text-slate-900 mt-0.5">{{ p.duracion || 'A convenir' }}</dd>

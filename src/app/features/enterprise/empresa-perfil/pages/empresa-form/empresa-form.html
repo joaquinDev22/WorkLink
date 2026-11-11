@@ -1,4 +1,4 @@
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fade-in">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 page-enter">
 
   <!-- ================================================================= -->
   <!-- 1. ENCABEZADO DE SECCIÓN                                          -->
@@ -116,7 +116,7 @@
                 [formField]="empresaForm.nombre"
                 [class.input-error]="empresaForm.nombre().touched() && empresaForm.nombre().invalid()"
                 placeholder="Ej: InnovaCorp Technologies S.A."
-                class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
+                class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow]">
               @if (empresaForm.nombre().touched() && empresaForm.nombre().invalid()) {
                 <p class="text-[11px] text-red-500 font-medium pt-0.5">
                   {{ empresaForm.nombre().errors()?.[0]?.message }}
@@ -130,7 +130,7 @@
               <select
                 id="emp-rubro"
                 [formField]="empresaForm.rubro"
-                class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
+                class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow]">
                 @for (rubro of rubrosDisponibles; track rubro) {
                   <option [value]="rubro">{{ rubro }}</option>
                 }
@@ -150,7 +150,7 @@
               [formField]="empresaForm.descripcion"
               [class.input-error]="empresaForm.descripcion().touched() && empresaForm.descripcion().invalid()"
               placeholder="Presenta tu empresa a los candidatos: misión, tecnologías que utilizan, cultura de trabajo y beneficios corporativos..."
-              class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all resize-none"></textarea>
+              class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow] resize-none"></textarea>
             @if (empresaForm.descripcion().touched() && empresaForm.descripcion().invalid()) {
               <p class="text-[11px] text-red-500 font-medium pt-0.5">
                 {{ empresaForm.descripcion().errors()?.[0]?.message }}
@@ -174,7 +174,7 @@
                   [formField]="empresaForm.sitio_web"
                   [class.input-error]="empresaForm.sitio_web().touched() && empresaForm.sitio_web().invalid()"
                   placeholder="https://tuempresa.com"
-                  class="w-full pl-10 pr-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
+                  class="w-full pl-10 pr-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow]">
               </div>
               @if (empresaForm.sitio_web().touched() && empresaForm.sitio_web().invalid()) {
                 <p class="text-[11px] text-red-500 font-medium pt-0.5">
@@ -196,7 +196,7 @@
                   id="emp-tel"
                   [formField]="empresaForm.telefono"
                   placeholder="+54 11 4821 9900"
-                  class="w-full pl-10 pr-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
+                  class="w-full pl-10 pr-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow]">
               </div>
             </div>
           </div>
@@ -218,7 +218,7 @@
                   [formField]="empresaForm.ubicacion"
                   [class.input-error]="empresaForm.ubicacion().touched() && empresaForm.ubicacion().invalid()"
                   placeholder="Ej: Buenos Aires, Argentina"
-                  class="w-full pl-10 pr-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
+                  class="w-full pl-10 pr-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow]">
               </div>
               @if (empresaForm.ubicacion().touched() && empresaForm.ubicacion().invalid()) {
                 <p class="text-[11px] text-red-500 font-medium pt-0.5">
@@ -234,7 +234,7 @@
                 id="emp-dir"
                 [formField]="empresaForm.direccion"
                 placeholder="Ej: Av. del Libertador 1450, Piso 12"
-                class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-all">
+                class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow]">
             </div>
           </div>
 
