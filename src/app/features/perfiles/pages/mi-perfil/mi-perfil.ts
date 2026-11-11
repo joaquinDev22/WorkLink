@@ -13,7 +13,9 @@ import { ProyectoAdmin } from '../../../freelance/proyecto-gestion/services/proy
 import { ProyectoResponseDTO } from '../../../freelance/proyecto-gestion/models/proyecto.models'
 import { EmpresaService } from '../../../enterprise/empresa-perfil/services/empresa'
 import { DashboardStatsResponseDTO } from '../../../enterprise/empresa-perfil/models/empresa.models'
-import { catchError, of } from 'rxjs'
+import { Cliente } from '../../../freelance/cliente-dashboard/services/cliente'
+import { PerfilCompletitudBanner } from '../../components/perfil-completitud/perfil-completitud'
+import { catchError, forkJoin, map, Observable, of } from 'rxjs'
 
 export interface HistorialEmpresaRecruiter {
   id: number
@@ -67,7 +69,7 @@ export const PATTERNS_TELEFONO: Record<string, { regex: RegExp, ejemplo: string 
 }
 
 @Component({
-  imports: [CommonModule, FormsModule, FormField, RouterLink],
+  imports: [CommonModule, FormsModule, FormField, RouterLink, PerfilCompletitudBanner],
   selector: 'app-mi-perfil',
   styleUrl: './mi-perfil.css',
   templateUrl: './mi-perfil.html',
@@ -79,6 +81,7 @@ export class MiPerfil implements OnInit {
   protected auth = inject(Auth)
   protected tokenStorage = inject(TokenStorage)
   protected proyectoAdmin = inject(ProyectoAdmin)
+  protected clienteService = inject(Cliente)
   private triggerEl: HTMLElement | null = null
 
   readonly perfil = this.perfilService.perfilActual
@@ -94,7 +97,19 @@ export class MiPerfil implements OnInit {
   readonly esPostulante = computed(() => this.rolActivo() === 'POSTULANTE')
   readonly esEmpresa = computed(() => this.rolActivo() === 'EMPRESA')
   readonly esRecruiter = computed(() => this.rolActivo() === 'RECRUITER')
+  readonly esCliente = computed(() => this.rolActivo() === 'CLIENTE')
   readonly esCandidato = computed(() => this.esFreelancer() || this.esPostulante())
+
+  readonly subtituloCompletitud = computed<string>(() => {
+    const rol = this.rolActivo()
+    if (rol === 'CLIENTE') return 'Completa tus datos de contacto y resumen para generar confianza con freelancers.'
+    if (rol === 'RECRUITER') return 'Completa tu identidad y contacto corporativo para destacar ante candidatos.'
+    if (rol === 'EMPRESA') return 'Completa la identidad de tu empresa para mejorar tus búsquedas.'
+    return 'Sube tus imágenes y datos para completar el 100% y ganar mayor visibilidad.'
+  })
+
+  readonly proyectosPublicadosCliente = this.proyectoAdmin.misProyectos
+  readonly isLoadingProyectosCliente = this.proyectoAdmin.isLoading
 
   // Histórico de proyectos freelance asignados / en los que trabajó
   readonly proyectosAsignados = signal<ProyectoResponseDTO[]>([])
@@ -281,7 +296,7 @@ export class MiPerfil implements OnInit {
   })
 
   ngOnInit(): void {
-    if (!this.perfil()) {
+    if (!this.perfil() || (this.esCliente() && !this.clienteService.perfil())) {
       this.perfilService.cargarPerfil().subscribe()
     }
     if (this.esFreelancer()) {
@@ -290,6 +305,9 @@ export class MiPerfil implements OnInit {
     }
     if (this.esRecruiter()) {
       this.cargarDatosRecruiter()
+    }
+    if (this.esCliente()) {
+      this.proyectoAdmin.getMisProyectosPublicados().pipe(catchError(() => of([]))).subscribe()
     }
   }
 
@@ -340,7 +358,7 @@ export class MiPerfil implements OnInit {
     } else if (item.clave === 'proyectos') {
       this.abrirProjectModal()
     } else {
-      this.toggleEditModal()
+      this.abrirEditar(ev)
     }
   }
 
@@ -366,8 +384,8 @@ export class MiPerfil implements OnInit {
     }
   }
 
-  async abrirEditar(ev: Event): Promise<void> {
-    this.triggerEl = ev.currentTarget as HTMLElement
+  async abrirEditar(ev?: Event): Promise<void> {
+    this.triggerEl = (ev?.currentTarget as HTMLElement | null) || null
     const current = this.perfil()
     if (current) {
       this.profileModel.set({
@@ -376,14 +394,16 @@ export class MiPerfil implements OnInit {
         descripcion: current.descripcion || '',
         telefono: current.telefono || '',
         ubicacion: current.ubicacion || '',
-        pais: current.pais || 'Argentina',
+        pais: current.pais || '',
         sitioWeb: current.sitioWeb || '',
-        fechaNacimiento: current.fechaNacimiento || '1998-01-01',
+        fechaNacimiento: current.fechaNacimiento || '',
         email: current.email || '',
         rol: this.rolActivo()
       })
     }
-    this.morph.name(this.triggerEl, 'edit-surface')
+    if (this.triggerEl) {
+      this.morph.name(this.triggerEl, 'edit-surface')
+    }
     await this.morph.run(() => {
       if (this.triggerEl) this.triggerEl.style.viewTransitionName = 'none'
       this.isEditModalOpen.set(true)
@@ -425,13 +445,39 @@ export class MiPerfil implements OnInit {
 
     this.isSaving.set(true)
     const datos = { ...form.value(), rol: this.rolActivo() }
-    this.perfilService.updateProfile(datos).subscribe({
+    const save$: Observable<unknown> = this.esCliente()
+      ? forkJoin([
+          this.clienteService.actualizarPerfilCliente({
+            firstName: (datos.nombre || '').trim(),
+            lastName: (datos.apellido || '').trim(),
+            phoneNumber: (datos.telefono || '').trim(),
+            country: (datos.pais || '').trim(),
+            fechaNacimiento: (datos.fechaNacimiento || '').trim()
+          }),
+          this.perfilService.updateProfile(datos).pipe(catchError(() => of(null)))
+        ]).pipe(map(() => null))
+      : this.perfilService.updateProfile(datos)
+
+    save$.subscribe({
       next: () => {
+        if (this.esCliente()) {
+          this.perfilService.perfilActual.update((p) => p ? {
+            ...p,
+            nombre: (datos.nombre || '').trim(),
+            apellido: (datos.apellido || '').trim(),
+            telefono: (datos.telefono || '').trim(),
+            pais: (datos.pais || '').trim(),
+            fechaNacimiento: (datos.fechaNacimiento || '').trim(),
+            descripcion: (datos.descripcion || '').trim(),
+            ubicacion: (datos.ubicacion || '').trim(),
+            sitioWeb: (datos.sitioWeb || '').trim()
+          } : p)
+        }
         this.isSaving.set(false)
         this.cerrarEditar().finally(() => this.isEditModalOpen.set(false))
         this.showToast('Perfil actualizado con éxito')
       },
-      error: (err) => {
+      error: (err: any) => {
         this.isSaving.set(false)
         console.error('Error al actualizar perfil (Detalle técnico backend):', err)
 

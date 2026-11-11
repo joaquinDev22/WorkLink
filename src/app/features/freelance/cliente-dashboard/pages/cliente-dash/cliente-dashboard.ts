@@ -12,6 +12,7 @@ import { FormField, form, maxLength, minLength, required } from '@angular/forms/
 import { gsap } from 'gsap'
 import { Cliente } from '../../services/cliente'
 import { ProyectoAdmin } from '../../../proyecto-gestion/services/proyecto-admin'
+import { Perfil } from '../../../../perfiles/services/perfil'
 import {
   ESTADO_PROYECTO_CONFIG,
   formatFechaProyecto
@@ -27,6 +28,7 @@ import { ClientProfileRequestDTO } from '../../models/cliente-dashboard.models'
 export class ClienteDashboard implements OnInit, OnDestroy {
   protected clienteService = inject(Cliente)
   protected proyectoAdmin = inject(ProyectoAdmin)
+  private perfilService = inject(Perfil)
   private hostEl = inject(ElementRef<HTMLElement>)
 
   readonly stats = this.clienteService.stats
@@ -132,7 +134,16 @@ export class ClienteDashboard implements OnInit, OnDestroy {
     }
 
     this.clienteService.actualizarPerfilCliente(this.perfilModel()).subscribe({
-      next: () => {
+      next: (actualizado) => {
+        const m = this.perfilModel()
+        this.perfilService.perfilActual.update((p) => p ? {
+          ...p,
+          nombre: actualizado?.firstName || m.firstName,
+          apellido: actualizado?.lastName || m.lastName,
+          telefono: actualizado?.phoneNumber || m.phoneNumber,
+          pais: actualizado?.country || m.country,
+          fechaNacimiento: actualizado?.fechaNacimiento || m.fechaNacimiento
+        } : p)
         this.toastMensaje.set('Perfil de cliente actualizado correctamente.')
         setTimeout(() => this.toastMensaje.set(null), 4000)
       },

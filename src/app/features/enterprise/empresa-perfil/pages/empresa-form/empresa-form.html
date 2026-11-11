@@ -14,6 +14,12 @@
     </div>
   </div>
 
+  <!-- Medidor reactivo de completitud para Empresa -->
+  <app-perfil-completitud
+    [completitud]="completitudEmpresa()"
+    subtitulo="Completa la identidad y canales de tu empresa para generar más confianza en candidatos."
+    (itemClick)="onCompletitudClick($event.item, logoInput, bannerInput)" />
+
   <!-- ================================================================= -->
   <!-- 2. GRID PRINCIPAL (FORMULARIO + VISTA PREVIA CORPORATIVA)         -->
   <!-- ================================================================= -->

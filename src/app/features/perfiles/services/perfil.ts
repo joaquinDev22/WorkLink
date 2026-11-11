@@ -2,8 +2,20 @@ import { TokenStorage } from './../../../core/auth/services/token-storage'
 import { inject, Service, signal, computed, effect } from '@angular/core'
 import { environment } from '../../../../environments/environment'
 import { HttpClient } from '@angular/common/http'
-import { PerfilUsuarioDTO, PerfilCompletitud, ItemFaltantePerfil, EditProfileModel, PerfilHabilidadDTO, NivelHabilidad, HabilidadCatalogoDTO, PerfilProyectoPortafolioDTO, ReputacionPerfilDTO } from '../models/perfil.models'
-import { Observable, of, tap, delay, finalize, catchError, throwError, map } from 'rxjs'
+import {
+  PerfilUsuarioDTO,
+  PerfilCompletitud,
+  ItemFaltantePerfil,
+  EditProfileModel,
+  PerfilHabilidadDTO,
+  NivelHabilidad,
+  HabilidadCatalogoDTO,
+  PerfilProyectoPortafolioDTO,
+  ReputacionPerfilDTO,
+  calcularFaltantesPorRol
+} from '../models/perfil.models'
+import { Observable, of, tap, delay, finalize, catchError, throwError, map, forkJoin } from 'rxjs'
+import { Cliente } from '../../freelance/cliente-dashboard/services/cliente'
 
 @Service()
 export class Perfil {
@@ -11,6 +23,7 @@ export class Perfil {
 
   protected client = inject(HttpClient)
   private tokenStorage = inject(TokenStorage)
+  private clienteService = inject(Cliente)
 
   readonly perfilActual = signal<PerfilUsuarioDTO | null>(null)
   readonly isLoading = signal<boolean>(false)
@@ -23,7 +36,7 @@ export class Perfil {
       const p = this.perfilActual()
       if (!p) return
 
-      if (this.ultimoPerfil) {
+      if (this.ultimoPerfil && this.ultimoPerfil.rol === p.rol) {
         const { items: prevFaltantes } = this.calcularFaltantes(this.ultimoPerfil)
         const { items: currFaltantes } = this.calcularFaltantes(p)
         const currClaves = new Set(currFaltantes.map(i => i.clave))
@@ -64,81 +77,7 @@ export class Perfil {
   }
 
   private calcularFaltantes(p: PerfilUsuarioDTO): { puntos: number, items: ItemFaltantePerfil[] } {
-    const itemsFaltantes: ItemFaltantePerfil[] = []
-    let puntos = 0
-
-    if (p.rol === 'EMPRESA') {
-      if (p.fotoPerfil || p.logo) puntos += 25
-      else itemsFaltantes.push({ clave: 'foto', label: 'Logotipo de la empresa', completado: false })
-
-      if (p.descripcion && p.descripcion.trim().length > 10) puntos += 25
-      else itemsFaltantes.push({ clave: 'descripcion', label: 'Descripción corporativa', completado: false })
-
-      if (p.sitioWeb && p.sitioWeb.trim().length > 4) puntos += 25
-      else itemsFaltantes.push({ clave: 'sitioWeb', label: 'Sitio web oficial', completado: false })
-
-      if (p.ubicacion || p.pais) puntos += 25
-      else itemsFaltantes.push({ clave: 'ubicacion', label: 'País o sede principal', completado: false })
-    } else if (p.rol === 'RECRUITER') {
-      if (p.fotoPerfil) puntos += 25
-      else itemsFaltantes.push({ clave: 'foto', label: 'Foto de perfil', completado: false })
-
-      if (p.bannerPerfil) puntos += 25
-      else itemsFaltantes.push({ clave: 'banner', label: 'Banner de portada', completado: false })
-
-      if (p.descripcion && p.descripcion.trim().length > 15) puntos += 25
-      else itemsFaltantes.push({ clave: 'descripcion', label: 'Resumen de trayectoria', completado: false })
-
-      if (p.telefono) puntos += 25
-      else itemsFaltantes.push({ clave: 'telefono', label: 'Teléfono corporativo', completado: false })
-    } else if (p.rol === 'FREELANCER') {
-      // FREELANCER: NO requiere CV, se evalúa por proyectos, habilidades técnicas, foto, portada y biografía
-      if (p.fotoPerfil) puntos += 25
-      else itemsFaltantes.push({ clave: 'foto', label: 'Foto de perfil', completado: false })
-
-      if (p.bannerPerfil) puntos += 15
-      else itemsFaltantes.push({ clave: 'banner', label: 'Banner de portada', completado: false })
-
-      if (p.descripcion && p.descripcion.trim().length > 15) puntos += 25
-      else itemsFaltantes.push({ clave: 'descripcion', label: 'Biografía profesional freelance', completado: false })
-
-      if (p.habilidades && p.habilidades.length >= 3) puntos += 20
-      else if (p.habilidades && p.habilidades.length > 0) {
-        puntos += 10
-        itemsFaltantes.push({ clave: 'habilidades', label: 'Agrega al menos 3 habilidades', completado: false })
-      } else {
-        itemsFaltantes.push({ clave: 'habilidades', label: 'Habilidades técnicas', completado: false })
-      }
-
-      if (p.proyectos && p.proyectos.length > 0) puntos += 15
-      else itemsFaltantes.push({ clave: 'proyectos', label: 'Portafolio de proyectos', completado: false })
-    } else {
-      // POSTULANTE / EMPLOYEE: Requiere CV (PDF)
-      if (p.tieneCv) puntos += 20
-      else itemsFaltantes.push({ clave: 'cv', label: 'Adjuntar CV (PDF)', completado: false })
-
-      if (p.fotoPerfil) puntos += 20
-      else itemsFaltantes.push({ clave: 'foto', label: 'Foto de perfil', completado: false })
-
-      if (p.bannerPerfil) puntos += 15
-      else itemsFaltantes.push({ clave: 'banner', label: 'Banner de portada', completado: false })
-
-      if (p.descripcion && p.descripcion.trim().length > 15) puntos += 20
-      else itemsFaltantes.push({ clave: 'descripcion', label: 'Biografía profesional', completado: false })
-
-      if (p.habilidades && p.habilidades.length >= 3) puntos += 25
-      else if (p.habilidades && p.habilidades.length > 0) {
-        puntos += 15
-        itemsFaltantes.push({ clave: 'habilidades', label: 'Agrega al menos 3 habilidades', completado: false })
-      } else {
-        itemsFaltantes.push({ clave: 'habilidades', label: 'Habilidades técnicas', completado: false })
-      }
-
-      if (p.proyectos && p.proyectos.length > 0) puntos += 20
-      else itemsFaltantes.push({ clave: 'proyectos', label: 'Proyectos de portafolio', completado: false })
-    }
-
-    return { puntos, items: itemsFaltantes }
+    return calcularFaltantesPorRol(p.rol, p)
   }
 
   // Medidor reactivo de completitud del perfil con checklist de faltantes
@@ -169,23 +108,45 @@ export class Perfil {
   }
 
   getProfile(): Observable<PerfilUsuarioDTO> {
+    const session = this.tokenStorage.getSession()
+    const sessionRol = session?.rol
+
     // Soporte para Development Mode con bypassAuth
     if (environment.bypassAuth) {
-      const session = this.tokenStorage.getSession()
-      const rol = session?.rol || 'FREELANCER'
+      const rol = sessionRol || 'FREELANCER'
       const nombreUsuario = session?.nombreUsuario || 'Usuario Desarrollador'
 
+      if (rol === 'CLIENTE') {
+        const cli = this.clienteService.perfil()
+        const mockCliente: PerfilUsuarioDTO = {
+          nombre: cli?.firstName || 'Lucía',
+          apellido: cli?.lastName || 'Fernández',
+          email: cli?.email || 'lucia.fernandez@innovatech.ar',
+          rol: 'CLIENTE',
+          descripcion: 'Cliente contratante en WorkLink enfocado en soluciones digitales y equipos freelance.',
+          ubicacion: 'Buenos Aires',
+          pais: cli?.country || 'Argentina',
+          telefono: cli?.phoneNumber || '+54 11 5555-0192',
+          fechaNacimiento: cli?.fechaNacimiento || '1992-05-14',
+          fotoPerfil: undefined,
+          bannerPerfil: undefined,
+          habilidades: [],
+          proyectos: []
+        }
+        return of(mockCliente).pipe(delay(250))
+      }
+
       const mockPerfil: PerfilUsuarioDTO = {
-        nombre: rol === 'EMPRESA' 
-          ? 'InnovaCorp Technologies S.A.' 
+        nombre: rol === 'EMPRESA'
+          ? 'InnovaCorp Technologies S.A.'
           : (rol === 'RECRUITER' ? 'Lucía' : nombreUsuario),
-        apellido: rol === 'EMPRESA' 
-          ? undefined 
+        apellido: rol === 'EMPRESA'
+          ? undefined
           : (rol === 'RECRUITER' ? 'Fernández' : 'Pérez'),
         email: rol === 'EMPRESA'
           ? 'contacto@innovacorp.com'
           : (rol === 'RECRUITER' ? 'lucia.fernandez@innovacorp.com' : `${nombreUsuario.toLowerCase().replace(/\s+/g, '')}@worklink.app`),
-        rol: rol,
+        rol,
         descripcion: rol === 'EMPRESA'
           ? 'Compañía líder en transformación digital y desarrollo de software corporativo en la nube.'
           : (rol === 'RECRUITER'
@@ -223,9 +184,40 @@ export class Perfil {
       return of(mockPerfil).pipe(delay(400))
     }
 
+    // Para CLIENTE combinamos /perfiles/getProfile con /client/me para asegurar datos reales del cliente
+    if (sessionRol === 'CLIENTE') {
+      return forkJoin({
+        perfil: this.client.get<PerfilUsuarioDTO>(`${this.API_URL}/getProfile`).pipe(catchError(() => of(null))),
+        cliente: this.clienteService.getMiPerfilCliente().pipe(catchError(() => of(null)))
+      }).pipe(
+        map(({ perfil, cliente }) => {
+          if (!perfil && !cliente) {
+            throw new Error('No se pudieron obtener los datos del perfil de cliente')
+          }
+          return {
+            ...(perfil ?? {
+              nombre: '',
+              email: '',
+              rol: 'CLIENTE',
+              habilidades: [],
+              proyectos: []
+            }),
+            nombre: cliente?.firstName || perfil?.nombre || session?.nombreUsuario || '',
+            apellido: cliente?.lastName || perfil?.apellido || '',
+            email: cliente?.email || perfil?.email || '',
+            telefono: cliente?.phoneNumber || perfil?.telefono || '',
+            pais: cliente?.country || perfil?.pais || '',
+            fechaNacimiento: cliente?.fechaNacimiento || perfil?.fechaNacimiento || '',
+            rol: 'CLIENTE',
+            habilidades: [],
+            proyectos: []
+          } as PerfilUsuarioDTO
+        })
+      )
+    }
+
     return this.client.get<PerfilUsuarioDTO>(`${this.API_URL}/getProfile`).pipe(
       map(data => {
-        const sessionRol = this.tokenStorage.getSession()?.rol
         if (sessionRol && (data.rol === 'EMPLOYEE' || data.rol === 'POSTULANTE' || data.rol === 'FREELANCER')) {
           return { ...data, rol: sessionRol }
         }

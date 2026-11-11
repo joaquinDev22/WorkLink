@@ -56,9 +56,11 @@ export class Header implements OnInit {
     return 'Ver mi perfil completo'
   })
 
-  readonly mostrarCompletitud = computed(() => {
-    const s = this.auth.session()
-    return s?.rol === 'FREELANCER' || s?.rol === 'POSTULANTE'
+  readonly mostrarCompletitud = computed(() => Boolean(this.auth.session()))
+
+  readonly completitudActual = computed(() => {
+    const rol = this.auth.session()?.rol
+    return rol === 'EMPRESA' ? this.empresaService.completitud() : this.perfilService.completitud()
   })
 
   // Switch de rol dual: Postulante (búsqueda de empleo corporativo) <-> Freelancer (proyectos independientes)

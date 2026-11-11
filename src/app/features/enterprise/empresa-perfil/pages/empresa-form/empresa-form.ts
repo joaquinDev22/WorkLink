@@ -1,13 +1,15 @@
-import { Component, OnInit, inject, signal } from '@angular/core'
+import { Component, OnInit, computed, inject, signal } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { form, minLength, maxLength, pattern, required, FormField } from '@angular/forms/signals'
 import { EmpresaService } from '../../services/empresa'
 import { EmpresaFormModel, EmpresaRequestDTO } from '../../models/empresa.models'
+import { PerfilCompletitudBanner } from '../../../../perfiles/components/perfil-completitud/perfil-completitud'
+import { ItemFaltantePerfil, calcularCompletitudPorRol } from '../../../../perfiles/models/perfil.models'
 
 @Component({
   selector: 'app-empresa-form',
   standalone: true,
-  imports: [CommonModule, FormField],
+  imports: [CommonModule, FormField, PerfilCompletitudBanner],
   templateUrl: './empresa-form.html',
   styleUrl: './empresa-form.css'
 })
@@ -33,6 +35,18 @@ export class EmpresaForm implements OnInit {
     rubro: 'Tecnología y Software',
     logo: '',
     banner: ''
+  })
+
+  readonly completitudEmpresa = computed(() => {
+    const m = this.empresaModel()
+    return calcularCompletitudPorRol('EMPRESA', {
+      logo: m.logo,
+      bannerPerfil: m.banner,
+      descripcion: m.descripcion,
+      ubicacion: m.ubicacion,
+      sitioWeb: m.sitio_web,
+      telefono: m.telefono
+    })
   })
 
   // Formulario con validaciones mediante Angular Signal Forms
@@ -175,6 +189,26 @@ export class EmpresaForm implements OnInit {
         this.showToast('Error al guardar los datos de la empresa. Reintente')
       }
     })
+  }
+
+  onCompletitudClick(item: ItemFaltantePerfil, logoInput: HTMLInputElement, bannerInput: HTMLInputElement): void {
+    if (item.clave === 'logo') {
+      logoInput.click()
+      return
+    }
+    if (item.clave === 'banner') {
+      bannerInput.click()
+      return
+    }
+    const targetIds: Record<string, string> = {
+      descripcion: 'emp-desc',
+      sitioWeb: 'emp-sitio',
+      telefono: 'emp-tel',
+      ubicacion: 'emp-ubicacion'
+    }
+    const el = document.getElementById(targetIds[item.clave] || '')
+    el?.focus()
+    el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
   }
 
   showToast(msg: string): void {
