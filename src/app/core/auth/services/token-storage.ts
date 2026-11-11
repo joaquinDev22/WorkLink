@@ -1,12 +1,14 @@
-import { Service } from '@angular/core';
+import { Service, signal } from '@angular/core';
 import { Session } from '../../models/session.model';
 
 @Service()
 export class TokenStorage {
     private readonly SESSION_KEY = 'worklink_session'
+    readonly session = signal<Session | null>(this.getSession())
 
     saveSession(session : Session) : void{
         localStorage.setItem(this.SESSION_KEY, JSON.stringify(session))
+        this.session.set(session)
     }
 
     getSession(): Session | null {
@@ -33,5 +35,6 @@ export class TokenStorage {
 
     clear() : void{
         localStorage.removeItem(this.SESSION_KEY)
+        this.session.set(null)
     }
 }

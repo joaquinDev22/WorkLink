@@ -1191,6 +1191,11 @@
           </button>
         </div>
 
+        <app-perfil-completitud
+          [completitud]="completitud()"
+          [subtitulo]="subtituloCompletitud()"
+          (itemClick)="ejecutarActividad($event.item, $event.event)" />
+
         <form (submit)="$event.preventDefault(); guardarCambios()" class="space-y-4">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="space-y-1" [class.sm:col-span-2]="rolActivo() === 'EMPRESA'">
@@ -1313,21 +1318,23 @@
             }
           </div>
 
-          <div class="space-y-1">
-            <label for="sitioWeb" class="text-xs font-semibold text-slate-700">Sitio Web o Enlace</label>
-            <input
-              type="url"
-              id="sitioWeb"
-              [formField]="editForm.sitioWeb"
-              [class.input-error]="editForm.sitioWeb().touched() && editForm.sitioWeb().invalid()"
-              placeholder="https://..."
-              class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow]">
-            @if (editForm.sitioWeb().touched() && editForm.sitioWeb().invalid()) {
-              @for (error of editForm.sitioWeb().errors(); track error.kind) {
-                <span class="text-xs text-rose-500 font-medium block pt-1">{{ error.message }}</span>
+          @if (!esCliente() && !esRecruiter()) {
+            <div class="space-y-1">
+              <label for="sitioWeb" class="text-xs font-semibold text-slate-700">Sitio Web o Enlace</label>
+              <input
+                type="url"
+                id="sitioWeb"
+                [formField]="editForm.sitioWeb"
+                [class.input-error]="editForm.sitioWeb().touched() && editForm.sitioWeb().invalid()"
+                placeholder="https://..."
+                class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow]">
+              @if (editForm.sitioWeb().touched() && editForm.sitioWeb().invalid()) {
+                @for (error of editForm.sitioWeb().errors(); track error.kind) {
+                  <span class="text-xs text-rose-500 font-medium block pt-1">{{ error.message }}</span>
+                }
               }
-            }
-          </div>
+            </div>
+          }
 
           <div class="pt-3 flex items-center justify-end gap-3 border-t border-slate-100">
             <button

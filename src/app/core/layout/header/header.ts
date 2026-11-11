@@ -8,6 +8,7 @@ import { Sidebar } from '../sidebar/sidebar'
 import { BreakpointObserver } from '@angular/cdk/layout'
 import { Perfil } from '../../../features/perfiles/services/perfil'
 import { EmpresaService } from '../../../features/enterprise/empresa-perfil/services/empresa'
+import { Cliente } from '../../../features/freelance/cliente-dashboard/services/cliente'
 
 export interface HeaderModalLink {
   label: string
@@ -25,6 +26,7 @@ export class Header implements OnInit {
   protected auth = inject(Auth)
   protected perfilService = inject(Perfil)
   protected empresaService = inject(EmpresaService)
+  private clienteService = inject(Cliente)
   private observer = inject(BreakpointObserver)
 
   isMinWidth = signal<boolean>(false)
@@ -208,7 +210,7 @@ export class Header implements OnInit {
           this.empresaService.getMiEmpresa().subscribe()
         }
       } else {
-        if (!this.perfilService.perfilActual()) {
+        if (!this.perfilService.perfilActual() || (s.rol === 'CLIENTE' && !this.clienteService.perfil())) {
           this.perfilService.cargarPerfil().subscribe()
         }
       }

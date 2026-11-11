@@ -8,19 +8,16 @@ import {
   signal
 } from '@angular/core'
 import { RouterLink } from '@angular/router'
-import { FormField, form, maxLength, minLength, required } from '@angular/forms/signals'
 import { gsap } from 'gsap'
 import { Cliente } from '../../services/cliente'
 import { ProyectoAdmin } from '../../../proyecto-gestion/services/proyecto-admin'
-import { Perfil } from '../../../../perfiles/services/perfil'
 import {
   ESTADO_PROYECTO_CONFIG,
   formatFechaProyecto
 } from '../../../proyecto-gestion/models/proyecto.models'
-import { ClientProfileRequestDTO } from '../../models/cliente-dashboard.models'
 
 @Component({
-  imports: [RouterLink, FormField],
+  imports: [RouterLink],
   selector: 'app-cliente-dashboard',
   styleUrl: './cliente-dashboard.css',
   templateUrl: './cliente-dashboard.html'
@@ -28,45 +25,20 @@ import { ClientProfileRequestDTO } from '../../models/cliente-dashboard.models'
 export class ClienteDashboard implements OnInit, OnDestroy {
   protected clienteService = inject(Cliente)
   protected proyectoAdmin = inject(ProyectoAdmin)
-  private perfilService = inject(Perfil)
   private hostEl = inject(ElementRef<HTMLElement>)
 
   readonly stats = this.clienteService.stats
   readonly perfil = this.clienteService.perfil
   readonly isLoadingStats = this.clienteService.isLoading
-  readonly isSavingPerfil = this.clienteService.isMutating
 
   readonly proyectosRecientes = computed(() => this.proyectoAdmin.misProyectos().slice(0, 4))
   readonly isLoadingProyectos = this.proyectoAdmin.isLoading
 
-  readonly perfilCargado = signal<boolean>(false)
   readonly toastMensaje = signal<string | null>(null)
   readonly toastError = signal<string | null>(null)
 
   readonly estadoConfig = ESTADO_PROYECTO_CONFIG
   readonly formatFecha = (f?: string) => formatFechaProyecto(f, false)
-
-  readonly perfilModel = signal<ClientProfileRequestDTO>({
-    firstName: '',
-    lastName: '',
-    phoneNumber: '',
-    country: '',
-    fechaNacimiento: ''
-  })
-
-  readonly perfilForm = form(this.perfilModel, (f) => {
-    required(f.firstName, { message: 'El nombre es obligatorio' })
-    minLength(f.firstName, 2, { message: 'Mínimo 2 caracteres' })
-    maxLength(f.firstName, 50, { message: 'Máximo 50 caracteres' })
-
-    required(f.lastName, { message: 'El apellido es obligatorio' })
-    minLength(f.lastName, 2, { message: 'Mínimo 2 caracteres' })
-    maxLength(f.lastName, 50, { message: 'Máximo 50 caracteres' })
-
-    required(f.phoneNumber, { message: 'El teléfono de contacto es obligatorio' })
-    required(f.country, { message: 'El país es obligatorio' })
-    required(f.fechaNacimiento, { message: 'La fecha de nacimiento es obligatoria' })
-  })
 
   private gsapCtx: gsap.Context | null = null
 
@@ -76,27 +48,17 @@ export class ClienteDashboard implements OnInit, OnDestroy {
       error: () => this.toastError.set('No se pudieron cargar las métricas del cliente.')
     })
 
-    this.clienteService.getMiPerfilCliente().subscribe({
-      next: (p) => {
-        if (p) {
-          this.perfilModel.set({
-            firstName: p.firstName ?? '',
-            lastName: p.lastName ?? '',
-            phoneNumber: p.phoneNumber ?? '',
-            country: p.country ?? '',
-            fechaNacimiento: p.fechaNacimiento ?? ''
-          })
+    if (!this.perfil()) {
+      this.clienteService.getMiPerfilCliente().subscribe({
+        error: () => {
+          // Opcional en saludo del panel
         }
-        this.perfilCargado.set(true)
-      },
-      error: () => {
-        this.perfilCargado.set(true)
-      }
-    })
+      })
+    }
 
     this.proyectoAdmin.getMisProyectosPublicados().subscribe({
       error: () => {
-        // Error manejado silenciosamente para no bloquear métricas ni perfil
+        // Error manejado silenciosamente para no bloquear métricas
       }
     })
   }
@@ -121,37 +83,5 @@ export class ClienteDashboard implements OnInit, OnDestroy {
         })
       })
     }, this.hostEl.nativeElement)
-  }
-
-  guardarPerfil(event: Event): void {
-    event.preventDefault()
-    this.toastError.set(null)
-    this.toastMensaje.set(null)
-
-    if (this.perfilForm().invalid()) {
-      this.toastError.set('Revisa los campos obligatorios del perfil antes de guardar.')
-      return
-    }
-
-    this.clienteService.actualizarPerfilCliente(this.perfilModel()).subscribe({
-      next: (actualizado) => {
-        const m = this.perfilModel()
-        this.perfilService.perfilActual.update((p) => p ? {
-          ...p,
-          nombre: actualizado?.firstName || m.firstName,
-          apellido: actualizado?.lastName || m.lastName,
-          telefono: actualizado?.phoneNumber || m.phoneNumber,
-          pais: actualizado?.country || m.country,
-          fechaNacimiento: actualizado?.fechaNacimiento || m.fechaNacimiento
-        } : p)
-        this.toastMensaje.set('Perfil de cliente actualizado correctamente.')
-        setTimeout(() => this.toastMensaje.set(null), 4000)
-      },
-      error: (err) => {
-        this.toastError.set(
-          err.error?.message || 'No pudimos actualizar tu perfil. Verifica los datos ingresados.'
-        )
-      }
-    })
   }
 }

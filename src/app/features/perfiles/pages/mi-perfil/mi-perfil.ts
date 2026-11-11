@@ -295,35 +295,34 @@ export class MiPerfil implements OnInit {
     return `data:image/jpeg;base64,${banner}`
   })
 
-  ngOnInit(): void {
-    if (!this.perfil() || (this.esCliente() && !this.clienteService.perfil())) {
+  private readonly syncRolDataEffect = effect(() => {
+    const rol = this.rolActivo()
+    if (!this.perfil() || (rol === 'CLIENTE' && !this.clienteService.perfil())) {
       this.perfilService.cargarPerfil().subscribe()
     }
-    if (this.esFreelancer()) {
+    if (rol === 'FREELANCER' && this.proyectosAsignados().length === 0 && !this.isLoadingProyectosAsignados()) {
       this.cargarReputacion()
       this.cargarProyectosAsignados()
     }
-    if (this.esRecruiter()) {
+    if (rol === 'RECRUITER' && !this.empresa()) {
       this.cargarDatosRecruiter()
     }
-    if (this.esCliente()) {
+    if (rol === 'CLIENTE' && this.proyectosPublicadosCliente().length === 0 && !this.isLoadingProyectosCliente()) {
       this.proyectoAdmin.getMisProyectosPublicados().pipe(catchError(() => of([]))).subscribe()
     }
+  })
+
+  ngOnInit(): void {
+    // La carga inicial y cambios de rol se gestionan reactivamente en syncRolDataEffect
   }
 
   toggleModoPostulanteFreelancer(): void {
     const nuevoRol: UserRole = this.rolActivo() === 'POSTULANTE' ? 'FREELANCER' : 'POSTULANTE'
     const actual = this.auth.session()
     if (actual) {
-      const updated = { ...actual, rol: nuevoRol }
-      this.tokenStorage.saveSession(updated)
-      this.auth.session.set(updated)
+      this.tokenStorage.saveSession({ ...actual, rol: nuevoRol })
     }
     this.perfilService.perfilActual.update(p => p ? { ...p, rol: nuevoRol } : null)
-    if (nuevoRol === 'FREELANCER') {
-      this.cargarReputacion()
-      this.cargarProyectosAsignados()
-    }
     this.showToast(`Modo cambiado a ${nuevoRol === 'FREELANCER' ? 'Freelancer' : 'Postulante'}`)
   }
 
@@ -345,18 +344,26 @@ export class MiPerfil implements OnInit {
     if (item.completado) return
 
     if (item.clave === 'foto') {
+      if (this.isEditModalOpen()) this.isEditModalOpen.set(false)
       const input = document.getElementById('fotoInput') as HTMLInputElement || document.querySelector('input[type="file"][accept*="image"]') as HTMLInputElement
       if (input) input.click()
     } else if (item.clave === 'banner') {
+      if (this.isEditModalOpen()) this.isEditModalOpen.set(false)
       const input = document.getElementById('bannerInput') as HTMLInputElement || document.querySelector('input[type="file"][accept*="image"]') as HTMLInputElement
       if (input) input.click()
     } else if (item.clave === 'cv') {
+      if (this.isEditModalOpen()) this.isEditModalOpen.set(false)
       const input = document.querySelector('input[type="file"][accept*="pdf"]') as HTMLInputElement
       if (input) input.click()
     } else if (item.clave === 'habilidades') {
+      if (this.isEditModalOpen()) this.isEditModalOpen.set(false)
       this.abrirSkillModal()
     } else if (item.clave === 'proyectos') {
+      if (this.isEditModalOpen()) this.isEditModalOpen.set(false)
       this.abrirProjectModal()
+    } else if (this.isEditModalOpen()) {
+      const targetId = item.clave === 'logo' ? 'nombre' : item.clave
+      document.getElementById(targetId)?.focus()
     } else {
       this.abrirEditar(ev)
     }
@@ -429,9 +436,9 @@ export class MiPerfil implements OnInit {
         descripcion: current.descripcion || '',
         telefono: current.telefono || '',
         ubicacion: current.ubicacion || '',
-        pais: current.pais || 'Argentina',
+        pais: current.pais || '',
         sitioWeb: current.sitioWeb || '',
-        fechaNacimiento: current.fechaNacimiento || '1998-01-01',
+        fechaNacimiento: current.fechaNacimiento || '',
         email: current.email || '',
         rol: this.rolActivo()
       })

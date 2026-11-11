@@ -30,15 +30,23 @@ export class Perfil {
 
   private completadosRecientes = signal<ItemFaltantePerfil[]>([])
   private ultimoPerfil: PerfilUsuarioDTO | null = null
+  private ultimoRol: string | null = null
 
   constructor() {
     effect(() => {
       const p = this.perfilActual()
-      if (!p) return
+      const rolActual = this.tokenStorage.session()?.rol || p?.rol || null
+      if (!p) {
+        this.ultimoPerfil = null
+        this.ultimoRol = rolActual
+        return
+      }
 
-      if (this.ultimoPerfil && this.ultimoPerfil.rol === p.rol) {
-        const { items: prevFaltantes } = this.calcularFaltantes(this.ultimoPerfil)
-        const { items: currFaltantes } = this.calcularFaltantes(p)
+      if (this.ultimoRol && rolActual && this.ultimoRol !== rolActual) {
+        this.completadosRecientes.set([])
+      } else if (this.ultimoPerfil && rolActual && this.ultimoRol === rolActual) {
+        const { items: prevFaltantes } = this.calcularFaltantes(this.ultimoPerfil, this.ultimoRol)
+        const { items: currFaltantes } = this.calcularFaltantes(p, rolActual)
         const currClaves = new Set(currFaltantes.map(i => i.clave))
 
         // Detectar actividades completadas: estaban incompletas y ahora están completas
@@ -61,6 +69,7 @@ export class Perfil {
       }
 
       this.ultimoPerfil = p
+      this.ultimoRol = rolActual
     })
   }
 
@@ -76,18 +85,20 @@ export class Perfil {
     }, 1500)
   }
 
-  private calcularFaltantes(p: PerfilUsuarioDTO): { puntos: number, items: ItemFaltantePerfil[] } {
-    return calcularFaltantesPorRol(p.rol, p)
+  private calcularFaltantes(p: PerfilUsuarioDTO, rolOverride?: string): { puntos: number, items: ItemFaltantePerfil[] } {
+    const rol = rolOverride || this.tokenStorage.session()?.rol || p.rol
+    return calcularFaltantesPorRol(rol, p)
   }
 
-  // Medidor reactivo de completitud del perfil con checklist de faltantes
+  // Medidor reactivo de completitud del perfil con checklist de faltantes según rol activo en sesión
   readonly completitud = computed<PerfilCompletitud>(() => {
     const p = this.perfilActual()
     if (!p) {
       return { porcentaje: 0, completado: false, itemsFaltantes: [] }
     }
 
-    const { puntos, items: incompletos } = this.calcularFaltantes(p)
+    const rolActivo = this.tokenStorage.session()?.rol || p.rol
+    const { puntos, items: incompletos } = this.calcularFaltantes(p, rolActivo)
     const incompletosClaves = new Set(incompletos.map(i => i.clave))
     const completados = this.completadosRecientes().filter(c => !incompletosClaves.has(c.clave))
 

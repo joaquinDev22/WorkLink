@@ -87,11 +87,15 @@
                                     </div>
                                 </div>
 
-                                <!-- 2. Anillo de Progreso de Perfil (Reactivo según el Rol activo) -->
-                                @if (mostrarCompletitud() && !completitudActual().completado) {
-                                    <div class="bg-slate-50 rounded-2xl p-3 border border-slate-100 flex items-center gap-3">
+                                <!-- 2. Anillo de Progreso de Perfil (Reactivo para todos los roles en el modal) -->
+                                @if (mostrarCompletitud()) {
+                                    @let comp = completitudActual();
+                                    <a
+                                        [routerLink]="perfilRoute()"
+                                        (click)="cerrarUserModal()"
+                                        class="bg-slate-50 hover:bg-slate-100/90 rounded-2xl p-3 border border-slate-100 flex items-center gap-3 transition-colors group">
                                         <div class="relative w-11 h-11 shrink-0 flex items-center justify-center">
-                                            <svg class="w-11 h-11 -rotate-90" viewBox="0 0 48 48">
+                                            <svg class="w-11 h-11 -rotate-90" viewBox="0 0 48 48" aria-hidden="true">
                                                 <circle 
                                                     cx="24" cy="24" r="19" 
                                                     class="stroke-slate-200" 
@@ -100,27 +104,32 @@
                                                 />
                                                 <circle 
                                                     cx="24" cy="24" r="19" 
-                                                    class="stroke-brand-indigo transition-[stroke-dashoffset] duration-700 ease-out" 
+                                                    [ngClass]="comp.completado ? 'stroke-emerald-500' : 'stroke-brand-indigo'"
+                                                    class="transition-[stroke-dashoffset] duration-700 ease-out" 
                                                     stroke-width="4" 
                                                     stroke-linecap="round"
                                                     fill="transparent" 
                                                     stroke-dasharray="119.38" 
-                                                    [style.strokeDashoffset]="119.38 - (119.38 * completitudActual().porcentaje / 100)" 
+                                                    [style.strokeDashoffset]="119.38 - (119.38 * comp.porcentaje / 100)" 
                                                 />
                                             </svg>
-                                            <span class="absolute text-[10px] font-bold text-slate-700">
-                                                {{ completitudActual().porcentaje }}%
+                                            <span class="absolute text-[10px] font-bold text-slate-700 tabular-nums">
+                                                {{ comp.porcentaje }}%
                                             </span>
                                         </div>
                                         <div class="flex-1 min-w-0">
-                                            <h4 class="text-xs font-semibold text-slate-800 leading-tight">
-                                                {{ completitudActual().completado ? 'Perfil completo' : 'Perfil incompleto' }}
+                                            <h4 class="text-xs font-semibold text-slate-800 leading-tight group-hover:text-brand-indigo transition-colors">
+                                                {{ comp.completado ? 'Perfil completo' : 'Perfil incompleto' }}
                                             </h4>
                                             <p class="text-[11px] text-slate-500 leading-tight mt-0.5">
-                                                {{ completitudActual().completado ? 'Tu perfil luce profesional y visible.' : 'Completa tu información para destacar.' }}
+                                                @if (comp.completado) {
+                                                    Tu perfil luce completo para {{ userDisplay().badgeLabel }}.
+                                                } @else {
+                                                    {{ comp.itemsFaltantes.length }} {{ comp.itemsFaltantes.length === 1 ? 'dato pendiente' : 'datos pendientes' }} · Ir al perfil
+                                                }
                                             </p>
                                         </div>
-                                    </div>
+                                    </a>
                                 }
 
                                 <!-- Switch de rol dual en el modal para Postulante / Freelancer -->
