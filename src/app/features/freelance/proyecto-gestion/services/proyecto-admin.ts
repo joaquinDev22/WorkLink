@@ -1,6 +1,6 @@
 import { inject, Service, signal } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
-import { delay, finalize, Observable, of, tap } from 'rxjs'
+import { catchError, delay, finalize, Observable, of, tap, throwError } from 'rxjs'
 import { environment } from '../../../../../environments/environment'
 import { TokenStorage } from '../../../../core/auth/services/token-storage'
 import {
@@ -123,15 +123,21 @@ export class ProyectoAdmin {
       )
     }
 
-    // Evita 403 si otro rol consulta su perfil sin JWT de FREELANCER
-    const tokenRol = this.tokenStorage.getJwtRol()
-    if (tokenRol && tokenRol !== 'FREELANCER') {
+    // Solo omite la petición en JWT exclusivos de roles no candidatos (CLIENTE, EMPRESA, RECRUITER)
+    const tokenRol = this.tokenStorage.getJwtRol()?.replace(/^ROLE_/i, '').toUpperCase()
+    if (tokenRol && !['FREELANCER', 'POSTULANTE', 'EMPLOYEE'].includes(tokenRol)) {
       this.misProyectos.set([])
       this.isLoading.set(false)
       return of([])
     }
 
     return this.client.get<ProyectoResponseDTO[]>(`${this.API_URL}/me/asignados`).pipe(
+      catchError((err) => {
+        if (err?.status === 403 || err?.status === 404) {
+          return of([])
+        }
+        return throwError(() => err)
+      }),
       tap((data) => this.misProyectos.set(Array.isArray(data) ? data : [])),
       finalize(() => this.isLoading.set(false))
     )
