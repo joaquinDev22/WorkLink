@@ -1,4 +1,4 @@
-<div class="page-enter max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 pb-14">
+<div class="page-enter w-full space-y-6 pb-14">
 
   <!-- Encabezado y Retorno -->
   <header class="space-y-3 border-b border-slate-200 pb-5">
@@ -181,23 +181,16 @@
           }
         </div>
 
-        <div class="flex items-center gap-2">
-          <input
-            #skillInp
-            type="text"
-            [value]="skillInput()"
-            (input)="skillInput.set(skillInp.value)"
-            (keydown.enter)="$event.preventDefault(); agregarSkill()"
-            placeholder="Agregar tecnología (ej: GraphQL, AWS)..."
-            aria-label="Nueva tecnología requerida"
-            class="flex-1 px-3.5 py-2.5 min-h-[44px] text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky" />
-          <button
-            type="button"
-            (click)="agregarSkill()"
-            class="btn-tactile-secondary px-4 py-2.5 min-h-[44px] text-sm cursor-pointer">
-            Agregar
-          </button>
-        </div>
+        <app-skill-autocomplete
+          [(value)]="skillInput"
+          [selected]="habilidades()"
+          [clearOnSelect]="true"
+          [showAddButton]="true"
+          addButtonLabel="Agregar"
+          placeholder="Buscar tecnología (ej: Angular, GraphQL, AWS)..."
+          ariaLabel="Nueva tecnología requerida"
+          (optionSelected)="agregarSkill($event)"
+          (submitted)="agregarSkill($event)" />
 
         <div class="flex flex-wrap gap-1.5">
           @for (sug of tecnologiasSugeridas; track sug) {
