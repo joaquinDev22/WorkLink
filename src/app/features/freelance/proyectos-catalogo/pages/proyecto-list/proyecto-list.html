@@ -1,4 +1,4 @@
-<div class="page-enter max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+<div class="page-enter w-full space-y-6 pb-10">
 
   <!-- Encabezado y Buscador Desktop -->
   <header class="flex flex-col lg:flex-row lg:items-end justify-between gap-4 border-b border-slate-200/80 pb-5">
@@ -107,8 +107,11 @@
       @if (!isLoading() && !errorCarga()) {
         <div class="flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm text-slate-500">
           <p class="font-medium tabular-nums">
-            Mostrando <span class="font-bold text-slate-900">{{ proyectosFiltrados().length }}</span>
+            <span class="font-bold text-slate-900">{{ proyectosFiltrados().length }}</span>
             {{ proyectosFiltrados().length === 1 ? 'proyecto disponible' : 'proyectos disponibles' }}
+            @if (proyectosFiltrados().length > itemsPorPagina) {
+              <span class="text-slate-400">· Página {{ paginaActual() }} de {{ totalPaginas() }}</span>
+            }
           </p>
           @if (hayFiltrosActivos()) {
             <button
@@ -250,27 +253,12 @@
         </div>
 
         <!-- Paginación -->
-        @if (totalPaginas() > 1) {
-          <nav aria-label="Paginación de proyectos" class="flex items-center justify-center gap-2 pt-4">
-            <button
-              type="button"
-              (click)="cambiarPagina(paginaActual() - 1)"
-              [disabled]="paginaActual() <= 1"
-              class="btn-tactile-secondary px-3.5 py-2 min-h-[44px] text-xs disabled:opacity-40 disabled:pointer-events-none cursor-pointer">
-              Anterior
-            </button>
-            <span class="text-xs font-semibold text-slate-600 px-3 tabular-nums">
-              Página {{ paginaActual() }} de {{ totalPaginas() }}
-            </span>
-            <button
-              type="button"
-              (click)="cambiarPagina(paginaActual() + 1)"
-              [disabled]="paginaActual() >= totalPaginas()"
-              class="btn-tactile-secondary px-3.5 py-2 min-h-[44px] text-xs disabled:opacity-40 disabled:pointer-events-none cursor-pointer">
-              Siguiente
-            </button>
-          </nav>
-        }
+        <app-paginator
+          [currentPage]="paginaActual()"
+          [totalItems]="proyectosFiltrados().length"
+          [pageSize]="itemsPorPagina"
+          itemLabel="proyectos"
+          (pageChange)="cambiarPagina($event)" />
       }
     </main>
   </div>
@@ -291,31 +279,72 @@
   </div>
 
   <!-- Área -->
-  <fieldset class="space-y-2">
-    <legend class="text-xs font-bold text-slate-700">Área de especialidad</legend>
-    <div class="flex flex-col gap-1.5">
-      <button
-        type="button"
-        (click)="seleccionarArea('TODOS')"
-        [class]="filtroArea() === 'TODOS'
-          ? 'bg-indigo-50 text-brand-indigo border-brand-indigo/30 font-bold shadow-[inset_0_1px_0_rgba(255,255,255,0.85),0_1px_2px_rgba(79,70,229,0.1)]'
-          : 'text-slate-600 hover:bg-slate-50 border-transparent hover:border-slate-200/80 font-medium'"
-        class="text-left text-xs px-3 py-2 min-h-[38px] rounded-xl border transition-[background-color,border-color,color,transform] duration-150 active:scale-[0.98] cursor-pointer">
-        Todas las áreas
-      </button>
-      @for (area of areasDisponibles(); track area) {
+  <div class="space-y-1.5 relative" data-area-dropdown>
+    <span class="block text-xs font-bold text-slate-700">Área de especialidad</span>
+    <button
+      type="button"
+      (click)="areaDropdownOpen.update(v => !v)"
+      [attr.aria-expanded]="areaDropdownOpen()"
+      aria-haspopup="listbox"
+      class="w-full flex items-center justify-between gap-2 px-3 py-2.5 min-h-[42px] bg-slate-50 hover:bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky transition-[background-color,border-color,box-shadow] cursor-pointer"
+      [class.border-brand-indigo]="areaDropdownOpen()"
+      [class.bg-white]="areaDropdownOpen()">
+      <span class="truncate">{{ filtroArea() === 'TODOS' ? 'Todas las áreas' : filtroArea() }}</span>
+      <svg
+        class="w-4 h-4 text-slate-400 shrink-0 transition-transform duration-200"
+        [class.rotate-180]="areaDropdownOpen()"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+      </svg>
+    </button>
+
+    @if (areaDropdownOpen()) {
+      <div
+        role="listbox"
+        aria-label="Área de especialidad"
+        class="absolute left-0 right-0 top-full mt-1.5 z-30 bg-white border border-slate-200/90 rounded-2xl shadow-xl p-1.5 max-h-64 overflow-y-auto space-y-0.5 animate-row-enter">
         <button
           type="button"
-          (click)="seleccionarArea(area)"
-          [class]="filtroArea().toLowerCase() === area.toLowerCase()
-            ? 'bg-indigo-50 text-brand-indigo border-brand-indigo/30 font-bold shadow-[inset_0_1px_0_rgba(255,255,255,0.85),0_1px_2px_rgba(79,70,229,0.1)]'
-            : 'text-slate-600 hover:bg-slate-50 border-transparent hover:border-slate-200/80 font-medium'"
-          class="text-left text-xs px-3 py-2 min-h-[38px] rounded-xl border transition-[background-color,border-color,color,transform] duration-150 active:scale-[0.98] cursor-pointer">
-          {{ area }}
+          role="option"
+          [attr.aria-selected]="filtroArea() === 'TODOS'"
+          (click)="seleccionarArea('TODOS')"
+          [class]="filtroArea() === 'TODOS'
+            ? 'bg-indigo-50 text-brand-indigo font-bold'
+            : 'text-slate-700 hover:bg-slate-50 font-medium'"
+          class="w-full flex items-center justify-between gap-2 text-left text-xs px-3 py-2 min-h-[38px] rounded-xl transition-colors cursor-pointer">
+          <span class="truncate">Todas las áreas</span>
+          @if (filtroArea() === 'TODOS') {
+            <svg class="w-3.5 h-3.5 text-brand-indigo shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+            </svg>
+          }
         </button>
-      }
-    </div>
-  </fieldset>
+
+        @for (area of areasDisponibles(); track area) {
+          @let selected = filtroArea().toLowerCase() === area.toLowerCase();
+          <button
+            type="button"
+            role="option"
+            [attr.aria-selected]="selected"
+            (click)="seleccionarArea(area)"
+            [class]="selected
+              ? 'bg-indigo-50 text-brand-indigo font-bold'
+              : 'text-slate-700 hover:bg-slate-50 font-medium'"
+            class="w-full flex items-center justify-between gap-2 text-left text-xs px-3 py-2 min-h-[38px] rounded-xl transition-colors cursor-pointer">
+            <span class="truncate">{{ area }}</span>
+            @if (selected) {
+              <svg class="w-3.5 h-3.5 text-brand-indigo shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+              </svg>
+            }
+          </button>
+        }
+      </div>
+    }
+  </div>
 
   <!-- Rango de Presupuesto -->
   <fieldset class="space-y-2.5 pt-2 border-t border-slate-100">
