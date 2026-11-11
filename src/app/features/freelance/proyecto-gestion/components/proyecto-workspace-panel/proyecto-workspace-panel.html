@@ -1,0 +1,381 @@
+@let p = proyecto();
+@let estado = estadoProyectoConfig[p.estado];
+
+<div class="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-xs space-y-6">
+
+  <!-- Cabecera del Proyecto Activo -->
+  <header class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 border-b border-slate-100 pb-4">
+    <div class="space-y-1.5 min-w-0">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold {{ estado.badgeClass }}">
+          <span class="w-1.5 h-1.5 rounded-full {{ estado.dotClass }}"></span>
+          {{ estado.label }}
+        </span>
+        <span class="text-xs font-medium text-slate-500">{{ p.area }}</span>
+        <span class="text-xs text-slate-400">Publicado {{ formatFecha(p.fechaPublicacion) }}</span>
+      </div>
+
+      <h2 class="text-xl font-black text-slate-900 tracking-tight">
+        <a
+          [routerLink]="['/freelance/proyecto', p.uuid || p.proyectoId]"
+          class="hover:text-brand-indigo transition-colors">
+          {{ p.nombreProyecto || p.area }}
+        </a>
+      </h2>
+
+      <p class="text-xs sm:text-sm text-slate-600">
+        @if (role() === 'CLIENTE') {
+          Freelancer asignado:
+          <strong class="text-slate-800">{{ p.nombreFreelancer || 'Pendiente de adjudicación' }}</strong>
+        } @else {
+          Cliente contratante: <strong class="text-slate-800">{{ p.nombreCliente }}</strong>
+        }
+      </p>
+    </div>
+
+    <!-- Acciones de Gestión Superior -->
+    <div class="flex flex-wrap items-center gap-2 shrink-0">
+      @if (role() === 'CLIENTE' && p.estado === 'BUSCANDO_TALENTO') {
+        <a
+          [routerLink]="['/freelance/proyecto', p.proyectoId, 'propuestas']"
+          class="btn-tactile-primary px-4 py-2 min-h-[40px] text-xs inline-flex items-center">
+          Comparar Propuestas
+        </a>
+        <a
+          [routerLink]="['/freelance/proyecto', p.proyectoId, 'editar']"
+          class="btn-tactile-secondary px-3.5 py-2 min-h-[40px] text-xs inline-flex items-center">
+          Editar
+        </a>
+      }
+
+      @if (role() === 'CLIENTE' && !esSoloLectura()) {
+        <button
+          type="button"
+          (click)="mostrarModalCancelar.set(true)"
+          class="px-3.5 py-2 min-h-[40px] rounded-xl text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition-colors cursor-pointer">
+          Cancelar proyecto
+        </button>
+      }
+    </div>
+  </header>
+
+  <!-- Alertas de estado -->
+  @if (feedbackOk()) {
+    <div role="status" class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs sm:text-sm font-medium">
+      {{ feedbackOk() }}
+    </div>
+  }
+  @if (feedbackError()) {
+    <div role="alert" class="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs sm:text-sm font-medium">
+      {{ feedbackError() }}
+    </div>
+  }
+
+  @if (p.estado === 'CANCELADO') {
+    <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-600 text-xs sm:text-sm">
+      Este proyecto fue cancelado y permanece en modo solo lectura para historial contractual.
+    </div>
+  }
+
+  <!-- SECCIÓN: Hitos y Pagos (WL-35) -->
+  <section class="space-y-4">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div class="space-y-1">
+        <h3 class="text-sm font-bold text-slate-900">Hitos y Entregables</h3>
+        <p class="text-xs text-slate-500 tabular-nums">
+          Total planificado: <strong class="text-slate-800">USD ${{ totalPresupuestoHitos() }}</strong>
+          · Pagado: <strong class="text-emerald-700">USD ${{ totalPagadoHitos() }}</strong>
+        </p>
+      </div>
+
+      @if (role() === 'CLIENTE' && p.estado === 'EN_PROGRESO') {
+        <button
+          type="button"
+          (click)="mostrarFormHito.update(v => !v)"
+          class="btn-tactile-secondary px-3.5 py-2 min-h-[40px] text-xs cursor-pointer">
+          {{ mostrarFormHito() ? 'Ocultar formulario' : '+ Nuevo Hito' }}
+        </button>
+      }
+    </div>
+
+    <!-- Barra de progreso de hitos -->
+    @if (hitos().length > 0) {
+      <div class="space-y-1.5">
+        <div class="flex justify-between text-xs font-semibold text-slate-600 tabular-nums">
+          <span>Avance de entregas</span>
+          <span>{{ porcentajeAvance() }}%</span>
+        </div>
+        <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+          <div
+            class="h-full bg-brand-indigo transition-all duration-300"
+            [style.width.%]="porcentajeAvance()">
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Formulario creación de hito (Cliente en EN_PROGRESO) -->
+    @if (mostrarFormHito() && role() === 'CLIENTE' && p.estado === 'EN_PROGRESO') {
+      <form (submit)="crearHito($event)" class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="sm:col-span-2 space-y-1">
+            <label for="hitoTitulo" class="text-xs font-semibold text-slate-700">Título del hito *</label>
+            <input
+              id="hitoTitulo"
+              #ht
+              type="text"
+              [value]="hitoTitulo()"
+              (input)="hitoTitulo.set(ht.value)"
+              placeholder="Ej: Maquetación UI + Validaciones"
+              class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm" />
+          </div>
+          <div class="space-y-1">
+            <label for="hitoMonto" class="text-xs font-semibold text-slate-700">Monto (USD) *</label>
+            <input
+              id="hitoMonto"
+              #hm
+              type="number"
+              min="1"
+              step="any"
+              [value]="hitoMonto() ?? ''"
+              (input)="actualizarMontoHito(hm.value)"
+              placeholder="450"
+              class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm tabular-nums" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="sm:col-span-2 space-y-1">
+            <label for="hitoDesc" class="text-xs font-semibold text-slate-700">Descripción del entregable</label>
+            <input
+              id="hitoDesc"
+              #hd
+              type="text"
+              [value]="hitoDesc()"
+              (input)="hitoDesc.set(hd.value)"
+              placeholder="Criterios de aprobación del entregable"
+              class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm" />
+          </div>
+          <div class="space-y-1">
+            <label for="hitoFecha" class="text-xs font-semibold text-slate-700">Fecha límite</label>
+            <input
+              id="hitoFecha"
+              #hf
+              type="date"
+              [value]="hitoFechaLimite()"
+              (input)="hitoFechaLimite.set(hf.value)"
+              class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm" />
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-2">
+          <button
+            type="button"
+            (click)="mostrarFormHito.set(false)"
+            class="btn-tactile-secondary px-3.5 py-2 text-xs cursor-pointer">
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            [disabled]="isMutating()"
+            class="btn-tactile-primary px-4 py-2 text-xs cursor-pointer">
+            Guardar Hito
+          </button>
+        </div>
+      </form>
+    }
+
+    <!-- Lista de Hitos -->
+    @if (isLoadingHitos()) {
+      <div class="space-y-2.5 animate-pulse">
+        <div class="h-16 bg-slate-100 rounded-xl"></div>
+        <div class="h-16 bg-slate-100 rounded-xl"></div>
+      </div>
+    } @else if (hitos().length === 0) {
+      <div class="p-6 text-center rounded-xl border border-dashed border-slate-200 text-xs sm:text-sm text-slate-500">
+        @if (p.estado === 'BUSCANDO_TALENTO') {
+          Los hitos de pago se habilitarán cuando adjudiques una propuesta al proyecto.
+        } @else {
+          No hay hitos registrados todavía en este proyecto.
+        }
+      </div>
+    } @else {
+      <div class="space-y-2.5">
+        @for (h of hitos(); track h.hitoId) {
+          @let hEstado = estadoHitoConfig[h.estado];
+          <div class="hito-row p-4 rounded-xl border border-slate-200/80 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="space-y-1 min-w-0">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="font-bold text-sm text-slate-900">{{ h.titulo }}</span>
+                <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold {{ hEstado.badgeClass }}">
+                  {{ hEstado.label }}
+                </span>
+              </div>
+              @if (h.descripcion) {
+                <p class="text-xs text-slate-600">{{ h.descripcion }}</p>
+              }
+              <div class="flex flex-wrap items-center gap-3 text-xs text-slate-500 tabular-nums">
+                <span class="font-bold text-slate-800">USD ${{ h.monto }}</span>
+                @if (h.fechaLimite) {
+                  <span>Vence: {{ formatFecha(h.fechaLimite) }}</span>
+                }
+              </div>
+            </div>
+
+            <!-- Transición de estado según rol (WL-35) -->
+            @if (!esSoloLectura()) {
+              <div class="shrink-0 flex items-center gap-2">
+                @if (role() === 'FREELANCER' && h.estado === 'PENDIENTE') {
+                  <button
+                    type="button"
+                    [disabled]="isMutating()"
+                    (click)="cambiarEstadoHito(h, 'COMPLETADO')"
+                    class="btn-tactile-primary px-3.5 py-2 min-h-[40px] text-xs cursor-pointer">
+                    Marcar entregado
+                  </button>
+                }
+                @if (role() === 'CLIENTE' && h.estado === 'COMPLETADO') {
+                  <button
+                    type="button"
+                    [disabled]="isMutating()"
+                    (click)="cambiarEstadoHito(h, 'PAGADO')"
+                    class="btn-tactile-primary px-3.5 py-2 min-h-[40px] text-xs cursor-pointer">
+                    Aprobar y Pagar
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+  </section>
+
+  <!-- SECCIÓN: Valoración y Reseña (WL-37 — solo en FINALIZADO) -->
+  @if (p.estado === 'FINALIZADO') {
+    <section class="pt-5 border-t border-slate-100 space-y-4">
+      <h3 class="text-sm font-bold text-slate-900">Valoración del Proyecto</h3>
+
+      @if (resenaEnviada(); as rev) {
+        <div class="p-4 rounded-xl bg-indigo-50/60 border border-indigo-200/80 space-y-2">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1" [attr.aria-label]="'Puntuación otorgada: ' + rev.puntaje + ' de 5'">
+              @for (star of [1, 2, 3, 4, 5]; track star) {
+                <svg
+                  class="w-4 h-4"
+                  [class.text-amber-400]="star <= rev.puntaje"
+                  [class.text-slate-300]="star > rev.puntaje"
+                  fill="currentColor"
+                  viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              }
+            </div>
+            <span class="text-xs font-semibold text-brand-indigo">Reseña confirmada</span>
+          </div>
+          <p class="text-sm text-slate-800 leading-relaxed">{{ rev.comentario }}</p>
+        </div>
+      } @else {
+        <form (submit)="enviarCalificacion($event)" class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
+          <div class="space-y-1.5">
+            <span class="text-xs font-semibold text-slate-700 block">Calificación general *</span>
+            <div class="flex items-center gap-1.5" role="radiogroup" aria-label="Puntuación de 1 a 5 estrellas">
+              @for (star of [1, 2, 3, 4, 5]; track star) {
+                <button
+                  type="button"
+                  (mouseenter)="puntajeHover.set(star)"
+                  (mouseleave)="puntajeHover.set(0)"
+                  (click)="puntajeSeleccionado.set(star)"
+                  [attr.aria-label]="star + (star === 1 ? ' estrella' : ' estrellas')"
+                  [attr.aria-checked]="puntajeSeleccionado() === star"
+                  role="radio"
+                  class="p-1.5 rounded-lg hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky cursor-pointer transition-transform active:scale-90">
+                  <svg
+                    class="w-6 h-6 transition-colors"
+                    [class.text-amber-400]="star <= (puntajeHover() || puntajeSeleccionado())"
+                    [class.text-slate-300]="star > (puntajeHover() || puntajeSeleccionado())"
+                    fill="currentColor"
+                    viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                </button>
+              }
+              <span class="text-xs font-semibold text-slate-600 ml-2 tabular-nums">
+                {{ puntajeSeleccionado() }} / 5
+              </span>
+            </div>
+          </div>
+
+          <div class="space-y-1">
+            <label for="resenaText" class="text-xs font-semibold text-slate-700">Comentario de cierre *</label>
+            <textarea
+              id="resenaText"
+              #rt
+              rows="3"
+              maxlength="500"
+              [value]="comentarioResena()"
+              (input)="comentarioResena.set(rt.value)"
+              placeholder="Comparte cómo fue la comunicación, calidad de entregas y cumplimiento de plazos..."
+              class="w-full p-3 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky"></textarea>
+          </div>
+
+          <div class="flex justify-end">
+            <button
+              type="submit"
+              [disabled]="isMutating()"
+              class="btn-tactile-primary px-5 py-2.5 min-h-[44px] text-xs sm:text-sm cursor-pointer">
+              Publicar Valoración
+            </button>
+          </div>
+        </form>
+      }
+    </section>
+  }
+</div>
+
+<!-- Modal de Confirmación de Cancelación (WL-36) -->
+@if (mostrarModalCancelar()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div
+      class="fixed inset-0 bg-slate-900/55 backdrop-blur-xs"
+      (click)="!isMutating() && mostrarModalCancelar.set(false)"
+      aria-hidden="true"></div>
+
+    <div
+      role="alertdialog"
+      aria-modal="true"
+      aria-labelledby="cancel-title"
+      class="relative z-10 w-full max-w-md bg-white rounded-2xl border border-slate-200 p-6 shadow-2xl space-y-4">
+      <div class="flex items-start gap-3">
+        <div class="w-10 h-10 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center shrink-0 border border-rose-200">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+        </div>
+        <div class="space-y-1">
+          <h3 id="cancel-title" class="text-base font-bold text-slate-900">¿Cancelar este proyecto?</h3>
+          <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+            Esta acción es irreversible. Se cerrarán las postulaciones y los hitos pasarán a modo de solo lectura.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2.5 pt-2">
+        <button
+          type="button"
+          [disabled]="isMutating()"
+          (click)="mostrarModalCancelar.set(false)"
+          class="btn-tactile-secondary px-4 py-2.5 min-h-[44px] text-xs sm:text-sm cursor-pointer">
+          Mantener activo
+        </button>
+        <button
+          type="button"
+          [disabled]="isMutating()"
+          (click)="confirmarCancelacion()"
+          class="px-4 py-2.5 min-h-[44px] rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs sm:text-sm transition-colors cursor-pointer">
+          {{ isMutating() ? 'Cancelando...' : 'Confirmar cancelación' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

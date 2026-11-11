@@ -1,1 +1,168 @@
-﻿<p>proyecto-propuestas works!</p>
+﻿<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 pb-14">
+
+  <!-- Navegación de regreso -->
+  <div class="flex items-center justify-between">
+    <a
+      routerLink="/freelance/mis-proyectos"
+      class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-slate-600 hover:text-brand-indigo focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky rounded-lg px-2 py-1.5 -ml-2 transition-colors">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      </svg>
+      <span>Volver a Mis Proyectos</span>
+    </a>
+  </div>
+
+  @if (isLoading()) {
+    <div class="space-y-4 animate-pulse" aria-busy="true">
+      <div class="h-24 bg-white border border-slate-200 rounded-2xl"></div>
+      <div class="h-36 bg-white border border-slate-200 rounded-2xl"></div>
+      <div class="h-36 bg-white border border-slate-200 rounded-2xl"></div>
+    </div>
+  } @else {
+    @if (proyecto(); as p) {
+      @let estado = estadoConfig[p.estado];
+      <header class="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="space-y-1.5 min-w-0">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold {{ estado.badgeClass }}">
+              <span class="w-1.5 h-1.5 rounded-full {{ estado.dotClass }}"></span>
+              {{ estado.label }}
+            </span>
+            <span class="text-xs text-slate-500 tabular-nums">
+              Presupuesto estimado: USD ${{ p.presupuestoMin }} - ${{ p.presupuestoMax }}
+            </span>
+          </div>
+          <h1 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight truncate">
+            Propuestas para {{ p.nombreProyecto || p.area }}
+          </h1>
+          @if (p.nombreFreelancer) {
+            <p class="text-xs sm:text-sm text-emerald-700 font-semibold">
+              Freelancer contratado: {{ p.nombreFreelancer }}
+            </p>
+          }
+        </div>
+
+        <!-- Ordenamiento -->
+        <div class="flex items-center gap-2 shrink-0">
+          <label for="ordenProp" class="text-xs font-semibold text-slate-500">Ordenar:</label>
+          <select
+            id="ordenProp"
+            #selOrden
+            [value]="orden()"
+            (change)="cambiarOrden(selOrden.value)"
+            class="px-3 py-2 min-h-[40px] bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800">
+            <option value="recientes">Más recientes</option>
+            <option value="menor_costo">Menor cotización</option>
+          </select>
+        </div>
+      </header>
+    }
+
+    @if (feedbackOk()) {
+      <div role="status" class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-medium flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <span>{{ feedbackOk() }}</span>
+        <a routerLink="/freelance/mis-proyectos" class="btn-tactile-primary px-4 py-2 text-xs shrink-0 text-center">
+          Gestionar hitos del proyecto
+        </a>
+      </div>
+    }
+    @if (feedbackError()) {
+      <div role="alert" class="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-sm font-medium">
+        {{ feedbackError() }}
+      </div>
+    }
+
+    @if (propuestasOrdenadas().length === 0) {
+      <div class="bg-white border border-dashed border-slate-300 rounded-2xl p-10 text-center space-y-2">
+        <h2 class="text-base font-bold text-slate-900">Aún no recibiste postulaciones</h2>
+        <p class="text-sm text-slate-500">
+          Cuando un freelancer envíe su cotización y carta técnica aparecerá aquí para que puedas compararla.
+        </p>
+      </div>
+    } @else {
+      <div class="grid grid-cols-1 gap-4">
+        @for (prop of propuestasOrdenadas(); track prop.postulacionId) {
+          <article class="propuesta-card bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="size-10 rounded-full bg-indigo-50 text-brand-indigo font-bold flex items-center justify-center border border-indigo-200 shrink-0">
+                  {{ prop.nombreEmpleado ? prop.nombreEmpleado.charAt(0).toUpperCase() : 'F' }}
+                </div>
+                <div class="min-w-0">
+                  <h2 class="text-base font-bold text-slate-900 truncate">{{ prop.nombreEmpleado }}</h2>
+                  <p class="text-xs text-slate-500">Enviada el {{ formatFecha(prop.fechaPostulacion) }}</p>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-4 shrink-0">
+                <div class="sm:text-right">
+                  <div class="text-[11px] font-medium text-slate-500">Cotización</div>
+                  <div class="text-lg font-black text-slate-900 tabular-nums">
+                    USD ${{ prop.costoPropuesto }}
+                  </div>
+                </div>
+
+                @if (proyecto()?.estado === 'BUSCANDO_TALENTO') {
+                  <button
+                    type="button"
+                    (click)="candidaturaAConfirmar.set(prop)"
+                    class="btn-tactile-primary px-4 py-2.5 min-h-[44px] text-xs sm:text-sm cursor-pointer">
+                    Contratar freelancer
+                  </button>
+                }
+              </div>
+            </div>
+
+            <p class="text-sm text-slate-700 leading-relaxed whitespace-pre-line text-pretty">
+              {{ prop.descripcion }}
+            </p>
+          </article>
+        }
+      </div>
+    }
+  }
+</div>
+
+<!-- Modal de Confirmación de Adjudicación -->
+@if (candidaturaAConfirmar(); as cand) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div
+      class="fixed inset-0 bg-slate-900/55 backdrop-blur-xs"
+      (click)="!isAssigning() && candidaturaAConfirmar.set(null)"
+      aria-hidden="true"></div>
+
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="assign-modal-title"
+      class="relative z-10 w-full max-w-md bg-white rounded-2xl border border-slate-200 p-6 shadow-2xl space-y-4">
+      <div class="space-y-1.5">
+        <h2 id="assign-modal-title" class="text-lg font-bold text-slate-900">Confirmar adjudicación</h2>
+        <p class="text-sm text-slate-600 leading-relaxed">
+          ¿Confirmas contratar a <strong class="text-slate-900">{{ cand.nombreEmpleado }}</strong> por una cotización de
+          <strong class="text-slate-900 tabular-nums">USD ${{ cand.costoPropuesto }}</strong>?
+        </p>
+        <p class="text-xs text-slate-500">
+          El proyecto pasará a estado En Progreso y se cerrarán las nuevas postulaciones.
+        </p>
+      </div>
+
+      <div class="flex items-center justify-end gap-2.5 pt-2">
+        <button
+          type="button"
+          [disabled]="isAssigning()"
+          (click)="candidaturaAConfirmar.set(null)"
+          class="btn-tactile-secondary px-4 py-2.5 min-h-[44px] text-xs sm:text-sm cursor-pointer">
+          Cancelar
+        </button>
+        <button
+          type="button"
+          [disabled]="isAssigning()"
+          (click)="confirmarAdjudicacion()"
+          class="btn-tactile-primary px-5 py-2.5 min-h-[44px] text-xs sm:text-sm cursor-pointer">
+          {{ isAssigning() ? 'Adjudicando...' : 'Sí, contratar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
