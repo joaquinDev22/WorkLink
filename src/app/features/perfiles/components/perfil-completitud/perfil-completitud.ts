@@ -4,6 +4,7 @@ import { ItemFaltantePerfil, PerfilCompletitud } from '../../models/perfil.model
 @Component({
   selector: 'app-perfil-completitud',
   standalone: true,
+  host: { class: 'block' },
   template: `
     @if (!completitud().completado) {
       <section

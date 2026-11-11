@@ -15,6 +15,7 @@ import { EmpresaService } from '../../../enterprise/empresa-perfil/services/empr
 import { DashboardStatsResponseDTO } from '../../../enterprise/empresa-perfil/models/empresa.models'
 import { Cliente } from '../../../freelance/cliente-dashboard/services/cliente'
 import { PerfilCompletitudBanner } from '../../components/perfil-completitud/perfil-completitud'
+import { SkillAutocomplete } from '../../../../shared/components/skill-autocomplete/skill-autocomplete'
 import { catchError, forkJoin, map, Observable, of } from 'rxjs'
 
 export interface HistorialEmpresaRecruiter {
@@ -69,7 +70,7 @@ export const PATTERNS_TELEFONO: Record<string, { regex: RegExp, ejemplo: string 
 }
 
 @Component({
-  imports: [CommonModule, FormsModule, FormField, RouterLink, PerfilCompletitudBanner],
+  imports: [CommonModule, FormsModule, FormField, RouterLink, PerfilCompletitudBanner, SkillAutocomplete],
   selector: 'app-mi-perfil',
   styleUrl: './mi-perfil.css',
   templateUrl: './mi-perfil.html',
@@ -127,9 +128,10 @@ export class MiPerfil implements OnInit {
   isSkillModalOpen = signal(false)
   skillNombre = signal('')
   skillNivel = signal<NivelHabilidad>(3)
-  catalogoHabilidades = signal<Array<{ id: number; name: string }>>([])
   isSavingSkill = signal(false)
-  mostrarDropdownSkills = signal(false)
+  readonly habilidadesActualesNombres = computed(() =>
+    (this.perfil()?.habilidades || []).map((h) => h.nombre)
+  )
   
   // Modal de proyectos (WL-18)
   isProjectModalOpen = signal<boolean>(false)
@@ -579,42 +581,17 @@ export class MiPerfil implements OnInit {
     })
   }
 
-  // Sugerencias reactivas filtradas del catálogo verificado mientras se escribe
-  readonly sugerenciasSkill = computed<Array<{ id: number; name: string }>>(() => {
-    const q = this.skillNombre().trim().toLowerCase()
-    const actuales = (this.perfil()?.habilidades || []).map(h => h.nombre.toLowerCase())
-    const catalogo = this.catalogoHabilidades().filter(h => !actuales.includes(h.name.toLowerCase()))
-
-    if (!q) {
-      return catalogo.slice(0, 8)
-    }
-    return catalogo.filter(h => h.name.toLowerCase().includes(q)).slice(0, 8)
-  })
-
   abrirSkillModal(): void {
     this.skillNombre.set('')
     this.skillNivel.set(3)
-    this.mostrarDropdownSkills.set(false)
     this.isSkillModalOpen.set(true)
-    this.perfilService.getHabilidadesCatalogo().subscribe({
-      next: (skills) => this.catalogoHabilidades.set(skills)
-    })
   }
   cerrarSkillModal(): void {
     this.isSkillModalOpen.set(false)
-    this.mostrarDropdownSkills.set(false)
-  }
-  seleccionarSugerencia(nombre: string): void {
-    this.skillNombre.set(nombre)
-    this.mostrarDropdownSkills.set(false)
   }
   guardarSkill(): void {
-    const raw = this.skillNombre().trim()
-    if (!raw) return
-
-    // Normalización: si coincide con una habilidad del catálogo oficial, usa su nombre canónico
-    const match = this.catalogoHabilidades().find(h => h.name.toLowerCase() === raw.toLowerCase())
-    const nombre = match ? match.name : raw
+    const nombre = this.skillNombre().trim()
+    if (!nombre) return
 
     this.isSavingSkill.set(true)
     this.perfilService.addMySkill(nombre, this.skillNivel()).subscribe({

@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, computed, inject, signal } from '@angular/core'
+import { Component, OnInit, computed, inject, signal } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { ProyectoAdmin } from '../../services/proyecto-admin'
 import {
@@ -8,9 +8,10 @@ import {
   formatFechaProyecto
 } from '../../models/proyecto.models'
 import { ProyectoWorkspacePanel } from '../../components/proyecto-workspace-panel/proyecto-workspace-panel'
+import { Paginator } from '../../../../../shared/components/paginator/paginator'
 
 @Component({
-  imports: [RouterLink, ProyectoWorkspacePanel],
+  imports: [RouterLink, ProyectoWorkspacePanel, Paginator],
   selector: 'app-mis-proyectos-freelancer',
   styleUrl: './mis-proyectos-freelancer.css',
   templateUrl: './mis-proyectos-freelancer.html'
@@ -23,6 +24,8 @@ export class MisProyectosFreelancer implements OnInit {
   readonly errorCarga = signal<string | null>(null)
   readonly filtroEstado = signal<EstadoProyecto | 'TODOS'>('TODOS')
   readonly proyectoActivoId = signal<number | null>(null)
+  readonly itemsPorPagina = 6
+  readonly paginaActual = signal<number>(1)
 
   readonly estadoConfig = ESTADO_PROYECTO_CONFIG
   readonly filtrosEstado: Array<EstadoProyecto | 'TODOS'> = [
@@ -42,6 +45,19 @@ export class MisProyectosFreelancer implements OnInit {
     const list = this.proyectos()
     return f === 'TODOS' ? list : list.filter((p) => p.estado === f)
   })
+
+  readonly proyectosPaginados = computed<ProyectoResponseDTO[]>(() => {
+    const list = this.proyectosFiltrados()
+    const total = Math.max(1, Math.ceil(list.length / this.itemsPorPagina))
+    const page = Math.min(Math.max(1, this.paginaActual()), total)
+    const start = (page - 1) * this.itemsPorPagina
+    return list.slice(start, start + this.itemsPorPagina)
+  })
+
+  seleccionarFiltro(est: EstadoProyecto | 'TODOS'): void {
+    this.filtroEstado.set(est)
+    this.paginaActual.set(1)
+  }
 
   readonly proyectoActivo = computed<ProyectoResponseDTO | null>(() => {
     const list = this.proyectosFiltrados()

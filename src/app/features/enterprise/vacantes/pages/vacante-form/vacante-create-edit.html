@@ -1,4 +1,4 @@
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 page-enter">
+<div class="w-full space-y-6 pb-10 page-enter">
 
   <!-- Encabezado y Navegación -->
   <div class="space-y-3 border-b border-slate-200 pb-6">
@@ -143,48 +143,18 @@
 
       <div class="space-y-2">
         <label for="tag-input" class="text-xs font-semibold text-slate-700">Agregar Tecnología (Selector con autocompletado)</label>
-        <div class="flex gap-2 relative">
-          <div class="relative flex-1">
-            <input
-              id="tag-input"
-              list="catalogo-habilidades-vacante"
-              type="text"
-              [value]="tagInput()"
-              (input)="tagInput.set($any($event.target).value)"
-              (keydown)="onTagKeyDown($event)"
-              placeholder="Buscar o escribir tecnología (ej: Angular, Docker, Spring Boot)..."
-              class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-[background-color,border-color,box-shadow]" />
-
-            <datalist id="catalogo-habilidades-vacante">
-              @for (hab of catalogoHabilidades(); track hab.id) {
-                <option [value]="hab.name"></option>
-              }
-            </datalist>
-
-            <!-- Dropdown flotante con coincidencias verificadas mientras escribe -->
-            @if (sugerenciasAutocompletado().length > 0) {
-              <div class="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-30 overflow-hidden divide-y divide-slate-100 animate-popover-in">
-                @for (sug of sugerenciasAutocompletado(); track sug) {
-                  <button
-                    type="button"
-                    (click)="agregarTag(sug)"
-                    class="w-full px-3.5 py-2 text-left text-xs font-semibold text-slate-700 hover:bg-brand-indigo/10 hover:text-brand-indigo flex items-center justify-between transition-colors"
-                  >
-                    <span>{{ sug }}</span>
-                    <span class="text-[10px] text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded font-bold">Verificada</span>
-                  </button>
-                }
-              </div>
-            }
-          </div>
-
-          <button
-            type="button"
-            (click)="agregarTagDesdeInput()"
-            class="btn-tactile-dark px-4 py-2.5 rounded-xl text-xs font-semibold shrink-0">
-            Agregar
-          </button>
-        </div>
+        <app-skill-autocomplete
+          inputId="tag-input"
+          [(value)]="tagInput"
+          [selected]="etiquetas()"
+          [clearOnSelect]="true"
+          [showAddButton]="true"
+          addButtonLabel="Agregar"
+          addButtonClass="btn-tactile-dark px-4 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold shrink-0 cursor-pointer"
+          placeholder="Buscar o escribir tecnología (ej: Angular, Docker, Spring Boot)..."
+          ariaLabel="Agregar tecnología"
+          (optionSelected)="agregarTag($event)"
+          (submitted)="agregarTag($event)" />
       </div>
 
       <!-- Tags Seleccionados -->

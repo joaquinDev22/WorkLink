@@ -13,6 +13,7 @@ import { gsap } from 'gsap'
 import { ProyectoAdmin } from '../../services/proyecto-admin'
 import { ProyectoCatalog } from '../../../proyectos-catalogo/services/proyecto-catalog'
 import { ProyectoRequestDTO } from '../../models/proyecto.models'
+import { SkillAutocomplete } from '../../../../../shared/components/skill-autocomplete/skill-autocomplete'
 
 interface ProyectoFormModel {
   nombreProyecto: string
@@ -25,7 +26,7 @@ interface ProyectoFormModel {
 }
 
 @Component({
-  imports: [RouterLink, FormField],
+  imports: [RouterLink, FormField, SkillAutocomplete],
   selector: 'app-proyecto-edit',
   styleUrl: './proyecto-edit.css',
   templateUrl: './proyecto-edit.html'
