@@ -1,1 +1,402 @@
-<p>proyecto-list works!</p>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+
+  <!-- Encabezado y Buscador Desktop -->
+  <header class="flex flex-col lg:flex-row lg:items-end justify-between gap-4 border-b border-slate-200/80 pb-5">
+    <div class="space-y-1">
+      <h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+        Proyectos Freelance
+      </h1>
+      <p class="text-sm text-slate-500">
+        Explora encargos técnicos por alcance, presupuesto y stack requerido para enviar tu propuesta.
+      </p>
+    </div>
+
+    <!-- Buscador Desktop -->
+    <div class="hidden lg:flex items-center gap-2 shrink-0">
+      <div class="relative">
+        <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <input
+          #inputBusquedaDesktop
+          type="search"
+          [value]="terminoBusqueda()"
+          (input)="buscar(inputBusquedaDesktop.value)"
+          (keyup.enter)="buscar(inputBusquedaDesktop.value)"
+          placeholder="Buscar por título, stack o área..."
+          aria-label="Buscar proyectos freelance"
+          class="w-72 pl-10 pr-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky focus:border-brand-indigo transition-colors" />
+      </div>
+      <button
+        type="button"
+        (click)="buscar(inputBusquedaDesktop.value)"
+        class="btn-tactile-primary px-4 py-2.5 text-sm cursor-pointer">
+        Buscar
+      </button>
+    </div>
+
+    <!-- Controles Mobile (Filtros + Lupa) -->
+    <div class="flex lg:hidden items-center justify-between gap-2">
+      <button
+        type="button"
+        (click)="mostrarFiltrosModal.set(true)"
+        class="btn-tactile-secondary flex items-center gap-2 px-4 py-2.5 min-h-[44px] text-sm font-semibold cursor-pointer">
+        <svg class="w-4 h-4 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+        </svg>
+        <span>Filtros</span>
+        @if (hayFiltrosActivos()) {
+          <span class="w-2 h-2 rounded-full bg-brand-indigo"></span>
+        }
+      </button>
+
+      <button
+        type="button"
+        (click)="mostrarBuscadorMobile.update(v => !v)"
+        [attr.aria-expanded]="mostrarBuscadorMobile()"
+        aria-label="Mostrar u ocultar buscador de proyectos"
+        class="min-w-[44px] min-h-[44px] inline-flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky cursor-pointer">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Buscador colapsable Mobile -->
+  <div
+    class="grid transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] lg:hidden motion-reduce:transition-none"
+    [class.grid-rows-[1fr]]="mostrarBuscadorMobile()"
+    [class.opacity-100]="mostrarBuscadorMobile()"
+    [class.grid-rows-[0fr]]="!mostrarBuscadorMobile()"
+    [class.opacity-0]="!mostrarBuscadorMobile()"
+    [class.pointer-events-none]="!mostrarBuscadorMobile()">
+    <div class="overflow-hidden">
+      <div class="flex items-center gap-2 bg-white p-2 rounded-xl border border-slate-200 shadow-xs">
+        <input
+          #inputBusquedaMobile
+          type="search"
+          [value]="terminoBusqueda()"
+          (input)="buscar(inputBusquedaMobile.value)"
+          (keyup.enter)="buscar(inputBusquedaMobile.value)"
+          placeholder="Buscar proyectos..."
+          aria-label="Buscar proyectos en móvil"
+          class="flex-1 min-h-[44px] px-3 text-sm text-slate-800 placeholder-slate-400 focus:outline-none" />
+        <button
+          type="button"
+          (click)="buscar(inputBusquedaMobile.value)"
+          class="btn-tactile-primary px-4 min-h-[44px] text-xs cursor-pointer">
+          Buscar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Layout Asimétrico: Sidebar de Filtros (3 cols) + Feed (9 cols) -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+    <!-- Panel Lateral Desktop -->
+    <aside class="hidden lg:block lg:col-span-3 lg:sticky lg:top-6 bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs space-y-6">
+      <ng-container *ngTemplateOutlet="panelFiltros"></ng-container>
+    </aside>
+
+    <!-- Catálogo Principal -->
+    <main class="lg:col-span-9 space-y-4">
+
+      <!-- Barra de resumen de resultados -->
+      @if (!isLoading() && !errorCarga()) {
+        <div class="flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm text-slate-500">
+          <p class="font-medium tabular-nums">
+            Mostrando <span class="font-bold text-slate-900">{{ proyectosFiltrados().length }}</span>
+            {{ proyectosFiltrados().length === 1 ? 'proyecto disponible' : 'proyectos disponibles' }}
+          </p>
+          @if (hayFiltrosActivos()) {
+            <button
+              type="button"
+              (click)="limpiarFiltros()"
+              class="text-xs font-semibold text-brand-indigo hover:text-brand-indigo-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky rounded px-1.5 py-1 cursor-pointer">
+              Restablecer filtros
+            </button>
+          }
+        </div>
+      }
+
+      @if (errorCarga()) {
+        <div role="alert" class="bg-white border border-rose-200 rounded-2xl p-8 text-center space-y-3">
+          <p class="text-sm font-semibold text-rose-700">{{ errorCarga() }}</p>
+          <button
+            type="button"
+            (click)="cargarCatalogo()"
+            class="btn-tactile-secondary px-4 py-2 text-sm cursor-pointer">
+            Reintentar
+          </button>
+        </div>
+      } @else if (isLoading()) {
+        <div class="grid grid-cols-1 gap-4" aria-busy="true" aria-label="Cargando proyectos freelance">
+          @for (item of [1, 2, 3, 4]; track item) {
+            <div class="bg-white border border-slate-200/80 p-6 rounded-2xl space-y-4 animate-pulse">
+              <div class="flex items-start justify-between gap-4">
+                <div class="space-y-2 flex-1">
+                  <div class="h-6 bg-slate-200 rounded-lg w-2/3"></div>
+                  <div class="h-4 bg-slate-200 rounded w-1/3"></div>
+                </div>
+                <div class="h-7 bg-slate-200 rounded-lg w-28"></div>
+              </div>
+              <div class="space-y-2">
+                <div class="h-4 bg-slate-200 rounded w-full"></div>
+                <div class="h-4 bg-slate-200 rounded w-5/6"></div>
+              </div>
+              <div class="flex gap-2">
+                <div class="h-6 bg-slate-200 rounded-lg w-16"></div>
+                <div class="h-6 bg-slate-200 rounded-lg w-20"></div>
+                <div class="h-6 bg-slate-200 rounded-lg w-14"></div>
+              </div>
+            </div>
+          }
+        </div>
+      } @else if (proyectosPaginados().length === 0) {
+        <div class="bg-white border border-dashed border-slate-300 rounded-2xl p-10 text-center space-y-3">
+          <div class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 mx-auto flex items-center justify-center">
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <h2 class="text-base font-bold text-slate-900">No encontramos proyectos con esos criterios</h2>
+          <p class="text-sm text-slate-500 max-w-md mx-auto">
+            Prueba ampliando el rango presupuestario o quitando etiquetas de tecnologías.
+          </p>
+          @if (hayFiltrosActivos()) {
+            <button
+              type="button"
+              (click)="limpiarFiltros()"
+              class="btn-tactile-primary px-5 py-2.5 text-sm cursor-pointer">
+              Ver todos los proyectos
+            </button>
+          }
+        </div>
+      } @else {
+        <div class="grid grid-cols-1 gap-4">
+          @for (p of proyectosPaginados(); track p.proyectoId) {
+            @let estado = estadoConfig[p.estado];
+            <article class="proyecto-card bg-white border border-slate-200/80 hover:border-brand-indigo/40 rounded-2xl p-5 sm:p-6 shadow-xs hover:shadow-md transition-all space-y-4">
+              <!-- Cabecera asimétrica: Título + Presupuesto tabular -->
+              <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                <div class="space-y-1.5 min-w-0">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold {{ estado.badgeClass }}">
+                      <span class="w-1.5 h-1.5 rounded-full {{ estado.dotClass }}"></span>
+                      {{ estado.label }}
+                    </span>
+                    <span class="text-xs font-semibold text-brand-indigo bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-100">
+                      {{ p.area }}
+                    </span>
+                    <span class="text-xs text-slate-400">
+                      {{ formatFecha(p.fechaPublicacion) }}
+                    </span>
+                  </div>
+
+                  <h2 class="text-lg sm:text-xl font-bold text-slate-900 tracking-tight text-pretty">
+                    <a
+                      [routerLink]="['/freelance/proyecto', p.uuid || p.proyectoId]"
+                      class="hover:text-brand-indigo focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky rounded transition-colors">
+                      {{ p.nombreProyecto || p.area }}
+                    </a>
+                  </h2>
+                </div>
+
+                <!-- Presupuesto destacado -->
+                <div class="sm:text-right shrink-0 bg-slate-50 sm:bg-transparent px-3 py-2 sm:p-0 rounded-xl border border-slate-100 sm:border-0">
+                  <div class="text-[11px] font-semibold text-slate-500">Presupuesto</div>
+                  <div class="text-base sm:text-lg font-black text-slate-900 tabular-nums">
+                    USD ${{ p.presupuestoMin }} - ${{ p.presupuestoMax }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Descripción acotada -->
+              <p class="text-sm text-slate-600 leading-relaxed line-clamp-3">
+                {{ p.descripcion }}
+              </p>
+
+              <!-- Pie: Stack requerido + Acción primaria -->
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-slate-100">
+                <div class="flex flex-wrap items-center gap-1.5">
+                  @for (skill of (p.habilidades ?? []).slice(0, 4); track skill) {
+                    <span class="px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200/70">
+                      {{ skill }}
+                    </span>
+                  }
+                  @if ((p.habilidades?.length ?? 0) > 4) {
+                    <span class="px-2 py-1 text-xs font-semibold text-slate-500">
+                      +{{ (p.habilidades?.length ?? 0) - 4 }}
+                    </span>
+                  }
+                  <span class="text-xs text-slate-400 ml-1">
+                    por <strong class="font-semibold text-slate-600">{{ p.nombreCliente }}</strong>
+                  </span>
+                </div>
+
+                <a
+                  [routerLink]="['/freelance/proyecto', p.uuid || p.proyectoId]"
+                  class="btn-tactile-primary px-4 py-2.5 min-h-[44px] text-sm inline-flex items-center justify-center gap-1.5 shrink-0">
+                  <span>Ver detalle</span>
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </a>
+              </div>
+            </article>
+          }
+        </div>
+
+        <!-- Paginación -->
+        @if (totalPaginas() > 1) {
+          <nav aria-label="Paginación de proyectos" class="flex items-center justify-center gap-2 pt-4">
+            <button
+              type="button"
+              (click)="cambiarPagina(paginaActual() - 1)"
+              [disabled]="paginaActual() <= 1"
+              class="btn-tactile-secondary px-3.5 py-2 min-h-[44px] text-xs disabled:opacity-40 disabled:pointer-events-none cursor-pointer">
+              Anterior
+            </button>
+            <span class="text-xs font-semibold text-slate-600 px-3 tabular-nums">
+              Página {{ paginaActual() }} de {{ totalPaginas() }}
+            </span>
+            <button
+              type="button"
+              (click)="cambiarPagina(paginaActual() + 1)"
+              [disabled]="paginaActual() >= totalPaginas()"
+              class="btn-tactile-secondary px-3.5 py-2 min-h-[44px] text-xs disabled:opacity-40 disabled:pointer-events-none cursor-pointer">
+              Siguiente
+            </button>
+          </nav>
+        }
+      }
+    </main>
+  </div>
+</div>
+
+<!-- Template compartido de Filtros (Sidebar Desktop + Drawer Mobile) -->
+<ng-template #panelFiltros>
+  <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+    <h2 class="text-sm font-bold text-slate-900">Filtrar proyectos</h2>
+    @if (hayFiltrosActivos()) {
+      <button
+        type="button"
+        (click)="limpiarFiltros()"
+        class="text-xs font-semibold text-brand-indigo hover:underline cursor-pointer">
+        Limpiar
+      </button>
+    }
+  </div>
+
+  <!-- Área -->
+  <fieldset class="space-y-2">
+    <legend class="text-xs font-bold text-slate-700">Área de especialidad</legend>
+    <div class="flex flex-col gap-1.5">
+      <button
+        type="button"
+        (click)="seleccionarArea('TODOS')"
+        [class]="filtroArea() === 'TODOS'
+          ? 'bg-indigo-50 text-brand-indigo border-brand-indigo/30 font-bold'
+          : 'text-slate-600 hover:bg-slate-50 border-transparent font-medium'"
+        class="text-left text-xs px-3 py-2 min-h-[38px] rounded-xl border transition-colors cursor-pointer">
+        Todas las áreas
+      </button>
+      @for (area of areasDisponibles(); track area) {
+        <button
+          type="button"
+          (click)="seleccionarArea(area)"
+          [class]="filtroArea().toLowerCase() === area.toLowerCase()
+            ? 'bg-indigo-50 text-brand-indigo border-brand-indigo/30 font-bold'
+            : 'text-slate-600 hover:bg-slate-50 border-transparent font-medium'"
+          class="text-left text-xs px-3 py-2 min-h-[38px] rounded-xl border transition-colors cursor-pointer">
+          {{ area }}
+        </button>
+      }
+    </div>
+  </fieldset>
+
+  <!-- Rango de Presupuesto -->
+  <fieldset class="space-y-2.5 pt-2 border-t border-slate-100">
+    <legend class="text-xs font-bold text-slate-700">Presupuesto (USD)</legend>
+    <div class="grid grid-cols-2 gap-2">
+      <div class="space-y-1">
+        <label for="filtroMinUsd" class="text-[11px] font-medium text-slate-500">Mínimo</label>
+        <input
+          id="filtroMinUsd"
+          #minUsd
+          type="number"
+          min="0"
+          step="100"
+          [value]="presupuestoMinFiltro() ?? ''"
+          (input)="actualizarMinPresupuesto(minUsd.value)"
+          placeholder="0"
+          class="w-full px-2.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 tabular-nums focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky" />
+      </div>
+      <div class="space-y-1">
+        <label for="filtroMaxUsd" class="text-[11px] font-medium text-slate-500">Máximo</label>
+        <input
+          id="filtroMaxUsd"
+          #maxUsd
+          type="number"
+          min="0"
+          step="100"
+          [value]="presupuestoMaxFiltro() ?? ''"
+          (input)="actualizarMaxPresupuesto(maxUsd.value)"
+          placeholder="Sin tope"
+          class="w-full px-2.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 tabular-nums focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky" />
+      </div>
+    </div>
+  </fieldset>
+
+  <!-- Stack tecnológico -->
+  @if (stacksDisponibles().length > 0) {
+    <fieldset class="space-y-2 pt-2 border-t border-slate-100">
+      <legend class="text-xs font-bold text-slate-700">Stack requerido</legend>
+      <div class="flex flex-wrap gap-1.5">
+        @for (skill of stacksDisponibles(); track skill) {
+          @let active = skillsSeleccionadas().includes(skill);
+          <button
+            type="button"
+            (click)="toggleSkill(skill)"
+            [attr.aria-pressed]="active"
+            [class]="active
+              ? 'bg-brand-indigo text-white border-brand-indigo font-semibold'
+              : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 font-medium'"
+            class="px-2.5 py-1.5 rounded-lg text-xs border transition-colors cursor-pointer">
+            {{ skill }}
+          </button>
+        }
+      </div>
+    </fieldset>
+  }
+</ng-template>
+
+<!-- Drawer Mobile de Filtros -->
+@if (mostrarFiltrosModal()) {
+  <div class="fixed inset-0 z-50 lg:hidden flex">
+    <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs" (click)="mostrarFiltrosModal.set(false)" aria-hidden="true"></div>
+    <div class="relative bg-white w-80 max-w-[85vw] h-full p-5 overflow-y-auto space-y-6 shadow-2xl z-10">
+      <div class="flex items-center justify-between">
+        <span class="text-sm font-bold text-slate-900">Filtros</span>
+        <button
+          type="button"
+          (click)="mostrarFiltrosModal.set(false)"
+          class="w-11 h-11 rounded-full flex items-center justify-center text-slate-500 hover:bg-slate-100 cursor-pointer"
+          aria-label="Cerrar filtros">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <ng-container *ngTemplateOutlet="panelFiltros"></ng-container>
+      <button
+        type="button"
+        (click)="mostrarFiltrosModal.set(false)"
+        class="btn-tactile-primary w-full py-3 min-h-[44px] text-sm cursor-pointer">
+        Ver {{ proyectosFiltrados().length }} resultados
+      </button>
+    </div>
+  </div>
+}

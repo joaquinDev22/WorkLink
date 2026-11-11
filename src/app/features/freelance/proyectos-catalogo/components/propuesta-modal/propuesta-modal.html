@@ -1,1 +1,174 @@
-﻿<p>propuesta-modal works!</p>
+﻿<div
+  class="fixed inset-0 bg-slate-900/55 backdrop-blur-xs z-50 transition-opacity duration-200 ease-out"
+  [class.opacity-100]="isOpen()"
+  [class.opacity-0]="!isOpen()"
+  [class.pointer-events-none]="!isOpen()"
+  (click)="cerrar()"
+  aria-hidden="true">
+</div>
+
+<div
+  class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 modal-3d-stage pointer-events-none"
+  [class.pointer-events-auto]="isOpen()">
+
+  <div
+    class="modal-3d-card w-full sm:max-w-lg bg-white rounded-t-3xl sm:rounded-3xl border border-slate-200 p-5 sm:p-7 z-50 max-h-[90vh] flex flex-col pointer-events-auto"
+    [class.modal-3d-visible]="isOpen()"
+    [class.modal-3d-hidden]="!isOpen()"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="propuesta-modal-title">
+
+    <div class="w-12 h-1 bg-slate-200 rounded-full mx-auto mb-3 sm:hidden shrink-0"></div>
+
+    <div class="flex items-start justify-between pb-4 border-b border-slate-100 shrink-0">
+      <div class="space-y-0.5 pr-2 min-w-0">
+        <h2 id="propuesta-modal-title" class="text-slate-900 font-extrabold text-lg sm:text-xl tracking-tight">
+          Enviar Propuesta Técnica
+        </h2>
+        @if (proyecto(); as p) {
+          <p class="text-xs sm:text-sm text-slate-500 truncate">
+            {{ p.nombreProyecto || p.area }}
+          </p>
+        }
+      </div>
+
+      <button
+        type="button"
+        (click)="cerrar()"
+        class="w-11 h-11 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-800 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky transition-colors cursor-pointer -mr-2"
+        aria-label="Cerrar modal de propuesta">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="overflow-y-auto overscroll-contain py-4 flex-1 space-y-5">
+      @if (mensajeExito()) {
+        <div class="text-center py-6 space-y-4">
+          <div class="w-14 h-14 mx-auto rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-200">
+            <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <div class="space-y-1.5">
+            <h3 class="text-lg font-bold text-slate-900">Propuesta enviada</h3>
+            <p class="text-sm text-slate-600 max-w-sm mx-auto text-pretty">
+              {{ mensajeExito() }}
+            </p>
+          </div>
+          <button
+            type="button"
+            (click)="cerrar()"
+            class="btn-tactile-primary w-full sm:w-auto px-6 py-2.5 text-sm min-h-[44px]">
+            Volver al proyecto
+          </button>
+        </div>
+      } @else {
+        <form id="formPropuesta" (submit)="enviarPropuesta($event)" class="space-y-4" novalidate>
+          @if (errorMsg()) {
+            <div role="alert" class="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs sm:text-sm font-medium flex items-start gap-2">
+              <svg class="w-4 h-4 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>{{ errorMsg() }}</span>
+            </div>
+          }
+
+          <fieldset class="space-y-1.5">
+            <div class="flex items-center justify-between gap-2">
+              <label for="costoPropuesta" class="text-xs sm:text-sm font-bold text-slate-800">
+                Cotización propuesta (USD) *
+              </label>
+              @if (proyecto(); as p) {
+                <span class="text-xs font-medium text-slate-500 tabular-nums">
+                  Presupuesto: ${{ p.presupuestoMin }} - ${{ p.presupuestoMax }}
+                </span>
+              }
+            </div>
+            <div class="relative">
+              <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-semibold text-sm">$</span>
+              <input
+                id="costoPropuesta"
+                #inputCosto
+                type="number"
+                min="1"
+                step="any"
+                [value]="costo() ?? ''"
+                (input)="actualizarCosto(inputCosto.value)"
+                placeholder="Ej: 1500"
+                class="w-full pl-8 pr-14 py-2.5 min-h-[44px] bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 tabular-nums focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky focus:border-brand-indigo transition-colors"
+                required />
+              <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-400">USD</span>
+            </div>
+          </fieldset>
+
+          <fieldset class="space-y-2">
+            <legend class="text-xs sm:text-sm font-bold text-slate-800">Plazo estimado de entrega</legend>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              @for (opcion of plazosSugeridos; track opcion) {
+                <button
+                  type="button"
+                  (click)="seleccionarTiempo(opcion)"
+                  [attr.aria-pressed]="tiempoEntrega() === opcion"
+                  [class]="tiempoEntrega() === opcion
+                    ? 'bg-indigo-50 text-brand-indigo border-brand-indigo font-bold'
+                    : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100 font-medium'"
+                  class="py-2 px-2.5 min-h-[44px] text-xs text-center rounded-xl border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky cursor-pointer">
+                  {{ opcion }}
+                </button>
+              }
+            </div>
+          </fieldset>
+
+          <fieldset class="space-y-1.5">
+            <div class="flex items-center justify-between gap-2">
+              <label for="descPropuesta" class="text-xs sm:text-sm font-bold text-slate-800">
+                Enfoque técnico y carta de presentación *
+              </label>
+              <span class="text-[11px] font-medium tabular-nums"
+                [class.text-emerald-600]="descripcion().trim().length >= 15"
+                [class.text-slate-400]="descripcion().trim().length < 15">
+                {{ descripcion().trim().length }} / 15 mín.
+              </span>
+            </div>
+            <textarea
+              id="descPropuesta"
+              #inputDesc
+              rows="4"
+              [value]="descripcion()"
+              (input)="descripcion.set(inputDesc.value)"
+              class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky focus:border-brand-indigo transition-colors placeholder:text-slate-400 leading-relaxed"
+              placeholder="Detalla tu experiencia con las tecnologías pedidas, hitos propuestos y plan de trabajo..."
+              required></textarea>
+          </fieldset>
+        </form>
+      }
+    </div>
+
+    @if (!mensajeExito()) {
+      <div class="pt-3 border-t border-slate-100 flex items-center gap-3 shrink-0">
+        <button
+          type="button"
+          (click)="cerrar()"
+          class="btn-tactile-secondary px-4 py-2.5 min-h-[44px] text-sm cursor-pointer">
+          Cancelar
+        </button>
+
+        <button
+          type="submit"
+          form="formPropuesta"
+          [disabled]="isSubmitting()"
+          class="btn-tactile-primary flex-1 py-2.5 px-4 min-h-[44px] text-sm flex items-center justify-center gap-2 disabled:opacity-60 disabled:pointer-events-none cursor-pointer">
+          @if (isSubmitting()) {
+            <span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+            <span>Enviando propuesta...</span>
+          } @else {
+            <span>Confirmar y Enviar</span>
+          }
+        </button>
+      </div>
+    }
+  </div>
+</div>

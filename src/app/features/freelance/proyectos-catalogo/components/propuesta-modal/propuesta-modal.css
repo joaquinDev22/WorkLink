@@ -1,1 +1,33 @@
-﻿
+﻿.modal-3d-stage {
+  perspective: 1200px;
+  perspective-origin: center center;
+}
+
+.modal-3d-card {
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+  transition:
+    transform 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-3d-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(0, 48px, -180px) rotateX(14deg) scale(0.9);
+  transition-duration: 0.2s;
+  transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
+}
+
+.modal-3d-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate3d(0, 0, 0) rotateX(0deg) scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-3d-card {
+    transition: opacity 0.15s ease-out !important;
+    transform: none !important;
+  }
+}
