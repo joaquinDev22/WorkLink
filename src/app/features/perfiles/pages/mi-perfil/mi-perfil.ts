@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, computed, signal, effect } from '@angular/core'
+import { Component, OnInit, inject, computed, signal, effect, untracked } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { FormsModule } from '@angular/forms'
 import { RouterLink } from '@angular/router'
@@ -297,21 +297,29 @@ export class MiPerfil implements OnInit {
     return `data:image/jpeg;base64,${banner}`
   })
 
+  private readonly rolesSincronizados = new Set<string>()
+
   private readonly syncRolDataEffect = effect(() => {
     const rol = this.rolActivo()
-    if (!this.perfil() || (rol === 'CLIENTE' && !this.clienteService.perfil())) {
-      this.perfilService.cargarPerfil().subscribe()
-    }
-    if (rol === 'FREELANCER' && this.proyectosAsignados().length === 0 && !this.isLoadingProyectosAsignados()) {
-      this.cargarReputacion()
-      this.cargarProyectosAsignados()
-    }
-    if (rol === 'RECRUITER' && !this.empresa()) {
-      this.cargarDatosRecruiter()
-    }
-    if (rol === 'CLIENTE' && this.proyectosPublicadosCliente().length === 0 && !this.isLoadingProyectosCliente()) {
-      this.proyectoAdmin.getMisProyectosPublicados().pipe(catchError(() => of([]))).subscribe()
-    }
+
+    untracked(() => {
+      if ((!this.perfil() || (rol === 'CLIENTE' && !this.clienteService.perfil())) && !this.rolesSincronizados.has(`PERFIL_${rol}`)) {
+        this.rolesSincronizados.add(`PERFIL_${rol}`)
+        this.perfilService.cargarPerfil().subscribe()
+      }
+
+      if (this.rolesSincronizados.has(rol)) return
+      this.rolesSincronizados.add(rol)
+
+      if (rol === 'FREELANCER') {
+        this.cargarReputacion()
+        this.cargarProyectosAsignados()
+      } else if (rol === 'RECRUITER') {
+        this.cargarDatosRecruiter()
+      } else if (rol === 'CLIENTE') {
+        this.proyectoAdmin.getMisProyectosPublicados().pipe(catchError(() => of([]))).subscribe()
+      }
+    })
   })
 
   ngOnInit(): void {
