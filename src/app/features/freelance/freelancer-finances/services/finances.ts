@@ -1,10 +1,12 @@
 import { inject, Service, signal } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
-import { delay, finalize, Observable, of, tap } from 'rxjs'
+import { delay, finalize, map, Observable, of, tap } from 'rxjs'
 import { environment } from '../../../../../environments/environment'
 import {
   FreelancerFinancesResponseDTO,
-  FreelancerTransactionResponseDTO
+  FreelancerTransactionResponseDTO,
+  MedioCobroRequestDTO,
+  MedioCobroResponseDTO
 } from '../models/finances.models'
 
 @Service()
@@ -14,6 +16,7 @@ export class Finances {
 
   readonly balance = signal<FreelancerFinancesResponseDTO | null>(null)
   readonly transactions = signal<FreelancerTransactionResponseDTO[]>([])
+  readonly medioCobro = signal<MedioCobroResponseDTO | null>(null)
   readonly isLoading = signal<boolean>(false)
 
   private readonly mockFinances: FreelancerFinancesResponseDTO = {
@@ -69,5 +72,51 @@ export class Finances {
     return this.client
       .get<FreelancerTransactionResponseDTO[]>(`${this.API_URL}/transactions`)
       .pipe(tap((data) => this.transactions.set(Array.isArray(data) ? data : [])))
+  }
+
+  // GET /api/v1/freelancer/medios-cobro - Datos de cobro configurados (204 si no existen)
+  getMedioCobro(): Observable<MedioCobroResponseDTO | null> {
+    if (environment.bypassAuth) {
+      return of(this.medioCobro()).pipe(delay(120))
+    }
+
+    return this.client.get<MedioCobroResponseDTO>(`${this.API_URL}/medios-cobro`).pipe(
+      map((data) => data ?? null),
+      tap((data) => this.medioCobro.set(data))
+    )
+  }
+
+  // PUT /api/v1/freelancer/medios-cobro - Registrar o actualizar datos de cobro (upsert)
+  saveMedioCobro(datos: MedioCobroRequestDTO): Observable<MedioCobroResponseDTO> {
+    if (environment.bypassAuth) {
+      const saved: MedioCobroResponseDTO = {
+        id: this.medioCobro()?.id ?? 1,
+        freelancerId: 1,
+        ...datos,
+        updatedAt: new Date().toISOString()
+      }
+      return of(saved).pipe(
+        delay(150),
+        tap((data) => this.medioCobro.set(data))
+      )
+    }
+
+    return this.client
+      .put<MedioCobroResponseDTO>(`${this.API_URL}/medios-cobro`, datos)
+      .pipe(tap((data) => this.medioCobro.set(data)))
+  }
+
+  // DELETE /api/v1/freelancer/medios-cobro - Eliminar datos de cobro
+  deleteMedioCobro(): Observable<void> {
+    if (environment.bypassAuth) {
+      return of(void 0).pipe(
+        delay(120),
+        tap(() => this.medioCobro.set(null))
+      )
+    }
+
+    return this.client
+      .delete<void>(`${this.API_URL}/medios-cobro`)
+      .pipe(tap(() => this.medioCobro.set(null)))
   }
 }

@@ -58,4 +58,35 @@ describe('Finances service', () => {
     expect(result).toEqual(mockTx)
     expect(service.transactions()).toEqual(mockTx)
   })
+
+  it('fetches, saves (PUT), and deletes freelancer payout settings via /medios-cobro', () => {
+    service.getMedioCobro().subscribe()
+    const getReq = httpMock.expectOne(`${environment.apiUrl}/freelancer/medios-cobro`)
+    expect(getReq.request.method).toBe('GET')
+    getReq.flush(null, { status: 204, statusText: 'No Content' })
+    expect(service.medioCobro()).toBeNull()
+
+    const payload = {
+      tipo: 'TRANSFERENCIA' as const,
+      titular: 'Joaquín Nieva',
+      documentoTitular: '40123456',
+      cbuCvu: '0000003100012345678901',
+      alias: 'joaquin.dev.mp',
+      mercadoPagoEmail: null
+    }
+    const saved = { id: 7, freelancerId: 12, ...payload }
+
+    service.saveMedioCobro(payload).subscribe()
+    const putReq = httpMock.expectOne(`${environment.apiUrl}/freelancer/medios-cobro`)
+    expect(putReq.request.method).toBe('PUT')
+    expect(putReq.request.body).toEqual(payload)
+    putReq.flush(saved)
+    expect(service.medioCobro()).toEqual(saved)
+
+    service.deleteMedioCobro().subscribe()
+    const delReq = httpMock.expectOne(`${environment.apiUrl}/freelancer/medios-cobro`)
+    expect(delReq.request.method).toBe('DELETE')
+    delReq.flush(null, { status: 204, statusText: 'No Content' })
+    expect(service.medioCobro()).toBeNull()
+  })
 })

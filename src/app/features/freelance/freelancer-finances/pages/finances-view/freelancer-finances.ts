@@ -21,7 +21,11 @@ import {
   formatFechaProyecto
 } from '../../../proyecto-gestion/models/proyecto.models'
 import { ProyectoAdmin } from '../../../proyecto-gestion/services/proyecto-admin'
-import { FreelancerTransactionResponseDTO } from '../../models/finances.models'
+import {
+  FreelancerTransactionResponseDTO,
+  MedioCobroRequestDTO,
+  TipoMedioCobro
+} from '../../models/finances.models'
 import { Finances } from '../../services/finances'
 
 @Component({
@@ -37,6 +41,7 @@ export class FreelancerFinances implements OnInit, OnDestroy {
 
   readonly finances = this.financesService.balance
   readonly transactions = this.financesService.transactions
+  readonly medioCobro = this.financesService.medioCobro
   readonly proyectos = this.proyectoAdmin.misProyectos
 
   readonly isLoading = signal<boolean>(true)
@@ -48,8 +53,18 @@ export class FreelancerFinances implements OnInit, OnDestroy {
   readonly filtroMetodo = signal<'TODOS' | MedioDePago>('TODOS')
   readonly filtroMoneda = signal<'TODAS' | 'PESOS' | 'USD'>('TODAS')
 
-  // Modal informativo WL-40 (pendiente de backend)
+  // Modal y formulario WL-40 (Datos de cobro del freelancer)
   readonly mostrarModalCobros = signal<boolean>(false)
+  readonly cobroTipo = signal<TipoMedioCobro>('TRANSFERENCIA')
+  readonly cobroTitular = signal<string>('')
+  readonly cobroDocumento = signal<string>('')
+  readonly cobroCbuCvu = signal<string>('')
+  readonly cobroAlias = signal<string>('')
+  readonly cobroMpEmail = signal<string>('')
+  readonly isSavingCobro = signal<boolean>(false)
+  readonly isDeletingCobro = signal<boolean>(false)
+  readonly cobroError = signal<string | null>(null)
+  readonly cobroNotice = signal<string | null>(null)
 
   readonly estadoConfig = ESTADO_PROYECTO_CONFIG
   readonly medioPagoConfig = MEDIO_PAGO_CONFIG
@@ -126,6 +141,7 @@ export class FreelancerFinances implements OnInit, OnDestroy {
           return of([])
         })
       ),
+      medioCobro: this.financesService.getMedioCobro().pipe(catchError(() => of(null))),
       proyectos: this.proyectoAdmin.getMisProyectosAsignados().pipe(catchError(() => of([])))
     }).subscribe(({ finances, transactions }) => {
       if (falloFinanzas && falloTransactions && !finances && transactions.length === 0) {
@@ -142,6 +158,111 @@ export class FreelancerFinances implements OnInit, OnDestroy {
     this.busqueda.set('')
     this.filtroMetodo.set('TODOS')
     this.filtroMoneda.set('TODAS')
+  }
+
+  abrirModalCobros(): void {
+    const actual = this.medioCobro()
+    this.cobroTipo.set(actual?.tipo ?? 'TRANSFERENCIA')
+    this.cobroTitular.set(actual?.titular ?? '')
+    this.cobroDocumento.set(actual?.documentoTitular ?? '')
+    this.cobroCbuCvu.set(actual?.cbuCvu ?? '')
+    this.cobroAlias.set(actual?.alias ?? '')
+    this.cobroMpEmail.set(actual?.mercadoPagoEmail ?? '')
+    this.cobroError.set(null)
+    this.mostrarModalCobros.set(true)
+  }
+
+  cerrarModalCobros(): void {
+    if (this.isSavingCobro() || this.isDeletingCobro()) return
+    this.cobroError.set(null)
+    this.mostrarModalCobros.set(false)
+  }
+
+  guardarMedioCobro(event: Event): void {
+    event.preventDefault()
+    const tipo = this.cobroTipo()
+    const titular = this.cobroTitular().trim()
+    const documentoTitular = this.cobroDocumento().trim()
+    const cbuCvu = this.cobroCbuCvu().trim()
+    const alias = this.cobroAlias().trim()
+    const mercadoPagoEmail = this.cobroMpEmail().trim()
+
+    if (!titular) {
+      this.cobroError.set('El nombre del titular es obligatorio.')
+      return
+    }
+    if (titular.length > 120) {
+      this.cobroError.set('El titular no puede superar los 120 caracteres.')
+      return
+    }
+    if (documentoTitular && !/^[0-9]{7,11}$/.test(documentoTitular)) {
+      this.cobroError.set('El DNI / CUIT / CUIL debe tener entre 7 y 11 dígitos.')
+      return
+    }
+    if (cbuCvu && !/^\d{22}$/.test(cbuCvu)) {
+      this.cobroError.set('El CBU / CVU debe tener exactamente 22 dígitos numéricos.')
+      return
+    }
+    if (alias.length > 40) {
+      this.cobroError.set('El alias no puede superar los 40 caracteres.')
+      return
+    }
+    if (mercadoPagoEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mercadoPagoEmail)) {
+      this.cobroError.set('Ingresá un correo de MercadoPago válido.')
+      return
+    }
+    if (tipo === 'TRANSFERENCIA' && !cbuCvu && !alias) {
+      this.cobroError.set('Para transferencia bancaria ingresá al menos tu CBU/CVU o Alias.')
+      return
+    }
+    if (tipo === 'MERCADOPAGO' && !mercadoPagoEmail && !cbuCvu && !alias) {
+      this.cobroError.set('Para MercadoPago ingresá el email de tu cuenta, CVU o Alias.')
+      return
+    }
+
+    const dto: MedioCobroRequestDTO = {
+      tipo,
+      titular,
+      documentoTitular: documentoTitular || null,
+      cbuCvu: cbuCvu || null,
+      alias: alias || null,
+      mercadoPagoEmail: mercadoPagoEmail || null
+    }
+
+    this.cobroError.set(null)
+    this.isSavingCobro.set(true)
+    this.financesService.saveMedioCobro(dto).subscribe({
+      next: () => {
+        this.isSavingCobro.set(false)
+        this.mostrarModalCobros.set(false)
+        this.cobroNotice.set('Datos de cobro guardados correctamente.')
+      },
+      error: (err) => {
+        this.isSavingCobro.set(false)
+        this.cobroError.set(
+          err?.error?.message || 'No pudimos guardar tus datos de cobro. Verificá los campos.'
+        )
+      }
+    })
+  }
+
+  eliminarMedioCobro(): void {
+    if (this.isSavingCobro() || this.isDeletingCobro()) return
+    this.cobroError.set(null)
+    this.isDeletingCobro.set(true)
+    this.financesService.deleteMedioCobro().subscribe({
+      next: () => {
+        this.isDeletingCobro.set(false)
+        this.mostrarModalCobros.set(false)
+        this.cobroNotice.set('Datos de cobro eliminados.')
+      },
+      error: (err) => {
+        this.isDeletingCobro.set(false)
+        this.cobroError.set(
+          err?.error?.message || 'No pudimos eliminar tus datos de cobro. Intentá nuevamente.'
+        )
+      }
+    })
   }
 
   labelMetodo(method: string): string {

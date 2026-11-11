@@ -50,6 +50,10 @@ describe('FreelancerFinances', () => {
       }
     ])
 
+    httpMock.expectOne(`${environment.apiUrl}/freelancer/medios-cobro`).flush(null, {
+      status: 204,
+      statusText: 'No Content'
+    })
     httpMock.expectOne(`${environment.apiUrl}/freelance/proyectos/me/asignados`).flush([])
 
     fixture.detectChanges()
@@ -75,10 +79,41 @@ describe('FreelancerFinances', () => {
     comp.limpiarFiltros()
     expect(comp.transaccionesFiltradas().length).toBe(2)
 
-    // Verifica que no muestra métricas falsas de retiros
     const text = (fixture.nativeElement as HTMLElement).textContent || ''
     expect(text).not.toContain('Retirado')
-    expect(text).toContain('Pendiente de backend')
+    expect(text).toContain('Sin configurar')
+
+    // Configura un medio de cobro válido y verifica que se envíe por PUT y actualice la tarjeta
+    comp.abrirModalCobros()
+    comp.cobroTitular.set('Joaquín Nieva')
+    comp.cobroAlias.set('joaquin.worklink.mp')
+    comp.guardarMedioCobro(new Event('submit'))
+
+    const putReq = httpMock.expectOne(`${environment.apiUrl}/freelancer/medios-cobro`)
+    expect(putReq.request.method).toBe('PUT')
+    expect(putReq.request.body).toEqual({
+      tipo: 'TRANSFERENCIA',
+      titular: 'Joaquín Nieva',
+      documentoTitular: null,
+      cbuCvu: null,
+      alias: 'joaquin.worklink.mp',
+      mercadoPagoEmail: null
+    })
+    putReq.flush({
+      id: 3,
+      freelancerId: 9,
+      tipo: 'TRANSFERENCIA',
+      titular: 'Joaquín Nieva',
+      documentoTitular: null,
+      cbuCvu: null,
+      alias: 'joaquin.worklink.mp',
+      mercadoPagoEmail: null
+    })
+
+    fixture.detectChanges()
+    const updatedText = (fixture.nativeElement as HTMLElement).textContent || ''
+    expect(updatedText).toContain('Configurado')
+    expect(updatedText).toContain('joaquin.worklink.mp')
   })
 
   it('shows an error alert instead of empty state when transactions fail while finances succeed', () => {
@@ -92,6 +127,7 @@ describe('FreelancerFinances', () => {
     httpMock
       .expectOne(`${environment.apiUrl}/freelancer/transactions`)
       .flush('Error', { status: 500, statusText: 'Server Error' })
+    httpMock.expectOne(`${environment.apiUrl}/freelancer/medios-cobro`).flush(null)
     httpMock.expectOne(`${environment.apiUrl}/freelance/proyectos/me/asignados`).flush([])
 
     fixture.detectChanges()

@@ -200,30 +200,78 @@
       <!-- Columna derecha (5 cols): WL-40 Datos de Cobro + Resumen compacto de proyectos -->
       <aside class="lg:col-span-5 space-y-6">
 
-        <!-- Card WL-40: Datos de cobro (honesta pendiente de backend) -->
+        <!-- Card WL-40: Datos de cobro configurables -->
         <section class="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
           <div class="flex items-start justify-between gap-3 border-b border-slate-100 pb-3">
             <div class="space-y-1">
               <h2 class="text-base font-bold text-slate-900">Datos de cobro</h2>
               <p class="text-xs text-slate-500">Cuenta receptora para retiros del freelancer.</p>
             </div>
-            <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-800 border border-amber-200 shrink-0">
-              Pendiente de backend
-            </span>
+            @if (medioCobro()) {
+              <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                Configurado
+              </span>
+            } @else {
+              <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-800 border border-amber-200 shrink-0">
+                Sin configurar
+              </span>
+            }
           </div>
 
-          <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
-            La carga de CBU, CVU, alias o cuenta de MercadoPago para retiros automáticos todavía no está habilitada en la API del servidor. Tus acreditaciones continúan registrándose por cada proyecto aprobado.
-          </p>
+          @if (cobroNotice()) {
+            <div role="status" class="px-3 py-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium flex items-center justify-between gap-2">
+              <span>{{ cobroNotice() }}</span>
+              <button type="button" (click)="cobroNotice.set(null)" class="text-emerald-700 hover:text-emerald-900 font-bold px-1 cursor-pointer" aria-label="Ocultar aviso">×</button>
+            </div>
+          }
+
+          @if (medioCobro(); as cobro) {
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2 text-xs sm:text-sm">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-slate-500">Modalidad</span>
+                <span class="font-bold text-slate-900">
+                  {{ cobro.tipo === 'MERCADOPAGO' ? 'MercadoPago' : 'Transferencia bancaria' }}
+                </span>
+              </div>
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-slate-500">Titular</span>
+                <span class="font-semibold text-slate-900 truncate max-w-[60%]">
+                  {{ cobro.titular }}{{ cobro.documentoTitular ? ' · ' + cobro.documentoTitular : '' }}
+                </span>
+              </div>
+              @if (cobro.cbuCvu) {
+                <div class="flex items-center justify-between gap-2">
+                  <span class="text-slate-500">CBU / CVU</span>
+                  <span class="font-mono text-xs font-semibold text-slate-800 tabular-nums">{{ cobro.cbuCvu }}</span>
+                </div>
+              }
+              @if (cobro.alias) {
+                <div class="flex items-center justify-between gap-2">
+                  <span class="text-slate-500">Alias</span>
+                  <span class="font-mono text-xs font-semibold text-slate-800">{{ cobro.alias }}</span>
+                </div>
+              }
+              @if (cobro.mercadoPagoEmail) {
+                <div class="flex items-center justify-between gap-2">
+                  <span class="text-slate-500">Cuenta MP</span>
+                  <span class="font-medium text-slate-800 truncate max-w-[60%]">{{ cobro.mercadoPagoEmail }}</span>
+                </div>
+              }
+            </div>
+          } @else {
+            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              Cargá tu CBU / CVU, Alias o cuenta receptora de MercadoPago para recibir los retiros de tus proyectos acreditados.
+            </p>
+          }
 
           <button
             type="button"
-            (click)="mostrarModalCobros.set(true)"
+            (click)="abrirModalCobros()"
             class="btn-tactile-secondary w-full px-4 py-2.5 min-h-[44px] text-xs sm:text-sm inline-flex items-center justify-center gap-2 cursor-pointer">
             <svg class="w-4 h-4 text-slate-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
             </svg>
-            <span>Ver estado de configuración de cobros</span>
+            <span>{{ medioCobro() ? 'Editar datos de cobro' : 'Configurar datos de cobro' }}</span>
           </button>
         </section>
 
@@ -273,26 +321,30 @@
   }
 </div>
 
-<!-- Modal informativo WL-40: Estado de Datos de Cobro -->
+<!-- Modal WL-40: Configuración de Datos de Cobro -->
 @if (mostrarModalCobros()) {
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
     <div
       class="animate-modal-backdrop fixed inset-0 bg-slate-900/55 backdrop-blur-xs"
-      (click)="mostrarModalCobros.set(false)"
+      (click)="cerrarModalCobros()"
       aria-hidden="true"></div>
 
-    <div
+    <form
+      (submit)="guardarMedioCobro($event)"
       role="dialog"
       aria-modal="true"
       aria-labelledby="cobros-modal-title"
-      class="animate-modal-card relative z-10 w-full max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-2xl border border-slate-200 p-6 shadow-2xl space-y-4">
+      class="animate-modal-card relative z-10 w-full max-w-lg max-h-[90vh] overflow-y-auto bg-white rounded-2xl border border-slate-200 p-6 shadow-2xl space-y-5">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-        <h3 id="cobros-modal-title" class="text-base font-bold text-slate-900">
-          Configuración de datos de cobro
-        </h3>
+        <div>
+          <h3 id="cobros-modal-title" class="text-base font-bold text-slate-900">
+            Configuración de datos de cobro
+          </h3>
+          <p class="text-xs text-slate-500">Se almacenan de forma segura asociados a tu perfil.</p>
+        </div>
         <button
           type="button"
-          (click)="mostrarModalCobros.set(false)"
+          (click)="cerrarModalCobros()"
           class="btn-tactile-icon w-9 h-9 rounded-xl flex items-center justify-center"
           aria-label="Cerrar modal">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -301,29 +353,148 @@
         </button>
       </div>
 
-      <div class="space-y-3 text-xs sm:text-sm text-slate-600 leading-relaxed">
-        <p>
-          Para evitar guardar datos bancarios ficticios en el navegador, la edición de <strong>CBU / CVU, Alias y cuenta de MercadoPago receptora</strong> permanece deshabilitada hasta que el backend incorpore el endpoint correspondiente.
-        </p>
+      @if (cobroError()) {
+        <div role="alert" class="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">
+          {{ cobroError() }}
+        </div>
+      }
 
-        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1.5 text-xs">
-          <div class="font-bold text-slate-900">¿Qué funciona hoy con datos reales?</div>
-          <ul class="list-disc pl-4 space-y-1 text-slate-600">
-            <li>Balance acreditado y monto en proyectos activos (<span class="font-mono">/freelancer/finances</span>).</li>
-            <li>Historial verificable de pagos recibidos (<span class="font-mono">/freelancer/transactions</span>).</li>
-            <li>Detalle individual de pagos por proyecto desde Mis Trabajos.</li>
-          </ul>
+      <div class="space-y-4">
+        <div class="space-y-1.5">
+          <span class="block text-xs font-bold text-slate-700">Modalidad de cobro</span>
+          <div class="grid grid-cols-2 gap-2.5">
+            <button
+              type="button"
+              (click)="cobroTipo.set('TRANSFERENCIA')"
+              class="px-3 py-2.5 min-h-[44px] rounded-xl border text-xs sm:text-sm font-semibold transition-colors cursor-pointer"
+              [class]="cobroTipo() === 'TRANSFERENCIA'
+                ? 'bg-indigo-50 border-brand-indigo text-brand-indigo'
+                : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'">
+              Transferencia (CBU/Alias)
+            </button>
+            <button
+              type="button"
+              (click)="cobroTipo.set('MERCADOPAGO')"
+              class="px-3 py-2.5 min-h-[44px] rounded-xl border text-xs sm:text-sm font-semibold transition-colors cursor-pointer"
+              [class]="cobroTipo() === 'MERCADOPAGO'
+                ? 'bg-sky-50 border-brand-sky text-sky-700'
+                : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'">
+              MercadoPago (CVU/Email)
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="space-y-1">
+            <label for="cobroTitular" class="block text-xs font-semibold text-slate-700">
+              Titular de la cuenta <span class="text-rose-500">*</span>
+            </label>
+            <input
+              id="cobroTitular"
+              #cTitular
+              type="text"
+              maxlength="120"
+              [value]="cobroTitular()"
+              (input)="cobroTitular.set(cTitular.value)"
+              placeholder="Ej: Joaquín Nieva"
+              class="w-full px-3.5 py-2.5 min-h-[44px] bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky" />
+          </div>
+
+          <div class="space-y-1">
+            <label for="cobroDocumento" class="block text-xs font-semibold text-slate-700">
+              DNI / CUIT / CUIL
+            </label>
+            <input
+              id="cobroDocumento"
+              #cDoc
+              type="text"
+              inputmode="numeric"
+              maxlength="11"
+              [value]="cobroDocumento()"
+              (input)="cobroDocumento.set(cDoc.value)"
+              placeholder="Solo dígitos (7 a 11)"
+              class="w-full px-3.5 py-2.5 min-h-[44px] bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="space-y-1">
+            <label for="cobroCbu" class="block text-xs font-semibold text-slate-700">
+              {{ cobroTipo() === 'MERCADOPAGO' ? 'CVU (22 dígitos)' : 'CBU / CVU (22 dígitos)' }}
+            </label>
+            <input
+              id="cobroCbu"
+              #cCbu
+              type="text"
+              inputmode="numeric"
+              maxlength="22"
+              [value]="cobroCbuCvu()"
+              (input)="cobroCbuCvu.set(cCbu.value)"
+              placeholder="22 dígitos numéricos"
+              class="w-full px-3.5 py-2.5 min-h-[44px] bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky" />
+          </div>
+
+          <div class="space-y-1">
+            <label for="cobroAlias" class="block text-xs font-semibold text-slate-700">
+              Alias bancario o MP
+            </label>
+            <input
+              id="cobroAlias"
+              #cAlias
+              type="text"
+              maxlength="40"
+              [value]="cobroAlias()"
+              (input)="cobroAlias.set(cAlias.value)"
+              placeholder="ej. joaquin.worklink.mp"
+              class="w-full px-3.5 py-2.5 min-h-[44px] bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky" />
+          </div>
+        </div>
+
+        @if (cobroTipo() === 'MERCADOPAGO') {
+          <div class="space-y-1">
+            <label for="cobroMpEmail" class="block text-xs font-semibold text-slate-700">
+              Correo de cuenta MercadoPago
+            </label>
+            <input
+              id="cobroMpEmail"
+              #cEmail
+              type="email"
+              [value]="cobroMpEmail()"
+              (input)="cobroMpEmail.set(cEmail.value)"
+              placeholder="tu-cuenta@mercadopago.com"
+              class="w-full px-3.5 py-2.5 min-h-[44px] bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky" />
+          </div>
+        }
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-slate-100">
+        <div>
+          @if (medioCobro()) {
+            <button
+              type="button"
+              [disabled]="isSavingCobro() || isDeletingCobro()"
+              (click)="eliminarMedioCobro()"
+              class="px-3.5 py-2 min-h-[44px] rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 disabled:opacity-50 transition-colors cursor-pointer">
+              {{ isDeletingCobro() ? 'Eliminando...' : 'Eliminar datos' }}
+            </button>
+          }
+        </div>
+        <div class="flex items-center gap-2 ml-auto">
+          <button
+            type="button"
+            [disabled]="isSavingCobro() || isDeletingCobro()"
+            (click)="cerrarModalCobros()"
+            class="btn-tactile-secondary px-4 py-2.5 min-h-[44px] text-xs sm:text-sm cursor-pointer">
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            [disabled]="isSavingCobro() || isDeletingCobro()"
+            class="btn-tactile-primary px-5 py-2.5 min-h-[44px] text-xs sm:text-sm disabled:opacity-50 cursor-pointer">
+            {{ isSavingCobro() ? 'Guardando...' : 'Guardar datos' }}
+          </button>
         </div>
       </div>
-
-      <div class="flex justify-end pt-2 border-t border-slate-100">
-        <button
-          type="button"
-          (click)="mostrarModalCobros.set(false)"
-          class="btn-tactile-primary px-5 py-2.5 min-h-[44px] text-xs sm:text-sm cursor-pointer">
-          Entendido
-        </button>
-      </div>
-    </div>
+    </form>
   </div>
 }
