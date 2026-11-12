@@ -1,3 +1,4 @@
+import { HasPendingChanges } from '../../../../core/models/pending-changes.model'
 import { Component, OnInit, inject, computed, signal, effect, untracked } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { FormsModule } from '@angular/forms'
@@ -31,9 +32,9 @@ export interface HistorialEmpresaRecruiter {
   perfilesReclutados: string[]
 }
 
-function cargarHistorialPersistido(): HistorialEmpresaRecruiter[] {
+function cargarHistorialPersistido(clave: string): HistorialEmpresaRecruiter[] {
   try {
-    const raw = localStorage.getItem('worklink_recruiter_historial')
+    const raw = localStorage.getItem(clave)
     if (raw) {
       const parsed = JSON.parse(raw)
       if (Array.isArray(parsed)) return parsed
@@ -75,7 +76,7 @@ export const PATTERNS_TELEFONO: Record<string, { regex: RegExp, ejemplo: string 
   styleUrl: './mi-perfil.css',
   templateUrl: './mi-perfil.html',
 })
-export class MiPerfil implements OnInit {
+export class MiPerfil implements OnInit, HasPendingChanges {
 
   protected perfilService = inject(Perfil)
   protected morph = inject(MorphService)
@@ -175,7 +176,9 @@ export class MiPerfil implements OnInit {
   readonly statsEmpresa = signal<DashboardStatsResponseDTO | null>(null)
 
   // Histórico de empresas del Recruiter con persistencia real en localStorage
-  readonly historialRecruiter = signal<HistorialEmpresaRecruiter[]>(cargarHistorialPersistido())
+  // Clave por usuario: otra cuenta en el mismo navegador no ve este historial
+  private readonly claveHistorial = 'worklink_recruiter_historial:' + (inject(TokenStorage).getSession()?.nombreUsuario ?? 'anonimo')
+  readonly historialRecruiter = signal<HistorialEmpresaRecruiter[]>(cargarHistorialPersistido(this.claveHistorial))
 
   readonly metricasRecruiter = computed(() => {
     const stats = this.statsEmpresa()
@@ -385,7 +388,7 @@ export class MiPerfil implements OnInit {
       const file = input.files[0]
       this.perfilService.uploadPhoto(file).subscribe({
         next: () => this.showToast('Foto de perfil actualizada correctamente'),
-        error: (err) => console.error('Error al subir foto', err)
+        error: (err) => this.showToast(err?.error?.message || err?.message || 'No se pudo actualizar la foto de perfil')
       })
     }
   }
@@ -396,7 +399,7 @@ export class MiPerfil implements OnInit {
       const file = input.files[0]
       this.perfilService.uploadBanner(file).subscribe({
         next: () => this.showToast('Banner de portada actualizado correctamente'),
-        error: (err) => console.error('Error al subir banner', err)
+        error: (err) => this.showToast(err?.error?.message || err?.message || 'No se pudo actualizar el banner')
       })
     }
   }
@@ -418,6 +421,7 @@ export class MiPerfil implements OnInit {
         rol: this.rolActivo()
       })
     }
+    this.perfilAlAbrir = JSON.stringify(this.profileModel())
     if (this.triggerEl) {
       this.morph.name(this.triggerEl, 'edit-surface')
     }
@@ -425,6 +429,12 @@ export class MiPerfil implements OnInit {
       if (this.triggerEl) this.triggerEl.style.viewTransitionName = 'none'
       this.isEditModalOpen.set(true)
     })
+  }
+
+  // Lo usa pendingChangesGuard: avisa al salir de la ruta con el formulario de perfil abierto y modificado
+  private perfilAlAbrir = ''
+  hasPendingChanges(): boolean {
+    return this.isEditModalOpen() && JSON.stringify(this.profileModel()) !== this.perfilAlAbrir
   }
 
   async cerrarEditar(): Promise<void> {
@@ -748,7 +758,7 @@ export class MiPerfil implements OnInit {
 
   private persistirHistorial(items: HistorialEmpresaRecruiter[]): void {
     try {
-      localStorage.setItem('worklink_recruiter_historial', JSON.stringify(items))
+      localStorage.setItem(this.claveHistorial, JSON.stringify(items))
     } catch {}
   }
 

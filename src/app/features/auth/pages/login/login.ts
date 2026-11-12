@@ -4,10 +4,9 @@ import { GoogleButton } from '../../components/google-btn/google-button'
 import { form, FormField, required } from '@angular/forms/signals'
 import { LoginRequestDTO } from '../../models/auth.models'
 import { RouterLink } from '@angular/router'
-import { FormsModule } from '@angular/forms'
 
 @Component({
-  imports: [FormField, GoogleButton, RouterLink, FormsModule],
+  imports: [FormField, GoogleButton, RouterLink],
   selector: 'app-login',
   styleUrl: './login.css',
   templateUrl: './login.html',
@@ -22,10 +21,6 @@ export class Login implements OnInit {
   rememberMe = signal<boolean>(false)
 
   // Modal de recuperación de contraseña
-  isForgotModalOpen = signal<boolean>(false)
-  forgotEmail = signal<string>('')
-  forgotLoading = signal<boolean>(false)
-  forgotSent = signal<boolean>(false)
 
   loginModel = signal<LoginRequestDTO>({
     usuario: '',
@@ -79,30 +74,5 @@ export class Login implements OnInit {
         this.errorMsg.set(msg)
       }
     })
-  }
-
-  abrirForgotPassword(e: Event): void {
-    e.preventDefault()
-    this.forgotSent.set(false)
-    this.forgotEmail.set(this.loginModel().usuario.includes('@') ? this.loginModel().usuario : '')
-    this.isForgotModalOpen.set(true)
-  }
-
-  cerrarForgotPassword(): void {
-    this.isForgotModalOpen.set(false)
-    this.forgotSent.set(false)
-  }
-
-  enviarRecuperacion(e: Event): void {
-    e.preventDefault()
-    const email = this.forgotEmail().trim()
-    if (!email || !email.includes('@')) return
-
-    this.forgotLoading.set(true)
-    // Simulación de envío de correo de recuperación
-    setTimeout(() => {
-      this.forgotLoading.set(false)
-      this.forgotSent.set(true)
-    }, 700)
   }
 }

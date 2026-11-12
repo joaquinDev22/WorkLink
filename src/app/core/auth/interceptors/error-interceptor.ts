@@ -27,12 +27,14 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
           ? mensajeBackend
           : ERROR_SERVIDOR
 
-      // WL-45: aviso global. /auth lo muestra su propio formulario; un 404 suele ser "no hay datos todavía"
+      // WL-45: aviso global. /auth lo muestra su propio formulario; un 404 en una consulta GET suele ser
+      // "no hay datos todavía", pero en una acción (POST/PUT/DELETE) es un error real y se avisa
       const esAuth = req.url.includes('/auth/')
+      const consultaSinDatos = error.status === 404 && req.method === 'GET'
       if (error.status === 401 && !esAuth) {
         auth.logout()
         notificaciones.mostrar('Tu sesión caducó. Inicia sesión de nuevo para continuar.', 'aviso')
-      } else if (!esAuth && error.status !== 404) {
+      } else if (!esAuth && !consultaSinDatos) {
         notificaciones.mostrar(mensaje)
       }
 

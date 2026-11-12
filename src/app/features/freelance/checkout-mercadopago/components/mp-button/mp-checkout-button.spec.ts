@@ -21,23 +21,10 @@ describe('MpCheckoutButton', () => {
     httpMock.verify()
   })
 
-  it('emits checkoutError and skips HTTP when monto is <= 0', () => {
-    const fixture = TestBed.createComponent(MpCheckoutButton)
-    fixture.componentRef.setInput('proyectoId', 55)
-    fixture.componentRef.setInput('monto', 0)
-    fixture.detectChanges()
-
-    let emittedError: string | undefined
-    fixture.componentInstance.checkoutError.subscribe((e) => (emittedError = e))
-
-    fixture.componentInstance.iniciarCheckout()
-    expect(emittedError).toContain('mayor a 0')
-  })
-
   it('sanitizes backend exception errors instead of leaking stack noise', () => {
     const fixture = TestBed.createComponent(MpCheckoutButton)
     fixture.componentRef.setInput('proyectoId', 55)
-    fixture.componentRef.setInput('monto', 500)
+    fixture.componentRef.setInput('hitoId', 7)
     fixture.detectChanges()
 
     let emittedError: string | undefined
@@ -48,8 +35,7 @@ describe('MpCheckoutButton', () => {
     const req = httpMock.expectOne(
       (r) =>
         r.url === `${environment.apiUrl}/freelance/proyectos/55/pagos/checkout` &&
-        r.params.get('monto') === '500' &&
-        r.params.get('backUrl') === `${window.location.origin}/freelance`
+        r.params.get('hitoId') === '7'
     )
     req.flush(
       { message: 'java.lang.NullPointerException: stack trace' },
@@ -65,7 +51,7 @@ describe('MpCheckoutButton', () => {
   it('rejects non-http(s) checkout URLs instead of redirecting', () => {
     const fixture = TestBed.createComponent(MpCheckoutButton)
     fixture.componentRef.setInput('proyectoId', 55)
-    fixture.componentRef.setInput('monto', 500)
+    fixture.componentRef.setInput('hitoId', 7)
     fixture.detectChanges()
 
     let emittedError: string | undefined

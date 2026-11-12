@@ -238,63 +238,57 @@ export class Perfil {
   }
 
   uploadPhoto(file: File): Observable<{ fotoUrl: string }> {
-    return new Observable(observer => {
-      const reader = new FileReader()
-      reader.onload = () => {
-        const base64 = reader.result as string
-        const current = this.perfilActual()
-        if (current) {
-          this.perfilActual.set({
-            ...current,
-            fotoPerfil: base64
-          })
-        }
-        if (environment.bypassAuth) {
-          observer.next({ fotoUrl: base64 })
-          observer.complete()
-        } else {
-          const formData = new FormData()
-          formData.append('file', file)
-          this.client.post<{ fotoUrl: string }>(`${this.API_URL}/uploadMyPhoto`, formData).subscribe({
-            next: (res) => {
-              observer.next(res)
-              observer.complete()
-            },
-            error: (err) => observer.error(err)
-          })
-        }
-      }
-      reader.onerror = (err) => observer.error(err)
-      reader.readAsDataURL(file)
-    })
+    return this.subirImagen(file, 'fotoPerfil', 'uploadMyPhoto', (base64) => ({ fotoUrl: base64 }))
   }
 
   uploadBanner(file: File): Observable<{ bannerUrl: string }> {
-    return new Observable(observer => {
+    return this.subirImagen(file, 'bannerPerfil', 'uploadMyBanner', (base64) => ({ bannerUrl: base64 }))
+  }
+
+  // Valida tipo y tamaño, muestra la imagen al instante y la revierte si el servidor rechaza la subida
+  private subirImagen<T>(
+    file: File,
+    campo: 'fotoPerfil' | 'bannerPerfil',
+    endpoint: string,
+    respuestaMock: (base64: string) => T
+  ): Observable<T> {
+    if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
+      return throwError(() => new Error('La imagen debe ser PNG, JPG o WebP.'))
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      return throwError(() => new Error('La imagen no puede superar los 5 MB.'))
+    }
+
+    return new Observable<T>(observer => {
+      const anterior = this.perfilActual()?.[campo]
+      const restaurar = () => {
+        const actual = this.perfilActual()
+        if (actual) this.perfilActual.set({ ...actual, [campo]: anterior })
+      }
       const reader = new FileReader()
       reader.onload = () => {
         const base64 = reader.result as string
         const current = this.perfilActual()
-        if (current) {
-          this.perfilActual.set({
-            ...current,
-            bannerPerfil: base64
-          })
-        }
+        if (current) this.perfilActual.set({ ...current, [campo]: base64 })
+
         if (environment.bypassAuth) {
-          observer.next({ bannerUrl: base64 })
+          observer.next(respuestaMock(base64))
           observer.complete()
-        } else {
-          const formData = new FormData()
-          formData.append('file', file)
-          this.client.post<{ bannerUrl: string }>(`${this.API_URL}/uploadMyBanner`, formData).subscribe({
-            next: (res) => {
-              observer.next(res)
-              observer.complete()
-            },
-            error: (err) => observer.error(err)
-          })
+          return
         }
+        const formData = new FormData()
+        formData.append('file', file)
+        const sub = this.client.post<T>(`${this.API_URL}/${endpoint}`, formData).subscribe({
+          next: (res) => {
+            observer.next(res)
+            observer.complete()
+          },
+          error: (err) => {
+            restaurar()
+            observer.error(err)
+          }
+        })
+        observer.add(sub)
       }
       reader.onerror = (err) => observer.error(err)
       reader.readAsDataURL(file)
