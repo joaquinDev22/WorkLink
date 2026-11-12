@@ -23,7 +23,6 @@ import { ProyectoAdmin } from '../../../proyecto-gestion/services/proyecto-admin
 import { ProyectoCatalog } from '../../../proyectos-catalogo/services/proyecto-catalog'
 import { MpCheckoutButton } from '../../components/mp-button/mp-checkout-button'
 import {
-  MEDIO_PAGO_CONFIG,
   PagosResponseDTO,
   formatMontoMoneda,
   formatTotalesPorMoneda
@@ -58,7 +57,6 @@ export class ProyectoPagos implements OnInit, OnDestroy {
   readonly isCliente = computed(() => this.auth.session()?.rol === 'CLIENTE')
   readonly estadoConfig = ESTADO_PROYECTO_CONFIG
   readonly estadoHitoConfig = ESTADO_HITO_CONFIG
-  readonly medioPagoConfig = MEDIO_PAGO_CONFIG
   readonly formatFecha = (f?: string) => formatFechaProyecto(f, false)
   readonly formatMonto = formatMontoMoneda
   readonly labelHito = labelHito

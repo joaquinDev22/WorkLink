@@ -25,7 +25,8 @@ export class Mercadopago {
           monto: 450,
           medioDePago: 'BILLETERA_VIRTUAL',
           proyectoId: 103,
-          mpPaymentId: 'mock-401'
+          mpPaymentId: 'mock-401',
+          fecha: '2026-11-05T14:30:00'
         }
       ]
     ]

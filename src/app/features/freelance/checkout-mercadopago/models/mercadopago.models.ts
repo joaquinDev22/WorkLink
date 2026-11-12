@@ -11,6 +11,7 @@ export interface PagosResponseDTO {
   medioDePago: MedioDePago
   proyectoId: number
   mpPaymentId: string | null   // id de la operación en Mercado Pago (RF31)
+  fecha: string | null         // LocalDateTime del backend (WL-39)
 }
 
 // POST /api/v1/freelance/proyectos/{proyectoId}/pagos/checkout
