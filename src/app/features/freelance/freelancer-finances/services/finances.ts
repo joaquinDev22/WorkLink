@@ -27,7 +27,7 @@ export class Finances {
   private readonly mockTransactions: FreelancerTransactionResponseDTO[] = [
     {
       id: 401,
-      currency: 'USD',
+      currency: 'PESOS',
       amount: 450,
       paymentMethod: 'BILLETERA_VIRTUAL',
       projectId: 103,
@@ -35,7 +35,7 @@ export class Finances {
     },
     {
       id: 388,
-      currency: 'USD',
+      currency: 'PESOS',
       amount: 1000,
       paymentMethod: 'TARJETA',
       projectId: 101,

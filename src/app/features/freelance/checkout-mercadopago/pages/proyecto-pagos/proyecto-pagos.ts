@@ -1,7 +1,6 @@
-﻿import {
+import {
   Component,
   ElementRef,
-  HostListener,
   OnDestroy,
   OnInit,
   computed,
@@ -14,6 +13,7 @@ import { gsap } from 'gsap'
 import { Auth } from '../../../../../core/auth/services/auth'
 import {
   ESTADO_HITO_CONFIG,
+  labelHito,
   ESTADO_PROYECTO_CONFIG,
   HitoResponseDTO,
   ProyectoResponseDTO,
@@ -23,16 +23,11 @@ import { ProyectoAdmin } from '../../../proyecto-gestion/services/proyecto-admin
 import { ProyectoCatalog } from '../../../proyectos-catalogo/services/proyecto-catalog'
 import { MpCheckoutButton } from '../../components/mp-button/mp-checkout-button'
 import {
-  MEDIO_PAGO_CONFIG,
-  MedioDePago,
-  Moneda,
   PagosResponseDTO,
   formatMontoMoneda,
   formatTotalesPorMoneda
 } from '../../models/mercadopago.models'
 import { Mercadopago } from '../../services/mercadopago'
-
-export type ModoMontoPago = 'SALDO' | 'HITO' | 'PERSONALIZADO'
 
 @Component({
   imports: [RouterLink, MpCheckoutButton],
@@ -59,30 +54,12 @@ export class ProyectoPagos implements OnInit, OnDestroy {
   readonly feedbackOk = signal<string | null>(null)
   readonly feedbackError = signal<string | null>(null)
 
-  // Selector WL-39 y WL-41
-  readonly medioSeleccionado = signal<MedioDePago>('BILLETERA_VIRTUAL')
-  readonly modoMonto = signal<ModoMontoPago>('SALDO')
-  readonly hitoSeleccionadoId = signal<number | null>(null)
-  readonly montoPersonalizado = signal<string>('')
-
-  // Modal secundario: Registrar pago directo (POST .../pagos)
-  readonly mostrarModalPagoDirecto = signal<boolean>(false)
-  readonly modalMoneda = signal<Moneda>('PESOS')
-  readonly modalMedio = signal<MedioDePago>('TARJETA')
-  readonly modalMonto = signal<string>('')
-  readonly modalError = signal<string | null>(null)
-
   readonly isCliente = computed(() => this.auth.session()?.rol === 'CLIENTE')
   readonly estadoConfig = ESTADO_PROYECTO_CONFIG
   readonly estadoHitoConfig = ESTADO_HITO_CONFIG
-  readonly medioPagoConfig = MEDIO_PAGO_CONFIG
-  readonly mediosPagoDisponibles: MedioDePago[] = ['BILLETERA_VIRTUAL', 'TARJETA']
   readonly formatFecha = (f?: string) => formatFechaProyecto(f, false)
   readonly formatMonto = formatMontoMoneda
-
-  readonly hitosPendientesPago = computed<HitoResponseDTO[]>(() =>
-    this.hitos().filter((h) => h.estado !== 'PAGADO')
-  )
+  readonly labelHito = labelHito
 
   readonly totalPlanificadoHitos = computed<number>(() =>
     this.hitos().reduce((acc, h) => acc + (Number(h.monto) || 0), 0)
@@ -109,53 +86,10 @@ export class ProyectoPagos implements OnInit, OnDestroy {
     return Math.max(0, ref - this.totalAbonado())
   })
 
-  readonly saldoCubierto = computed<boolean>(
-    () => this.montoReferenciaProyecto() > 0 && this.saldoRestante() === 0
-  )
-
-  readonly puedeOperarPagos = computed<boolean>(() => {
-    const estado = this.proyecto()?.estado
-    return this.isCliente() && (estado === 'EN_PROGRESO' || estado === 'FINALIZADO')
-  })
-
-  readonly montoSeleccionado = computed<number | null>(() => {
-    const modo = this.modoMonto()
-    if (modo === 'SALDO') {
-      const saldo = this.saldoRestante()
-      if (saldo > 0) return saldo
-      if (this.montoReferenciaProyecto() > 0) return null
-      const fallback = Number(this.proyecto()?.presupuestoMax || this.proyecto()?.presupuestoMin || 0)
-      return fallback > 0 ? fallback : null
-    }
-    if (modo === 'HITO') {
-      const id = this.hitoSeleccionadoId()
-      const hito = this.hitosPendientesPago().find((h) => h.hitoId === id)
-      return hito && hito.monto > 0 ? Number(hito.monto) : null
-    }
-    const num = Number(this.montoPersonalizado())
-    return Number.isFinite(num) && num > 0 ? num : null
-  })
-
-  readonly montoValido = computed<boolean>(() => {
-    const m = this.montoSeleccionado()
-    return m !== null && Number.isFinite(m) && m > 0
-  })
-
-  readonly excedePresupuestoModal = computed<boolean>(() => {
-    const max = Number(this.proyecto()?.presupuestoMax || 0)
-    const monto = Number(this.modalMonto())
-    if (max <= 0 || !Number.isFinite(monto) || monto <= 0) return false
-    return this.totalAbonado() + monto > max
-  })
+  // D5: el próximo hito es el primero sin completar; solo se paga si sigue PENDIENTE
+  readonly proximoHito = computed(() => this.hitos().find((h) => h.estado !== 'COMPLETADO') ?? null)
 
   private gsapCtx: gsap.Context | null = null
-
-  @HostListener('document:keydown.escape')
-  onEscape(): void {
-    if (this.mostrarModalPagoDirecto() && !this.isMutatingPago()) {
-      this.cerrarModalPagoDirecto()
-    }
-  }
 
   ngOnInit(): void {
     this.cargarDatos()
@@ -206,14 +140,6 @@ export class ProyectoPagos implements OnInit, OnDestroy {
           const listHitos = Array.isArray(hitos) ? hitos : []
           this.hitos.set(listHitos)
 
-          const pendientes = listHitos.filter((h) => h.estado !== 'PAGADO')
-          if (pendientes.length > 0) {
-            this.hitoSeleccionadoId.set(pendientes[0].hitoId)
-          }
-          if (this.saldoRestante() <= 0 && pendientes.length === 0) {
-            this.modoMonto.set('PERSONALIZADO')
-          }
-
           if (falloPagos && falloHitos) {
             this.feedbackError.set('No pudimos cargar el historial completo de pagos del proyecto.')
           } else if (falloPagos) {
@@ -251,79 +177,9 @@ export class ProyectoPagos implements OnInit, OnDestroy {
     })
   }
 
-  seleccionarModoMonto(modo: ModoMontoPago): void {
-    this.modoMonto.set(modo)
-    this.feedbackError.set(null)
-    if (modo === 'HITO' && !this.hitoSeleccionadoId()) {
-      const primero = this.hitosPendientesPago()[0]
-      if (primero) this.hitoSeleccionadoId.set(primero.hitoId)
-    }
-  }
-
   onCheckoutError(msg: string): void {
     this.feedbackOk.set(null)
     this.feedbackError.set(msg)
-  }
-
-  abrirModalPagoDirecto(): void {
-    this.modalError.set(null)
-    this.modalMedio.set(this.medioSeleccionado())
-    const sugerido = this.montoSeleccionado()
-    this.modalMonto.set(sugerido && sugerido > 0 ? String(sugerido) : '')
-    this.mostrarModalPagoDirecto.set(true)
-  }
-
-  cerrarModalPagoDirecto(): void {
-    if (this.isMutatingPago()) return
-    this.mostrarModalPagoDirecto.set(false)
-    this.modalError.set(null)
-  }
-
-  confirmarPagoDirecto(event: Event): void {
-    event.preventDefault()
-    const p = this.proyecto()
-    if (!p) return
-
-    this.modalError.set(null)
-    this.feedbackOk.set(null)
-    this.feedbackError.set(null)
-
-    const monto = Number(this.modalMonto())
-    if (!Number.isFinite(monto) || monto <= 0) {
-      this.modalError.set('Ingresá un monto válido mayor a 0.')
-      return
-    }
-
-    this.mpService
-      .registrarPago(p.proyectoId, {
-        moneda: this.modalMoneda(),
-        monto,
-        medioDePago: this.modalMedio()
-      })
-      .subscribe({
-        next: (nuevo) => {
-          this.mostrarModalPagoDirecto.set(false)
-          this.pagos.update((curr) => [nuevo, ...curr])
-          this.feedbackOk.set(
-            `Pago #${nuevo.pagoId} por ${this.formatMonto(nuevo.monto, nuevo.moneda)} registrado correctamente.`
-          )
-          // Refresca el proyecto e hitos por si el backend actualizó estados tras completar el pago
-          this.catalogService.getProyectoById(p.proyectoId).subscribe({
-            next: (updated) => updated && this.proyecto.set(updated)
-          })
-          this.proyectoAdmin.getHitos(p.proyectoId).subscribe({
-            next: (hitos) => Array.isArray(hitos) && this.hitos.set(hitos)
-          })
-        },
-        error: (err) => {
-          const raw = err?.error?.message
-          const safeMsg =
-            typeof raw === 'string' && raw.trim().length > 0 && !/Exception|Trace|java\./i.test(raw)
-              ? raw
-              : 'No se pudo registrar el pago. Verificá que el proyecto esté en progreso y el monto sea válido.'
-          this.modalError.set(safeMsg)
-        }
-      })
   }
 
   private animarEntrada(): void {

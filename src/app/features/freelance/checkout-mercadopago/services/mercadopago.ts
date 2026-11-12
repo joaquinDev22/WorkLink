@@ -1,10 +1,9 @@
 import { inject, Service, signal } from '@angular/core'
 import { HttpClient, HttpParams } from '@angular/common/http'
-import { delay, finalize, Observable, of, tap } from 'rxjs'
+import { delay, finalize, Observable, of } from 'rxjs'
 import { environment } from '../../../../../environments/environment'
 import {
   MercadoPagoPreferenceResponseDTO,
-  PagosRequestDTO,
   PagosResponseDTO
 } from '../models/mercadopago.models'
 
@@ -22,10 +21,12 @@ export class Mercadopago {
       [
         {
           pagoId: 401,
-          moneda: 'USD',
+          moneda: 'PESOS',
           monto: 450,
           medioDePago: 'BILLETERA_VIRTUAL',
-          proyectoId: 103
+          proyectoId: 103,
+          mpPaymentId: 'mock-401',
+          fecha: '2026-11-05T14:30:00'
         }
       ]
     ]
@@ -47,80 +48,21 @@ export class Mercadopago {
       .pipe(finalize(() => this.isLoading.set(false)))
   }
 
-  // POST /api/v1/freelance/proyectos/{proyectoId}/pagos - Registrar pago directo
-  registrarPago(proyectoId: number, dto: PagosRequestDTO): Observable<PagosResponseDTO> {
+  // POST /api/v1/freelance/proyectos/{proyectoId}/pagos/checkout?hitoId=N - Paga por adelantado el próximo hito
+  crearCheckoutPreference(proyectoId: number, hitoId: number): Observable<MercadoPagoPreferenceResponseDTO> {
     this.isMutating.set(true)
     if (environment.bypassAuth) {
-      const nuevo: PagosResponseDTO = {
-        pagoId: Math.floor(Math.random() * 9000) + 500,
-        moneda: dto.moneda,
-        monto: dto.monto,
-        medioDePago: dto.medioDePago,
-        proyectoId
-      }
-      const actuales = this.mockPagosByProyecto.get(proyectoId) ?? []
-      this.mockPagosByProyecto.set(proyectoId, [nuevo, ...actuales])
-      return of(nuevo).pipe(
+      const retorno = `${window.location.origin}/freelance/pagos/success?external_reference=${proyectoId}-${hitoId}&status=approved&payment_id=mock-998811`
+      return of({ preferenceId: `mock-pref-${proyectoId}-${hitoId}`, initPoint: retorno, sandboxInitPoint: retorno }).pipe(
         delay(250),
         finalize(() => this.isMutating.set(false))
       )
     }
 
     return this.client
-      .post<PagosResponseDTO>(`${this.API_URL}/${proyectoId}/pagos`, dto)
-      .pipe(finalize(() => this.isMutating.set(false)))
-  }
-
-  // POST /api/v1/freelance/proyectos/{proyectoId}/pagos/checkout?monto={monto}&backUrl={url}
-  crearCheckoutPreference(
-    proyectoId: number,
-    monto?: number,
-    backUrl?: string
-  ): Observable<MercadoPagoPreferenceResponseDTO> {
-    this.isMutating.set(true)
-    if (environment.bypassAuth) {
-      const resolvedBase = (backUrl || `${window.location.origin}/freelance`).replace(/\/+$/, '')
-      const mockPref: MercadoPagoPreferenceResponseDTO = {
-        preferenceId: `mock-pref-${proyectoId}-${Date.now()}`,
-        initPoint: `${resolvedBase}/pagos/success?external_reference=${proyectoId}&status=approved&payment_id=mock-998811&preference_id=mock-pref-${proyectoId}`,
-        sandboxInitPoint: `${resolvedBase}/pagos/success?external_reference=${proyectoId}&status=approved&payment_id=mock-998811&preference_id=mock-pref-${proyectoId}`
-      }
-      return of(mockPref).pipe(
-        delay(250),
-        tap(() => {
-          const actuales = this.mockPagosByProyecto.get(proyectoId) ?? []
-          const montoPago = monto && monto > 0 ? monto : 650
-          if (actuales.length < 2) {
-            this.mockPagosByProyecto.set(proyectoId, [
-              {
-                pagoId: Math.floor(Math.random() * 9000) + 600,
-                moneda: 'PESOS',
-                monto: montoPago,
-                medioDePago: 'BILLETERA_VIRTUAL',
-                proyectoId
-              },
-              ...actuales
-            ])
-          }
-        }),
-        finalize(() => this.isMutating.set(false))
-      )
-    }
-
-    let params = new HttpParams()
-    if (monto !== undefined && monto !== null && monto > 0) {
-      params = params.set('monto', monto.toString())
-    }
-    if (backUrl) {
-      params = params.set('backUrl', backUrl.replace(/\/+$/, ''))
-    }
-
-    return this.client
-      .post<MercadoPagoPreferenceResponseDTO>(
-        `${this.API_URL}/${proyectoId}/pagos/checkout`,
-        null,
-        { params }
-      )
+      .post<MercadoPagoPreferenceResponseDTO>(`${this.API_URL}/${proyectoId}/pagos/checkout`, null, {
+        params: new HttpParams().set('hitoId', hitoId)
+      })
       .pipe(finalize(() => this.isMutating.set(false)))
   }
 }

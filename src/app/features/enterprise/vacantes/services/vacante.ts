@@ -29,7 +29,7 @@ export class VacanteService {
       ubicacion: 'Buenos Aires, Argentina (Remoto)',
       tipoUbicacion: 'REMOTO',
       tipoVacante: 'Full-time',
-      salario: '$2.500 - $3.500 USD / mes',
+      salario: '$2.500.000 - $3.500.000 / mes',
       etiquetas: ['Angular', 'TypeScript', 'Tailwind CSS', 'Signals', 'RxJS']
     },
     {
@@ -44,7 +44,7 @@ export class VacanteService {
       ubicacion: 'Buenos Aires, Argentina (Híbrido)',
       tipoUbicacion: 'HIBRIDO',
       tipoVacante: 'Full-time',
-      salario: '$3.800 - $4.800 USD / mes',
+      salario: '$3.800.000 - $4.800.000 / mes',
       etiquetas: ['Java', 'Spring Boot', 'Angular', 'Docker', 'PostgreSQL', 'AWS']
     },
     {
@@ -59,7 +59,7 @@ export class VacanteService {
       ubicacion: 'Remoto LATAM',
       tipoUbicacion: 'REMOTO',
       tipoVacante: 'Full-time',
-      salario: '$2.200 - $3.000 USD / mes',
+      salario: '$2.200.000 - $3.000.000 / mes',
       etiquetas: ['Figma', 'Design Systems', 'UX Research', 'UI Architecture', 'Prototyping']
     },
     {
@@ -74,7 +74,7 @@ export class VacanteService {
       ubicacion: 'Córdoba, Argentina (Remoto)',
       tipoUbicacion: 'REMOTO',
       tipoVacante: 'Full-time',
-      salario: '$3.200 - $4.200 USD / mes',
+      salario: '$3.200.000 - $4.200.000 / mes',
       etiquetas: ['Go', 'Kubernetes', 'Kafka', 'PostgreSQL', 'Microservices']
     },
     {
@@ -89,7 +89,7 @@ export class VacanteService {
       ubicacion: 'Montevideo, Uruguay (Híbrido)',
       tipoUbicacion: 'HIBRIDO',
       tipoVacante: 'Full-time',
-      salario: '$2.000 - $2.800 USD / mes',
+      salario: '$2.000.000 - $2.800.000 / mes',
       etiquetas: ['Node.js', 'React', 'TypeScript', 'GraphQL', 'Jest']
     },
     {
@@ -104,7 +104,7 @@ export class VacanteService {
       ubicacion: 'Rosario, Argentina (Remoto)',
       tipoUbicacion: 'REMOTO',
       tipoVacante: 'Full-time',
-      salario: '$2.800 - $3.900 USD / mes',
+      salario: '$2.800.000 - $3.900.000 / mes',
       etiquetas: ['Python', 'Apache Spark', 'Databricks', 'SQL', 'Airflow']
     },
     {
@@ -119,7 +119,7 @@ export class VacanteService {
       ubicacion: 'Santiago, Chile (Presencial)',
       tipoUbicacion: 'PRESENCIAL',
       tipoVacante: 'Full-time',
-      salario: '$3.500 - $4.500 USD / mes',
+      salario: '$3.500.000 - $4.500.000 / mes',
       etiquetas: ['AWS', 'Terraform', 'CI/CD', 'Security', 'Docker']
     }
   ]

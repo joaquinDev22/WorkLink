@@ -51,7 +51,6 @@ export class FreelancerFinances implements OnInit, OnDestroy {
   // Filtros de tabla (WL-43)
   readonly busqueda = signal<string>('')
   readonly filtroMetodo = signal<'TODOS' | MedioDePago>('TODOS')
-  readonly filtroMoneda = signal<'TODAS' | 'PESOS' | 'USD'>('TODAS')
 
   // Modal y formulario WL-40 (Datos de cobro del freelancer)
   readonly mostrarModalCobros = signal<boolean>(false)
@@ -82,11 +81,9 @@ export class FreelancerFinances implements OnInit, OnDestroy {
   readonly transaccionesFiltradas = computed<FreelancerTransactionResponseDTO[]>(() => {
     const q = this.busqueda().trim().toLowerCase()
     const met = this.filtroMetodo()
-    const mon = this.filtroMoneda()
 
     return this.transactions().filter((t) => {
       if (met !== 'TODOS' && t.paymentMethod !== met) return false
-      if (mon !== 'TODAS' && t.currency?.toUpperCase() !== mon) return false
       if (!q) return true
       return (
         (t.projectTitle || '').toLowerCase().includes(q) ||
@@ -99,8 +96,7 @@ export class FreelancerFinances implements OnInit, OnDestroy {
   readonly hayFiltrosActivos = computed(
     () =>
       this.busqueda().trim().length > 0 ||
-      this.filtroMetodo() !== 'TODOS' ||
-      this.filtroMoneda() !== 'TODAS'
+      this.filtroMetodo() !== 'TODOS'
   )
 
   private gsapCtx: gsap.Context | null = null
@@ -157,7 +153,6 @@ export class FreelancerFinances implements OnInit, OnDestroy {
   limpiarFiltros(): void {
     this.busqueda.set('')
     this.filtroMetodo.set('TODOS')
-    this.filtroMoneda.set('TODAS')
   }
 
   abrirModalCobros(): void {

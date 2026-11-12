@@ -92,7 +92,7 @@
                 </div>
               </button>
               <div class="flex items-center justify-between gap-2 text-xs text-slate-600 tabular-nums pt-0.5">
-                <span>USD ${{ p.presupuestoMin }} - ${{ p.presupuestoMax }}</span>
+                <span>${{ p.presupuestoMin }} - ${{ p.presupuestoMax }}</span>
                 @if (p.estado === 'EN_PROGRESO' || p.estado === 'FINALIZADO') {
                   <a
                     [routerLink]="['/freelance/proyecto', p.proyectoId, 'pagos']"

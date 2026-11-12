@@ -15,7 +15,7 @@ export class MpCheckoutButton {
   private router = inject(Router)
 
   readonly proyectoId = input.required<number>()
-  readonly monto = input<number | null>(null)
+  readonly hitoId = input.required<number>()
   readonly disabled = input<boolean>(false)
   readonly label = input<string>('Pagar con MercadoPago')
 
@@ -27,17 +27,9 @@ export class MpCheckoutButton {
   iniciarCheckout(): void {
     if (this.disabled() || this.isRedirecting()) return
 
-    const id = this.proyectoId()
-    const montoVal = this.monto()
-    if (montoVal !== null && (!Number.isFinite(montoVal) || montoVal <= 0)) {
-      this.checkoutError.emit('Ingresá un monto válido mayor a 0 para iniciar el checkout.')
-      return
-    }
-
     this.isRedirecting.set(true)
-    const backUrl = `${window.location.origin}/freelance`
-
-    this.mpService.crearCheckoutPreference(id, montoVal ?? undefined, backUrl).subscribe({
+    // El monto y las URLs de retorno los define el backend a partir del hito
+    this.mpService.crearCheckoutPreference(this.proyectoId(), this.hitoId()).subscribe({
       next: (pref) => {
         this.preferenceCreated.emit(pref)
         const targetUrl = pref?.initPoint || pref?.sandboxInitPoint
