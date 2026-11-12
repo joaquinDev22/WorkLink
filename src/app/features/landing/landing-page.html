@@ -9,27 +9,22 @@
 
       <!-- Copywriting + CTAs con volumen -->
       <div class="lg:col-span-6 flex flex-col items-center lg:items-start text-center lg:text-left space-y-6">
-        <div class="hero-stagger inline-flex items-center gap-2 px-3.5 py-1.5 bg-brand-indigo/80 border border-brand-indigo-light/30 shadow-inner shadow-brand-indigo-light/50 rounded-full text-xs font-medium text-slate-100">
-          <span class="w-2 h-2 rounded-full bg-brand-sky"></span>
-          <span>Plataforma Dual: Trabajo Independiente y Empleo Formal</span>
-        </div>
-
         <h1 class="hero-stagger text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-[1.08] tracking-tight text-balance">
-          Proyectos freelance protegidos.
+          Empleo formal y freelance por hitos.
           <span class="block text-brand-sky pt-1">
-            Vacantes directas sin rodeos.
+            En una sola cuenta.
           </span>
         </h1>
 
         <p class="hero-stagger text-base sm:text-lg text-slate-200 max-w-xl leading-relaxed font-normal text-pretty">
-          WorkLink combina la seguridad de fondos en custodia para hitos freelance con un portal de selección ágil para empresas de tecnología.
+          Las empresas publican vacantes y coordinan entrevistas con sus recruiters. Los clientes contratan freelancers por hitos y pagan cada etapa con Mercado Pago antes de que empiece.
         </p>
 
         <div class="hero-stagger flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto pt-2">
           <a
             routerLink="/auth/register"
             class="btn-registrarse bg-brand-violet w-full sm:w-auto min-h-[44px] px-7 py-3.5 rounded-xl font-semibold text-white text-center inline-flex items-center justify-center">
-            Registrarse Gratis
+            Crear cuenta gratis
           </a>
 
           <a
@@ -67,7 +62,7 @@
                   <h2 class="text-sm font-bold text-white mt-0.5">Refactor de Microservicios Spring Boot & JWT</h2>
                 </div>
                 <span class="px-2.5 py-1 rounded-lg bg-brand-indigo/60 border border-white/15 text-white font-mono text-xs font-bold shadow-inner tabular-nums shrink-0">
-                  $1,200 USD
+                  $ 240.000
                 </span>
               </div>
 
@@ -77,16 +72,16 @@
                     <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
                     </svg>
-                    <span>Hito 1: Arquitectura y Dockerfile</span>
+                    <span>Hito 1 · Arquitectura y Dockerfile</span>
                   </span>
-                  <span class="text-emerald-300 text-[11px] font-medium shrink-0">Fondos Liberados</span>
+                  <span class="text-emerald-300 text-[11px] font-medium shrink-0">Completado</span>
                 </div>
                 <div class="flex items-center justify-between text-xs p-2.5 rounded-xl glass-neu-inset">
                   <span class="flex items-center gap-2 text-slate-100">
                     <span class="w-2 h-2 rounded-full bg-amber-400 shrink-0 ml-1 mr-1"></span>
-                    <span>Hito 2: Endpoints Auth & Tests</span>
+                    <span>Hito 2 · Endpoints Auth y tests</span>
                   </span>
-                  <span class="text-amber-300 text-[11px] font-medium shrink-0">En Revisión</span>
+                  <span class="text-amber-300 text-[11px] font-medium shrink-0">Pagado · en progreso</span>
                 </div>
               </div>
             </div>
@@ -96,7 +91,7 @@
               <div class="flex items-center justify-between gap-2">
                 <div>
                   <span class="text-[11px] font-semibold text-purple-300">Vacante Corporativa</span>
-                  <h2 class="text-sm font-bold text-white mt-0.5">Senior Angular & Signals Architect</h2>
+                  <h2 class="text-sm font-bold text-white mt-0.5">Desarrollador Angular Jr.</h2>
                 </div>
                 <span class="text-xs text-slate-200 font-medium shrink-0">Remoto · Full-time</span>
               </div>
@@ -108,53 +103,38 @@
             </div>
           </div>
 
-          <!-- Métricas en relieve hundido -->
-          <div class="grid glass-neu-inset rounded-2xl grid-cols-3 gap-3 p-2 w-full max-w-md mx-auto">
-            <div class="rounded-xl p-3 text-center">
-              <span class="block text-2xl font-bold text-white tabular-nums">{{ talentosTexto() }}</span>
-              <span class="text-xs text-slate-200 font-medium">Talentos</span>
-            </div>
-            <div class="rounded-xl p-3 text-center">
-              <span class="block text-2xl font-bold text-brand-sky tabular-nums">{{ custodiaTexto() }}</span>
-              <span class="text-xs text-slate-200 font-medium">En Custodia</span>
-            </div>
-            <div class="rounded-xl p-3 text-center">
-              <span class="block text-2xl font-bold text-white tabular-nums">{{ empresasTexto() }}</span>
-              <span class="text-xs text-slate-200 font-medium">Empresas</span>
-            </div>
-          </div>
-
         </div>
       </div>
 
     </div>
   </section>
 
-  <!-- 2. BANNER DE EMPRESAS (Marquee Continuo GPU con Fade Mask) -->
-  <section class="py-8 overflow-hidden select-none glass-neu-inset">
-    <p class="text-xs font-semibold text-slate-200 text-center mb-5 tracking-wide">
-      Organizaciones y empresas que construyen equipos en WorkLink
-    </p>
-
-    <div class="overflow-hidden w-full marquee-container">
-      <div class="marquee-track">
-        @for (emp of [...empresas, ...empresas, ...empresas, ...empresas]; track $index) {
-          <span class="mx-10 text-lg font-bold text-slate-200 hover:text-white transition-colors cursor-default tracking-wide">
-            {{ emp.nombre }}
-          </span>
-        }
-      </div>
-    </div>
+  <!-- 2. INTEGRACIONES REALES (servicios que el sistema usa de verdad, no clientes) -->
+  <section class="border-y border-white/10 bg-slate-950/30 backdrop-blur-sm">
+    <ul class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-8 text-sm text-slate-200">
+      <li class="flex items-center gap-3 justify-center sm:justify-start">
+        <svg class="w-5 h-5 text-brand-sky shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" /></svg>
+        <span><strong class="text-white font-semibold">Ingreso con Google</strong> o con tu usuario</span>
+      </li>
+      <li class="flex items-center gap-3 justify-center">
+        <svg class="w-5 h-5 text-brand-sky shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
+        <span><strong class="text-white font-semibold">Pagos con Mercado Pago</strong>, sin guardar tarjetas</span>
+      </li>
+      <li class="flex items-center gap-3 justify-center sm:justify-end">
+        <svg class="w-5 h-5 text-brand-sky shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+        <span><strong class="text-white font-semibold">Entrevistas por Google Meet</strong></span>
+      </li>
+    </ul>
   </section>
 
   <!-- 3. DOS PILARES DE NEGOCIO (Slabs Glass-Neumórficos) -->
   <section class="pilares-section max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
     <div class="max-w-2xl mb-14 space-y-2">
       <h2 class="text-3xl sm:text-4xl font-bold text-white tracking-tight text-balance">
-        Construido tanto para el trabajo independiente como para contrataciones formales.
+        Dos formas de trabajar, una misma cuenta.
       </h2>
       <p class="text-sm sm:text-base text-slate-200">
-        Dos flujos operativos diseñados sobre una misma cuenta verificada.
+        Un postulante puede pasar a modo freelancer con un clic, sin crear otra cuenta.
       </p>
     </div>
 
@@ -170,7 +150,7 @@
           </div>
           <h3 class="text-2xl font-bold text-white">Ecosistema Freelance</h3>
           <p class="text-slate-200 text-sm leading-relaxed text-pretty">
-            Elimina la incertidumbre del cobro y entrega de software con nuestro sistema de pagos por hitos protegidos en custodia.
+            El proyecto se divide en hitos. Cada uno se paga antes de empezar, así el freelancer trabaja con el cobro asegurado.
           </p>
 
           <ul class="space-y-3 pt-2 text-sm text-slate-100">
@@ -180,7 +160,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
                 </svg>
               </span>
-              <span>Fondos retenidos de forma segura antes de iniciar el trabajo.</span>
+              <span>Cada hito se paga con Mercado Pago antes de empezar.</span>
             </li>
             <li class="flex items-center gap-3">
               <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0">
@@ -188,7 +168,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
                 </svg>
               </span>
-              <span>Liberación contra criterios de aceptación y entregables validados.</span>
+              <span>El monto acordado se reparte en partes iguales entre los hitos.</span>
             </li>
             <li class="flex items-center gap-3">
               <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0">
@@ -196,7 +176,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
                 </svg>
               </span>
-              <span>Sin comisiones ocultas ni penalizaciones al liquidar hitos.</span>
+              <span>Historial de pagos y calificaciones visible para ambas partes.</span>
             </li>
           </ul>
         </div>
@@ -223,7 +203,7 @@
           </div>
           <h3 class="text-2xl font-bold text-white">Portal de Empleo & Empresas</h3>
           <p class="text-slate-200 text-sm leading-relaxed text-pretty">
-            Publica vacantes de relación de dependencia o contratación a largo plazo con candidatos pre-calificados y etapas visibles.
+            Publica vacantes en relación de dependencia, delega en tus recruiters y sigue a cada candidato por etapas.
           </p>
 
           <ul class="space-y-3 pt-2 text-sm text-slate-100">
@@ -233,7 +213,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
                 </svg>
               </span>
-              <span>Filtros técnicos específicos por stack tecnológico y experiencia.</span>
+              <span>Filtros por modalidad, tecnología y tipo de contratación.</span>
             </li>
             <li class="flex items-center gap-3">
               <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0">
@@ -241,7 +221,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
                 </svg>
               </span>
-              <span>Trazabilidad en tiempo real del estado de cada postulación laboral.</span>
+              <span>El candidato ve en qué estado está su postulación.</span>
             </li>
             <li class="flex items-center gap-3">
               <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0">
@@ -249,7 +229,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
                 </svg>
               </span>
-              <span>Agendamiento directo de entrevistas técnicas sin fricción.</span>
+              <span>Entrevistas agendadas con enlace a Google Meet.</span>
             </li>
           </ul>
         </div>
@@ -269,83 +249,108 @@
     </div>
   </section>
 
-  <!-- 4. TESTIMONIOS INTERACTIVOS (Píldoras Neumórficas Reactivas) -->
-  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-    <div class="text-center space-y-4 mb-10">
-      <h2 class="text-3xl sm:text-4xl font-extrabold text-white text-balance">Experiencias reales de la comunidad</h2>
-      <p class="text-slate-200 text-sm sm:text-base">Historias directas de desarrolladores, empresas y clientes.</p>
+  <!-- 4. CICLO DE UN HITO: el mecanismo real de pagos por adelantado -->
+  <section class="ciclo-section max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+      <div class="lg:col-span-5 space-y-4">
+        <h2 class="text-3xl sm:text-4xl font-bold text-white tracking-tight">Así se paga un proyecto freelance</h2>
+        <p class="text-slate-200 text-sm sm:text-base leading-relaxed text-pretty">
+          El monto acordado en la propuesta se reparte en partes iguales entre los hitos. Se trabaja de a un hito por vez: el cliente lo paga, el freelancer lo desarrolla y lo entrega, y recién ahí se habilita el siguiente.
+        </p>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          Ejemplo: una propuesta de <strong class="text-white tabular-nums">$ 2.000.000</strong> en 4 hitos son <strong class="text-white tabular-nums">$ 500.000</strong> por hito.
+        </p>
+      </div>
 
-      <div class="flex flex-wrap items-center justify-center gap-2.5 pt-4" role="tablist" aria-label="Filtrar testimonios por rol">
-        @for (f of filtrosRol; track f) {
+      <ol class="lg:col-span-7 grid gap-3 sm:grid-cols-3" aria-label="Estados de un hito">
+        <li class="ciclo-paso rounded-2xl glass-neu-inset p-5 space-y-2">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-400/15 text-amber-200 text-xs font-semibold"><span class="w-1.5 h-1.5 rounded-full bg-amber-300"></span>Pendiente de pago</span>
+          <p class="text-sm text-slate-100 leading-relaxed">El cliente ve el próximo hito con su monto y lo paga con Mercado Pago.</p>
+        </li>
+        <li class="ciclo-paso rounded-2xl glass-neu-inset p-5 space-y-2 ring-1 ring-brand-sky/40">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-sky-400/15 text-sky-200 text-xs font-semibold"><span class="w-1.5 h-1.5 rounded-full bg-sky-300"></span>Pagado · en progreso</span>
+          <p class="text-sm text-slate-100 leading-relaxed">Mercado Pago confirma el pago y el freelancer empieza a trabajar con el cobro asegurado.</p>
+        </li>
+        <li class="ciclo-paso rounded-2xl glass-neu-inset p-5 space-y-2">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-400/15 text-emerald-200 text-xs font-semibold"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" /></svg>Completado</span>
+          <p class="text-sm text-slate-100 leading-relaxed">El freelancer lo entrega y se habilita el pago del siguiente. Con el último, el proyecto se finaliza.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 5. CÓMO FUNCIONA: los tres recorridos reales del MVP -->
+  <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="text-center space-y-4 mb-10">
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white text-balance">Cómo funciona</h2>
+      <p class="text-slate-200 text-sm sm:text-base">Elige tu perfil y mira el recorrido paso a paso.</p>
+
+      <div class="flex flex-wrap items-center justify-center gap-2.5 pt-4" role="tablist" aria-label="Recorridos de WorkLink">
+        @for (r of recorridos; track r.id) {
           <button
             type="button"
             role="tab"
-            [attr.aria-selected]="rolFiltro() === f"
-            (click)="cambiarFiltro(f)"
-            [class.neu-pill-active]="rolFiltro() === f"
-            [class.text-white]="rolFiltro() === f"
-            [class.neu-pill-idle]="rolFiltro() !== f"
-            [class.text-slate-100]="rolFiltro() !== f"
-            class="px-5 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold cursor-pointer">
-            {{ f === 'TODOS' ? 'Todos los testimonios' : f }}
+            [id]="'tab-' + r.id"
+            [attr.aria-selected]="recorridoActivo() === r.id"
+            aria-controls="panel-recorrido"
+            (click)="cambiarRecorrido(r.id)"
+            [class.neu-pill-active]="recorridoActivo() === r.id"
+            [class.text-white]="recorridoActivo() === r.id"
+            [class.neu-pill-idle]="recorridoActivo() !== r.id"
+            [class.text-slate-100]="recorridoActivo() !== r.id"
+            class="px-5 py-2.5 min-h-[44px] rounded-xl text-sm font-semibold cursor-pointer">
+            {{ r.etiqueta }}
           </button>
         }
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      @for (testimonio of testimoniosFiltrados(); track testimonio.id) {
-        <article class="testimonio-card glass-neu-card rounded-2xl p-6 flex flex-col justify-between space-y-4">
-          <div class="space-y-3">
-            <span class="text-[11px] font-bold text-brand-sky px-2.5 py-1 rounded-md glass-neu-inset inline-block">
-              {{ testimonio.rol }}
-            </span>
-            <p class="text-slate-100 text-xs sm:text-sm leading-relaxed text-pretty">
-              "{{ testimonio.comentario }}"
-            </p>
-          </div>
+    @let recorrido = recorridoSeleccionado();
+    <div id="panel-recorrido" role="tabpanel" [attr.aria-labelledby]="'tab-' + recorrido.id" class="glass-neu-card rounded-3xl p-6 sm:p-10">
+      <h3 class="text-xl sm:text-2xl font-bold text-white text-balance">{{ recorrido.titulo }}</h3>
+      <ol class="mt-6 grid gap-4 sm:grid-cols-2">
+        @for (paso of recorrido.pasos; track $index) {
+          <li class="paso-item flex gap-4 rounded-2xl glass-neu-inset p-4">
+            <span class="w-8 h-8 rounded-full bg-brand-indigo/70 text-white text-sm font-bold flex items-center justify-center shrink-0 tabular-nums" aria-hidden="true">{{ $index + 1 }}</span>
+            <p class="text-sm text-slate-100 leading-relaxed text-pretty">{{ paso }}</p>
+          </li>
+        }
+      </ol>
+    </div>
+  </section>
 
-          <div class="flex items-center gap-3 pt-3 border-t border-white/10">
-            @if (!brokenAvatars()[testimonio.id]) {
-              <img
-                [src]="testimonio.avatar"
-                [alt]="testimonio.nombre"
-                loading="lazy"
-                (error)="onAvatarError(testimonio.id)"
-                class="w-9 h-9 rounded-full object-cover ring-2 ring-white/20 shadow-sm shrink-0">
-            } @else {
-              <div class="w-9 h-9 rounded-full glass-neu-inset text-white font-bold text-xs flex items-center justify-center shrink-0">
-                {{ testimonio.nombre.charAt(0) }}
-              </div>
-            }
-            <div class="min-w-0">
-              <span class="block text-sm font-semibold text-white leading-tight truncate">{{ testimonio.nombre }}</span>
-              <span class="block text-[11px] text-slate-300 leading-tight truncate">
-                {{ testimonio.empresaOStack }}
-              </span>
-            </div>
-          </div>
-        </article>
+  <!-- 6. PREGUNTAS FRECUENTES (details nativo: accesible y sin JS) -->
+  <section class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <h2 class="text-3xl sm:text-4xl font-bold text-white tracking-tight text-center mb-8">Preguntas frecuentes</h2>
+    <div class="space-y-3">
+      @for (item of preguntas; track item.pregunta) {
+        <details class="faq-item group rounded-2xl glass-neu-inset px-5 py-3">
+          <summary class="flex items-center justify-between gap-4 cursor-pointer list-none text-sm sm:text-base font-semibold text-white min-h-[44px]">
+            <span>{{ item.pregunta }}</span>
+            <svg class="w-5 h-5 text-brand-sky shrink-0 transition-transform duration-200 group-open:rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m7-7H5" /></svg>
+          </summary>
+          <p class="pt-1 pb-2 text-sm text-slate-200 leading-relaxed text-pretty">{{ item.respuesta }}</p>
+        </details>
       }
     </div>
   </section>
 
-  <!-- 5. CTA FINAL (Slab Glass-Neumórfico) -->
+  <!-- 7. CTA FINAL (Slab Glass-Neumórfico) -->
   <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
     <div class="cta-slab glass-neu-card rounded-3xl p-8 sm:p-14 text-center relative overflow-hidden">
       <div class="relative z-10 space-y-6 max-w-xl mx-auto">
         <h2 class="text-3xl sm:text-4xl font-bold text-white tracking-tight text-balance">
-          Comienza a trabajar o contratar hoy mismo.
+          Empieza a trabajar o a contratar hoy.
         </h2>
         <p class="text-slate-200 text-sm sm:text-base text-pretty">
-          Crea tu perfil en menos de 2 minutos y accede a propuestas y proyectos verificados.
+          Crea tu cuenta gratis, elige tu rol y entra directo a tu panel.
         </p>
 
         <div class="pt-2">
           <a
             routerLink="/auth/register"
             class="btn-registrarse bg-brand-violet inline-flex items-center justify-center min-h-[44px] px-8 py-3.5 rounded-xl font-semibold text-white text-base">
-            Registrarse Gratis
+            Crear cuenta gratis
           </a>
         </div>
       </div>
