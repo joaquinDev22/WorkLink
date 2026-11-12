@@ -1,4 +1,4 @@
-﻿import { Routes } from '@angular/router'
+import { Routes } from '@angular/router'
 import { roleGuard } from '../../core/auth/guards/role-guard'
 
 export const routes: Routes = [
@@ -24,6 +24,8 @@ export const routes: Routes = [
   },
   {
     path: 'mis-trabajos',
+    canActivate: [roleGuard],
+    data: { roles: ['FREELANCER'] },
     loadComponent: () =>
       import('./proyecto-gestion/pages/mis-proyectos-freelancer/mis-proyectos-freelancer').then(
         (m) => m.MisProyectosFreelancer
@@ -62,6 +64,8 @@ export const routes: Routes = [
   // --- ZONA CLIENTE ---
   {
     path: 'cliente-dashboard',
+    canActivate: [roleGuard],
+    data: { roles: ['CLIENTE'] },
     loadComponent: () =>
       import('./cliente-dashboard/pages/cliente-dash/cliente-dashboard').then(
         (m) => m.ClienteDashboard
@@ -69,6 +73,8 @@ export const routes: Routes = [
   },
   {
     path: 'mis-proyectos',
+    canActivate: [roleGuard],
+    data: { roles: ['CLIENTE'] },
     loadComponent: () =>
       import('./proyecto-gestion/pages/mis-proyectos-cliente/mis-proyectos-cliente').then(
         (m) => m.MisProyectosCliente
@@ -76,16 +82,22 @@ export const routes: Routes = [
   },
   {
     path: 'nuevo-proyecto',
+    canActivate: [roleGuard],
+    data: { roles: ['CLIENTE'] },
     loadComponent: () =>
       import('./proyecto-gestion/pages/proyecto-edit/proyecto-edit').then((m) => m.ProyectoEdit)
   },
   {
     path: 'proyecto/:id/editar',
+    canActivate: [roleGuard],
+    data: { roles: ['CLIENTE'] },
     loadComponent: () =>
       import('./proyecto-gestion/pages/proyecto-edit/proyecto-edit').then((m) => m.ProyectoEdit)
   },
   {
     path: 'proyecto/:id/propuestas',
+    canActivate: [roleGuard],
+    data: { roles: ['CLIENTE'] },
     loadComponent: () =>
       import('./proyecto-gestion/pages/proyecto-propuestas/proyecto-propuestas').then(
         (m) => m.ProyectoPropuestas

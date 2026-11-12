@@ -1,12 +1,13 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { TokenStorage } from '../services/token-storage';
+import { environment } from '../../../../environments/environment';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const tokenStorage = inject(TokenStorage)
-  const token = tokenStorage.getToken()
+  const token = inject(TokenStorage).getToken()
 
-  const request = token ? req.clone({
+  // El JWT solo viaja a nuestra API, nunca a dominios de terceros
+  const request = token && req.url.startsWith(environment.apiUrl) ? req.clone({
     setHeaders:{
       Authorization : `Bearer ${token}`
     }

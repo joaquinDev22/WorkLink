@@ -12,8 +12,14 @@ export class TokenStorage {
     }
 
     getSession(): Session | null {
-        const raw = localStorage.getItem(this.SESSION_KEY)
-        return raw ? JSON.parse(raw) : null
+        // Un valor corrupto en localStorage no debe romper el arranque de la app
+        try {
+            const raw = localStorage.getItem(this.SESSION_KEY)
+            return raw ? JSON.parse(raw) : null
+        } catch {
+            localStorage.removeItem(this.SESSION_KEY)
+            return null
+        }
     }
 
     getToken(): string | null {
