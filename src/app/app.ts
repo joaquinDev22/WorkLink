@@ -1,10 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { Header } from './core/layout/header/header';
-import { Footer } from './core/layout/footer/footer';
+import { ToastGlobal } from './shared/components/toast-global/toast-global';
 
 @Component({
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, ToastGlobal],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',

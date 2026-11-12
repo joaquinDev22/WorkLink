@@ -2,21 +2,18 @@ import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http'
 import { inject } from '@angular/core'
 import { catchError, throwError } from 'rxjs'
 import { Auth } from '../services/auth'
+import { Notificaciones } from '../../services/notificaciones'
 
 const SIN_CONEXION = 'No pudimos conectar con el servidor. Revisa tu conexión o intenta de nuevo en unos minutos.'
 const ERROR_SERVIDOR = 'El servidor no pudo procesar la solicitud. Intenta de nuevo en unos minutos.'
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(Auth)
+  const notificaciones = inject(Notificaciones)
 
   return next(req).pipe(
     catchError((error) => {
       if (!(error instanceof HttpErrorResponse)) return throwError(() => error)
-
-      // 401 = sesión vencida o inválida; en /auth es un login fallido y el formulario muestra el error
-      if (error.status === 401 && !req.url.includes('/auth/')) {
-        auth.logout()
-      }
 
       // ErrorResponseDTO del backend: el detalle útil viene en details[]; se usa como message
       const body = error.error
@@ -29,6 +26,15 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         : typeof mensajeBackend === 'string' && mensajeBackend.trim() && !/Exception|java\.|SQL|\.java:/i.test(mensajeBackend)
           ? mensajeBackend
           : ERROR_SERVIDOR
+
+      // WL-45: aviso global. /auth lo muestra su propio formulario; un 404 suele ser "no hay datos todavía"
+      const esAuth = req.url.includes('/auth/')
+      if (error.status === 401 && !esAuth) {
+        auth.logout()
+        notificaciones.mostrar('Tu sesión caducó. Inicia sesión de nuevo para continuar.', 'aviso')
+      } else if (!esAuth && error.status !== 404) {
+        notificaciones.mostrar(mensaje)
+      }
 
       return throwError(() => new HttpErrorResponse({
         error: { ...(typeof body === 'object' && body !== null ? body : {}), message: mensaje },
