@@ -130,34 +130,6 @@
   outline-offset: 2px;
 }
 
-/* ==========================================================================
-   3. MARQUEE CONTINUO (Loop 100% CSS a 60fps con Fade Mask)
-   ========================================================================== */
-
-.marquee-container {
-  mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
-}
-
-@keyframes marquee-slide {
-  0% {
-    transform: translate3d(0, 0, 0);
-  }
-  100% {
-    transform: translate3d(-50%, 0, 0);
-  }
-}
-
-.marquee-track {
-  display: flex;
-  width: max-content;
-  animation: marquee-slide 28s linear infinite;
-}
-
-.marquee-track:hover {
-  animation-play-state: paused;
-}
-
 @keyframes glow-pulse {
   0%, 100% {
     opacity: 0.25;
@@ -174,9 +146,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .marquee-track {
-    animation: none !important;
-  }
   .animate-glow-subtle {
     animation: none !important;
   }
@@ -190,4 +159,9 @@
   .neu-pill-idle:hover {
     transform: none !important;
   }
+}
+
+/* FAQ: oculta el marcador nativo de <details> (el ícono propio indica el estado) */
+.faq-item summary::-webkit-details-marker {
+  display: none;
 }

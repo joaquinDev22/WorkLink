@@ -1,4 +1,4 @@
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 page-enter">
+<div class="w-full space-y-8 pb-10 page-enter">
 
   <!-- ================================================================= -->
   <!-- 1. ENCABEZADO DE SECCIÓN                                          -->
@@ -13,6 +13,12 @@
       </p>
     </div>
   </div>
+
+  <!-- Medidor reactivo de completitud para Empresa -->
+  <app-perfil-completitud
+    [completitud]="completitudEmpresa()"
+    subtitulo="Completa la identidad y canales de tu empresa para generar más confianza en candidatos."
+    (itemClick)="onCompletitudClick($event.item, logoInput, bannerInput)" />
 
   <!-- ================================================================= -->
   <!-- 2. GRID PRINCIPAL (FORMULARIO + VISTA PREVIA CORPORATIVA)         -->

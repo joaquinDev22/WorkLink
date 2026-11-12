@@ -1,71 +1,500 @@
-<div class="page-enter max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 pb-14">
+<div class="page-enter w-full space-y-6 pb-14">
 
   <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/80 pb-5">
     <div class="space-y-1">
       <h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-        Resumen Financiero Freelance
+        Finanzas y Transacciones Freelance
       </h1>
       <p class="text-sm text-slate-500">
-        Consolidado de proyectos activos, finalizados y rangos contractuales en curso.
+        Balance acreditado, saldo en proyectos activos, movimientos reales y estado de cobros.
       </p>
     </div>
-    <a routerLink="/freelance/mis-trabajos" class="btn-tactile-primary px-4 py-2.5 min-h-[44px] text-sm inline-flex items-center justify-center shrink-0">
+    <a
+      routerLink="/freelance/mis-trabajos"
+      class="btn-tactile-primary px-5 py-2.5 min-h-[44px] text-sm inline-flex items-center justify-center shrink-0">
       Ir a Mis Trabajos
     </a>
   </header>
 
   @if (isLoading()) {
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 animate-pulse" aria-busy="true">
-      <div class="h-24 bg-white border border-slate-200 rounded-2xl"></div>
-      <div class="h-24 bg-white border border-slate-200 rounded-2xl"></div>
-      <div class="h-24 bg-white border border-slate-200 rounded-2xl"></div>
+    <div class="space-y-6 animate-pulse" aria-busy="true">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="h-24 bg-white border border-slate-200 rounded-2xl"></div>
+        <div class="h-24 bg-white border border-slate-200 rounded-2xl"></div>
+        <div class="h-24 bg-white border border-slate-200 rounded-2xl"></div>
+      </div>
+      <div class="h-72 bg-white border border-slate-200 rounded-2xl"></div>
+    </div>
+  } @else if (errorCarga()) {
+    <div role="alert" class="bg-white border border-rose-200 rounded-2xl p-6 text-center space-y-3">
+      <p class="text-sm font-medium text-rose-700">{{ errorCarga() }}</p>
+      <button type="button" (click)="cargarFinanzas()" class="btn-tactile-secondary px-4 py-2 min-h-[44px] text-xs cursor-pointer">
+        Reintentar
+      </button>
     </div>
   } @else {
-    <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs space-y-1">
-        <span class="text-xs font-semibold text-slate-500">Proyectos en progreso</span>
-        <div class="text-2xl font-black text-brand-indigo tabular-nums">{{ enProgreso() }}</div>
+    <!-- KPIs reales desde GET /freelancer/finances + proyectos asignados -->
+    <section aria-label="Indicadores financieros reales" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="fin-kpi bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs space-y-1">
+        <span class="text-xs font-semibold text-slate-500">Balance acreditado</span>
+        <div class="text-2xl sm:text-3xl font-black text-emerald-700 tabular-nums">
+          {{ formatMonto(finances()?.balance ?? 0, 'USD') }}
+        </div>
+        <p class="text-xs text-slate-500">Total de pagos registrados en tus proyectos.</p>
       </div>
-      <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs space-y-1">
-        <span class="text-xs font-semibold text-slate-500">Proyectos finalizados</span>
-        <div class="text-2xl font-black text-emerald-700 tabular-nums">{{ finalizados() }}</div>
+
+      <div class="fin-kpi bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs space-y-1">
+        <span class="text-xs font-semibold text-slate-500">En proyectos en curso</span>
+        <div class="text-2xl sm:text-3xl font-black text-brand-indigo tabular-nums">
+          {{ formatMonto(finances()?.pending ?? 0, 'USD') }}
+        </div>
+        <p class="text-xs text-slate-500">Presupuesto asociado a encargos en progreso.</p>
       </div>
-      <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs space-y-1">
-        <span class="text-xs font-semibold text-slate-500">Volumen contractual estimado</span>
-        <div class="text-2xl font-black text-slate-900 tabular-nums">USD ${{ totalEstimadoMax() }}</div>
+
+      <div class="fin-kpi bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs space-y-1">
+        <span class="text-xs font-semibold text-slate-500">Actividad contractual</span>
+        <div class="text-2xl sm:text-3xl font-black text-slate-900 tabular-nums">
+          {{ enProgreso() }} activos · {{ finalizados() }} finalizados
+        </div>
+        <p class="text-xs text-slate-500">Basado en tus proyectos asignados vigentes.</p>
       </div>
     </section>
 
-    <section class="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
-      <h2 class="text-base font-bold text-slate-900 border-b border-slate-100 pb-3">
-        Detalle por proyecto asignado
-      </h2>
+    <!-- Grilla asimétrica: Transacciones (7 cols) + Datos de Cobro WL-40 & Proyectos (5 cols) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-      @if (proyectos().length === 0) {
-        <p class="text-sm text-slate-500 py-6 text-center">
-          Todavía no registras proyectos asignados para mostrar movimientos.
-        </p>
-      } @else {
-        <div class="divide-y divide-slate-100">
-          @for (p of proyectos(); track p.proyectoId) {
-            @let cfg = estadoConfig[p.estado];
-            <div class="animate-row-enter py-3.5 first:pt-0 last:pb-0 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <div class="space-y-0.5 min-w-0">
-                <div class="font-bold text-sm text-slate-900 truncate">{{ p.nombreProyecto || p.area }}</div>
-                <div class="text-xs text-slate-500">{{ p.nombreCliente }} · {{ formatFecha(p.fechaPublicacion) }}</div>
-              </div>
-              <div class="flex items-center gap-3 shrink-0">
-                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold {{ cfg.badgeClass }}">
-                  {{ cfg.label }}
-                </span>
-                <span class="text-sm font-black text-slate-900 tabular-nums">
-                  USD ${{ p.presupuestoMin }} - ${{ p.presupuestoMax }}
-                </span>
-              </div>
+      <!-- Tabla filtrable de transacciones reales (WL-43) -->
+      <section class="lg:col-span-7 bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3.5">
+          <div>
+            <h2 class="text-base font-bold text-slate-900">Historial de transacciones</h2>
+            <p class="text-xs text-slate-500">
+              Movimientos reales recuperados de tus proyectos asignados.
+            </p>
+          </div>
+          <span class="text-xs font-semibold text-slate-500 tabular-nums">
+            {{ transaccionesFiltradas().length }} de {{ transactions().length }}
+          </span>
+        </div>
+
+        <!-- Filtros -->
+        <div class="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
+          <div class="sm:col-span-6">
+            <label for="txSearch" class="sr-only">Buscar por proyecto o número de pago</label>
+            <input
+              id="txSearch"
+              #txs
+              type="search"
+              [value]="busqueda()"
+              (input)="busqueda.set(txs.value)"
+              placeholder="Buscar por área, proyecto o #ID..."
+              class="w-full px-3.5 py-2 min-h-[44px] bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-500 focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky" />
+          </div>
+
+          <div class="sm:col-span-3">
+            <label for="txMetodo" class="sr-only">Filtrar por medio de pago</label>
+            <select
+              id="txMetodo"
+              #txm
+              [value]="filtroMetodo()"
+              (change)="filtroMetodo.set($any(txm.value))"
+              class="w-full px-3 py-2 min-h-[44px] bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky">
+              <option value="TODOS">Todos los medios</option>
+              <option value="BILLETERA_VIRTUAL">Billetera virtual</option>
+              <option value="TARJETA">Tarjeta</option>
+            </select>
+          </div>
+
+          <div class="sm:col-span-3">
+            <label for="txMoneda" class="sr-only">Filtrar por moneda</label>
+            <select
+              id="txMoneda"
+              #txc
+              [value]="filtroMoneda()"
+              (change)="filtroMoneda.set($any(txc.value))"
+              class="w-full px-3 py-2 min-h-[44px] bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky">
+              <option value="TODAS">Todas las monedas</option>
+              <option value="PESOS">PESOS</option>
+              <option value="USD">USD</option>
+            </select>
+          </div>
+        </div>
+
+        @if (transactionsError()) {
+          <div role="alert" class="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs sm:text-sm font-medium flex items-center justify-between gap-3">
+            <span>{{ transactionsError() }}</span>
+            <button type="button" (click)="cargarFinanzas()" class="btn-tactile-secondary px-3 py-1.5 text-xs shrink-0 cursor-pointer">
+              Reintentar
+            </button>
+          </div>
+        } @else if (transactions().length === 0) {
+          <div class="py-10 px-4 text-center border border-dashed border-slate-200 rounded-xl space-y-2">
+            <p class="text-sm font-semibold text-slate-700">Todavía no tenés transacciones registradas</p>
+            <p class="text-xs text-slate-500 max-w-sm mx-auto">
+              Cuando un cliente abone hitos o pagos en tus proyectos asignados, aparecerán listados acá.
+            </p>
+          </div>
+        } @else if (transaccionesFiltradas().length === 0) {
+          <div class="py-8 px-4 text-center border border-dashed border-slate-200 rounded-xl space-y-3">
+            <p class="text-sm font-medium text-slate-600">
+              No encontramos movimientos con los filtros actuales.
+            </p>
+            @if (hayFiltrosActivos()) {
+              <button
+                type="button"
+                (click)="limpiarFiltros()"
+                class="btn-tactile-secondary px-4 py-2 min-h-[40px] text-xs cursor-pointer">
+                Limpiar filtros
+              </button>
+            }
+          </div>
+        } @else {
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-slate-100 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                  <th class="py-2.5 pr-3">ID</th>
+                  <th class="py-2.5 px-3">Proyecto</th>
+                  <th class="py-2.5 px-3">Medio</th>
+                  <th class="py-2.5 px-3 text-right">Importe</th>
+                  <th class="py-2.5 pl-3 text-right">Detalle</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 text-sm">
+                @for (tx of transaccionesFiltradas(); track tx.id) {
+                  <tr class="animate-row-enter">
+                    <td class="py-3 pr-3 font-mono text-xs font-semibold text-slate-600 tabular-nums">
+                      #{{ tx.id }}
+                    </td>
+                    <td class="py-3 px-3 min-w-[140px]">
+                      <a
+                        [routerLink]="['/freelance/proyecto', tx.projectId]"
+                        class="font-bold text-slate-900 hover:text-brand-indigo transition-colors block truncate max-w-[200px]">
+                        {{ tx.projectTitle || 'Proyecto #' + tx.projectId }}
+                      </a>
+                      <span class="text-[11px] text-slate-500 tabular-nums">Proyecto #{{ tx.projectId }}</span>
+                    </td>
+                    <td class="py-3 px-3">
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold {{ badgeMetodo(tx.paymentMethod) }}">
+                        {{ labelMetodo(tx.paymentMethod) }}
+                      </span>
+                    </td>
+                    <td class="py-3 px-3 text-right font-black text-slate-900 tabular-nums whitespace-nowrap">
+                      {{ formatMonto(tx.amount, tx.currency) }}
+                    </td>
+                    <td class="py-3 pl-3 text-right whitespace-nowrap">
+                      <a
+                        [routerLink]="['/freelance/proyecto', tx.projectId, 'pagos']"
+                        class="text-xs font-semibold text-brand-indigo hover:underline">
+                        Ver pagos
+                      </a>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </section>
+
+      <!-- Columna derecha (5 cols): WL-40 Datos de Cobro + Resumen compacto de proyectos -->
+      <aside class="lg:col-span-5 space-y-6">
+
+        <!-- Card WL-40: Datos de cobro configurables -->
+        <section class="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
+          <div class="flex items-start justify-between gap-3 border-b border-slate-100 pb-3">
+            <div class="space-y-1">
+              <h2 class="text-base font-bold text-slate-900">Datos de cobro</h2>
+              <p class="text-xs text-slate-500">Cuenta receptora para retiros del freelancer.</p>
+            </div>
+            @if (medioCobro()) {
+              <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                Configurado
+              </span>
+            } @else {
+              <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-800 border border-amber-200 shrink-0">
+                Sin configurar
+              </span>
+            }
+          </div>
+
+          @if (cobroNotice()) {
+            <div role="status" class="px-3 py-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium flex items-center justify-between gap-2">
+              <span>{{ cobroNotice() }}</span>
+              <button type="button" (click)="cobroNotice.set(null)" class="text-emerald-700 hover:text-emerald-900 font-bold px-1 cursor-pointer" aria-label="Ocultar aviso">×</button>
             </div>
           }
-        </div>
-      }
-    </section>
+
+          @if (medioCobro(); as cobro) {
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2 text-xs sm:text-sm">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-slate-500">Modalidad</span>
+                <span class="font-bold text-slate-900">
+                  {{ cobro.tipo === 'MERCADOPAGO' ? 'MercadoPago' : 'Transferencia bancaria' }}
+                </span>
+              </div>
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-slate-500">Titular</span>
+                <span class="font-semibold text-slate-900 truncate max-w-[60%]">
+                  {{ cobro.titular }}{{ cobro.documentoTitular ? ' · ' + cobro.documentoTitular : '' }}
+                </span>
+              </div>
+              @if (cobro.cbuCvu) {
+                <div class="flex items-center justify-between gap-2">
+                  <span class="text-slate-500">CBU / CVU</span>
+                  <span class="font-mono text-xs font-semibold text-slate-800 tabular-nums">{{ cobro.cbuCvu }}</span>
+                </div>
+              }
+              @if (cobro.alias) {
+                <div class="flex items-center justify-between gap-2">
+                  <span class="text-slate-500">Alias</span>
+                  <span class="font-mono text-xs font-semibold text-slate-800">{{ cobro.alias }}</span>
+                </div>
+              }
+              @if (cobro.mercadoPagoEmail) {
+                <div class="flex items-center justify-between gap-2">
+                  <span class="text-slate-500">Cuenta MP</span>
+                  <span class="font-medium text-slate-800 truncate max-w-[60%]">{{ cobro.mercadoPagoEmail }}</span>
+                </div>
+              }
+            </div>
+          } @else {
+            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              Cargá tu CBU / CVU, Alias o cuenta receptora de MercadoPago para recibir los retiros de tus proyectos acreditados.
+            </p>
+          }
+
+          <button
+            type="button"
+            (click)="abrirModalCobros()"
+            class="btn-tactile-secondary w-full px-4 py-2.5 min-h-[44px] text-xs sm:text-sm inline-flex items-center justify-center gap-2 cursor-pointer">
+            <svg class="w-4 h-4 text-slate-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            <span>{{ medioCobro() ? 'Editar datos de cobro' : 'Configurar datos de cobro' }}</span>
+          </button>
+        </section>
+
+        <!-- Resumen compacto de proyectos asignados -->
+        <section class="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <h2 class="text-base font-bold text-slate-900">Proyectos asignados</h2>
+            <a routerLink="/freelance/mis-trabajos" class="text-xs font-semibold text-brand-indigo hover:underline">
+              Ver hitos
+            </a>
+          </div>
+
+          @if (proyectos().length === 0) {
+            <p class="text-xs sm:text-sm text-slate-500 py-4 text-center">
+              Todavía no tenés proyectos asignados.
+            </p>
+          } @else {
+            <div class="divide-y divide-slate-100">
+              @for (p of proyectos(); track p.proyectoId) {
+                @let cfg = estadoConfig[p.estado];
+                <div class="py-3 first:pt-0 last:pb-0 flex items-center justify-between gap-3">
+                  <div class="space-y-0.5 min-w-0">
+                    <a
+                      [routerLink]="['/freelance/proyecto', p.proyectoId, 'pagos']"
+                      class="font-bold text-sm text-slate-900 hover:text-brand-indigo truncate block">
+                      {{ p.nombreProyecto || p.area }}
+                    </a>
+                    <div class="text-xs text-slate-500 truncate">
+                      {{ p.nombreCliente }} · {{ formatFecha(p.fechaPublicacion) }}
+                    </div>
+                  </div>
+                  <div class="flex flex-col items-end gap-1 shrink-0">
+                    <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold {{ cfg.badgeClass }}">
+                      {{ cfg.label }}
+                    </span>
+                    <span class="text-xs font-bold text-slate-800 tabular-nums">
+                      USD ${{ p.presupuestoMin }} - ${{ p.presupuestoMax }}
+                    </span>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </section>
+      </aside>
+    </div>
   }
 </div>
+
+<!-- Modal WL-40: Configuración de Datos de Cobro -->
+@if (mostrarModalCobros()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div
+      class="animate-modal-backdrop fixed inset-0 bg-slate-900/55 backdrop-blur-xs"
+      (click)="cerrarModalCobros()"
+      aria-hidden="true"></div>
+
+    <form
+      (submit)="guardarMedioCobro($event)"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="cobros-modal-title"
+      class="animate-modal-card relative z-10 w-full max-w-lg max-h-[90vh] overflow-y-auto bg-white rounded-2xl border border-slate-200 p-6 shadow-2xl space-y-5">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div>
+          <h3 id="cobros-modal-title" class="text-base font-bold text-slate-900">
+            Configuración de datos de cobro
+          </h3>
+          <p class="text-xs text-slate-500">Se almacenan de forma segura asociados a tu perfil.</p>
+        </div>
+        <button
+          type="button"
+          (click)="cerrarModalCobros()"
+          class="btn-tactile-icon w-9 h-9 rounded-xl flex items-center justify-center"
+          aria-label="Cerrar modal">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      @if (cobroError()) {
+        <div role="alert" class="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">
+          {{ cobroError() }}
+        </div>
+      }
+
+      <div class="space-y-4">
+        <div class="space-y-1.5">
+          <span class="block text-xs font-bold text-slate-700">Modalidad de cobro</span>
+          <div class="grid grid-cols-2 gap-2.5">
+            <button
+              type="button"
+              (click)="cobroTipo.set('TRANSFERENCIA')"
+              class="px-3 py-2.5 min-h-[44px] rounded-xl border text-xs sm:text-sm font-semibold transition-colors cursor-pointer"
+              [class]="cobroTipo() === 'TRANSFERENCIA'
+                ? 'bg-indigo-50 border-brand-indigo text-brand-indigo'
+                : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'">
+              Transferencia (CBU/Alias)
+            </button>
+            <button
+              type="button"
+              (click)="cobroTipo.set('MERCADOPAGO')"
+              class="px-3 py-2.5 min-h-[44px] rounded-xl border text-xs sm:text-sm font-semibold transition-colors cursor-pointer"
+              [class]="cobroTipo() === 'MERCADOPAGO'
+                ? 'bg-sky-50 border-brand-sky text-sky-700'
+                : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'">
+              MercadoPago (CVU/Email)
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="space-y-1">
+            <label for="cobroTitular" class="block text-xs font-semibold text-slate-700">
+              Titular de la cuenta <span class="text-rose-500">*</span>
+            </label>
+            <input
+              id="cobroTitular"
+              #cTitular
+              type="text"
+              maxlength="120"
+              [value]="cobroTitular()"
+              (input)="cobroTitular.set(cTitular.value)"
+              placeholder="Ej: Joaquín Nieva"
+              class="w-full px-3.5 py-2.5 min-h-[44px] bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky" />
+          </div>
+
+          <div class="space-y-1">
+            <label for="cobroDocumento" class="block text-xs font-semibold text-slate-700">
+              DNI / CUIT / CUIL
+            </label>
+            <input
+              id="cobroDocumento"
+              #cDoc
+              type="text"
+              inputmode="numeric"
+              maxlength="11"
+              [value]="cobroDocumento()"
+              (input)="cobroDocumento.set(cDoc.value)"
+              placeholder="Solo dígitos (7 a 11)"
+              class="w-full px-3.5 py-2.5 min-h-[44px] bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="space-y-1">
+            <label for="cobroCbu" class="block text-xs font-semibold text-slate-700">
+              {{ cobroTipo() === 'MERCADOPAGO' ? 'CVU (22 dígitos)' : 'CBU / CVU (22 dígitos)' }}
+            </label>
+            <input
+              id="cobroCbu"
+              #cCbu
+              type="text"
+              inputmode="numeric"
+              maxlength="22"
+              [value]="cobroCbuCvu()"
+              (input)="cobroCbuCvu.set(cCbu.value)"
+              placeholder="22 dígitos numéricos"
+              class="w-full px-3.5 py-2.5 min-h-[44px] bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky" />
+          </div>
+
+          <div class="space-y-1">
+            <label for="cobroAlias" class="block text-xs font-semibold text-slate-700">
+              Alias bancario o MP
+            </label>
+            <input
+              id="cobroAlias"
+              #cAlias
+              type="text"
+              maxlength="40"
+              [value]="cobroAlias()"
+              (input)="cobroAlias.set(cAlias.value)"
+              placeholder="ej. joaquin.worklink.mp"
+              class="w-full px-3.5 py-2.5 min-h-[44px] bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky" />
+          </div>
+        </div>
+
+        @if (cobroTipo() === 'MERCADOPAGO') {
+          <div class="space-y-1">
+            <label for="cobroMpEmail" class="block text-xs font-semibold text-slate-700">
+              Correo de cuenta MercadoPago
+            </label>
+            <input
+              id="cobroMpEmail"
+              #cEmail
+              type="email"
+              [value]="cobroMpEmail()"
+              (input)="cobroMpEmail.set(cEmail.value)"
+              placeholder="tu-cuenta@mercadopago.com"
+              class="w-full px-3.5 py-2.5 min-h-[44px] bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky" />
+          </div>
+        }
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-slate-100">
+        <div>
+          @if (medioCobro()) {
+            <button
+              type="button"
+              [disabled]="isSavingCobro() || isDeletingCobro()"
+              (click)="eliminarMedioCobro()"
+              class="px-3.5 py-2 min-h-[44px] rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 disabled:opacity-50 transition-colors cursor-pointer">
+              {{ isDeletingCobro() ? 'Eliminando...' : 'Eliminar datos' }}
+            </button>
+          }
+        </div>
+        <div class="flex items-center gap-2 ml-auto">
+          <button
+            type="button"
+            [disabled]="isSavingCobro() || isDeletingCobro()"
+            (click)="cerrarModalCobros()"
+            class="btn-tactile-secondary px-4 py-2.5 min-h-[44px] text-xs sm:text-sm cursor-pointer">
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            [disabled]="isSavingCobro() || isDeletingCobro()"
+            class="btn-tactile-primary px-5 py-2.5 min-h-[44px] text-xs sm:text-sm disabled:opacity-50 cursor-pointer">
+            {{ isSavingCobro() ? 'Guardando...' : 'Guardar datos' }}
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+}

@@ -8,6 +8,7 @@ import { Sidebar } from '../sidebar/sidebar'
 import { BreakpointObserver } from '@angular/cdk/layout'
 import { Perfil } from '../../../features/perfiles/services/perfil'
 import { EmpresaService } from '../../../features/enterprise/empresa-perfil/services/empresa'
+import { Cliente } from '../../../features/freelance/cliente-dashboard/services/cliente'
 
 export interface HeaderModalLink {
   label: string
@@ -25,6 +26,7 @@ export class Header implements OnInit {
   protected auth = inject(Auth)
   protected perfilService = inject(Perfil)
   protected empresaService = inject(EmpresaService)
+  private clienteService = inject(Cliente)
   private observer = inject(BreakpointObserver)
 
   isMinWidth = signal<boolean>(false)
@@ -56,9 +58,11 @@ export class Header implements OnInit {
     return 'Ver mi perfil completo'
   })
 
-  readonly mostrarCompletitud = computed(() => {
-    const s = this.auth.session()
-    return s?.rol === 'FREELANCER' || s?.rol === 'POSTULANTE'
+  readonly mostrarCompletitud = computed(() => Boolean(this.auth.session()))
+
+  readonly completitudActual = computed(() => {
+    const rol = this.auth.session()?.rol
+    return rol === 'EMPRESA' ? this.empresaService.completitud() : this.perfilService.completitud()
   })
 
   // Switch de rol dual: Postulante (búsqueda de empleo corporativo) <-> Freelancer (proyectos independientes)
@@ -90,11 +94,11 @@ export class Header implements OnInit {
     const perfil = this.perfilService.perfilActual()
 
     if (rol === 'EMPRESA') {
-      const nombre = emp?.nombre || 'InnovaCorp Technologies S.A.'
+      const nombre = emp?.nombre || s?.nombreUsuario || 'Mi empresa'
       return {
         nombre,
-        subtitulo: emp?.rubro || 'Tecnología y Software',
-        email: emp?.sitio_web ? emp.sitio_web.replace(/^https?:\/\//, '') : 'contacto@innovacorp.com',
+        subtitulo: emp?.rubro || 'Perfil corporativo',
+        email: emp?.sitio_web ? emp.sitio_web.replace(/^https?:\/\//, '') : '',
         rol: 'EMPRESA',
         badgeClass: 'bg-indigo-50 text-brand-indigo border-brand-indigo/30 shadow-2xs',
         badgeLabel: 'Empresa',
@@ -105,11 +109,11 @@ export class Header implements OnInit {
     }
 
     if (rol === 'RECRUITER') {
-      const nombre = perfil?.nombre ? `${perfil.nombre} ${perfil.apellido || ''}`.trim() : 'Lucía Fernández'
+      const nombre = perfil?.nombre ? `${perfil.nombre} ${perfil.apellido || ''}`.trim() : (s?.nombreUsuario || 'Recruiter')
       return {
         nombre,
-        subtitulo: 'InnovaCorp Technologies • Reclutamiento',
-        email: perfil?.email || 'lucia.fernandez@innovacorp.com',
+        subtitulo: 'Reclutamiento',
+        email: perfil?.email || '',
         rol: 'RECRUITER',
         badgeClass: 'bg-teal-50 text-teal-700 border-teal-200/90 shadow-2xs',
         badgeLabel: 'Recruiter IT',
@@ -206,7 +210,7 @@ export class Header implements OnInit {
           this.empresaService.getMiEmpresa().subscribe()
         }
       } else {
-        if (!this.perfilService.perfilActual()) {
+        if (!this.perfilService.perfilActual() || (s.rol === 'CLIENTE' && !this.clienteService.perfil())) {
           this.perfilService.cargarPerfil().subscribe()
         }
       }

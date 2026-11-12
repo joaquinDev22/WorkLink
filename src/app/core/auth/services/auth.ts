@@ -1,4 +1,4 @@
-import { inject, Service, signal } from '@angular/core'
+import { inject, Service } from '@angular/core'
 import { Router } from '@angular/router'
 import { TokenStorage } from './token-storage'
 import { HttpClient } from '@angular/common/http'
@@ -17,8 +17,8 @@ export class Auth {
     private perfilService = inject(Perfil)
     private readonly apiUrl = `${environment.apiUrl}/auth`
 
-    // Signal con tu Session tipada
-    session = signal<Session | null>(this.tokenStorage.getSession())
+    // Signal compartida con TokenStorage para mantener reactivo el rol activo en toda la app
+    session = this.tokenStorage.session
     
     cambiarRol(nuevoRol: UserRole): void {
         const actual = this.session()

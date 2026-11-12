@@ -1,4 +1,4 @@
-<div class="page-enter max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 pb-14">
+<div class="page-enter w-full space-y-6 pb-14">
 
   <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/80 pb-5">
     <div class="space-y-1">
@@ -51,7 +51,7 @@
         @let active = filtroEstado() === est;
         <button
           type="button"
-          (click)="filtroEstado.set(est)"
+          (click)="seleccionarFiltro(est)"
           [class]="active
             ? 'btn-tactile-primary font-semibold'
             : 'btn-tactile-secondary text-slate-700 font-medium'"
@@ -69,30 +69,51 @@
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         <!-- Selector lateral de proyectos (4 cols) -->
         <aside class="lg:col-span-4 space-y-2.5">
-          @for (p of proyectosFiltrados(); track p.proyectoId) {
+          @for (p of proyectosPaginados(); track p.proyectoId) {
             @let cfg = estadoConfig[p.estado];
             @let selected = proyectoActivo()?.proyectoId === p.proyectoId;
-            <button
-              type="button"
-              (click)="proyectoActivoId.set(p.proyectoId)"
+            <div
               [class]="selected
                 ? 'border-brand-indigo bg-indigo-50/40 ring-2 ring-brand-indigo/15 shadow-[inset_0_1px_0_rgba(255,255,255,0.85),0_2px_6px_rgba(79,70,229,0.1)]'
                 : 'border-slate-200/80 bg-white hover:border-slate-300 shadow-xs'"
-              class="w-full text-left p-4 rounded-2xl border transition-[border-color,background-color,box-shadow,transform] duration-150 active:scale-[0.99] space-y-2 cursor-pointer">
-              <div class="flex items-center justify-between gap-2">
-                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-semibold {{ cfg.badgeClass }}">
-                  {{ cfg.label }}
-                </span>
-                <span class="text-[11px] text-slate-400">{{ formatFecha(p.fechaPublicacion) }}</span>
+              class="w-full p-4 rounded-2xl border transition-[border-color,background-color,box-shadow] duration-150 space-y-2">
+              <button
+                type="button"
+                (click)="proyectoActivoId.set(p.proyectoId)"
+                class="w-full text-left space-y-2 cursor-pointer rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky">
+                <div class="flex items-center justify-between gap-2">
+                  <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-semibold {{ cfg.badgeClass }}">
+                    {{ cfg.label }}
+                  </span>
+                  <span class="text-[11px] text-slate-500">{{ formatFecha(p.fechaPublicacion) }}</span>
+                </div>
+                <div class="font-bold text-sm text-slate-900 line-clamp-2">
+                  {{ p.nombreProyecto || p.area }}
+                </div>
+              </button>
+              <div class="flex items-center justify-between gap-2 text-xs text-slate-600 tabular-nums pt-0.5">
+                <span>USD ${{ p.presupuestoMin }} - ${{ p.presupuestoMax }}</span>
+                @if (p.estado === 'EN_PROGRESO' || p.estado === 'FINALIZADO') {
+                  <a
+                    [routerLink]="['/freelance/proyecto', p.proyectoId, 'pagos']"
+                    class="font-semibold text-brand-indigo hover:underline inline-flex items-center gap-1 py-1 px-1.5 -mr-1.5 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky">
+                    <span>Pagos</span>
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </a>
+                }
               </div>
-              <div class="font-bold text-sm text-slate-900 line-clamp-2">
-                {{ p.nombreProyecto || p.area }}
-              </div>
-              <div class="text-xs text-slate-500 tabular-nums">
-                USD ${{ p.presupuestoMin }} - ${{ p.presupuestoMax }}
-              </div>
-            </button>
+            </div>
           }
+
+          <app-paginator
+            [compact]="true"
+            [currentPage]="paginaActual()"
+            [totalItems]="proyectosFiltrados().length"
+            [pageSize]="itemsPorPagina"
+            itemLabel="proyectos"
+            (pageChange)="paginaActual.set($event)" />
         </aside>
 
         <!-- Workspace del proyecto seleccionado (8 cols) -->

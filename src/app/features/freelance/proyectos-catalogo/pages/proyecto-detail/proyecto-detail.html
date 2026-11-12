@@ -1,4 +1,4 @@
-<div class="page-enter max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 pb-14">
+<div class="page-enter w-full space-y-6 pb-14">
 
   <!-- Barra de retorno contextual -->
   <div class="flex items-center justify-between">
@@ -186,14 +186,29 @@
                   Ir a Mis Trabajos
                 </a>
               }
+              @if (p.estado === 'EN_PROGRESO' || p.estado === 'FINALIZADO') {
+                <a
+                  [routerLink]="['/freelance/proyecto', p.proyectoId, 'pagos']"
+                  class="btn-tactile-secondary w-full py-2.5 px-4 min-h-[44px] text-sm flex items-center justify-center">
+                  Ver Pagos del Proyecto
+                </a>
+              }
             }
           } @else if (isCliente()) {
             <div class="space-y-2.5">
-              <a
-                [routerLink]="['/freelance/proyecto', p.proyectoId, 'propuestas']"
-                class="btn-tactile-primary w-full py-3 px-4 min-h-[44px] text-sm flex items-center justify-center gap-2">
-                <span>Comparar Propuestas</span>
-              </a>
+              @if (p.estado === 'EN_PROGRESO' || p.estado === 'FINALIZADO') {
+                <a
+                  [routerLink]="['/freelance/proyecto', p.proyectoId, 'pagos']"
+                  class="btn-tactile-primary w-full py-3 px-4 min-h-[44px] text-sm flex items-center justify-center gap-2">
+                  <span>Pagos y Checkout</span>
+                </a>
+              } @else {
+                <a
+                  [routerLink]="['/freelance/proyecto', p.proyectoId, 'propuestas']"
+                  class="btn-tactile-primary w-full py-3 px-4 min-h-[44px] text-sm flex items-center justify-center gap-2">
+                  <span>Comparar Propuestas</span>
+                </a>
+              }
               @if (p.estado === 'BUSCANDO_TALENTO') {
                 <a
                   [routerLink]="['/freelance/proyecto', p.proyectoId, 'editar']"

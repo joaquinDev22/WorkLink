@@ -1,4 +1,4 @@
-<div class="max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-6 space-y-6 page-enter">
+<div class="w-full space-y-6 pb-10 page-enter">
 
   <!-- ================================================================= -->
   <!-- 1. VISTA DE CARGA CON SKELETONS Y EFECTO SHINE (isLoading = true)  -->
@@ -161,10 +161,12 @@
                     ? 'bg-purple-50 text-purple-700 border-purple-200'
                     : (rolActivo() === 'RECRUITER'
                         ? 'bg-teal-50 text-teal-700 border-teal-200'
-                        : 'bg-indigo-50 text-indigo-700 border-indigo-200'))">
+                        : (rolActivo() === 'CLIENTE'
+                            ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                            : 'bg-indigo-50 text-indigo-700 border-indigo-200')))">
               <span
                 class="w-1.5 h-1.5 rounded-full"
-                [ngClass]="rolActivo() === 'FREELANCER' ? 'bg-amber-500' : (rolActivo() === 'RECRUITER' ? 'bg-teal-500' : 'bg-brand-indigo')"></span>
+                [ngClass]="rolActivo() === 'FREELANCER' ? 'bg-amber-500' : (rolActivo() === 'RECRUITER' ? 'bg-teal-500' : (rolActivo() === 'CLIENTE' ? 'bg-emerald-500' : 'bg-brand-indigo'))"></span>
               {{ rolActivo() }}
             </span>
 
@@ -212,64 +214,11 @@
       </div>
     </div>
 
-    <!-- ANILLO DE PROGRESO (visible si el perfil no está al 100% y es Freelancer o Postulante) -->
-    @if (!completitud().completado && rolActivo() !== 'EMPRESA' && rolActivo() !== 'RECRUITER') {
-      <div class="bg-slate-50/90 rounded-3xl border border-slate-200/80 p-5 sm:p-6 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
-        <div class="flex items-center gap-4">
-          <div class="relative w-16 h-16 shrink-0 flex items-center justify-center">
-            <svg class="w-16 h-16 -rotate-90" viewBox="0 0 48 48" aria-hidden="true">
-              <circle
-                cx="24" cy="24" r="19"
-                class="stroke-indigo-100"
-                stroke-width="4"
-                fill="transparent"
-              />
-              <circle
-                cx="24" cy="24" r="19"
-                class="stroke-brand-indigo transition-[stroke-dashoffset] duration-1000 ease-out"
-                stroke-width="4"
-                stroke-linecap="round"
-                fill="transparent"
-                stroke-dasharray="119.38"
-                [style.stroke-dashoffset]="119.38 - (119.38 * completitud().porcentaje / 100)"
-              />
-            </svg>
-            <span class="absolute text-sm font-extrabold text-slate-800">
-              {{ completitud().porcentaje }}%
-            </span>
-          </div>
-
-          <div class="space-y-1">
-            <h3 class="text-sm sm:text-base font-bold text-slate-900">
-              ¡Tu perfil está al {{ completitud().porcentaje }}%!
-            </h3>
-            <p class="text-xs sm:text-sm text-slate-600">
-              Sube tus imágenes y datos para completar el 100% y ganar mayor visibilidad.
-            </p>
-          </div>
-        </div>
-
-        <!-- Checklist de faltantes -->
-        <div class="flex flex-wrap items-center gap-2">
-          @for (item of completitud().itemsFaltantes; track item.clave) {
-            <label 
-              (click)="ejecutarActividad(item, $event)"
-              [class.completado]="item.completado"
-              class="btn-tactile-icon inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-brand-indigo select-none">
-              <span> 
-                @if (!item.completado) {
-                  + {{ item.label }}
-                } @else {
-                  <!-- Aquí renderiza el SVG inline solo cuando está completado -->
-                  <svg xmlns="http://w3.org" viewBox="0 0 24 24" width="16" height="16" style="display: inline-block; vertical-align: middle; margin-right: 4px;">
-                    <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 12l5 5L20 7"/>
-                  </svg>
-                }</span>
-            </label>           
-          }
-        </div>
-      </div>
-    }
+    <!-- ANILLO DE PROGRESO REACTIVO POR ROL (Postulante, Freelancer, Recruiter, Cliente) -->
+    <app-perfil-completitud
+      [completitud]="completitud()"
+      [subtitulo]="subtituloCompletitud()"
+      (itemClick)="ejecutarActividad($event.item, $event.event)" />
 
     <!-- GRID INFERIOR (2 columnas) -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -471,13 +420,68 @@
             }
           </div>
         }
+
+        <!-- ACCESO RÁPIDO WL-40 / WL-43: Finanzas y Datos de Cobro (Freelancer) -->
+        @if (rolActivo() === 'FREELANCER') {
+          <div class="bg-white rounded-3xl border border-slate-200/90 p-6 shadow-sm space-y-3.5">
+            <div class="flex items-start justify-between gap-2">
+              <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                <svg class="w-5 h-5 text-brand-indigo shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                </svg>
+                <span>Finanzas y Cobros</span>
+              </h2>
+              <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-800 border border-amber-200 shrink-0">
+                Cobros: pendiente backend
+              </span>
+            </div>
+
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Consultá tu balance acreditado, historial de transacciones y estado de configuración de cuenta receptora.
+            </p>
+
+            <a
+              routerLink="/freelance/finanzas"
+              class="btn-tactile-secondary w-full py-2.5 px-4 min-h-[44px] text-xs sm:text-sm inline-flex items-center justify-center gap-2">
+              <span>Ir a Mis Finanzas</span>
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </a>
+          </div>
+        }
+
+        <!-- ACCESO RÁPIDO WL-39 / WL-41: Pagos de Proyectos (Cliente) -->
+        @if (rolActivo() === 'CLIENTE') {
+          <div class="bg-white rounded-3xl border border-slate-200/90 p-6 shadow-sm space-y-3.5">
+            <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+              <svg class="w-5 h-5 text-brand-indigo shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+              </svg>
+              <span>Pagos y Medios Habilitados</span>
+            </h2>
+
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Cada proyecto en curso admite pagos por <strong>MercadoPago Checkout Pro</strong>, <strong>Billetera virtual</strong> o <strong>Tarjeta</strong> por operación (sin tarjetas guardadas en servidor).
+            </p>
+
+            <a
+              routerLink="/freelance/mis-proyectos"
+              class="btn-tactile-secondary w-full py-2.5 px-4 min-h-[44px] text-xs sm:text-sm inline-flex items-center justify-center gap-2">
+              <span>Gestionar Pagos por Proyecto</span>
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </a>
+          </div>
+        }
       </div>
 
       <!-- COLUMNA DERECHA: Habilidades y Portafolio -->
       <div class="lg:col-span-2 space-y-6">
 
-        <!-- 1. Habilidades Técnicas (Postulantes y Freelancers) -->
-        @if (rolActivo() !== 'EMPRESA' && rolActivo() !== 'RECRUITER') {
+        <!-- 1. Habilidades Técnicas (Exclusivo Postulantes y Freelancers) -->
+        @if (esCandidato()) {
           <div class="bg-white rounded-3xl border border-slate-200/90 p-6 shadow-sm space-y-4">
             <div class="flex items-center justify-between">
               <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
@@ -526,8 +530,8 @@
           </div>
         }
 
-        <!-- 2. Proyectos y Portafolio (WL-18: US-11 - Postulantes y Freelancers) -->
-        @if (rolActivo() !== 'EMPRESA' && rolActivo() !== 'RECRUITER') {
+        <!-- 2. Proyectos y Portafolio (WL-18: US-11 - Exclusivo Postulantes y Freelancers) -->
+        @if (esCandidato()) {
           <div class="bg-white rounded-3xl border border-slate-200/90 p-6 shadow-sm space-y-4">
             <div class="flex items-center justify-between">
               <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
@@ -1130,6 +1134,85 @@
         </div>
       }
 
+        <!-- 5. Proyectos y Actividad como Cliente (Exclusivo CLIENTE) -->
+        @if (esCliente()) {
+          <div class="bg-white rounded-3xl border border-slate-200/90 p-6 shadow-sm space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-100 gap-3">
+              <div class="space-y-0.5">
+                <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                  <svg class="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                  <span>Proyectos Publicados como Cliente</span>
+                </h2>
+                <p class="text-xs text-slate-500">
+                  Resumen de las búsquedas freelance que publicaste en WorkLink
+                </p>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-2 shrink-0">
+                <a
+                  routerLink="/freelance/cliente-dashboard"
+                  class="btn-tactile-secondary px-3.5 py-2 min-h-[38px] text-xs inline-flex items-center">
+                  Ir a Mis Proyectos
+                </a>
+                <a
+                  routerLink="/freelance/nuevo-proyecto"
+                  class="btn-tactile-primary px-3.5 py-2 min-h-[38px] text-xs inline-flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                  </svg>
+                  <span>Publicar Proyecto</span>
+                </a>
+              </div>
+            </div>
+
+            @if (isLoadingProyectosCliente()) {
+              <div class="py-8 text-center text-xs text-slate-400">Cargando proyectos publicados...</div>
+            } @else if (proyectosPublicadosCliente().length > 0) {
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                @for (p of proyectosPublicadosCliente(); track p.proyectoId) {
+                  <a
+                    [routerLink]="['/freelance/proyecto', p.uuid || p.proyectoId]"
+                    class="p-4 rounded-2xl bg-slate-50/70 border border-slate-200/80 hover:border-brand-indigo/40 hover:bg-white transition-[background-color,border-color,box-shadow] hover:shadow-xs flex flex-col justify-between gap-2.5">
+                    <div class="space-y-1.5">
+                      <div class="flex items-center justify-between gap-2">
+                        <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-600">
+                          {{ p.area || 'Freelance' }}
+                        </span>
+                        <span class="text-[11px] font-semibold text-brand-indigo">
+                          {{ p.estado }}
+                        </span>
+                      </div>
+                      <h3 class="font-bold text-slate-900 text-sm line-clamp-1">
+                        {{ p.nombreProyecto || p.area }}
+                      </h3>
+                      <p class="text-xs text-slate-600 line-clamp-2">
+                        {{ p.descripcion }}
+                      </p>
+                    </div>
+                    <div class="pt-2 border-t border-slate-200/60 flex items-center justify-between text-xs text-slate-500">
+                      <span>Presupuesto</span>
+                      <span class="font-bold text-slate-900 tabular-nums">USD ${{ p.presupuestoMin }} - ${{ p.presupuestoMax }}</span>
+                    </div>
+                  </a>
+                }
+              </div>
+            } @else {
+              <div class="py-8 px-4 text-center border-2 border-dashed border-slate-200 rounded-2xl space-y-2.5">
+                <p class="text-slate-500 text-xs sm:text-sm font-medium">
+                  Todavía no publicaste proyectos freelance.
+                </p>
+                <a
+                  routerLink="/freelance/nuevo-proyecto"
+                  class="btn-tactile-primary inline-flex items-center gap-1.5 px-4 py-2 min-h-[40px] text-xs">
+                  Publicar primer proyecto
+                </a>
+              </div>
+            }
+          </div>
+        }
+
       </div><!-- /columna derecha -->
     </div><!-- /grid inferior -->
   } @else {
@@ -1162,7 +1245,6 @@
             </svg>
           </button>
         </div>
-
         <form (submit)="$event.preventDefault(); guardarCambios()" class="space-y-4">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="space-y-1" [class.sm:col-span-2]="rolActivo() === 'EMPRESA'">
@@ -1285,21 +1367,23 @@
             }
           </div>
 
-          <div class="space-y-1">
-            <label for="sitioWeb" class="text-xs font-semibold text-slate-700">Sitio Web o Enlace</label>
-            <input
-              type="url"
-              id="sitioWeb"
-              [formField]="editForm.sitioWeb"
-              [class.input-error]="editForm.sitioWeb().touched() && editForm.sitioWeb().invalid()"
-              placeholder="https://..."
-              class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow]">
-            @if (editForm.sitioWeb().touched() && editForm.sitioWeb().invalid()) {
-              @for (error of editForm.sitioWeb().errors(); track error.kind) {
-                <span class="text-xs text-rose-500 font-medium block pt-1">{{ error.message }}</span>
+          @if (!esCliente() && !esRecruiter()) {
+            <div class="space-y-1">
+              <label for="sitioWeb" class="text-xs font-semibold text-slate-700">Sitio Web o Enlace</label>
+              <input
+                type="url"
+                id="sitioWeb"
+                [formField]="editForm.sitioWeb"
+                [class.input-error]="editForm.sitioWeb().touched() && editForm.sitioWeb().invalid()"
+                placeholder="https://..."
+                class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow]">
+              @if (editForm.sitioWeb().touched() && editForm.sitioWeb().invalid()) {
+                @for (error of editForm.sitioWeb().errors(); track error.kind) {
+                  <span class="text-xs text-rose-500 font-medium block pt-1">{{ error.message }}</span>
+                }
               }
-            }
-          </div>
+            </div>
+          }
 
           <div class="pt-3 flex items-center justify-end gap-3 border-t border-slate-100">
             <button
@@ -1353,72 +1437,18 @@
           </button>
         </div>
 
-        <!-- Input de habilidad técnica con autocompletado verificado -->
+        <!-- Input de habilidad técnica con autocompletado HTML -->
         <div class="space-y-2">
           <label for="skillNombre" class="text-xs font-bold text-slate-700 uppercase">Tecnología o Habilidad</label>
-          <div class="relative">
-            <input
-              id="skillNombre"
-              name="tecnologia-habilidad-selector"
-              type="text"
-              autocomplete="off"
-              autocorrect="off"
-              autocapitalize="off"
-              spellcheck="false"
-              role="combobox"
-              aria-autocomplete="list"
-              [value]="skillNombre()"
-              (focus)="mostrarDropdownSkills.set(true)"
-              (input)="skillNombre.set($any($event.target).value); mostrarDropdownSkills.set(true)"
-              (keydown.enter)="$event.preventDefault(); guardarSkill()"
-              placeholder="Buscar o escribir habilidad (ej: Angular, Docker, Spring Boot)..."
-              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200/90 bg-white text-slate-900 text-sm shadow-inner shadow-slate-200/70 focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-[border-color,box-shadow]"
-            />
-
-            <!-- Menú de Autocompletado con Habilidades Válidas del Catálogo -->
-            @if (mostrarDropdownSkills() && skillNombre().trim().length > 0) {
-              <div class="absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200/90 rounded-2xl shadow-xl z-30 overflow-hidden divide-y divide-slate-100 max-h-52 overflow-y-auto animate-popover-in">
-                <div class="px-3.5 py-1.5 bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
-                  <span>Habilidades válidas en catálogo</span>
-                  <button type="button" (click)="mostrarDropdownSkills.set(false)" class="text-slate-400 hover:text-slate-600 text-xs p-0.5">✕</button>
-                </div>
-                @for (sug of sugerenciasSkill(); track sug.id) {
-                  <button
-                    type="button"
-                    (click)="seleccionarSugerencia(sug.name)"
-                    class="w-full px-4 py-2.5 text-left text-xs font-semibold text-slate-700 hover:bg-brand-indigo/10 hover:text-brand-indigo flex items-center justify-between transition-colors">
-                    <span class="flex items-center gap-2">
-                      <span class="w-1.5 h-1.5 rounded-full bg-brand-indigo"></span>
-                      {{ sug.name }}
-                    </span>
-                    <span class="text-[10px] text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full font-bold">
-                      ✓ Válida
-                    </span>
-                  </button>
-                }
-                @if (sugerenciasSkill().length === 0) {
-                  <div class="px-4 py-3 text-xs text-slate-500 italic text-center">
-                    No se encontró en el catálogo oficial. Puedes guardarla como personalizada.
-                  </div>
-                }
-              </div>
-            }
-          </div>
-
-          <!-- Sugerencias de acceso rápido -->
-          @if (sugerenciasSkill().length > 0) {
-            <div class="flex flex-wrap items-center gap-1.5 pt-1">
-              <span class="text-[11px] font-medium text-slate-400 self-center">Sugerencias:</span>
-              @for (sug of sugerenciasSkill(); track sug.id) {
-                <button
-                  type="button"
-                  (click)="seleccionarSugerencia(sug.name)"
-                  class="btn-tactile-icon px-2.5 py-1 text-[11px] font-semibold hover:text-brand-indigo">
-                  + {{ sug.name }}
-                </button>
-              }
-            </div>
-          }
+          <app-skill-autocomplete
+            inputId="skillNombre"
+            [(value)]="skillNombre"
+            [selected]="habilidadesActualesNombres()"
+            [clearOnSelect]="false"
+            [showAddButton]="false"
+            placeholder="Buscar o escribir habilidad (ej: Angular, Docker, Spring Boot)..."
+            ariaLabel="Tecnología o Habilidad"
+            (submitted)="guardarSkill()" />
         </div>
 
         <!-- Selector de 5 niveles con volumen y neumorfismo táctil -->

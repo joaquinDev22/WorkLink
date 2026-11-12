@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, computed, signal, effect } from '@angular/core'
+import { Component, OnInit, inject, computed, signal, effect, untracked } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { FormsModule } from '@angular/forms'
 import { RouterLink } from '@angular/router'
@@ -13,7 +13,10 @@ import { ProyectoAdmin } from '../../../freelance/proyecto-gestion/services/proy
 import { ProyectoResponseDTO } from '../../../freelance/proyecto-gestion/models/proyecto.models'
 import { EmpresaService } from '../../../enterprise/empresa-perfil/services/empresa'
 import { DashboardStatsResponseDTO } from '../../../enterprise/empresa-perfil/models/empresa.models'
-import { catchError, of } from 'rxjs'
+import { Cliente } from '../../../freelance/cliente-dashboard/services/cliente'
+import { PerfilCompletitudBanner } from '../../components/perfil-completitud/perfil-completitud'
+import { SkillAutocomplete } from '../../../../shared/components/skill-autocomplete/skill-autocomplete'
+import { catchError, forkJoin, map, Observable, of } from 'rxjs'
 
 export interface HistorialEmpresaRecruiter {
   id: number
@@ -67,7 +70,7 @@ export const PATTERNS_TELEFONO: Record<string, { regex: RegExp, ejemplo: string 
 }
 
 @Component({
-  imports: [CommonModule, FormsModule, FormField, RouterLink],
+  imports: [CommonModule, FormsModule, FormField, RouterLink, PerfilCompletitudBanner, SkillAutocomplete],
   selector: 'app-mi-perfil',
   styleUrl: './mi-perfil.css',
   templateUrl: './mi-perfil.html',
@@ -79,6 +82,7 @@ export class MiPerfil implements OnInit {
   protected auth = inject(Auth)
   protected tokenStorage = inject(TokenStorage)
   protected proyectoAdmin = inject(ProyectoAdmin)
+  protected clienteService = inject(Cliente)
   private triggerEl: HTMLElement | null = null
 
   readonly perfil = this.perfilService.perfilActual
@@ -94,7 +98,19 @@ export class MiPerfil implements OnInit {
   readonly esPostulante = computed(() => this.rolActivo() === 'POSTULANTE')
   readonly esEmpresa = computed(() => this.rolActivo() === 'EMPRESA')
   readonly esRecruiter = computed(() => this.rolActivo() === 'RECRUITER')
+  readonly esCliente = computed(() => this.rolActivo() === 'CLIENTE')
   readonly esCandidato = computed(() => this.esFreelancer() || this.esPostulante())
+
+  readonly subtituloCompletitud = computed<string>(() => {
+    const rol = this.rolActivo()
+    if (rol === 'CLIENTE') return 'Completa tus datos de contacto y resumen para generar confianza con freelancers.'
+    if (rol === 'RECRUITER') return 'Completa tu identidad y contacto corporativo para destacar ante candidatos.'
+    if (rol === 'EMPRESA') return 'Completa la identidad de tu empresa para mejorar tus búsquedas.'
+    return 'Sube tus imágenes y datos para completar el 100% y ganar mayor visibilidad.'
+  })
+
+  readonly proyectosPublicadosCliente = this.proyectoAdmin.misProyectos
+  readonly isLoadingProyectosCliente = this.proyectoAdmin.isLoading
 
   // Histórico de proyectos freelance asignados / en los que trabajó
   readonly proyectosAsignados = signal<ProyectoResponseDTO[]>([])
@@ -112,9 +128,10 @@ export class MiPerfil implements OnInit {
   isSkillModalOpen = signal(false)
   skillNombre = signal('')
   skillNivel = signal<NivelHabilidad>(3)
-  catalogoHabilidades = signal<Array<{ id: number; name: string }>>([])
   isSavingSkill = signal(false)
-  mostrarDropdownSkills = signal(false)
+  readonly habilidadesActualesNombres = computed(() =>
+    (this.perfil()?.habilidades || []).map((h) => h.nombre)
+  )
   
   // Modal de proyectos (WL-18)
   isProjectModalOpen = signal<boolean>(false)
@@ -280,32 +297,42 @@ export class MiPerfil implements OnInit {
     return `data:image/jpeg;base64,${banner}`
   })
 
+  private readonly rolesSincronizados = new Set<string>()
+
+  private readonly syncRolDataEffect = effect(() => {
+    const rol = this.rolActivo()
+
+    untracked(() => {
+      if ((!this.perfil() || (rol === 'CLIENTE' && !this.clienteService.perfil())) && !this.rolesSincronizados.has(`PERFIL_${rol}`)) {
+        this.rolesSincronizados.add(`PERFIL_${rol}`)
+        this.perfilService.cargarPerfil().subscribe()
+      }
+
+      if (this.rolesSincronizados.has(rol)) return
+      this.rolesSincronizados.add(rol)
+
+      if (rol === 'FREELANCER') {
+        this.cargarReputacion()
+        this.cargarProyectosAsignados()
+      } else if (rol === 'RECRUITER') {
+        this.cargarDatosRecruiter()
+      } else if (rol === 'CLIENTE') {
+        this.proyectoAdmin.getMisProyectosPublicados().pipe(catchError(() => of([]))).subscribe()
+      }
+    })
+  })
+
   ngOnInit(): void {
-    if (!this.perfil()) {
-      this.perfilService.cargarPerfil().subscribe()
-    }
-    if (this.esFreelancer()) {
-      this.cargarReputacion()
-      this.cargarProyectosAsignados()
-    }
-    if (this.esRecruiter()) {
-      this.cargarDatosRecruiter()
-    }
+    // La carga inicial y cambios de rol se gestionan reactivamente en syncRolDataEffect
   }
 
   toggleModoPostulanteFreelancer(): void {
     const nuevoRol: UserRole = this.rolActivo() === 'POSTULANTE' ? 'FREELANCER' : 'POSTULANTE'
     const actual = this.auth.session()
     if (actual) {
-      const updated = { ...actual, rol: nuevoRol }
-      this.tokenStorage.saveSession(updated)
-      this.auth.session.set(updated)
+      this.tokenStorage.saveSession({ ...actual, rol: nuevoRol })
     }
     this.perfilService.perfilActual.update(p => p ? { ...p, rol: nuevoRol } : null)
-    if (nuevoRol === 'FREELANCER') {
-      this.cargarReputacion()
-      this.cargarProyectosAsignados()
-    }
     this.showToast(`Modo cambiado a ${nuevoRol === 'FREELANCER' ? 'Freelancer' : 'Postulante'}`)
   }
 
@@ -327,20 +354,28 @@ export class MiPerfil implements OnInit {
     if (item.completado) return
 
     if (item.clave === 'foto') {
+      if (this.isEditModalOpen()) this.isEditModalOpen.set(false)
       const input = document.getElementById('fotoInput') as HTMLInputElement || document.querySelector('input[type="file"][accept*="image"]') as HTMLInputElement
       if (input) input.click()
     } else if (item.clave === 'banner') {
+      if (this.isEditModalOpen()) this.isEditModalOpen.set(false)
       const input = document.getElementById('bannerInput') as HTMLInputElement || document.querySelector('input[type="file"][accept*="image"]') as HTMLInputElement
       if (input) input.click()
     } else if (item.clave === 'cv') {
+      if (this.isEditModalOpen()) this.isEditModalOpen.set(false)
       const input = document.querySelector('input[type="file"][accept*="pdf"]') as HTMLInputElement
       if (input) input.click()
     } else if (item.clave === 'habilidades') {
+      if (this.isEditModalOpen()) this.isEditModalOpen.set(false)
       this.abrirSkillModal()
     } else if (item.clave === 'proyectos') {
+      if (this.isEditModalOpen()) this.isEditModalOpen.set(false)
       this.abrirProjectModal()
+    } else if (this.isEditModalOpen()) {
+      const targetId = item.clave === 'logo' ? 'nombre' : item.clave
+      document.getElementById(targetId)?.focus()
     } else {
-      this.toggleEditModal()
+      this.abrirEditar(ev)
     }
   }
 
@@ -366,8 +401,8 @@ export class MiPerfil implements OnInit {
     }
   }
 
-  async abrirEditar(ev: Event): Promise<void> {
-    this.triggerEl = ev.currentTarget as HTMLElement
+  async abrirEditar(ev?: Event): Promise<void> {
+    this.triggerEl = (ev?.currentTarget as HTMLElement | null) || null
     const current = this.perfil()
     if (current) {
       this.profileModel.set({
@@ -376,14 +411,16 @@ export class MiPerfil implements OnInit {
         descripcion: current.descripcion || '',
         telefono: current.telefono || '',
         ubicacion: current.ubicacion || '',
-        pais: current.pais || 'Argentina',
+        pais: current.pais || '',
         sitioWeb: current.sitioWeb || '',
-        fechaNacimiento: current.fechaNacimiento || '1998-01-01',
+        fechaNacimiento: current.fechaNacimiento || '',
         email: current.email || '',
         rol: this.rolActivo()
       })
     }
-    this.morph.name(this.triggerEl, 'edit-surface')
+    if (this.triggerEl) {
+      this.morph.name(this.triggerEl, 'edit-surface')
+    }
     await this.morph.run(() => {
       if (this.triggerEl) this.triggerEl.style.viewTransitionName = 'none'
       this.isEditModalOpen.set(true)
@@ -409,9 +446,9 @@ export class MiPerfil implements OnInit {
         descripcion: current.descripcion || '',
         telefono: current.telefono || '',
         ubicacion: current.ubicacion || '',
-        pais: current.pais || 'Argentina',
+        pais: current.pais || '',
         sitioWeb: current.sitioWeb || '',
-        fechaNacimiento: current.fechaNacimiento || '1998-01-01',
+        fechaNacimiento: current.fechaNacimiento || '',
         email: current.email || '',
         rol: this.rolActivo()
       })
@@ -425,13 +462,39 @@ export class MiPerfil implements OnInit {
 
     this.isSaving.set(true)
     const datos = { ...form.value(), rol: this.rolActivo() }
-    this.perfilService.updateProfile(datos).subscribe({
+    const save$: Observable<unknown> = this.esCliente()
+      ? forkJoin([
+          this.clienteService.actualizarPerfilCliente({
+            firstName: (datos.nombre || '').trim(),
+            lastName: (datos.apellido || '').trim(),
+            phoneNumber: (datos.telefono || '').trim(),
+            country: (datos.pais || '').trim(),
+            fechaNacimiento: (datos.fechaNacimiento || '').trim()
+          }),
+          this.perfilService.updateProfile(datos).pipe(catchError(() => of(null)))
+        ]).pipe(map(() => null))
+      : this.perfilService.updateProfile(datos)
+
+    save$.subscribe({
       next: () => {
+        if (this.esCliente()) {
+          this.perfilService.perfilActual.update((p) => p ? {
+            ...p,
+            nombre: (datos.nombre || '').trim(),
+            apellido: (datos.apellido || '').trim(),
+            telefono: (datos.telefono || '').trim(),
+            pais: (datos.pais || '').trim(),
+            fechaNacimiento: (datos.fechaNacimiento || '').trim(),
+            descripcion: (datos.descripcion || '').trim(),
+            ubicacion: (datos.ubicacion || '').trim(),
+            sitioWeb: (datos.sitioWeb || '').trim()
+          } : p)
+        }
         this.isSaving.set(false)
         this.cerrarEditar().finally(() => this.isEditModalOpen.set(false))
         this.showToast('Perfil actualizado con éxito')
       },
-      error: (err) => {
+      error: (err: any) => {
         this.isSaving.set(false)
         console.error('Error al actualizar perfil (Detalle técnico backend):', err)
 
@@ -498,7 +561,7 @@ export class MiPerfil implements OnInit {
       },
       error: (err) => {
         this.isUploadingCv.set(false)
-        this.cvError.set(err?.message || 'Error al subir el CV')
+        this.cvError.set(err?.error?.message || err?.message || 'Error al subir el CV')
       }
     })
   }
@@ -526,42 +589,17 @@ export class MiPerfil implements OnInit {
     })
   }
 
-  // Sugerencias reactivas filtradas del catálogo verificado mientras se escribe
-  readonly sugerenciasSkill = computed<Array<{ id: number; name: string }>>(() => {
-    const q = this.skillNombre().trim().toLowerCase()
-    const actuales = (this.perfil()?.habilidades || []).map(h => h.nombre.toLowerCase())
-    const catalogo = this.catalogoHabilidades().filter(h => !actuales.includes(h.name.toLowerCase()))
-
-    if (!q) {
-      return catalogo.slice(0, 8)
-    }
-    return catalogo.filter(h => h.name.toLowerCase().includes(q)).slice(0, 8)
-  })
-
   abrirSkillModal(): void {
     this.skillNombre.set('')
     this.skillNivel.set(3)
-    this.mostrarDropdownSkills.set(false)
     this.isSkillModalOpen.set(true)
-    this.perfilService.getHabilidadesCatalogo().subscribe({
-      next: (skills) => this.catalogoHabilidades.set(skills)
-    })
   }
   cerrarSkillModal(): void {
     this.isSkillModalOpen.set(false)
-    this.mostrarDropdownSkills.set(false)
-  }
-  seleccionarSugerencia(nombre: string): void {
-    this.skillNombre.set(nombre)
-    this.mostrarDropdownSkills.set(false)
   }
   guardarSkill(): void {
-    const raw = this.skillNombre().trim()
-    if (!raw) return
-
-    // Normalización: si coincide con una habilidad del catálogo oficial, usa su nombre canónico
-    const match = this.catalogoHabilidades().find(h => h.name.toLowerCase() === raw.toLowerCase())
-    const nombre = match ? match.name : raw
+    const nombre = this.skillNombre().trim()
+    if (!nombre) return
 
     this.isSavingSkill.set(true)
     this.perfilService.addMySkill(nombre, this.skillNivel()).subscribe({

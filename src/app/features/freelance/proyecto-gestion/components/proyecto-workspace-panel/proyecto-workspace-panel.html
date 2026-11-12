@@ -35,6 +35,18 @@
 
     <!-- Acciones de Gestión Superior -->
     <div class="flex flex-wrap items-center gap-2 shrink-0">
+      @if (p.estado === 'EN_PROGRESO' || p.estado === 'FINALIZADO') {
+        <a
+          [routerLink]="['/freelance/proyecto', p.proyectoId, 'pagos']"
+          [class]="role() === 'CLIENTE' ? 'btn-tactile-primary' : 'btn-tactile-secondary'"
+          class="px-4 py-2 min-h-[40px] text-xs inline-flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+          </svg>
+          <span>{{ role() === 'CLIENTE' ? 'Pagos y Checkout' : 'Ver Pagos' }}</span>
+        </a>
+      }
+
       @if (role() === 'CLIENTE' && p.estado === 'BUSCANDO_TALENTO') {
         <a
           [routerLink]="['/freelance/proyecto', p.proyectoId, 'propuestas']"
@@ -88,14 +100,23 @@
         </p>
       </div>
 
-      @if (role() === 'CLIENTE' && p.estado === 'EN_PROGRESO') {
-        <button
-          type="button"
-          (click)="mostrarFormHito.update(v => !v)"
-          class="btn-tactile-secondary px-3.5 py-2 min-h-[40px] text-xs cursor-pointer">
-          {{ mostrarFormHito() ? 'Ocultar formulario' : '+ Nuevo Hito' }}
-        </button>
-      }
+      <div class="flex flex-wrap items-center gap-2">
+        @if (p.estado === 'EN_PROGRESO' || p.estado === 'FINALIZADO') {
+          <a
+            [routerLink]="['/freelance/proyecto', p.proyectoId, 'pagos']"
+            class="btn-tactile-secondary px-3.5 py-2 min-h-[40px] text-xs inline-flex items-center">
+            {{ role() === 'CLIENTE' ? 'Gestionar pagos' : 'Historial de pagos' }}
+          </a>
+        }
+        @if (role() === 'CLIENTE' && p.estado === 'EN_PROGRESO') {
+          <button
+            type="button"
+            (click)="mostrarFormHito.update(v => !v)"
+            class="btn-tactile-secondary px-3.5 py-2 min-h-[40px] text-xs cursor-pointer">
+            {{ mostrarFormHito() ? 'Ocultar formulario' : '+ Nuevo Hito' }}
+          </button>
+        }
+      </div>
     </div>
 
     <!-- Barra de progreso de hitos -->

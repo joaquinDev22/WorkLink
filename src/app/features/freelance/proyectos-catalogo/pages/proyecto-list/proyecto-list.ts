@@ -17,12 +17,17 @@ import {
   ProyectoResponseDTO,
   formatFechaProyecto
 } from '../../../proyecto-gestion/models/proyecto.models'
+import { Paginator } from '../../../../../shared/components/paginator/paginator'
 
 @Component({
-  imports: [RouterLink, NgTemplateOutlet],
+  imports: [RouterLink, NgTemplateOutlet, Paginator],
   selector: 'app-proyecto-list',
   styleUrl: './proyecto-list.css',
-  templateUrl: './proyecto-list.html'
+  templateUrl: './proyecto-list.html',
+  host: {
+    '(document:click)': 'onDocumentClick($event)',
+    '(document:keydown.escape)': 'areaDropdownOpen.set(false)'
+  }
 })
 export class ProyectoList implements OnInit, OnDestroy {
   private hostEl = inject(ElementRef<HTMLElement>)
@@ -40,6 +45,7 @@ export class ProyectoList implements OnInit, OnDestroy {
 
   readonly mostrarFiltrosModal = signal<boolean>(false)
   readonly mostrarBuscadorMobile = signal<boolean>(false)
+  readonly areaDropdownOpen = signal<boolean>(false)
 
   readonly itemsPorPagina = 8
   readonly paginaActual = signal<number>(1)
@@ -168,7 +174,16 @@ export class ProyectoList implements OnInit, OnDestroy {
 
   seleccionarArea(area: string): void {
     this.filtroArea.set(area)
+    this.areaDropdownOpen.set(false)
     this.paginaActual.set(1)
+  }
+
+  onDocumentClick(event: Event): void {
+    if (!this.areaDropdownOpen()) return
+    const target = event.target as HTMLElement | null
+    if (!target?.closest('[data-area-dropdown]')) {
+      this.areaDropdownOpen.set(false)
+    }
   }
 
   actualizarMinPresupuesto(raw: string): void {
@@ -192,6 +207,7 @@ export class ProyectoList implements OnInit, OnDestroy {
 
   limpiarFiltros(): void {
     this.filtroArea.set('TODOS')
+    this.areaDropdownOpen.set(false)
     this.terminoBusqueda.set('')
     this.presupuestoMinFiltro.set(null)
     this.presupuestoMaxFiltro.set(null)

@@ -8,9 +8,10 @@ import { PostulacionModal } from '../../components/postulacion-modal/postulacion
 import { VacanteService } from '../../services/vacante'
 import { ModalidadTrabajo, PostulacionResponseDTO, VacanteResponseDTO } from '../../models/vacante.models'
 import { Auth } from '../../../../../core/auth/services/auth'
+import { Paginator } from '../../../../../shared/components/paginator/paginator'
 
 @Component({
-  imports: [VacanteCard, PostulacionModal],
+  imports: [VacanteCard, PostulacionModal, Paginator],
   selector: 'app-vacante-catalogo',
   styleUrl: './vacante-catalogo.css',
   templateUrl: './vacante-catalogo.html'
@@ -39,10 +40,12 @@ export class VacanteCatalogo implements OnInit, OnDestroy {
     return rol === 'POSTULANTE' || rol === 'FREELANCER'
   })
 
-  // Estados reactivos de filtrado
+  // Estados reactivos de filtrado y paginación
   readonly searchFilter = signal<string>('')
   readonly modalidadFilter = signal<ModalidadTrabajo | 'TODAS'>('TODAS')
   readonly selectedTag = signal<string | null>(null)
+  readonly itemsPorPagina = 8
+  readonly paginaActual = signal<number>(1)
 
   // Control del modal de postulación
   readonly isModalOpen = signal<boolean>(false)
@@ -99,6 +102,14 @@ export class VacanteCatalogo implements OnInit, OnDestroy {
     })
   })
 
+  readonly vacantesPaginadas = computed<VacanteResponseDTO[]>(() => {
+    const filtradas = this.vacantesFiltradas()
+    const totalPaginas = Math.max(1, Math.ceil(filtradas.length / this.itemsPorPagina))
+    const pagina = Math.min(Math.max(1, this.paginaActual()), totalPaginas)
+    const inicio = (pagina - 1) * this.itemsPorPagina
+    return filtradas.slice(inicio, inicio + this.itemsPorPagina)
+  })
+
   ngOnInit(): void {
     // Configuración del pipeline reactivo con debounceTime(300) y distinctUntilChanged()
     this.searchSubject
@@ -109,6 +120,7 @@ export class VacanteCatalogo implements OnInit, OnDestroy {
       )
       .subscribe((query) => {
         this.searchFilter.set(query)
+        this.paginaActual.set(1)
       })
 
     // Carga inicial del feed de vacantes
@@ -122,10 +134,29 @@ export class VacanteCatalogo implements OnInit, OnDestroy {
 
   setModalidad(modalidad: ModalidadTrabajo | 'TODAS'): void {
     this.modalidadFilter.set(modalidad)
+    this.paginaActual.set(1)
   }
 
   toggleTag(tag: string): void {
     this.selectedTag.update((current) => (current === tag ? null : tag))
+    this.paginaActual.set(1)
+  }
+
+  limpiarTag(): void {
+    this.selectedTag.set(null)
+    this.paginaActual.set(1)
+  }
+
+  restablecerFiltros(): void {
+    this.searchFilter.set('')
+    this.setModalidad('TODAS')
+    this.selectedTag.set(null)
+    this.paginaActual.set(1)
+  }
+
+  cambiarPagina(nuevaPagina: number): void {
+    this.paginaActual.set(nuevaPagina)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   abrirModalPostulacion(vacante: VacanteResponseDTO): void {

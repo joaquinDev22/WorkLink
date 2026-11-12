@@ -93,7 +93,44 @@ export class ProyectoCatalog {
   // GET /api/v1/freelance/proyectos/{id} o /uuid/{uuid} - Público. Detalle de proyecto
   getProyectoById(idOrUuid: number | string): Observable<ProyectoResponseDTO> {
     if (environment.bypassAuth) {
-      const found = this.mockProyectos.find(
+      const mockExtras: ProyectoResponseDTO[] = [
+        {
+          proyectoId: 101,
+          uuid: 'proj-fl-001',
+          nombreProyecto: 'E-Commerce SSR con Angular & Stripe',
+          area: 'Frontend',
+          descripcion:
+            'Desarrollo integral de plataforma de venta online con arquitectura de componentes Standalone y Signals reactivas.',
+          fechaPublicacion: '2026-10-15',
+          presupuestoMin: 800,
+          presupuestoMax: 1400,
+          clienteId: 5,
+          nombreCliente: 'InnovaCorp Technologies S.A.',
+          duracion: '1 mes',
+          tipoPago: 'Por Hitos',
+          habilidades: ['Angular', 'TypeScript', 'Tailwind CSS'],
+          estado: 'FINALIZADO',
+          nombreFreelancer: 'Joaquín Nieva'
+        },
+        {
+          proyectoId: 103,
+          uuid: 'proj-fl-003',
+          nombreProyecto: 'Dashboard Analítico en Tiempo Real',
+          area: 'Frontend',
+          descripcion: 'Visualización interactiva de métricas empresariales.',
+          fechaPublicacion: '2026-11-01',
+          presupuestoMin: 900,
+          presupuestoMax: 1300,
+          clienteId: 12,
+          nombreCliente: 'Lucía Fernández',
+          duracion: '3 semanas',
+          tipoPago: 'Por Hitos',
+          habilidades: ['Angular', 'RxJS', 'Tailwind CSS'],
+          estado: 'EN_PROGRESO',
+          nombreFreelancer: 'Valentina Gómez'
+        }
+      ]
+      const found = [...this.mockProyectos, ...mockExtras].find(
         (p) => p.uuid === String(idOrUuid) || String(p.proyectoId) === String(idOrUuid)
       )
       return of(found ?? this.mockProyectos[0]).pipe(delay(150))

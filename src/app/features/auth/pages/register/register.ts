@@ -197,7 +197,7 @@ export class Register {
       },
       error: (err) => {
         // Si el backend devuelve 409 (Conflict) o 400 con mensaje de duplicado
-        if (err.status === 409 || err.status === 400) {
+        if ([400, 409, 422].includes(err.status)) {
           this.errorServidor.set(err.error?.message || 'El usuario o el correo ya se encuentran registrados.')
         } else {
           this.errorServidor.set('Ocurrió un error en el servidor. Intenta nuevamente.')

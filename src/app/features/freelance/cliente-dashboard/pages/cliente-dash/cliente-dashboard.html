@@ -1,4 +1,4 @@
-<div class="page-enter max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 pb-14">
+<div class="page-enter w-full space-y-6 pb-14">
 
   <!-- Cabecera de Panel -->
   <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/80 pb-5">
@@ -80,11 +80,8 @@
     </section>
   }
 
-  <!-- Grilla Asimétrica: Proyectos Recientes (7 cols) + Perfil de Cliente (5 cols) -->
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-
-    <!-- Proyectos Recientes -->
-    <section class="lg:col-span-7 bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
+  <!-- Proyectos Recientes -->
+  <section class="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
         <h2 class="text-base font-bold text-slate-900">Tus proyectos recientes</h2>
         <a routerLink="/freelance/mis-proyectos" class="text-xs font-semibold text-brand-indigo hover:underline">
@@ -137,11 +134,22 @@
                     class="btn-tactile-primary px-3 py-2 min-h-[40px] text-xs inline-flex items-center">
                     Ver propuestas
                   </a>
-                } @else {
+                } @else if (p.estado === 'EN_PROGRESO' || p.estado === 'FINALIZADO') {
+                  <a
+                    [routerLink]="['/freelance/proyecto', p.proyectoId, 'pagos']"
+                    class="btn-tactile-primary px-3 py-2 min-h-[40px] text-xs inline-flex items-center">
+                    Pagos
+                  </a>
                   <a
                     routerLink="/freelance/mis-proyectos"
                     class="btn-tactile-secondary px-3 py-2 min-h-[40px] text-xs inline-flex items-center">
                     Hitos
+                  </a>
+                } @else {
+                  <a
+                    [routerLink]="['/freelance/proyecto', p.uuid || p.proyectoId]"
+                    class="btn-tactile-secondary px-3 py-2 min-h-[40px] text-xs inline-flex items-center">
+                    Ver detalle
                   </a>
                 }
               </div>
@@ -150,103 +158,4 @@
         </div>
       }
     </section>
-
-    <!-- Formulario de Perfil del Cliente (WL-29) -->
-    <section class="lg:col-span-5 bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
-      <div class="border-b border-slate-100 pb-3 space-y-0.5">
-        <h2 class="text-base font-bold text-slate-900">Perfil de Cliente</h2>
-        @if (perfil(); as p) {
-          <p class="text-xs text-slate-500">Cuenta verificada: {{ p.email }} ({{ p.username }})</p>
-        }
-      </div>
-
-      @if (!perfilCargado()) {
-        <div class="space-y-3 animate-pulse">
-          <div class="h-10 bg-slate-200 rounded-xl"></div>
-          <div class="h-10 bg-slate-200 rounded-xl"></div>
-          <div class="h-10 bg-slate-200 rounded-xl"></div>
-        </div>
-      } @else {
-        <form (submit)="guardarPerfil($event)" class="space-y-4" novalidate>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div class="space-y-1">
-              <label for="cli-nombre" class="text-xs font-semibold text-slate-700">Nombre *</label>
-              <input
-                id="cli-nombre"
-                type="text"
-                [formField]="perfilForm.firstName"
-                class="w-full px-3 py-2.5 min-h-[44px] bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky" />
-              @if (perfilForm.firstName().touched() && perfilForm.firstName().invalid()) {
-                <p class="text-[11px] text-rose-600 font-medium">{{ perfilForm.firstName().errors()?.[0]?.message }}</p>
-              }
-            </div>
-
-            <div class="space-y-1">
-              <label for="cli-apellido" class="text-xs font-semibold text-slate-700">Apellido *</label>
-              <input
-                id="cli-apellido"
-                type="text"
-                [formField]="perfilForm.lastName"
-                class="w-full px-3 py-2.5 min-h-[44px] bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky" />
-              @if (perfilForm.lastName().touched() && perfilForm.lastName().invalid()) {
-                <p class="text-[11px] text-rose-600 font-medium">{{ perfilForm.lastName().errors()?.[0]?.message }}</p>
-              }
-            </div>
-          </div>
-
-          <div class="space-y-1">
-            <label for="cli-telefono" class="text-xs font-semibold text-slate-700">Teléfono de contacto *</label>
-            <input
-              id="cli-telefono"
-              type="tel"
-              [formField]="perfilForm.phoneNumber"
-              placeholder="+54 11 5555-0100"
-              class="w-full px-3 py-2.5 min-h-[44px] bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky" />
-            @if (perfilForm.phoneNumber().touched() && perfilForm.phoneNumber().invalid()) {
-              <p class="text-[11px] text-rose-600 font-medium">{{ perfilForm.phoneNumber().errors()?.[0]?.message }}</p>
-            }
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div class="space-y-1">
-              <label for="cli-pais" class="text-xs font-semibold text-slate-700">País *</label>
-              <input
-                id="cli-pais"
-                type="text"
-                [formField]="perfilForm.country"
-                placeholder="Argentina"
-                class="w-full px-3 py-2.5 min-h-[44px] bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky" />
-              @if (perfilForm.country().touched() && perfilForm.country().invalid()) {
-                <p class="text-[11px] text-rose-600 font-medium">{{ perfilForm.country().errors()?.[0]?.message }}</p>
-              }
-            </div>
-
-            <div class="space-y-1">
-              <label for="cli-nac" class="text-xs font-semibold text-slate-700">Fecha de nacimiento *</label>
-              <input
-                id="cli-nac"
-                type="date"
-                [formField]="perfilForm.fechaNacimiento"
-                class="w-full px-3 py-2.5 min-h-[44px] bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky" />
-              @if (perfilForm.fechaNacimiento().touched() && perfilForm.fechaNacimiento().invalid()) {
-                <p class="text-[11px] text-rose-600 font-medium">{{ perfilForm.fechaNacimiento().errors()?.[0]?.message }}</p>
-              }
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            [disabled]="perfilForm().invalid() || isSavingPerfil()"
-            class="btn-tactile-primary w-full py-2.5 px-4 min-h-[44px] text-sm disabled:opacity-50 disabled:pointer-events-none cursor-pointer">
-            @if (isSavingPerfil()) {
-              <span>Guardando perfil...</span>
-            } @else {
-              <span>Guardar datos del cliente</span>
-            }
-          </button>
-        </form>
-      }
-    </section>
-
-  </div>
 </div>
