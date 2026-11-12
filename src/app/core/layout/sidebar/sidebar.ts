@@ -17,8 +17,7 @@ export class Sidebar {
 
   readonly userDisplayName = computed(() => {
     const s = this.auth.session()
-    if (s?.rol === 'EMPRESA') return this.empresaService.empresaActual()?.nombre || 'InnovaCorp Technologies'
-    if (s?.rol === 'RECRUITER') return 'Lucía Fernández'
+    if (s?.rol === 'EMPRESA') return this.empresaService.empresaActual()?.nombre || s?.nombreUsuario || 'Mi empresa'
     return s?.nombreUsuario || 'Usuario'
   })
 

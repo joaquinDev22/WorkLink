@@ -94,11 +94,11 @@ export class Header implements OnInit {
     const perfil = this.perfilService.perfilActual()
 
     if (rol === 'EMPRESA') {
-      const nombre = emp?.nombre || 'InnovaCorp Technologies S.A.'
+      const nombre = emp?.nombre || s?.nombreUsuario || 'Mi empresa'
       return {
         nombre,
-        subtitulo: emp?.rubro || 'Tecnología y Software',
-        email: emp?.sitio_web ? emp.sitio_web.replace(/^https?:\/\//, '') : 'contacto@innovacorp.com',
+        subtitulo: emp?.rubro || 'Perfil corporativo',
+        email: emp?.sitio_web ? emp.sitio_web.replace(/^https?:\/\//, '') : '',
         rol: 'EMPRESA',
         badgeClass: 'bg-indigo-50 text-brand-indigo border-brand-indigo/30 shadow-2xs',
         badgeLabel: 'Empresa',
@@ -109,11 +109,11 @@ export class Header implements OnInit {
     }
 
     if (rol === 'RECRUITER') {
-      const nombre = perfil?.nombre ? `${perfil.nombre} ${perfil.apellido || ''}`.trim() : 'Lucía Fernández'
+      const nombre = perfil?.nombre ? `${perfil.nombre} ${perfil.apellido || ''}`.trim() : (s?.nombreUsuario || 'Recruiter')
       return {
         nombre,
-        subtitulo: 'InnovaCorp Technologies • Reclutamiento',
-        email: perfil?.email || 'lucia.fernandez@innovacorp.com',
+        subtitulo: 'Reclutamiento',
+        email: perfil?.email || '',
         rol: 'RECRUITER',
         badgeClass: 'bg-teal-50 text-teal-700 border-teal-200/90 shadow-2xs',
         badgeLabel: 'Recruiter IT',

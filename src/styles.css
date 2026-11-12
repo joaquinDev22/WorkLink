@@ -3,6 +3,9 @@
 @import 'tailwindcss';
 
 @theme {
+  /* Tipografía de marca: una sola familia para títulos, UI y datos (Operate) */
+  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+
   /* ==========================================================
      1. COLORES DE IDENTIDAD WORKLINK
      ========================================================== */
@@ -596,7 +599,9 @@
 
 /* Entrada sutil GPU-only para vistas internas y contenedores */
 .page-enter {
-  animation: pageFadeRise 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  /* backwards y no both: al terminar no queda un transform en el contenedor; si quedara,
+     los modales position:fixed de la página se centrarían en la página y no en la pantalla */
+  animation: pageFadeRise 260ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 
 @keyframes pageFadeRise {
@@ -653,5 +658,89 @@
   }
   .input-error {
     animation: none !important;
+  }
+}
+
+/* ==========================================================
+   SUPERFICIES DEL NAVEGADOR CON LA PALETA DE MARCA
+   (selección, cursor, scrollbar, foco y números tabulares)
+   ========================================================== */
+@layer base {
+  html {
+    color: var(--color-slate-900);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    scrollbar-color: color-mix(in oklab, var(--color-brand-indigo) 35%, transparent) transparent;
+  }
+
+  ::selection {
+    background-color: color-mix(in oklab, var(--color-brand-sky) 35%, transparent);
+    color: inherit;
+  }
+
+  input,
+  textarea {
+    caret-color: var(--color-brand-indigo);
+  }
+
+  h1, h2, h3 {
+    text-wrap: balance;
+    letter-spacing: -0.02em;
+  }
+
+  table,
+  [class*="tabular"] {
+    font-variant-numeric: tabular-nums;
+  }
+
+  a {
+    text-underline-offset: 0.2em;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand-sky);
+    outline-offset: 2px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: color-mix(in oklab, var(--color-brand-indigo) 30%, transparent);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: color-mix(in oklab, var(--color-brand-indigo) 50%, transparent);
+  }
+}
+
+/* ==========================================================
+   ALINEACIÓN BASE DE BOTONES TÁCTILES
+   En @layer components: las utilidades (hidden, flex, justify-*) siguen ganando
+   ========================================================== */
+@layer components {
+  .btn-tactile-primary,
+  .btn-tactile-secondary,
+  .btn-tactile-dark,
+  .btn-tactile-danger,
+  .btn-tactile-icon,
+  .btn-tactile-ghost-dark,
+  .btn-registrarse,
+  .btn-iniciar-sesion {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    text-align: center;
+    line-height: 1.25;
+    cursor: pointer;
+  }
+
+  :is(.btn-tactile-primary, .btn-tactile-secondary, .btn-tactile-dark, .btn-tactile-danger,
+      .btn-tactile-icon, .btn-tactile-ghost-dark, .btn-registrarse, .btn-iniciar-sesion) > svg {
+    flex-shrink: 0;
   }
 }

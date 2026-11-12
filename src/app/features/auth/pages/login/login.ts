@@ -75,7 +75,7 @@ export class Login implements OnInit {
       },
       error: (err) => {
         this.isLoading.set(false)
-        const msg = err?.error?.mensaje || err?.error?.message || 'Usuario o contraseña incorrectos. Por favor, verifica tus datos.'
+        const msg = err?.error?.message || 'Usuario o contraseña incorrectos. Por favor, verifica tus datos.'
         this.errorMsg.set(msg)
       }
     })

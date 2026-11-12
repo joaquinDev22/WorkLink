@@ -11,20 +11,13 @@ import { RouterLink } from '@angular/router'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-export type RolFiltro = 'TODOS' | 'FREELANCER' | 'CLIENTE' | 'EMPRESA'
+export type Recorrido = 'POSTULANTE' | 'EMPRESA' | 'FREELANCE'
 
-export interface TestimonioItem {
-  readonly id: string
-  readonly nombre: string
-  readonly rol: 'FREELANCER' | 'CLIENTE' | 'EMPRESA'
-  readonly cargo: string
-  readonly empresaOStack: string
-  readonly comentario: string
-  readonly avatar: string
-}
-
-export interface EmpresaItem {
-  readonly nombre: string
+export interface RecorridoItem {
+  readonly id: Recorrido
+  readonly etiqueta: string
+  readonly titulo: string
+  readonly pasos: readonly string[]
 }
 
 gsap.registerPlugin(ScrollTrigger)
@@ -40,81 +33,56 @@ export class LandingPage implements AfterViewInit, OnDestroy {
   private hostEl = inject(ElementRef<HTMLElement>)
   private gsapCtx: gsap.Context | null = null
 
-  readonly empresas: readonly EmpresaItem[] = [
-    { nombre: 'MercadoLibre' },
-    { nombre: 'Globant' },
-    { nombre: 'Auth0' },
-    { nombre: 'Ualá' },
-    { nombre: 'Despegar' },
-    { nombre: 'Tiendanube' },
-    { nombre: 'Pomelo' },
-    { nombre: 'Accenture' }
-  ]
-
-  readonly testimonios: readonly TestimonioItem[] = [
+  // Los tres recorridos reales del MVP (dossier §2.8): sin métricas ni testimonios inventados
+  readonly recorridos: readonly RecorridoItem[] = [
     {
-      id: '1',
-      nombre: 'Mateo Silva',
-      rol: 'FREELANCER',
-      cargo: 'Desarrollador Full Stack',
-      empresaOStack: 'Angular · Spring Boot',
-      comentario:
-        'La tranquilidad de que los fondos de cada hito queden en custodia antes de tirar una sola línea de código cambió por completo cómo cotizo mis proyectos.',
-      avatar:
-        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'
+      id: 'POSTULANTE',
+      etiqueta: 'Postulantes',
+      titulo: 'Encuentra tu primer empleo en IT',
+      pasos: [
+        'Crea tu cuenta con email o Google y elige el rol Postulante.',
+        'Completa tu perfil: habilidades, portfolio y CV en PDF.',
+        'Filtra vacantes por modalidad y tecnología, y postúlate con una carta.',
+        'Sigue el estado de cada postulación y entra a la entrevista por Google Meet.'
+      ]
     },
     {
-      id: '2',
-      nombre: 'Lucía Fernández',
-      rol: 'EMPRESA',
-      cargo: 'VP of Engineering',
-      empresaOStack: 'Cloud Logistics Inc.',
-      comentario:
-        'Publicamos la vacante de Tech Lead y en menos de 48 horas teníamos candidatos con perfiles técnicos verificados y disponibilidad real.',
-      avatar:
-        'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80'
+      id: 'EMPRESA',
+      etiqueta: 'Empresas',
+      titulo: 'Contrata con un proceso ordenado',
+      pasos: [
+        'Registra la empresa y completá su perfil corporativo.',
+        'Da de alta a tus recruiters con el email con el que se registraron.',
+        'Publica vacantes y revisa a cada candidato con su CV.',
+        'Agenda entrevistas técnicas con fecha, hora y enlace de videollamada.'
+      ]
     },
     {
-      id: '3',
-      nombre: 'Gonzalo Rivas',
-      rol: 'CLIENTE',
-      cargo: 'Product Founder',
-      empresaOStack: 'Fintech Startup',
-      comentario:
-        'Liberar los pagos únicamente cuando el entregable cumple con los criterios de aceptación acordados nos dio el control que ninguna otra plataforma ofrecía.',
-      avatar:
-        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80'
-    },
-    {
-      id: '4',
-      nombre: 'Camila Morales',
-      rol: 'FREELANCER',
-      cargo: 'UI/UX & Design Engineer',
-      empresaOStack: 'Design Systems · Tailwind',
-      comentario:
-        'No tener comisiones ocultas ni sorpresas al liquidar mis cobros hace que sea mi plataforma predilecta para clientes corporativos.',
-      avatar:
-        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80'
+      id: 'FREELANCE',
+      etiqueta: 'Freelance',
+      titulo: 'Proyectos por hitos, pagados antes de empezar',
+      pasos: [
+        'El cliente publica un proyecto con su rango de presupuesto.',
+        'Los freelancers envían propuestas y el cliente adjudica la que elige.',
+        'El monto acordado se divide en partes iguales entre los hitos.',
+        'Cada hito se paga con Mercado Pago antes de empezar; el freelancer lo entrega y se habilita el siguiente.'
+      ]
     }
   ]
 
-  readonly filtrosRol: readonly RolFiltro[] = ['TODOS', 'FREELANCER', 'CLIENTE', 'EMPRESA']
-  readonly rolFiltro = signal<RolFiltro>('TODOS')
-  readonly brokenAvatars = signal<Record<string, boolean>>({})
+  // Respuestas basadas en lo que el sistema hace hoy (sin promesas de soporte, comisiones ni garantías)
+  readonly preguntas: readonly { pregunta: string; respuesta: string }[] = [
+    { pregunta: '¿Cuánto cuesta usar WorkLink?', respuesta: 'Crear la cuenta es gratis en cualquier rol. En los proyectos freelance, el cliente paga cada hito por Mercado Pago.' },
+    { pregunta: '¿Puedo buscar empleo y hacer freelance con la misma cuenta?', respuesta: 'Sí. Si eres postulante, cambias a modo freelancer desde tu perfil con un clic, sin crear otra cuenta.' },
+    { pregunta: '¿Cómo se paga un hito?', respuesta: 'El cliente paga el próximo hito pendiente con Mercado Pago Checkout Pro. Cuando el pago se confirma, el hito pasa a en progreso y el freelancer empieza a trabajar.' },
+    { pregunta: '¿WorkLink guarda los datos de mi tarjeta?', respuesta: 'No. El pago se hace en Mercado Pago; WorkLink solo registra el monto y el número de operación para el historial.' },
+    { pregunta: '¿Cómo sumo a mi equipo de recruiters?', respuesta: 'Cada recruiter se registra con el rol Recruiter. Después, la empresa lo da de alta desde su panel con el mismo email y ya puede gestionar las vacantes.' }
+  ]
 
-  readonly testimoniosFiltrados = computed(() => {
-    const filtro = this.rolFiltro()
-    if (filtro === 'TODOS') return this.testimonios
-    return this.testimonios.filter((t) => t.rol === filtro)
-  })
-
-  readonly talentosCount = signal(0)
-  readonly custodiaCount = signal(0)
-  readonly empresasCount = signal(0)
-
-  readonly talentosTexto = computed(() => `+${this.talentosCount().toLocaleString('es-AR')}`)
-  readonly custodiaTexto = computed(() => `${this.custodiaCount()}%`)
-  readonly empresasTexto = computed(() => `+${this.empresasCount()}`)
+  readonly recorridoActivo = signal<Recorrido>('POSTULANTE')
+  readonly recorridoSeleccionado = computed(
+    () => this.recorridos.find((r) => r.id === this.recorridoActivo()) ?? this.recorridos[0]
+  )
 
   ngAfterViewInit(): void {
     this.iniciarAnimacionesLanding()
@@ -124,19 +92,15 @@ export class LandingPage implements AfterViewInit, OnDestroy {
     this.gsapCtx?.revert()
   }
 
-  onAvatarError(id: string): void {
-    this.brokenAvatars.update((curr) => ({ ...curr, [id]: true }))
-  }
-
-  cambiarFiltro(nuevoFiltro: RolFiltro): void {
-    if (this.rolFiltro() === nuevoFiltro) return
-    this.rolFiltro.set(nuevoFiltro)
+  cambiarRecorrido(id: Recorrido): void {
+    if (this.recorridoActivo() === id) return
+    this.recorridoActivo.set(id)
 
     queueMicrotask(() => {
       const scope = gsap.context(() => {
         const mm = gsap.matchMedia()
         mm.add('(prefers-reduced-motion: no-preference)', () => {
-          gsap.from('.testimonio-card', {
+          gsap.from('.paso-item', {
             y: 12,
             autoAlpha: 0,
             duration: 0.28,
@@ -155,12 +119,6 @@ export class LandingPage implements AfterViewInit, OnDestroy {
     this.gsapCtx?.revert()
     this.gsapCtx = gsap.context(() => {
       const mm = gsap.matchMedia()
-
-      mm.add('(prefers-reduced-motion: reduce)', () => {
-        this.talentosCount.set(3000)
-        this.custodiaCount.set(100)
-        this.empresasCount.set(500)
-      })
 
       mm.add('(prefers-reduced-motion: no-preference)', () => {
         const heroTl = gsap.timeline({ defaults: { ease: 'power3.out', force3D: true } })
@@ -185,20 +143,6 @@ export class LandingPage implements AfterViewInit, OnDestroy {
             '-=0.35'
           )
 
-        const metrics = { talentos: 0, custodia: 0, empresas: 0 }
-        gsap.to(metrics, {
-          talentos: 3000,
-          custodia: 100,
-          empresas: 500,
-          duration: 1.5,
-          ease: 'power3.out',
-          onUpdate: () => {
-            this.talentosCount.set(Math.round(metrics.talentos))
-            this.custodiaCount.set(Math.round(metrics.custodia))
-            this.empresasCount.set(Math.round(metrics.empresas))
-          }
-        })
-
         gsap.from('.pilar-card', {
           y: 20,
           autoAlpha: 0,
@@ -212,6 +156,17 @@ export class LandingPage implements AfterViewInit, OnDestroy {
             start: 'top 84%',
             once: true
           }
+        })
+
+        gsap.from('.ciclo-paso', {
+          y: 16,
+          autoAlpha: 0,
+          duration: 0.4,
+          stagger: 0.12,
+          ease: 'power3.out',
+          force3D: true,
+          clearProps: 'transform,opacity,visibility',
+          scrollTrigger: { trigger: '.ciclo-section', start: 'top 80%', once: true }
         })
 
         gsap.from('.cta-slab', {

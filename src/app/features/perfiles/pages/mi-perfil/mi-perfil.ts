@@ -561,7 +561,7 @@ export class MiPerfil implements OnInit {
       },
       error: (err) => {
         this.isUploadingCv.set(false)
-        this.cvError.set(err?.message || 'Error al subir el CV')
+        this.cvError.set(err?.error?.message || err?.message || 'Error al subir el CV')
       }
     })
   }

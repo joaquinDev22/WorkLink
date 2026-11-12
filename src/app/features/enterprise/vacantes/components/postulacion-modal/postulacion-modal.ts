@@ -59,7 +59,7 @@ export class PostulacionModal {
         this.isSubmitting.set(false)
         const errorMsg =
           err?.error?.message ||
-          err?.message ||
+          err?.error?.message || err?.message ||
           'Ya registras una postulación previa a esta búsqueda laboral.'
         this.errorMessage.set(errorMsg)
       }
