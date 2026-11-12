@@ -78,7 +78,7 @@
         <div>
           <dt class="text-xs font-medium text-slate-500">Presupuesto</dt>
           <dd class="text-base sm:text-lg font-black text-slate-900 tabular-nums mt-0.5">
-            USD ${{ p.presupuestoMin }} - ${{ p.presupuestoMax }}
+            {{ formatMonto(p.presupuestoMin) }} – {{ formatMonto(p.presupuestoMax) }}
           </dd>
         </div>
         <div>
@@ -90,7 +90,7 @@
         <div class="col-span-2 sm:col-span-1">
           <dt class="text-xs font-medium text-slate-500">Saldo estimado</dt>
           <dd class="text-base sm:text-lg font-black text-brand-indigo tabular-nums mt-0.5">
-            {{ formatMonto(saldoRestante(), 'USD') }}
+            {{ formatMonto(saldoRestante(), 'PESOS') }}
           </dd>
         </div>
       </dl>
@@ -120,167 +120,59 @@
       <!-- Columna izquierda: Pasarela + Historial real -->
       <div class="lg:col-span-7 space-y-6">
 
-        <!-- Panel de Pago (Solo CLIENTE) -->
+        <!-- Panel de Pago (Solo CLIENTE): un hito por vez, pagado antes de empezar (D2, D5) -->
         @if (isCliente()) {
           <section class="pago-animate bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-xs space-y-5">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3.5">
-              <div>
-                <h2 class="text-base sm:text-lg font-bold text-slate-900">Realizar pago del proyecto</h2>
-                <p class="text-xs text-slate-500">
-                  Elegí el importe y el medio de pago para abonar vía Checkout Pro o registrar un pago directo.
-                </p>
-              </div>
+            <div class="border-b border-slate-100 pb-3.5">
+              <h2 class="text-base sm:text-lg font-bold text-slate-900">Pagar el próximo hito</h2>
+              <p class="text-xs text-slate-500">
+                Cada hito se paga con Mercado Pago antes de que el freelancer empiece a trabajarlo.
+              </p>
             </div>
 
-            @if (!puedeOperarPagos()) {
+            @if (p.estado !== 'EN_PROGRESO') {
               <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-600">
                 @if (p.estado === 'BUSCANDO_TALENTO') {
-                  Los pagos se habilitan una vez que adjudiques una propuesta y el proyecto pase a <strong>En progreso</strong>.
+                  Los pagos se habilitan cuando adjudiques una propuesta y el proyecto pase a <strong>En progreso</strong>.
+                } @else if (p.estado === 'FINALIZADO') {
+                  Todos los hitos están completados: el proyecto está finalizado.
                 } @else {
-                  Este proyecto fue cancelado y permanece en solo lectura; no admite nuevos pagos.
+                  Este proyecto fue cancelado y quedó en solo lectura.
                 }
               </div>
             } @else {
-              <!-- 1. Selección de importe (A4) -->
-              <div class="space-y-2.5">
-                <span class="text-xs font-bold text-slate-700 block">1. Importe a abonar</span>
-                <div class="flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    (click)="seleccionarModoMonto('SALDO')"
-                    [disabled]="saldoCubierto()"
-                    [class]="modoMonto() === 'SALDO' ? 'btn-tactile-primary' : 'btn-tactile-secondary'"
-                    class="px-3.5 py-2 min-h-[40px] text-xs cursor-pointer">
-                    @if (saldoCubierto()) {
-                      Saldo cubierto (USD $0)
-                    } @else {
-                      Saldo restante ({{ formatMonto(saldoRestante() || p.presupuestoMax, 'USD') }})
+              @let siguiente = proximoHito();
+              @if (!siguiente) {
+                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-600">
+                  Todavía no hay hitos. Créalos desde el panel del proyecto: el monto acordado se reparte entre ellos.
+                </div>
+              } @else if (siguiente.estado === 'EN_PROGRESO') {
+                <div class="p-4 rounded-xl bg-sky-50 border border-sky-200 text-xs sm:text-sm text-sky-800">
+                  <strong>{{ siguiente.titulo }}</strong> ya está pagado y en desarrollo. El próximo pago se habilita cuando el freelancer lo marque como completado.
+                </div>
+              } @else {
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl bg-slate-50 border border-slate-200">
+                  <div class="min-w-0">
+                    <span class="block text-sm font-bold text-slate-900 truncate">{{ siguiente.titulo }}</span>
+                    @if (siguiente.fechaLimite) {
+                      <span class="block text-xs text-slate-500">Vence {{ formatFecha(siguiente.fechaLimite) }}</span>
                     }
-                  </button>
-
-                  @if (hitosPendientesPago().length > 0) {
-                    <button
-                      type="button"
-                      (click)="seleccionarModoMonto('HITO')"
-                      [class]="modoMonto() === 'HITO' ? 'btn-tactile-primary' : 'btn-tactile-secondary'"
-                      class="px-3.5 py-2 min-h-[40px] text-xs cursor-pointer">
-                      Pagar un hito
-                    </button>
-                  }
-
-                  <button
-                    type="button"
-                    (click)="seleccionarModoMonto('PERSONALIZADO')"
-                    [class]="modoMonto() === 'PERSONALIZADO' ? 'btn-tactile-primary' : 'btn-tactile-secondary'"
-                    class="px-3.5 py-2 min-h-[40px] text-xs cursor-pointer">
-                    Otro monto
-                  </button>
-                </div>
-
-                @if (modoMonto() === 'HITO' && hitosPendientesPago().length > 0) {
-                  <div class="pt-1 space-y-1">
-                    <label for="hitoPagoSelect" class="text-xs font-semibold text-slate-700">Seleccioná el hito</label>
-                    <select
-                      id="hitoPagoSelect"
-                      #hs
-                      [value]="hitoSeleccionadoId() ?? ''"
-                      (change)="hitoSeleccionadoId.set(hs.value ? +hs.value : null)"
-                      class="w-full px-3.5 py-2.5 min-h-[44px] bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky">
-                      @for (h of hitosPendientesPago(); track h.hitoId) {
-                        <option [value]="h.hitoId">{{ h.titulo }} — USD ${{ h.monto }}</option>
-                      }
-                    </select>
                   </div>
-                }
-
-                @if (modoMonto() === 'PERSONALIZADO') {
-                  <div class="pt-1 space-y-1">
-                    <label for="montoCustomInput" class="text-xs font-semibold text-slate-700">Monto personalizado</label>
-                    <input
-                      id="montoCustomInput"
-                      #mci
-                      type="number"
-                      min="1"
-                      step="any"
-                      [value]="montoPersonalizado()"
-                      (input)="montoPersonalizado.set(mci.value)"
-                      placeholder="Ej: 450"
-                      class="w-full px-3.5 py-2.5 min-h-[44px] bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 tabular-nums focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky" />
-                  </div>
-                }
-              </div>
-
-              <!-- 2. Selector de medio de pago (WL-39) -->
-              <div class="space-y-2.5">
-                <div class="flex items-center justify-between gap-2">
-                  <span class="text-xs font-bold text-slate-700">2. Medio de pago para esta operación</span>
-                  <span class="text-[11px] text-slate-500">Sin datos de tarjeta guardados</span>
+                  <span class="text-xl font-black text-slate-900 tabular-nums shrink-0">{{ formatMonto(siguiente.monto) }}</span>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" role="radiogroup" aria-label="Medio de pago">
-                  @for (mKey of mediosPagoDisponibles; track mKey) {
-                    @let cfg = medioPagoConfig[mKey];
-                    @let active = medioSeleccionado() === mKey;
-                    <button
-                      type="button"
-                      role="radio"
-                      [attr.aria-checked]="active"
-                      (click)="medioSeleccionado.set(mKey)"
-                      [class]="active
-                        ? 'border-brand-indigo bg-indigo-50/50 ring-2 ring-brand-indigo/15'
-                        : 'border-slate-200 bg-white hover:border-slate-300'"
-                      class="text-left p-3.5 rounded-xl border transition-[border-color,background-color,box-shadow] cursor-pointer space-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky">
-                      <div class="flex items-center justify-between gap-2">
-                        <span class="text-xs sm:text-sm font-bold text-slate-900">{{ cfg.label }}</span>
-                        <span
-                          class="w-4 h-4 rounded-full border flex items-center justify-center shrink-0"
-                          [class.border-brand-indigo]="active"
-                          [class.border-slate-300]="!active">
-                          @if (active) {
-                            <span class="w-2 h-2 rounded-full bg-brand-indigo"></span>
-                          }
-                        </span>
-                      </div>
-                      <p class="text-xs text-slate-600 leading-snug">{{ cfg.description }}</p>
-                    </button>
-                  }
-                </div>
-              </div>
-
-              <!-- 3. Acciones de pago: Checkout Pro (Primaria) + Pago Directo (Secundaria) -->
-              <div class="pt-2 border-t border-slate-100 space-y-3">
-                <div class="flex items-center justify-between text-xs sm:text-sm">
-                  <span class="text-slate-600">Importe para Checkout Pro (ARS)</span>
-                  <span class="font-black text-slate-900 tabular-nums">
-                    {{ montoValido() ? formatMonto(montoSeleccionado()!, 'ARS') : 'Ingresá un monto > 0' }}
-                  </span>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <app-mp-checkout-button
-                    [proyectoId]="p.proyectoId"
-                    [monto]="montoSeleccionado()"
-                    [disabled]="!montoValido() || isMutatingPago()"
-                    label="Pagar con MercadoPago"
-                    (checkoutError)="onCheckoutError($event)">
-                  </app-mp-checkout-button>
-
-                  <button
-                    type="button"
-                    (click)="abrirModalPagoDirecto()"
-                    [disabled]="isMutatingPago()"
-                    class="btn-tactile-secondary w-full px-4 py-3 min-h-[44px] text-sm inline-flex items-center justify-center gap-2 cursor-pointer">
-                    <svg class="w-4 h-4 text-slate-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                    </svg>
-                    <span>Registrar pago directo</span>
-                  </button>
-                </div>
+                <app-mp-checkout-button
+                  [proyectoId]="p.proyectoId"
+                  [hitoId]="siguiente.hitoId"
+                  [disabled]="isMutatingPago()"
+                  label="Pagar con Mercado Pago"
+                  (checkoutError)="onCheckoutError($event)">
+                </app-mp-checkout-button>
 
                 <p class="text-xs text-slate-500">
-                  MercadoPago Checkout Pro abre en esta misma pestaña para redirigirte automáticamente al finalizar.
+                  Mercado Pago se abre en esta pestaña y te devuelve a WorkLink al terminar. No guardamos datos de tarjeta.
                 </p>
-              </div>
+              }
             }
           </section>
         }
@@ -314,7 +206,7 @@
             <div class="py-8 px-4 text-center border border-dashed border-slate-200 rounded-xl space-y-1.5">
               <p class="text-sm font-semibold text-slate-700">Todavía no hay pagos registrados</p>
               <p class="text-xs text-slate-500">
-                Cuando completes un pago con MercadoPago o registres un pago directo, aparecerá detallado aquí.
+                Cuando se confirme un pago de Mercado Pago, aparece acá.
               </p>
             </div>
           } @else {
@@ -324,7 +216,7 @@
                   <tr class="border-b border-slate-100 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
                     <th class="py-2.5 pr-3">Pago</th>
                     <th class="py-2.5 px-3">Medio</th>
-                    <th class="py-2.5 px-3">Moneda</th>
+                    <th class="py-2.5 px-3">Operación MP</th>
                     <th class="py-2.5 pl-3 text-right">Importe</th>
                   </tr>
                 </thead>
@@ -341,7 +233,7 @@
                         </span>
                       </td>
                       <td class="py-3 px-3 text-xs font-semibold text-slate-600">
-                        {{ pago.moneda }}
+                        {{ pago.mpPaymentId || '—' }}
                       </td>
                       <td class="py-3 pl-3 text-right font-black text-slate-900 tabular-nums">
                         {{ formatMonto(pago.monto, pago.moneda) }}
@@ -377,12 +269,12 @@
                   <div class="flex items-start justify-between gap-2">
                     <span class="text-sm font-bold text-slate-900 leading-snug">{{ h.titulo }}</span>
                     <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold shrink-0 {{ hc.badgeClass }}">
-                      {{ hc.label }}
+                      {{ labelHito(h.estado, !isCliente()) }}
                     </span>
                   </div>
                   <div class="flex items-center justify-between text-xs text-slate-600 tabular-nums">
                     <span>Vence {{ formatFecha(h.fechaLimite) }}</span>
-                    <span class="font-bold text-slate-900">USD ${{ h.monto }}</span>
+                    <span class="font-bold text-slate-900">{{ formatMonto(h.monto) }}</span>
                   </div>
                 </div>
               }
@@ -394,109 +286,3 @@
     </div>
   }
 </div>
-
-<!-- Modal secundario: Registrar pago directo (POST /api/v1/freelance/proyectos/{id}/pagos) -->
-@if (mostrarModalPagoDirecto()) {
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-    <div
-      class="animate-modal-backdrop fixed inset-0 bg-slate-900/55 backdrop-blur-xs"
-      (click)="cerrarModalPagoDirecto()"
-      aria-hidden="true"></div>
-
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="pago-directo-title"
-      class="animate-modal-card relative z-10 w-full max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-2xl border border-slate-200 p-6 shadow-2xl space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-        <h3 id="pago-directo-title" class="text-base font-bold text-slate-900">Registrar pago directo</h3>
-        <button
-          type="button"
-          [disabled]="isMutatingPago()"
-          (click)="cerrarModalPagoDirecto()"
-          class="btn-tactile-icon w-9 h-9 rounded-xl flex items-center justify-center"
-          aria-label="Cerrar modal">
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-
-      <p class="text-xs text-slate-600 leading-relaxed">
-        Registrá un pago ya acreditado fuera de Checkout Pro o mediante tarjeta/billetera habilitada.
-      </p>
-
-      @if (modalError()) {
-        <div role="alert" class="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">
-          {{ modalError() }}
-        </div>
-      }
-
-      @if (excedePresupuestoModal()) {
-        <div role="status" class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-medium">
-          Atención: el acumulado superará el presupuesto máximo publicado (USD ${{ proyecto()?.presupuestoMax }}).
-        </div>
-      }
-
-      <form (submit)="confirmarPagoDirecto($event)" class="space-y-4" novalidate>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div class="space-y-1">
-            <label for="pagoMoneda" class="text-xs font-semibold text-slate-700">Moneda *</label>
-            <select
-              id="pagoMoneda"
-              #pmon
-              [value]="modalMoneda()"
-              (change)="modalMoneda.set($any(pmon.value))"
-              class="w-full px-3 py-2.5 min-h-[44px] bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky">
-              <option value="PESOS">PESOS (ARS)</option>
-              <option value="USD">USD (Dólares)</option>
-            </select>
-          </div>
-
-          <div class="space-y-1">
-            <label for="pagoMedio" class="text-xs font-semibold text-slate-700">Medio de pago *</label>
-            <select
-              id="pagoMedio"
-              #pmed
-              [value]="modalMedio()"
-              (change)="modalMedio.set($any(pmed.value))"
-              class="w-full px-3 py-2.5 min-h-[44px] bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky">
-              <option value="TARJETA">Tarjeta</option>
-              <option value="BILLETERA_VIRTUAL">Billetera virtual</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="space-y-1">
-          <label for="pagoMontoInput" class="text-xs font-semibold text-slate-700">Monto *</label>
-          <input
-            id="pagoMontoInput"
-            #pmonto
-            type="number"
-            min="0.01"
-            step="any"
-            [value]="modalMonto()"
-            (input)="modalMonto.set(pmonto.value)"
-            placeholder="Ej: 450"
-            class="w-full px-3.5 py-2.5 min-h-[44px] bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 tabular-nums focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky" />
-        </div>
-
-        <div class="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-100">
-          <button
-            type="button"
-            [disabled]="isMutatingPago()"
-            (click)="cerrarModalPagoDirecto()"
-            class="btn-tactile-secondary px-4 py-2.5 min-h-[44px] text-xs sm:text-sm cursor-pointer">
-            Cancelar
-          </button>
-          <button
-            type="submit"
-            [disabled]="isMutatingPago()"
-            class="btn-tactile-primary px-5 py-2.5 min-h-[44px] text-xs sm:text-sm cursor-pointer">
-            {{ isMutatingPago() ? 'Registrando...' : 'Confirmar pago' }}
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-}

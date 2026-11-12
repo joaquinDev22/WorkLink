@@ -64,7 +64,7 @@ export class PropuestaModal {
     const desc = this.descripcion().trim()
 
     if (!monto || monto <= 0) {
-      this.errorMsg.set('Ingresa un monto válido en USD mayor a 0.')
+      this.errorMsg.set('Ingresa un monto válido en pesos mayor a 0.')
       return
     }
 
@@ -86,7 +86,7 @@ export class PropuestaModal {
         next: (res) => {
           this.isSubmitting.set(false)
           this.mensajeExito.set(
-            `Tu propuesta de USD $${res.costoPropuesto} fue enviada al cliente correctamente.`
+            `Tu propuesta de $${res.costoPropuesto} fue enviada al cliente correctamente.`
           )
           this.propuestaEnviada.emit(res)
           this.descripcion.set('')

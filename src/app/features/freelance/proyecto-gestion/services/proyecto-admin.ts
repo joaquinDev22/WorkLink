@@ -229,16 +229,16 @@ export class ProyectoAdmin {
           descripcion: 'Configuración de módulos standalone, guards y tokens.',
           monto: 450,
           fechaLimite: '2026-11-18',
-          estado: 'PAGADO',
+          estado: 'COMPLETADO',
           proyectoId
         },
         {
           hitoId: 12,
           titulo: 'Implementación de vistas e integración REST',
           descripcion: 'Conexión completa con backend y estados vacíos/carga.',
-          monto: 650,
+          monto: 450,
           fechaLimite: '2026-11-28',
-          estado: 'COMPLETADO',
+          estado: 'EN_PROGRESO',
           proyectoId
         }
       ]
@@ -255,6 +255,7 @@ export class ProyectoAdmin {
       return of({
         hitoId: Math.floor(Math.random() * 1000) + 20,
         ...datos,
+        monto: 0,
         estado: 'PENDIENTE' as EstadoHito,
         proyectoId
       }).pipe(
@@ -268,7 +269,7 @@ export class ProyectoAdmin {
       .pipe(finalize(() => this.isMutating.set(false)))
   }
 
-  // PUT /api/v1/freelance/proyectos/{proyectoId}/hitos/{hitoId}/estado?nuevoEstado=PENDIENTE|COMPLETADO|PAGADO
+  // PUT /api/v1/freelance/proyectos/{proyectoId}/hitos/{hitoId}/estado?nuevoEstado=COMPLETADO (EN_PROGRESO lo pone el webhook de pago)
   actualizarEstadoHito(
     proyectoId: number,
     hitoId: number,

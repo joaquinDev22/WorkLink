@@ -38,7 +38,7 @@
       <div class="fin-kpi bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs space-y-1">
         <span class="text-xs font-semibold text-slate-500">Balance acreditado</span>
         <div class="text-2xl sm:text-3xl font-black text-emerald-700 tabular-nums">
-          {{ formatMonto(finances()?.balance ?? 0, 'USD') }}
+          {{ formatMonto(finances()?.balance ?? 0, 'PESOS') }}
         </div>
         <p class="text-xs text-slate-500">Total de pagos registrados en tus proyectos.</p>
       </div>
@@ -46,7 +46,7 @@
       <div class="fin-kpi bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs space-y-1">
         <span class="text-xs font-semibold text-slate-500">En proyectos en curso</span>
         <div class="text-2xl sm:text-3xl font-black text-brand-indigo tabular-nums">
-          {{ formatMonto(finances()?.pending ?? 0, 'USD') }}
+          {{ formatMonto(finances()?.pending ?? 0, 'PESOS') }}
         </div>
         <p class="text-xs text-slate-500">Presupuesto asociado a encargos en progreso.</p>
       </div>
@@ -91,7 +91,7 @@
               class="w-full px-3.5 py-2 min-h-[44px] bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-500 focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky" />
           </div>
 
-          <div class="sm:col-span-3">
+          <div class="sm:col-span-6">
             <label for="txMetodo" class="sr-only">Filtrar por medio de pago</label>
             <select
               id="txMetodo"
@@ -105,19 +105,6 @@
             </select>
           </div>
 
-          <div class="sm:col-span-3">
-            <label for="txMoneda" class="sr-only">Filtrar por moneda</label>
-            <select
-              id="txMoneda"
-              #txc
-              [value]="filtroMoneda()"
-              (change)="filtroMoneda.set($any(txc.value))"
-              class="w-full px-3 py-2 min-h-[44px] bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky">
-              <option value="TODAS">Todas las monedas</option>
-              <option value="PESOS">PESOS</option>
-              <option value="USD">USD</option>
-            </select>
-          </div>
         </div>
 
         @if (transactionsError()) {
@@ -308,7 +295,7 @@
                       {{ cfg.label }}
                     </span>
                     <span class="text-xs font-bold text-slate-800 tabular-nums">
-                      USD ${{ p.presupuestoMin }} - ${{ p.presupuestoMax }}
+                      ${{ p.presupuestoMin }} - ${{ p.presupuestoMax }}
                     </span>
                   </div>
                 </div>

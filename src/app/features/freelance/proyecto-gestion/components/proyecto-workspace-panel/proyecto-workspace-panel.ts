@@ -14,11 +14,13 @@ import {
 } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { gsap } from 'gsap'
+import { formatMontoMoneda } from '../../../checkout-mercadopago/models/mercadopago.models'
 import { ProyectoAdmin } from '../../services/proyecto-admin'
 import { ProyectoCatalog } from '../../../proyectos-catalogo/services/proyecto-catalog'
 import {
   CalificacionProyectoResponseDTO,
   ESTADO_HITO_CONFIG,
+  labelHito,
   ESTADO_PROYECTO_CONFIG,
   EstadoHito,
   HitoResponseDTO,
@@ -50,7 +52,6 @@ export class ProyectoWorkspacePanel implements OnChanges, OnDestroy {
   readonly mostrarFormHito = signal<boolean>(false)
   readonly hitoTitulo = signal<string>('')
   readonly hitoDesc = signal<string>('')
-  readonly hitoMonto = signal<number | null>(null)
   readonly hitoFechaLimite = signal<string>('')
 
   // Cancelación irreversible (WL-36)
@@ -67,7 +68,15 @@ export class ProyectoWorkspacePanel implements OnChanges, OnDestroy {
 
   readonly estadoProyectoConfig = ESTADO_PROYECTO_CONFIG
   readonly estadoHitoConfig = ESTADO_HITO_CONFIG
+  readonly labelHito = labelHito
+  readonly formatMonto = (monto: number) => formatMontoMoneda(monto, 'PESOS')
   readonly formatFecha = (f?: string) => formatFechaProyecto(f, false)
+
+  // El próximo hito a pagar: el primero sin completar, siempre que siga PENDIENTE (los hitos van en orden)
+  readonly proximoHitoId = computed(() => {
+    const siguiente = this.hitos().find((h) => h.estado !== 'COMPLETADO')
+    return siguiente?.estado === 'PENDIENTE' ? siguiente.hitoId : null
+  })
 
   readonly esSoloLectura = computed(() => {
     const e = this.proyecto().estado
@@ -80,7 +89,7 @@ export class ProyectoWorkspacePanel implements OnChanges, OnDestroy {
 
   readonly totalPagadoHitos = computed(() =>
     this.hitos()
-      .filter((h) => h.estado === 'PAGADO')
+      .filter((h) => h.estado !== 'PENDIENTE')
       .reduce((acc, h) => acc + (h.monto || 0), 0)
   )
 
@@ -88,8 +97,8 @@ export class ProyectoWorkspacePanel implements OnChanges, OnDestroy {
     const list = this.hitos()
     if (list.length === 0) return 0
     const puntos = list.reduce((acc, h) => {
-      if (h.estado === 'PAGADO') return acc + 1
-      if (h.estado === 'COMPLETADO') return acc + 0.65
+      if (h.estado === 'COMPLETADO') return acc + 1
+      if (h.estado === 'EN_PROGRESO') return acc + 0.5
       return acc
     }, 0)
     return Math.round((puntos / list.length) * 100)
@@ -166,20 +175,14 @@ export class ProyectoWorkspacePanel implements OnChanges, OnDestroy {
     }, this.hostEl.nativeElement)
   }
 
-  actualizarMontoHito(raw: string): void {
-    const num = Number(raw)
-    this.hitoMonto.set(raw === '' || Number.isNaN(num) ? null : num)
-  }
-
   crearHito(event: Event): void {
     event.preventDefault()
     this.feedbackError.set(null)
     this.feedbackOk.set(null)
 
     const titulo = this.hitoTitulo().trim()
-    const monto = this.hitoMonto()
-    if (!titulo || !monto || monto <= 0) {
-      this.feedbackError.set('Ingresa un título y un monto válido mayor a 0 USD para el hito.')
+    if (!titulo) {
+      this.feedbackError.set('Ingresa un título para el hito.')
       return
     }
 
@@ -188,15 +191,14 @@ export class ProyectoWorkspacePanel implements OnChanges, OnDestroy {
       .crearHito(this.proyecto().proyectoId, {
         titulo,
         descripcion: this.hitoDesc().trim() || 'Entregable acordado por hito.',
-        monto,
         fechaLimite: this.hitoFechaLimite() || new Date().toISOString().split('T')[0]
       })
       .subscribe({
         next: (nuevo) => {
-          this.hitos.update((curr) => [...curr, nuevo])
+          // El backend vuelve a repartir el monto acordado entre los hitos pendientes: se recarga la lista
+          this.cargarDatosWorkspace()
           this.hitoTitulo.set('')
           this.hitoDesc.set('')
-          this.hitoMonto.set(null)
           this.hitoFechaLimite.set('')
           this.mostrarFormHito.set(false)
           this.isMutating.set(false)
@@ -223,9 +225,7 @@ export class ProyectoWorkspacePanel implements OnChanges, OnDestroy {
           )
           this.isMutating.set(false)
           this.feedbackOk.set(
-            nuevoEstado === 'COMPLETADO'
-              ? `Hito "${hito.titulo}" marcado como entregado.`
-              : `Hito "${hito.titulo}" aprobado y marcado como pagado.`
+            `Hito "${hito.titulo}" marcado como completado. El cliente ya puede pagar el siguiente.`
           )
         },
         error: (err) => {

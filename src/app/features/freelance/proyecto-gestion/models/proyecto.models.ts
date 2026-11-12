@@ -57,13 +57,13 @@ export interface PostulacionProyectoResponseDTO {
 }
 
 // Hitos: GET / POST / PUT /api/v1/freelance/proyectos/{proyectoId}/hitos
-export type EstadoHito = 'PENDIENTE' | 'COMPLETADO' | 'PAGADO'
+// PENDIENTE = sin pagar · EN_PROGRESO = pagado y en desarrollo · COMPLETADO = entregado
+export type EstadoHito = 'PENDIENTE' | 'EN_PROGRESO' | 'COMPLETADO'
 
 export interface HitoRequestDTO {
   titulo: string
   descripcion: string
-  monto: number
-  fechaLimite: string // YYYY-MM-DD
+  fechaLimite: string // YYYY-MM-DD (el monto lo reparte el backend en partes iguales)
 }
 
 export interface HitoResponseDTO {
@@ -118,18 +118,22 @@ export const ESTADO_PROYECTO_CONFIG: Record<
 
 export const ESTADO_HITO_CONFIG: Record<EstadoHito, { label: string; badgeClass: string }> = {
   PENDIENTE: {
-    label: 'Pendiente',
+    label: 'Pendiente de pago',
     badgeClass: 'bg-amber-50 text-amber-800 border border-amber-200'
   },
-  COMPLETADO: {
-    label: 'Entregado (por aprobar)',
+  EN_PROGRESO: {
+    label: 'En progreso',
     badgeClass: 'bg-sky-50 text-sky-700 border border-sky-200'
   },
-  PAGADO: {
-    label: 'Aprobado y Pagado',
+  COMPLETADO: {
+    label: 'Completado',
     badgeClass: 'bg-emerald-50 text-emerald-700 border border-emerald-200'
   }
 }
+
+// Un mismo estado: el freelancer lo ve "Pagado" (puede trabajar) y el cliente "En progreso"
+export const labelHito = (estado: EstadoHito, esFreelancer: boolean): string =>
+  estado === 'EN_PROGRESO' && esFreelancer ? 'Pagado · en desarrollo' : ESTADO_HITO_CONFIG[estado].label
 
 export function formatFechaProyecto(fechaStr?: string, mesLargo = false): string {
   if (!fechaStr) return 'Reciente'
