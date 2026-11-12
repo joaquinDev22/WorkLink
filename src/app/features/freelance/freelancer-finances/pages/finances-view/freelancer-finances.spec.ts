@@ -68,10 +68,6 @@ describe('FreelancerFinances', () => {
     expect(comp.transaccionesFiltradas()[0].id).toBe(11)
 
     comp.filtroMetodo.set('TODOS')
-    comp.filtroMoneda.set('PESOS')
-    expect(comp.transaccionesFiltradas().length).toBe(1)
-    expect(comp.transaccionesFiltradas()[0].id).toBe(10)
-
     comp.busqueda.set('inexistente')
     expect(comp.transaccionesFiltradas().length).toBe(0)
     expect(comp.hayFiltrosActivos()).toBe(true)

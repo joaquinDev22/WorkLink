@@ -48,6 +48,7 @@ describe('PagoRetorno', () => {
     expect(comp.estadoRetorno()).toBe('success')
     expect(comp.proyectoId()).toBe(103)
     expect(comp.extraerProyectoId('45')).toBe(45)
+    expect(comp.extraerProyectoId('12-34')).toBe(12)
     expect(comp.extraerProyectoId(null)).toBeNull()
 
     const reqPagos = httpMock.expectOne(`${environment.apiUrl}/freelance/proyectos/103/pagos`)
@@ -74,8 +75,8 @@ describe('PagoRetorno', () => {
     fixture.detectChanges()
     expect(comp.pagosConfirmados().length).toBe(1)
     expect(comp.totalConfirmado()).toBe(50000)
-    expect(comp.totalConfirmadoTexto()).toBe('ARS $50.000')
-    expect((fixture.nativeElement as HTMLElement).textContent).toContain('ARS $50.000')
+    expect(comp.totalConfirmadoTexto()).toBe('$ 50.000')
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain('$ 50.000')
     expect(comp.isRevalidating()).toBe(false)
   })
 

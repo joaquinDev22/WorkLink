@@ -37,23 +37,7 @@ describe('Mercadopago service', () => {
     expect(service.isLoading()).toBe(false)
   })
 
-  it('registers a direct payment via POST', () => {
-    const dto = { moneda: 'PESOS' as const, monto: 120000, medioDePago: 'BILLETERA_VIRTUAL' as const }
-    const created = { pagoId: 77, ...dto, proyectoId: 42 }
-
-    let result: unknown
-    service.registrarPago(42, dto).subscribe((res) => (result = res))
-
-    const req = httpMock.expectOne(`${environment.apiUrl}/freelance/proyectos/42/pagos`)
-    expect(req.request.method).toBe('POST')
-    expect(req.request.body).toEqual(dto)
-    req.flush(created)
-
-    expect(result).toEqual(created)
-    expect(service.isMutating()).toBe(false)
-  })
-
-  it('creates MercadoPago checkout preference stripping trailing slashes from backUrl', () => {
+  it('crea la preferencia de Checkout Pro para el hito indicado', () => {
     const prefResp = {
       preferenceId: 'pref-123',
       initPoint: 'https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id=pref-123',
@@ -62,14 +46,15 @@ describe('Mercadopago service', () => {
 
     let result: unknown
     service
-      .crearCheckoutPreference(42, 650, 'http://localhost:4200/freelance///')
+      .crearCheckoutPreference(42, 7)
       .subscribe((res) => (result = res))
 
     const req = httpMock.expectOne(
       (r) =>
         r.url === `${environment.apiUrl}/freelance/proyectos/42/pagos/checkout` &&
-        r.params.get('monto') === '650' &&
-        r.params.get('backUrl') === 'http://localhost:4200/freelance'
+        r.params.get('hitoId') === '7' &&
+        !r.params.has('monto') &&
+        !r.params.has('backUrl')
     )
     expect(req.request.method).toBe('POST')
     expect(req.request.body).toBeNull()

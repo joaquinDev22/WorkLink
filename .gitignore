@@ -43,10 +43,9 @@ __screenshots__/
 .DS_Store
 Thumbs.db
 
-# Environments (Credenciales sensibles y URLs locales)
-/src/environments/environment.ts
-/src/environments/environment.development.ts
+# Environments: environment.ts y environment.development.ts se versionan (no tienen secretos:
+# la API es localhost y el client ID de Google es público) para que un clon limpio compile.
+# Variantes personales (environment.local.ts, etc.) quedan fuera.
 /src/environments/environment.*.ts
-
-# Exceptuar la plantilla de ejemplo para que sí se suba a GitHub
+!/src/environments/environment.development.ts
 !/src/environments/environment.example.ts

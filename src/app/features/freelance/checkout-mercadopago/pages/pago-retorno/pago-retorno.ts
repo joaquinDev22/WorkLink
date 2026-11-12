@@ -97,7 +97,8 @@ export class PagoRetorno implements OnInit, OnDestroy {
     if (!rawRef) return null
     const clean = rawRef.trim()
     if (/^\d+$/.test(clean)) return Number(clean)
-    const match = clean.match(/^(\d+)/)  // "{proyectoId}-{hitoId}": el proyecto es el primer número
+    // "{proyectoId}-{hitoId}" (pago por hito): el proyecto es el primer número; otros formatos, el último
+    const match = clean.match(/^(\d+)-\d+$/) ?? clean.match(/(\d+)$/)
     return match ? Number(match[1]) : null
   }
 
