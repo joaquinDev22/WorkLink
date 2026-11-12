@@ -3,6 +3,9 @@
 @import 'tailwindcss';
 
 @theme {
+  /* Tipografía de marca: una sola familia para títulos, UI y datos (Operate) */
+  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+
   /* ==========================================================
      1. COLORES DE IDENTIDAD WORKLINK
      ========================================================== */
@@ -48,7 +51,65 @@
    
   /* Sombra de la tarjeta de Login */
   --shadow-card-login: 0 25px 50px -12px rgba(99, 102, 241, 0.45);
+
+    /* 🌟 1. Rayo de brillo reflectivo (destello que cruza una tarjeta o botón) */
+  --animate-dash: dash 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  @keyframes dash {
+    0% {
+      transform: translateX(-150%) skewX(-20deg);
+    }
+    40%, 100% {
+      transform: translateX(250%) skewX(-20deg);
+    }
+  }
+  /* 💡 2. Halo de resplandor pulsante (glow suave con el celeste de WorkLink) */
+  --animate-glow: glow 2s ease-in-out infinite alternate;
+  @keyframes glow {
+    from {
+      filter: drop-shadow(0 0 4px rgba(56, 189, 248, 0.2));
+    }
+    to {
+      filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.65));
+    }
+  }
+
+  --animate-shake: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  @keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
+  }
+
+  --animate-fade-in: fadeIn 0.2s ease-out both;
+  --animate-scale-in: scaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+  /* 🎬 SALIDAS (Rápidas y aceleradas hacia afuera) */
+  --animate-fade-out: fadeOut 0.18s ease-in both;
+  --animate-scale-out: scaleOut 0.18s ease-in both;
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.96) translateY(8px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  @keyframes scaleOut {
+    from { opacity: 1; transform: scale(1) translateY(0); }
+    to { opacity: 0; transform: scale(0.96) translateY(8px); }
+  }
+
+  /* Curvas y duraciones morfológicas (AI_RULES §2) */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-emphasized: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-morph: 380ms;
+  --shadow-float: 0 2px 4px rgb(15 23 42 / 0.05), 0 12px 32px rgb(15 23 42 / 0.12);
 }
+
 .btn-registrarse {
   box-shadow: var(--shadow-inner-indigo);
   transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1);
@@ -65,16 +126,621 @@
   box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4);
 }
 
+.btn-registrarse:focus-visible,
+.btn-iniciar-sesion:focus-visible {
+  outline: 2px solid var(--color-brand-sky);
+  outline-offset: 2px;
+}
+
 .btn-iniciar-sesion {
+  box-shadow: var(--shadow-inner-white);
   transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1);
   user-select: none;
 }
 
 .btn-iniciar-sesion:hover {
+  transform: translateY(-1px);
   box-shadow: var(--shadow-inner-white), var(--shadow-glow-white);
 }
 
 .btn-iniciar-sesion:active {
   transform: translateY(1px) scale(0.96);
   box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+@utility animate-shine {
+  position: relative;
+  overflow: hidden;
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      115deg,
+      transparent 25%,
+      rgba(255, 255, 255, 0.25) 50%,
+      transparent 75%
+    );
+    transform: translateX(-100%);
+    animation: shine-sweep 3s ease-in-out infinite;
+    pointer-events: none;
+  }
+}
+@keyframes shine-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  35%, 100% {
+    transform: translateX(100%);
+  }
+}
+
+/* ==========================================================
+   CLASE DE UTILIDAD: ESTADO DE ERROR DE FORMULARIO
+   ========================================================== */
+.input-error {
+  animation: var(--animate-shake);
+  border-color: #ef4444 !important; /* red-500 */
+  background-color: #fef2f2;         /* red-50 sutil */
+}
+.input-error:focus {
+  border-color: #dc2626 !important; /* red-600 */
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25) !important; /* Ring rojo translúcido */
+}
+
+/* ==========================================================
+   4. TRANSFORMACIONES MORFOLÓGICAS LIMPIAS Y CRISTALINAS (AI_RULES: Patrón A & §5.8)
+   ========================================================== */
+@utility vt-morph {
+  view-transition-class: morph;
+}
+
+/* Transición limpia y fluida del fondo (evita congelamiento o saltos de pantalla) */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 200ms;
+  animation-timing-function: ease-out;
+}
+
+/* Contenedor del morph: interpola tamaño, posición y bordes suavemente */
+::view-transition-group(edit-surface) {
+  animation-duration: var(--duration-morph, 400ms);
+  animation-timing-function: var(--ease-emphasized, cubic-bezier(0.16, 1, 0.3, 1));
+  overflow: clip;
+  border-radius: 1.5rem;
+}
+
+/* El contenido del botón se desvanece de inmediato */
+::view-transition-old(edit-surface) {
+  animation: morph-content-out 120ms ease-out both;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+/* El contenido del modal emerge nítido, centrado y perfectamente recto */
+::view-transition-new(edit-surface) {
+  animation: morph-content-in 320ms cubic-bezier(0.16, 1, 0.3, 1) 50ms both;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+@keyframes morph-content-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+@keyframes morph-content-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ==========================================================
+   5. TACTILE NEUMORPHISM CON VOLUMEN Y PROFUNDIDAD (BOTONES Y TABS)
+   ========================================================== */
+
+/* Botón primario con bisel superior e inferior táctil */
+.btn-tactile-primary {
+  background: linear-gradient(180deg, var(--color-brand-indigo) 0%, var(--color-brand-indigo-dark) 100%);
+  color: #ffffff;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  box-shadow: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -2px 0 0 rgba(0, 0, 0, 0.25),
+    0 2px 4px 0 rgba(79, 70, 229, 0.25),
+    0 4px 12px 0 rgba(79, 70, 229, 0.15);
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.18s ease;
+  user-select: none;
+}
+
+.btn-tactile-primary:hover:not(:disabled) {
+  transform: translateY(-1.5px);
+  box-shadow: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -2px 0 0 rgba(0, 0, 0, 0.25),
+    0 4px 8px 0 rgba(79, 70, 229, 0.32),
+    0 8px 20px 0 rgba(79, 70, 229, 0.22);
+}
+
+.btn-tactile-primary:active:not(:disabled) {
+  transform: translateY(1px) scale(0.97);
+  box-shadow: 
+    inset 0 3px 6px 0 rgba(0, 0, 0, 0.40),
+    0 1px 2px 0 rgba(79, 70, 229, 0.20);
+}
+
+.btn-tactile-primary:disabled,
+.btn-tactile-secondary:disabled,
+.btn-tactile-dark:disabled,
+.btn-tactile-danger:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.btn-tactile-primary:focus-visible,
+.btn-tactile-secondary:focus-visible,
+.btn-tactile-dark:focus-visible,
+.btn-tactile-danger:focus-visible,
+.tab-tactile-active:focus-visible,
+.tab-tactile-inactive:focus-visible {
+  outline: 2px solid var(--color-brand-sky);
+  outline-offset: 2px;
+}
+
+/* Botón secundario / neutral táctil */
+.btn-tactile-secondary {
+  background: #ffffff;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  box-shadow: 
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.05),
+    0 1px 2px 0 rgba(15, 23, 42, 0.05);
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s ease;
+  user-select: none;
+}
+
+.btn-tactile-secondary:hover:not(:disabled) {
+  background: #f8fafc;
+  color: #0f172a;
+  transform: translateY(-1px);
+  box-shadow: 
+    inset 0 1px 0 0 rgba(255, 255, 255, 1),
+    0 2px 4px 0 rgba(15, 23, 42, 0.08);
+}
+
+.btn-tactile-secondary:active:not(:disabled) {
+  transform: translateY(1px) scale(0.97);
+  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.08);
+}
+
+.btn-tactile-secondary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Botón oscuro táctil */
+.btn-tactile-dark {
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  color: #ffffff;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  box-shadow: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -2px 0 0 rgba(0, 0, 0, 0.45),
+    0 2px 4px 0 rgba(15, 23, 42, 0.25);
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.btn-tactile-dark:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -2px 0 0 rgba(0, 0, 0, 0.45),
+    0 4px 8px 0 rgba(15, 23, 42, 0.35);
+}
+
+.btn-tactile-dark:active:not(:disabled) {
+  transform: translateY(1px) scale(0.97);
+  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.50);
+}
+
+.btn-tactile-dark:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Botón de peligro / baja táctil */
+.btn-tactile-danger {
+  background: linear-gradient(180deg, #e11d48 0%, #be123c 100%);
+  color: #ffffff;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  box-shadow: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -2px 0 0 rgba(0, 0, 0, 0.25),
+    0 2px 4px 0 rgba(225, 29, 72, 0.25),
+    0 4px 12px 0 rgba(225, 29, 72, 0.15);
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.btn-tactile-danger:hover:not(:disabled) {
+  transform: translateY(-1.5px);
+  box-shadow: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -2px 0 0 rgba(0, 0, 0, 0.25),
+    0 4px 8px 0 rgba(225, 29, 72, 0.35);
+}
+
+.btn-tactile-danger:active:not(:disabled) {
+  transform: translateY(1px) scale(0.97);
+  box-shadow: inset 0 3px 6px 0 rgba(0, 0, 0, 0.40);
+}
+
+/* Píldora de pestaña segmentada táctil */
+.tab-tactile-active {
+  background: #ffffff;
+  color: #0f172a;
+  border-radius: 0.75rem;
+  padding: 0.45rem 0.95rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  box-shadow: 
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.06),
+    0 1px 3px 0 rgba(15, 23, 42, 0.1);
+  transform: scale(1);
+}
+
+.tab-tactile-inactive {
+  color: #64748b;
+  border-radius: 0.75rem;
+  padding: 0.45rem 0.95rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  transition: color 0.15s ease, transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s ease;
+}
+
+.tab-tactile-inactive:hover {
+  color: #0f172a;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.tab-tactile-inactive:active {
+  transform: scale(0.96);
+}
+
+/* ==========================================================
+   6. ANIMACIONES FLUIDAS DE MODALES Y FILTRADO (TRANSITIONS-DEV)
+   ========================================================== */
+
+/* Fondo oscuro / backdrop fluido composited-only */
+.animate-modal-backdrop {
+  animation: modalBackdropIn 200ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes modalBackdropIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Tarjeta de modal con desaceleración orgánica tipo spring */
+.animate-modal-card {
+  animation: modalSpringIn 280ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes modalSpringIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+/* Popover / dropdown flotante (reemplazo real de animate-in zoom-in-95) */
+.animate-popover-in {
+  animation: popoverSpringIn 180ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: top right;
+}
+
+@keyframes popoverSpringIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -6px, 0) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+/* Toast flotante inferior (reemplazo real de animate-in slide-in-from-bottom-5) */
+.animate-toast-in {
+  animation: toastSlideIn 240ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* Entrada fluida de filas al cambiar filtros (sin translateY para evitar sub scrollbar en contenedores con overflow-x) */
+.animate-row-enter {
+  animation: rowSmoothIn 180ms ease-out both;
+}
+
+@keyframes rowSmoothIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Botón icónico / paginación / chip táctil con volumen */
+.btn-tactile-icon {
+  background: #ffffff;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.06),
+    0 1px 2px 0 rgba(15, 23, 42, 0.06);
+  transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.16s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  user-select: none;
+  cursor: pointer;
+}
+
+.btn-tactile-icon:hover:not(:disabled) {
+  background: #f8fafc;
+  color: var(--color-brand-indigo);
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 0 #ffffff,
+    0 2px 5px 0 rgba(15, 23, 42, 0.08);
+}
+
+.btn-tactile-icon:active:not(:disabled) {
+  transform: translateY(1px) scale(0.95);
+  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.10);
+}
+
+.btn-tactile-icon:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.btn-tactile-icon:focus-visible,
+.btn-tactile-ghost-dark:focus-visible {
+  outline: 2px solid var(--color-brand-sky);
+  outline-offset: 2px;
+}
+
+/* Botón táctil translúcido sobre fondos oscuros / glassmorphism */
+.btn-tactile-ghost-dark {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f1f5f9;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 0.75rem;
+  font-weight: 600;
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.22),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.25),
+    0 2px 6px 0 rgba(15, 23, 42, 0.2);
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s ease, border-color 0.15s ease;
+  user-select: none;
+  cursor: pointer;
+}
+
+.btn-tactile-ghost-dark:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(56, 189, 248, 0.5);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.btn-tactile-ghost-dark:active:not(:disabled) {
+  transform: translateY(1px) scale(0.97);
+  box-shadow: inset 0 2px 5px 0 rgba(0, 0, 0, 0.35);
+}
+
+/* Entrada sutil GPU-only para vistas internas y contenedores */
+.page-enter {
+  /* backwards y no both: al terminar no queda un transform en el contenedor; si quedara,
+     los modales position:fixed de la página se centrarían en la página y no en la pantalla */
+  animation: pageFadeRise 260ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+@keyframes pageFadeRise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* Degradación elegante para usuarios que prefieren movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+  .btn-registrarse,
+  .btn-iniciar-sesion,
+  .btn-tactile-primary,
+  .btn-tactile-secondary,
+  .btn-tactile-dark,
+  .btn-tactile-danger,
+  .btn-tactile-icon,
+  .btn-tactile-ghost-dark,
+  .tab-tactile-inactive {
+    transition: background-color 120ms ease-out, border-color 120ms ease-out !important;
+  }
+  .btn-registrarse:hover,
+  .btn-registrarse:active,
+  .btn-iniciar-sesion:hover,
+  .btn-iniciar-sesion:active,
+  .btn-tactile-primary:hover,
+  .btn-tactile-primary:active,
+  .btn-tactile-secondary:hover,
+  .btn-tactile-secondary:active,
+  .btn-tactile-dark:hover,
+  .btn-tactile-dark:active,
+  .btn-tactile-danger:hover,
+  .btn-tactile-danger:active,
+  .btn-tactile-icon:hover,
+  .btn-tactile-icon:active,
+  .btn-tactile-ghost-dark:hover,
+  .btn-tactile-ghost-dark:active {
+    transform: none !important;
+  }
+  .animate-shine::after {
+    animation: none !important;
+    display: none;
+  }
+  .animate-modal-card,
+  .animate-popover-in,
+  .animate-toast-in,
+  .page-enter {
+    animation: fadeIn 120ms ease-out both !important;
+  }
+  .input-error {
+    animation: none !important;
+  }
+}
+
+/* ==========================================================
+   SUPERFICIES DEL NAVEGADOR CON LA PALETA DE MARCA
+   (selección, cursor, scrollbar, foco y números tabulares)
+   ========================================================== */
+@layer base {
+  html {
+    color: var(--color-slate-900);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    scrollbar-color: color-mix(in oklab, var(--color-brand-indigo) 35%, transparent) transparent;
+  }
+
+  ::selection {
+    background-color: color-mix(in oklab, var(--color-brand-sky) 35%, transparent);
+    color: inherit;
+  }
+
+  input,
+  textarea {
+    caret-color: var(--color-brand-indigo);
+  }
+
+  h1, h2, h3 {
+    text-wrap: balance;
+    letter-spacing: -0.02em;
+  }
+
+  table,
+  [class*="tabular"] {
+    font-variant-numeric: tabular-nums;
+  }
+
+  a {
+    text-underline-offset: 0.2em;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand-sky);
+    outline-offset: 2px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: color-mix(in oklab, var(--color-brand-indigo) 30%, transparent);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: color-mix(in oklab, var(--color-brand-indigo) 50%, transparent);
+  }
+}
+
+/* ==========================================================
+   ALINEACIÓN BASE DE BOTONES TÁCTILES
+   En @layer components: las utilidades (hidden, flex, justify-*) siguen ganando
+   ========================================================== */
+@layer components {
+  .btn-tactile-primary,
+  .btn-tactile-secondary,
+  .btn-tactile-dark,
+  .btn-tactile-danger,
+  .btn-tactile-icon,
+  .btn-tactile-ghost-dark,
+  .btn-registrarse,
+  .btn-iniciar-sesion {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    text-align: center;
+    line-height: 1.25;
+    cursor: pointer;
+  }
+
+  :is(.btn-tactile-primary, .btn-tactile-secondary, .btn-tactile-dark, .btn-tactile-danger,
+      .btn-tactile-icon, .btn-tactile-ghost-dark, .btn-registrarse, .btn-iniciar-sesion) > svg {
+    flex-shrink: 0;
+  }
 }

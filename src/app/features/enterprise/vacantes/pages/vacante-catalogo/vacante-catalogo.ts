@@ -1,9 +1,208 @@
-﻿import { Component } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, computed, effect, inject, signal, DestroyRef } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { Subject } from 'rxjs'
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
+import gsap from 'gsap'
+import { VacanteCard } from '../../components/vacante-card/vacante-card'
+import { PostulacionModal } from '../../components/postulacion-modal/postulacion-modal'
+import { VacanteService } from '../../services/vacante'
+import { ModalidadTrabajo, PostulacionResponseDTO, VacanteResponseDTO } from '../../models/vacante.models'
+import { Auth } from '../../../../../core/auth/services/auth'
+import { Paginator } from '../../../../../shared/components/paginator/paginator'
 
 @Component({
-  imports: [],
+  imports: [VacanteCard, PostulacionModal, Paginator],
   selector: 'app-vacante-catalogo',
   styleUrl: './vacante-catalogo.css',
-  templateUrl: './vacante-catalogo.html',
+  templateUrl: './vacante-catalogo.html'
 })
-export class VacanteCatalogo {}
+export class VacanteCatalogo implements OnInit, OnDestroy {
+  private host = inject(ElementRef<HTMLElement>)
+  private gsapCtx?: gsap.Context
+  private hasAnimatedCards = false
+  protected vacanteService = inject(VacanteService)
+  private auth = inject(Auth)
+  private destroyRef = inject(DestroyRef)
+
+  constructor() {
+    effect(() => {
+      const loading = this.vacanteService.isLoading()
+      const total = this.vacantesFiltradas().length
+      if (!loading && total > 0 && !this.hasAnimatedCards) {
+        this.hasAnimatedCards = true
+        this.animateCards()
+      }
+    })
+  }
+
+  readonly puedePostular = computed(() => {
+    const rol = this.auth.session()?.rol
+    return rol === 'POSTULANTE' || rol === 'FREELANCER'
+  })
+
+  // Estados reactivos de filtrado y paginación
+  readonly searchFilter = signal<string>('')
+  readonly modalidadFilter = signal<ModalidadTrabajo | 'TODAS'>('TODAS')
+  readonly selectedTag = signal<string | null>(null)
+  readonly itemsPorPagina = 8
+  readonly paginaActual = signal<number>(1)
+
+  // Control del modal de postulación
+  readonly isModalOpen = signal<boolean>(false)
+  readonly selectedVacante = signal<VacanteResponseDTO | null>(null)
+  readonly toastMessage = signal<string | null>(null)
+
+  // Subject para debounce reactivo de búsqueda (Escenario 1 - Gherkin WL-24)
+  private searchSubject = new Subject<string>()
+
+  // Tags tecnológicas reactivas a las vacantes reales cargadas desde la base de datos
+  readonly popularTags = computed<string[]>(() => {
+    const catalogo = this.vacanteService.catalogoVacantes()
+    const counts: Record<string, number> = {}
+
+    for (const v of catalogo) {
+      for (const t of v.etiquetas || []) {
+        const clean = t.trim()
+        if (clean) {
+          counts[clean] = (counts[clean] || 0) + 1
+        }
+      }
+    }
+
+    const sorted = Object.keys(counts).sort((a, b) => counts[b] - counts[a])
+    if (sorted.length > 0) {
+      return sorted.slice(0, 12)
+    }
+
+    return ['Angular', 'TypeScript', 'Java', 'Spring Boot', 'Python', 'Docker', 'AWS']
+  })
+
+  // Lista filtrada reactivamente
+  readonly vacantesFiltradas = computed(() => {
+    const term = this.searchFilter().toLowerCase().trim()
+    const modalidad = this.modalidadFilter()
+    const tag = this.selectedTag()
+    const catalogo = this.vacanteService.catalogoVacantes()
+
+    return catalogo.filter((v) => {
+      const matchText =
+        !term ||
+        v.puesto.toLowerCase().includes(term) ||
+        v.nombreEmpresa.toLowerCase().includes(term) ||
+        v.descripcion.toLowerCase().includes(term) ||
+        v.etiquetas.some((t) => t.toLowerCase().includes(term))
+
+      const matchModalidad =
+        modalidad === 'TODAS' || v.tipoUbicacion?.toUpperCase() === modalidad
+
+      const matchTag =
+        !tag || v.etiquetas.some((t) => t.toLowerCase() === tag.toLowerCase())
+
+      return matchText && matchModalidad && matchTag
+    })
+  })
+
+  readonly vacantesPaginadas = computed<VacanteResponseDTO[]>(() => {
+    const filtradas = this.vacantesFiltradas()
+    const totalPaginas = Math.max(1, Math.ceil(filtradas.length / this.itemsPorPagina))
+    const pagina = Math.min(Math.max(1, this.paginaActual()), totalPaginas)
+    const inicio = (pagina - 1) * this.itemsPorPagina
+    return filtradas.slice(inicio, inicio + this.itemsPorPagina)
+  })
+
+  ngOnInit(): void {
+    // Configuración del pipeline reactivo con debounceTime(300) y distinctUntilChanged()
+    this.searchSubject
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe((query) => {
+        this.searchFilter.set(query)
+        this.paginaActual.set(1)
+      })
+
+    // Carga inicial del feed de vacantes
+    this.vacanteService.getCatalogoVacantes().subscribe()
+  }
+
+  onSearchInput(event: Event): void {
+    const input = event.target as HTMLInputElement
+    this.searchSubject.next(input.value)
+  }
+
+  setModalidad(modalidad: ModalidadTrabajo | 'TODAS'): void {
+    this.modalidadFilter.set(modalidad)
+    this.paginaActual.set(1)
+  }
+
+  toggleTag(tag: string): void {
+    this.selectedTag.update((current) => (current === tag ? null : tag))
+    this.paginaActual.set(1)
+  }
+
+  limpiarTag(): void {
+    this.selectedTag.set(null)
+    this.paginaActual.set(1)
+  }
+
+  restablecerFiltros(): void {
+    this.searchFilter.set('')
+    this.setModalidad('TODAS')
+    this.selectedTag.set(null)
+    this.paginaActual.set(1)
+  }
+
+  cambiarPagina(nuevaPagina: number): void {
+    this.paginaActual.set(nuevaPagina)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  abrirModalPostulacion(vacante: VacanteResponseDTO): void {
+    if (!this.puedePostular()) return
+    this.selectedVacante.set(vacante)
+    this.isModalOpen.set(true)
+  }
+
+  cerrarModalPostulacion(): void {
+    this.isModalOpen.set(false)
+    this.selectedVacante.set(null)
+  }
+
+  onPostulacionExitosa(nueva: PostulacionResponseDTO): void {
+    this.cerrarModalPostulacion()
+    this.toastMessage.set(`¡Postulación enviada con éxito para "${nueva.puestoVacante}"!`)
+    setTimeout(() => {
+      this.toastMessage.set(null)
+    }, 4500)
+  }
+
+  estaPostulado(vacanteId: number): boolean {
+    if (!this.puedePostular()) return false
+    return this.vacanteService.yaPostulado(vacanteId)
+  }
+
+  private animateCards(): void {
+    requestAnimationFrame(() => {
+      this.gsapCtx?.revert()
+      this.gsapCtx = gsap.context(() => {
+        const mm = gsap.matchMedia()
+        mm.add('(prefers-reduced-motion: no-preference)', () => {
+          gsap.from('.vacante-card-item', {
+            y: 16,
+            autoAlpha: 0,
+            duration: 0.4,
+            stagger: { each: 0.04, from: 'start' },
+            ease: 'power3.out',
+            clearProps: 'transform,opacity,visibility'
+          })
+        })
+      }, this.host.nativeElement)
+    })
+  }
+
+  ngOnDestroy(): void {
+    this.gsapCtx?.revert()
+  }
+}

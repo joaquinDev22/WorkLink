@@ -2,14 +2,14 @@
    ESTILOS DE MARCA WORKLINK (PÁGINA DE REGISTRO)
    ========================================================================== */
 
-/* Contenedor principal idéntico en paleta al Login */
+/* Contenedor principal idéntico en paleta y radio al Login */
 .card-register-brand {
   background: linear-gradient(to top, rgba(55, 48, 163, 0.55), rgba(129, 140, 248, 0.45));
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--color-glass-border);
   box-shadow: var(--shadow-card-login);
-  border-radius: 1.25rem;
+  border-radius: 1.5rem;
 }
 
 /* Tarjetas interactivas de objetivo en colores de marca */
@@ -31,7 +31,7 @@
 }
 
 .choice-card-brand:active {
-  transform: translateY(1px) scale(0.98);
+  transform: translateY(1px) scale(0.97);
   box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4), var(--shadow-inner-indigo);
 }
 
@@ -40,7 +40,7 @@
   background: rgba(55, 48, 163, 0.8);
   border: 1px solid var(--color-glass-border-subtle);
   box-shadow: var(--shadow-inner-indigo);
-  transition: all 0.25s ease-out;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Botón submit idéntico a Login */

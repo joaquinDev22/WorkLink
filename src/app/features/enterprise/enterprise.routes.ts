@@ -1,25 +1,79 @@
-﻿import { Routes } from '@angular/router';
+import { Routes } from '@angular/router'
+import { roleGuard } from '../../core/auth/guards/role-guard'
 
 export const routes: Routes = [
+  // --- ZONA POSTULANTE / PÚBLICA ---
   {
-    path: 'vacantes',
-    loadComponent: () => import('./vacantes/pages/vacante-admin/vacante-admin-list').then(m => m.VacanteAdminList)
+    path: 'catalogo',
+    loadComponent: () => import('./vacantes/pages/vacante-catalogo/vacante-catalogo').then(m => m.VacanteCatalogo)
+  },
+  {
+    path: 'vacante/:id',
+    loadComponent: () => import('./vacantes/pages/vacante-detail/vacante-detail').then(m => m.VacanteDetail)
+  },
+  {
+    path: 'mis-postulaciones',
+    canActivate: [roleGuard],
+    data: { roles: ['POSTULANTE'] },
+    loadComponent: () => import('./vacantes/pages/vacante-postulantes/vacante-postulantes').then(m => m.VacantePostulantes)
+  },
+
+  // --- ZONA EXCLUSIVA EMPRESA ---
+  {
+    path: 'perfil',
+    canActivate: [roleGuard],
+    data: { roles: ['EMPRESA'] },
+    loadComponent: () => import('./empresa-perfil/pages/empresa-form/empresa-form').then(m => m.EmpresaForm)
   },
   {
     path: 'dashboard',
+    canActivate: [roleGuard],
+    data: { roles: ['EMPRESA'] },
     loadComponent: () => import('./dashboard/pages/empresa-dashboard/empresa-dashboard').then(m => m.EmpresaDashboard)
   },
   {
     path: 'recruiters',
+    canActivate: [roleGuard],
+    data: { roles: ['EMPRESA'] },
     loadComponent: () => import('./recruiters/pages/recruiter-list/recruiter-list').then(m => m.RecruiterList)
   },
+
+  // --- ZONA ENTREVISTAS (RECRUITER & POSTULANTE) ---
   {
     path: 'entrevistas',
+    canActivate: [roleGuard],
+    data: { roles: ['RECRUITER', 'POSTULANTE'] },
     loadComponent: () => import('./entrevistas/pages/entrevista-calendar/entrevista-calendar').then(m => m.EntrevistaCalendar)
   },
   {
+    path: 'postulantes',
+    canActivate: [roleGuard],
+    data: { roles: ['RECRUITER'] },
+    loadComponent: () => import('./vacantes/pages/vacante-postulantes/vacante-postulantes').then(m => m.VacantePostulantes)
+  },
+
+  // --- ADMINISTRACIÓN DE VACANTES (EMPRESA & RECRUITER) ---
+  {
+    path: 'vacantes',
+    canActivate: [roleGuard],
+    data: { roles: ['EMPRESA', 'RECRUITER'] },
+    loadComponent: () => import('./vacantes/pages/vacante-admin/vacante-admin-list').then(m => m.VacanteAdminList)
+  },
+  {
+    path: 'vacantes/nueva',
+    canActivate: [roleGuard],
+    data: { roles: ['EMPRESA'] },
+    loadComponent: () => import('./vacantes/pages/vacante-form/vacante-create-edit').then(m => m.VacanteCreateEdit)
+  },
+  {
+    path: 'vacantes/editar/:id',
+    canActivate: [roleGuard],
+    data: { roles: ['EMPRESA'] },
+    loadComponent: () => import('./vacantes/pages/vacante-form/vacante-create-edit').then(m => m.VacanteCreateEdit)
+  },
+  {
     path: '',
-    redirectTo: 'vacantes',
+    redirectTo: 'catalogo',
     pathMatch: 'full'
   }
-];
+]

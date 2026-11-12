@@ -1,1 +1,132 @@
-﻿<p>mis-proyectos-cliente works!</p>
+<div class="page-enter w-full space-y-6 pb-14">
+
+  <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/80 pb-5">
+    <div class="space-y-1">
+      <h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+        Mis Proyectos Publicados
+      </h1>
+      <p class="text-sm text-slate-500">
+        Administra propuestas recibidas, aprueba hitos entregados, cancela encargos o califica al finalizar.
+      </p>
+    </div>
+    <a
+      routerLink="/freelance/nuevo-proyecto"
+      class="btn-tactile-primary px-5 py-2.5 min-h-[44px] text-sm inline-flex items-center justify-center gap-2 shrink-0">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+      </svg>
+      <span>Publicar Proyecto</span>
+    </a>
+  </header>
+
+  @if (errorCarga()) {
+    <div role="alert" class="bg-white border border-rose-200 rounded-2xl p-6 text-center space-y-3">
+      <p class="text-sm font-medium text-rose-700">{{ errorCarga() }}</p>
+      <button type="button" (click)="cargarProyectos()" class="btn-tactile-secondary px-4 py-2 text-xs cursor-pointer">
+        Reintentar
+      </button>
+    </div>
+  } @else if (isLoading()) {
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-pulse" aria-busy="true">
+      <div class="lg:col-span-4 space-y-3">
+        <div class="h-24 bg-white border border-slate-200 rounded-2xl"></div>
+        <div class="h-24 bg-white border border-slate-200 rounded-2xl"></div>
+      </div>
+      <div class="lg:col-span-8 h-80 bg-white border border-slate-200 rounded-2xl"></div>
+    </div>
+  } @else if (proyectos().length === 0) {
+    <div class="bg-white border border-dashed border-slate-300 rounded-2xl p-10 text-center space-y-3">
+      <h2 class="text-base font-bold text-slate-900">Todavía no publicaste proyectos</h2>
+      <p class="text-sm text-slate-500 max-w-md mx-auto">
+        Publica tu primer encargo freelance para recibir propuestas técnicas y coordinar entregas por hitos.
+      </p>
+      <a routerLink="/freelance/nuevo-proyecto" class="btn-tactile-primary inline-flex px-5 py-2.5 text-sm">
+        Crear primer proyecto
+      </a>
+    </div>
+  } @else {
+    <!-- Filtros rápidos de estado -->
+    <div class="flex flex-wrap items-center gap-2">
+      @for (est of filtrosEstado; track est) {
+        @let active = filtroEstado() === est;
+        <button
+          type="button"
+          (click)="seleccionarFiltro(est)"
+          [class]="active
+            ? 'btn-tactile-primary font-semibold'
+            : 'btn-tactile-secondary text-slate-700 font-medium'"
+          class="px-3.5 py-2 min-h-[40px] rounded-xl text-xs">
+          {{ labelEstado(est) }}
+        </button>
+      }
+    </div>
+
+    @if (proyectosFiltrados().length === 0) {
+      <div class="bg-white border border-dashed border-slate-300 rounded-2xl p-8 text-center text-sm text-slate-500">
+        No tienes proyectos en este estado.
+      </div>
+    } @else {
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <!-- Selector lateral de proyectos (4 cols) -->
+        <aside class="lg:col-span-4 space-y-2.5">
+          @for (p of proyectosPaginados(); track p.proyectoId) {
+            @let cfg = estadoConfig[p.estado];
+            @let selected = proyectoActivo()?.proyectoId === p.proyectoId;
+            <div
+              [class]="selected
+                ? 'border-brand-indigo bg-indigo-50/40 ring-2 ring-brand-indigo/15 shadow-[inset_0_1px_0_rgba(255,255,255,0.85),0_2px_6px_rgba(79,70,229,0.1)]'
+                : 'border-slate-200/80 bg-white hover:border-slate-300 shadow-xs'"
+              class="w-full p-4 rounded-2xl border transition-[border-color,background-color,box-shadow] duration-150 space-y-2">
+              <button
+                type="button"
+                (click)="proyectoActivoId.set(p.proyectoId)"
+                class="w-full text-left space-y-2 cursor-pointer rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky">
+                <div class="flex items-center justify-between gap-2">
+                  <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-semibold {{ cfg.badgeClass }}">
+                    {{ cfg.label }}
+                  </span>
+                  <span class="text-[11px] text-slate-500">{{ formatFecha(p.fechaPublicacion) }}</span>
+                </div>
+                <div class="font-bold text-sm text-slate-900 line-clamp-2">
+                  {{ p.nombreProyecto || p.area }}
+                </div>
+              </button>
+              <div class="flex items-center justify-between gap-2 text-xs text-slate-600 tabular-nums pt-0.5">
+                <span>${{ p.presupuestoMin }} - ${{ p.presupuestoMax }}</span>
+                @if (p.estado === 'EN_PROGRESO' || p.estado === 'FINALIZADO') {
+                  <a
+                    [routerLink]="['/freelance/proyecto', p.proyectoId, 'pagos']"
+                    class="font-semibold text-brand-indigo hover:underline inline-flex items-center gap-1 py-1 px-1.5 -mr-1.5 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky">
+                    <span>Pagos</span>
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </a>
+                }
+              </div>
+            </div>
+          }
+
+          <app-paginator
+            [compact]="true"
+            [currentPage]="paginaActual()"
+            [totalItems]="proyectosFiltrados().length"
+            [pageSize]="itemsPorPagina"
+            itemLabel="proyectos"
+            (pageChange)="paginaActual.set($event)" />
+        </aside>
+
+        <!-- Workspace del proyecto seleccionado (8 cols) -->
+        <main class="lg:col-span-8">
+          @if (proyectoActivo(); as activo) {
+            <app-proyecto-workspace-panel
+              role="CLIENTE"
+              [proyecto]="activo"
+              (proyectoChange)="actualizarProyectoEnLista($event)">
+            </app-proyecto-workspace-panel>
+          }
+        </main>
+      </div>
+    }
+  }
+</div>

@@ -1,1 +1,397 @@
-<p>recruiter-list works!</p>
+<!-- Directorio del Equipo de Reclutadores -->
+<div class="w-full space-y-6 pb-10 page-enter">
+
+  <!-- Toast de Notificación -->
+  @if (toastMsg()) {
+    <div
+      class="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 bg-slate-900 text-white text-xs sm:text-sm font-medium rounded-xl shadow-xl border border-slate-800 animate-toast-in"
+      role="status"
+      aria-live="polite">
+      <div class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+      <span>{{ toastMsg() }}</span>
+      <button
+        type="button"
+        (click)="toastMsg.set(null)"
+        class="ml-2 p-1 rounded-lg text-slate-400 hover:text-white transition-colors cursor-pointer"
+        aria-label="Cerrar notificación">
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  }
+
+  <!-- Header de Sección -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-6">
+    <div>
+      <div class="flex items-center gap-3">
+        <h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+          Equipo de Reclutadores
+        </h1>
+        <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700">
+          {{ recruiters().length }} cuentas autorizadas
+        </span>
+      </div>
+      <p class="text-sm text-slate-500 mt-1">
+        Miembros autorizados para evaluar candidaturas, filtrar CVs y coordinar entrevistas técnicas.
+      </p>
+    </div>
+
+    <!-- Botón Principal: Alta Recruiter -->
+    <div class="flex items-center gap-3 shrink-0">
+      <button
+        type="button"
+        (click)="abrirModal()"
+        class="btn-tactile-primary w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        <span>Nuevo Reclutador</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Contenedor Unificado de Directorio (Toolbar + Roster) -->
+  <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+
+    <!-- Barra de Herramientas Integrada -->
+    <div class="p-4 sm:px-6 sm:py-4 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      
+      <!-- Búsqueda rápida -->
+      <div class="relative flex-1 max-w-md">
+        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="onFilterChange()"
+          placeholder="Buscar por nombre, email o área..."
+          class="w-full pl-10 pr-10 py-2 text-xs sm:text-sm bg-white border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-[border-color,box-shadow]" />
+        @if (searchTerm()) {
+          <button
+            type="button"
+            (click)="searchTerm.set(''); onFilterChange()"
+            class="btn-tactile-icon absolute inset-y-1.5 right-1.5 w-7 h-7 rounded-lg flex items-center justify-center"
+            aria-label="Limpiar búsqueda">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        }
+      </div>
+
+      <!-- Segmented Control de Áreas -->
+      @if (availableAreas().length > 0) {
+        <div class="flex flex-wrap items-center gap-1.5 bg-slate-200/60 p-1.5 rounded-2xl text-xs shrink-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <button
+            type="button"
+            (click)="selectedArea.set('TODAS'); onFilterChange()"
+            class="{{ selectedArea() === 'TODAS' ? 'tab-tactile-active' : 'tab-tactile-inactive' }}">
+            Todas
+          </button>
+          @for (area of availableAreas(); track area) {
+            <button
+              type="button"
+              (click)="selectedArea.set(area); onFilterChange()"
+              class="{{ selectedArea() === area ? 'tab-tactile-active' : 'tab-tactile-inactive' }}">
+              {{ area }}
+            </button>
+          }
+        </div>
+      }
+
+    </div>
+
+    <!-- Contenido de Tabla / Directorio -->
+    @if (isLoading()) {
+      <div class="p-8 space-y-4">
+        @for (i of [1, 2, 3]; track i) {
+          <div class="p-4 rounded-xl border border-slate-100 animate-pulse flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-slate-200"></div>
+              <div class="space-y-1.5">
+                <div class="w-36 h-3.5 bg-slate-200 rounded"></div>
+                <div class="w-48 h-3 bg-slate-100 rounded"></div>
+              </div>
+            </div>
+            <div class="w-24 h-6 bg-slate-100 rounded-full"></div>
+          </div>
+        }
+      </div>
+    } @else if (filteredRecruiters().length > 0) {
+
+      <!-- Tabla Desktop -->
+      <div class="hidden md:block overflow-x-auto overflow-y-hidden [scrollbar-width:thin]">
+        <table class="w-full text-left text-xs sm:text-sm">
+          <thead class="border-b border-slate-100 bg-slate-50/75 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+            <tr>
+              <th scope="col" class="px-6 py-3.5">Miembro</th>
+              <th scope="col" class="px-6 py-3.5">Área / Especialidad</th>
+              <th scope="col" class="px-6 py-3.5">Rol de Sistema</th>
+              <th scope="col" class="px-6 py-3.5">Alcance Operativo</th>
+              <th scope="col" class="px-6 py-3.5 text-right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            @for (rec of paginatedRecruiters(); track rec.recruiterId) {
+              <tr class="hover:bg-slate-50/70 transition-colors animate-row-enter">
+
+                <!-- Miembro: Avatar + Nombre + Email -->
+                <td class="px-6 py-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-slate-900 text-white font-bold text-xs flex items-center justify-center shrink-0">
+                      {{ getInitials(rec.nombre, rec.apellido) }}
+                    </div>
+                    <div>
+                      <div class="font-bold text-slate-900 text-sm">
+                        {{ rec.nombre }} {{ rec.apellido }}
+                      </div>
+                      <div class="text-xs text-slate-500">
+                        {{ rec.email }}
+                      </div>
+                    </div>
+                  </div>
+                </td>
+
+                <!-- Área / Especialidad -->
+                <td class="px-6 py-4">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-slate-100 text-slate-700">
+                    {{ rec.area || 'General' }}
+                  </span>
+                </td>
+
+                <!-- Rol de Sistema -->
+                <td class="px-6 py-4">
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-brand-indigo border border-indigo-100">
+                    <svg class="w-3 h-3 text-brand-indigo" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                    RECRUITER
+                  </span>
+                </td>
+
+                <!-- Alcance Operativo -->
+                <td class="px-6 py-4 text-xs text-slate-500">
+                  Gestión de postulantes y entrevistas
+                </td>
+
+                <!-- Acciones -->
+                <td class="px-6 py-4 text-right">
+                  <button
+                    type="button"
+                    (click)="solicitarBaja(rec)"
+                    class="btn-tactile-icon w-9 h-9 rounded-xl inline-flex items-center justify-center text-rose-500 hover:text-rose-600 hover:bg-rose-50"
+                    title="Desvincular reclutador"
+                    aria-label="Desvincular reclutador">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </td>
+
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Tarjetas Móviles (sm:hidden) -->
+      <div class="md:hidden divide-y divide-slate-100">
+        @for (rec of paginatedRecruiters(); track rec.recruiterId) {
+          <div class="p-4 flex items-start justify-between gap-3 animate-row-enter">
+            <div class="flex items-start gap-3 min-w-0">
+              <div class="w-9 h-9 rounded-xl bg-slate-900 text-white font-bold text-xs flex items-center justify-center shrink-0">
+                {{ getInitials(rec.nombre, rec.apellido) }}
+              </div>
+              <div class="space-y-1 min-w-0">
+                <p class="font-bold text-slate-900 text-sm truncate">
+                  {{ rec.nombre }} {{ rec.apellido }}
+                </p>
+                <p class="text-xs text-slate-500 truncate">
+                  {{ rec.email }}
+                </p>
+                <div class="flex items-center gap-2 pt-0.5">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-700">
+                    {{ rec.area || 'General' }}
+                  </span>
+                  <span class="text-[10px] font-semibold text-brand-indigo">
+                    RECRUITER
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              (click)="solicitarBaja(rec)"
+              class="btn-tactile-icon w-10 h-10 rounded-xl flex items-center justify-center text-rose-500 hover:text-rose-600 hover:bg-rose-50 shrink-0"
+              aria-label="Dar de baja">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </div>
+        }
+      </div>
+
+      <!-- Barra de Paginación Táctil y Accesible -->
+      @if (filteredRecruiters().length > 0) {
+        <div class="border-t border-slate-100 bg-slate-50/60 px-6 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+          <!-- Indicador de Rango -->
+          <div class="text-slate-500 font-medium order-2 sm:order-1 text-center sm:text-left">
+            Mostrando <span class="font-bold text-slate-800">{{ rangeStart() }}</span> a <span class="font-bold text-slate-800">{{ rangeEnd() }}</span> de <span class="font-bold text-slate-800">{{ filteredRecruiters().length }}</span> reclutadores
+          </div>
+
+          <!-- Controles de Paginación -->
+          <div class="flex items-center gap-2 order-1 sm:order-2">
+            <!-- Selector de Cantidad por Página -->
+            <div class="flex items-center gap-1.5 mr-2">
+              <span class="text-slate-400 font-semibold text-[11px]">Por pág:</span>
+              <div class="inline-flex bg-slate-200/70 p-0.5 rounded-lg text-xs">
+                <button
+                  type="button"
+                  (click)="setPageSize(5)"
+                  class="{{ pageSize() === 5 ? 'tab-tactile-active text-indigo-700' : 'tab-tactile-inactive' }} px-2.5 py-1">
+                  5
+                </button>
+                <button
+                  type="button"
+                  (click)="setPageSize(10)"
+                  class="{{ pageSize() === 10 ? 'tab-tactile-active text-indigo-700' : 'tab-tactile-inactive' }} px-2.5 py-1">
+                  10
+                </button>
+              </div>
+            </div>
+
+            <!-- Botón Anterior -->
+            <button
+              type="button"
+              (click)="prevPage()"
+              [disabled]="currentPage() === 1"
+              class="btn-tactile-secondary px-2.5 py-1.5 rounded-lg font-semibold inline-flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed"
+              aria-label="Página anterior">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+              </svg>
+              <span class="hidden sm:inline">Anterior</span>
+            </button>
+
+            <!-- Números de Página -->
+            <div class="flex items-center gap-1">
+              @for (p of pagesList(); track p) {
+                <button
+                  type="button"
+                  (click)="goToPage(p)"
+                  class="w-9 h-9 rounded-xl text-xs font-bold flex items-center justify-center {{ currentPage() === p ? 'tab-tactile-active text-indigo-700' : 'btn-tactile-icon' }}">
+                  {{ p }}
+                </button>
+              }
+            </div>
+
+            <!-- Botón Siguiente -->
+            <button
+              type="button"
+              (click)="nextPage()"
+              [disabled]="currentPage() === totalPages()"
+              class="btn-tactile-secondary px-2.5 py-1.5 rounded-lg font-semibold inline-flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed"
+              aria-label="Página siguiente">
+              <span class="hidden sm:inline">Siguiente</span>
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      }
+
+    } @else {
+
+      <!-- Estado Vacío -->
+      <div class="p-12 text-center space-y-3">
+        <p class="text-sm font-bold text-slate-800">
+          {{ searchTerm() || selectedArea() !== 'TODAS' ? 'No se encontraron reclutadores con esos criterios' : 'No tienes reclutadores registrados aún' }}
+        </p>
+        <p class="text-xs text-slate-500 max-w-sm mx-auto">
+          {{ searchTerm() || selectedArea() !== 'TODAS' ? 'Intenta restablecer la búsqueda o seleccionar otra especialidad.' : 'Comienza invitando profesionales a tu equipo para delegar la selección de talento.' }}
+        </p>
+        @if (searchTerm() || selectedArea() !== 'TODAS') {
+          <button
+            type="button"
+            (click)="searchTerm.set(''); selectedArea.set('TODAS')"
+            class="btn-tactile-secondary px-3.5 py-1.5 rounded-lg text-xs font-semibold">
+            Limpiar filtros
+          </button>
+        }
+      </div>
+
+    }
+
+  </div>
+
+  <!-- Modal de Alta de Recruiter -->
+  <app-recruiter-form-modal
+    [isOpen]="isModalOpen()"
+    (closed)="isModalOpen.set(false)"
+    (saved)="onRecruiterSaved($event)">
+  </app-recruiter-form-modal>
+
+  <!-- Modal de Confirmación de Baja con Animación Fluida -->
+  @if (recruiterToDelete()) {
+    <div
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/50 backdrop-blur-sm animate-modal-backdrop transition-opacity"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="confirm-delete-rec-title"
+      (keydown.escape)="cancelarBaja()">
+
+      <div class="fixed inset-0" (click)="cancelarBaja()"></div>
+
+      <div class="relative w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-200 p-6 z-10 animate-modal-card space-y-4">
+        <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        </div>
+
+        <div class="space-y-1">
+          <h3 id="confirm-delete-rec-title" class="text-base font-bold text-slate-900">
+            ¿Desvincular reclutador?
+          </h3>
+          <p class="text-xs text-slate-500">
+            Se revocará el acceso corporativo a <strong class="text-slate-700">{{ recruiterToDelete()?.nombre }} {{ recruiterToDelete()?.apellido }}</strong>. Ya no podrá gestionar candidatos de tu empresa.
+          </p>
+        </div>
+
+        <div class="pt-2 flex items-center justify-end gap-2.5">
+          <button
+            type="button"
+            (click)="cancelarBaja()"
+            class="btn-tactile-secondary px-4 py-2 rounded-xl text-xs font-semibold">
+            Cancelar
+          </button>
+
+          <button
+            type="button"
+            (click)="confirmarBaja()"
+            [disabled]="isMutating()"
+            class="btn-tactile-danger inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold">
+            @if (isMutating()) {
+              <span>Desvinculando...</span>
+            } @else {
+              <span>Sí, desvincular</span>
+            }
+          </button>
+        </div>
+      </div>
+
+    </div>
+  }
+
+</div>

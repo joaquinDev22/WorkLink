@@ -1,1 +1,311 @@
-﻿<p>empresa-dashboard works!</p>
+<!-- Dashboard Corporativo - Vista Ejecutiva -->
+<div class="w-full space-y-8 pb-10 page-enter">
+
+  <!-- Header Superior con Acción Principal -->
+  <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-6">
+    <div>
+      <div class="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-1">
+        <span>{{ empresa()?.nombre || 'Mi Empresa' }}</span>
+        <span>•</span>
+        <span class="text-slate-400">Panel Ejecutivo</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+        Dashboard Corporativo
+      </h1>
+      <p class="text-sm text-slate-500 mt-0.5 max-w-2xl">
+        Pulso general de contratación, demanda de competencias técnicas y velocidad del proceso de selección.
+      </p>
+    </div>
+
+    <div class="flex items-center gap-3 shrink-0">
+      <a
+        routerLink="/enterprise/vacantes/nueva"
+        class="btn-tactile-primary w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        <span>Publicar Vacante</span>
+      </a>
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <!-- Skeleton de Carga -->
+    <div class="space-y-6 animate-pulse">
+      <div class="h-28 bg-slate-100 rounded-2xl border border-slate-200/60"></div>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 h-96 bg-slate-100 rounded-2xl border border-slate-200/60"></div>
+        <div class="h-96 bg-slate-100 rounded-2xl border border-slate-200/60"></div>
+      </div>
+    </div>
+  } @else {
+
+    <!-- Franja Unificada de Métricas Ejecutivas (KPI Strip Sin Duplicación) -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs divide-y sm:divide-y-0 sm:divide-x divide-slate-100 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 overflow-hidden">
+      
+      <!-- Métrica 1: Búsquedas Activas -->
+      <div class="dash-kpi p-6 space-y-1">
+        <p class="text-xs font-semibold text-slate-500">Búsquedas Activas</p>
+        <div class="flex items-baseline gap-2">
+          <span class="text-3xl font-black text-slate-900 tracking-tight">{{ vacantesActivas().length }}</span>
+          <span class="text-xs font-semibold text-slate-400">/ {{ misVacantes().length }} totales</span>
+        </div>
+        <p class="text-xs text-emerald-600 font-medium pt-1 flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          <span>Convocatorias vigentes</span>
+        </p>
+      </div>
+
+      <!-- Métrica 2: Tasa de Efectividad -->
+      <div class="dash-kpi p-6 space-y-1">
+        <p class="text-xs font-semibold text-slate-500">Tasa de Efectividad</p>
+        <div class="flex items-baseline gap-2">
+          <span class="text-3xl font-black text-slate-900 tracking-tight">{{ tasaEfectividad() }}%</span>
+          <span class="text-xs font-semibold text-slate-400">conversión</span>
+        </div>
+        <p class="text-xs text-slate-500 font-medium pt-1">
+          Incorporaciones sobre aplicaciones
+        </p>
+      </div>
+
+      <!-- Métrica 3: Carga del Equipo -->
+      <div class="dash-kpi p-6 space-y-1">
+        <p class="text-xs font-semibold text-slate-500">Carga de Selección</p>
+        <div class="flex items-baseline gap-2">
+          <span class="text-3xl font-black text-slate-900 tracking-tight">{{ ratioCarga() }}</span>
+          <span class="text-xs font-semibold text-slate-400">vacantes / recruiter</span>
+        </div>
+        <p class="text-xs text-slate-500 font-medium pt-1">
+          {{ recruiters().length }} reclutadores asignados
+        </p>
+      </div>
+
+      <!-- Métrica 4: Tiempo Promedio de Contratación -->
+      <div class="dash-kpi p-6 space-y-1">
+        <p class="text-xs font-semibold text-slate-500">Tiempo Estimado Ciclo</p>
+        <div class="flex items-baseline gap-2">
+          <span class="text-3xl font-black text-slate-900 tracking-tight">{{ vacantesActivas().length > 0 ? '14' : '0' }}</span>
+          <span class="text-xs font-semibold text-slate-400">días promedio</span>
+        </div>
+        <p class="text-xs text-slate-500 font-medium pt-1">
+          {{ vacantesActivas().length > 0 ? 'Ritmo ágil de selección' : 'Sin búsquedas activas' }}
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Layout Asimétrico 2/3 + 1/3 -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+
+      <!-- Columna Principal (2/3): Prioridades y Habilidades Demandadas -->
+      <div class="lg:col-span-2 space-y-8">
+
+        <!-- Convocatorias que Requieren Atención (Ordenadas por urgencia de fecha límite) -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+          <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+            <div>
+              <h2 class="text-base font-bold text-slate-900 tracking-tight">
+                Prioridades de Contratación
+              </h2>
+              <p class="text-xs text-slate-500">
+                Vacantes activas ordenadas por proximidad a su fecha de cierre.
+              </p>
+            </div>
+            <a
+              routerLink="/enterprise/vacantes"
+              class="text-xs font-bold text-brand-indigo hover:underline flex items-center gap-1">
+              <span>Gestionar vacantes</span>
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </a>
+          </div>
+
+          @if (vacantesPrioritarias().length > 0) {
+            <div class="divide-y divide-slate-100">
+              @for (v of vacantesPrioritarias(); track v.vacanteId) {
+                <div class="p-5 hover:bg-slate-50/70 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div class="space-y-1">
+                    <div class="flex items-center gap-2.5">
+                      <span class="font-bold text-slate-900 text-sm">{{ v.puesto }}</span>
+                      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200/80">
+                        Cierra en {{ diasRestantes(v.finalizacion) }} días
+                      </span>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-slate-500">
+                      <span class="font-medium text-slate-700">{{ v.tipoVacante }}</span>
+                      <span>•</span>
+                      <span>{{ v.tipoUbicacion }}</span>
+                      @if (v.salario) {
+                        <span>•</span>
+                        <span class="text-emerald-700 font-semibold">{{ v.salario }}</span>
+                      }
+                    </div>
+                  </div>
+
+                  <div class="flex items-center gap-2 shrink-0">
+                    <a
+                      [routerLink]="['/enterprise/vacantes/editar', v.vacanteId]"
+                      class="btn-tactile-secondary px-3.5 py-1.5 rounded-xl text-xs font-semibold">
+                      Modificar
+                    </a>
+                  </div>
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="p-8 text-center text-xs text-slate-500">
+              No hay vacantes activas en este momento.
+            </div>
+          }
+        </div>
+
+        <!-- Demanda de Competencias Técnicas (Skill Breakdown) -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs space-y-4">
+          <div>
+            <h2 class="text-base font-bold text-slate-900 tracking-tight">
+              Demanda de Competencias Técnicas
+            </h2>
+            <p class="text-xs text-slate-500">
+              Distribución de tecnologías más requeridas en los perfiles corporativos publicados.
+            </p>
+          </div>
+
+          <div class="space-y-3 pt-2">
+            @for (tec of topTecnologias(); track tec.nombre) {
+              <div class="space-y-1">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-bold text-slate-800">{{ tec.nombre }}</span>
+                  <span class="text-slate-500">{{ tec.count }} {{ tec.count === 1 ? 'búsqueda' : 'búsquedas' }}</span>
+                </div>
+                <div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+                  <div
+                    class="bg-brand-indigo h-full rounded-full transition-[width] duration-300"
+                    [style.width.%]="tec.pct * 3">
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Columna Lateral (1/3): Embudo de Conversión & Modalidad -->
+      <div class="space-y-6">
+
+        <!-- Embudo de Selección Consolidado (Presentado una única vez) -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs space-y-4">
+          <div>
+            <h3 class="text-sm font-bold text-slate-900 tracking-tight">
+              Embudo de Candidaturas
+            </h3>
+            <p class="text-xs text-slate-500">
+              Paso a paso de candidatos en el proceso.
+            </p>
+          </div>
+
+          <div class="space-y-2.5">
+            <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
+              <div>
+                <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">1. Recibidas</span>
+                <span class="text-base font-black text-slate-900">{{ postulacionesRecibidas() }}</span>
+              </div>
+              <span class="text-xs font-semibold text-slate-500">100%</span>
+            </div>
+
+            <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
+              <div>
+                <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">2. Filtro Técnico</span>
+                <span class="text-base font-black text-slate-900">{{ filtroTecnico() }}</span>
+              </div>
+              <span class="text-xs font-semibold text-indigo-600">
+                {{ postulacionesRecibidas() > 0 ? '50%' : '0%' }}
+              </span>
+            </div>
+
+            <div class="flex items-center justify-between p-3 rounded-xl bg-amber-50/60 border border-amber-100">
+              <div>
+                <span class="text-[11px] font-semibold text-amber-700 uppercase tracking-wider block">3. En Entrevista</span>
+                <span class="text-base font-black text-amber-900">{{ entrevistasProgramadas() }}</span>
+              </div>
+              <span class="text-xs font-bold text-amber-700">
+                {{ postulacionesRecibidas() > 0 ? (((entrevistasProgramadas()) / postulacionesRecibidas()) * 100).toFixed(0) : 0 }}%
+              </span>
+            </div>
+
+            <div class="flex items-center justify-between p-3 rounded-xl bg-emerald-50/60 border border-emerald-100">
+              <div>
+                <span class="text-[11px] font-semibold text-emerald-700 uppercase tracking-wider block">4. Contratados</span>
+                <span class="text-base font-black text-emerald-900">{{ contratacionesRealizadas() }}</span>
+              </div>
+              <span class="text-xs font-bold text-emerald-700">
+                {{ postulacionesRecibidas() > 0 ? (((contratacionesRealizadas()) / postulacionesRecibidas()) * 100).toFixed(0) : 0 }}%
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modalidad Operativa -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs space-y-3">
+          <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider">
+            Esquema Operativo
+          </h3>
+
+          <div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden flex">
+            <div class="bg-brand-indigo h-full" [style.width.%]="distribucionModalidad().remotoPct"></div>
+            <div class="bg-sky-500 h-full" [style.width.%]="distribucionModalidad().hibridoPct"></div>
+            <div class="bg-slate-400 h-full" [style.width.%]="distribucionModalidad().presencialPct"></div>
+          </div>
+
+          <div class="space-y-1.5 text-xs pt-1">
+            <div class="flex items-center justify-between">
+              <span class="flex items-center gap-2 text-slate-600">
+                <span class="w-2 h-2 rounded-full bg-brand-indigo"></span>
+                Remoto
+              </span>
+              <span class="font-bold text-slate-800">{{ distribucionModalidad().remoto }} ({{ distribucionModalidad().remotoPct }}%)</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="flex items-center gap-2 text-slate-600">
+                <span class="w-2 h-2 rounded-full bg-sky-500"></span>
+                Híbrido
+              </span>
+              <span class="font-bold text-slate-800">{{ distribucionModalidad().hibrido }} ({{ distribucionModalidad().hibridoPct }}%)</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="flex items-center gap-2 text-slate-600">
+                <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+                Presencial
+              </span>
+              <span class="font-bold text-slate-800">{{ distribucionModalidad().presencial }} ({{ distribucionModalidad().presencialPct }}%)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Acceso al Equipo de Reclutamiento -->
+        <div class="p-5 rounded-2xl bg-slate-900 text-white space-y-3">
+          <div class="flex items-center justify-between">
+            <p class="text-xs font-bold text-slate-200">Equipo de Reclutadores</p>
+            <span class="text-xs font-bold text-slate-400">{{ recruiters().length }} activos</span>
+          </div>
+          <p class="text-[11px] text-slate-400 leading-relaxed">
+            Las aplicaciones individuales y CVs son filtrados exclusivamente por tu equipo de reclutamiento para preservar la privacidad de los candidatos.
+          </p>
+          <a
+            routerLink="/enterprise/recruiters"
+            class="btn-tactile-dark inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold border border-slate-700">
+            <span>Gestionar reclutadores</span>
+            <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </a>
+        </div>
+
+      </div>
+
+    </div>
+
+  }
+
+</div>

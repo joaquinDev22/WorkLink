@@ -1,1 +1,391 @@
-﻿<p>empresa-form works!</p>
+<div class="w-full space-y-8 pb-10 page-enter">
+
+  <!-- ================================================================= -->
+  <!-- 1. ENCABEZADO DE SECCIÓN                                          -->
+  <!-- ================================================================= -->
+  <div class="border-b border-slate-200 pb-6">
+    <div>
+      <h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+        Perfil y Branding Corporativo
+      </h1>
+      <p class="text-sm text-slate-500 mt-1 max-w-2xl">
+        Configura la identidad comercial, imagen de marca y canales de contacto oficial de tu empresa.
+      </p>
+    </div>
+  </div>
+
+  <!-- Medidor reactivo de completitud para Empresa -->
+  <app-perfil-completitud
+    [completitud]="completitudEmpresa()"
+    subtitulo="Completa la identidad y canales de tu empresa para generar más confianza en candidatos."
+    (itemClick)="onCompletitudClick($event.item, logoInput, bannerInput)" />
+
+  <!-- ================================================================= -->
+  <!-- 2. GRID PRINCIPAL (FORMULARIO + VISTA PREVIA CORPORATIVA)         -->
+  <!-- ================================================================= -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+    <!-- COLUMNA IZQUIERDA: Formulario de Edición (8 cols) -->
+    <div class="lg:col-span-7 xl:col-span-8 space-y-6">
+
+      <!-- A. SECCIÓN DE BRANDING: Banner y Logotipo -->
+      <div class="bg-white rounded-3xl border border-slate-200/90 p-6 shadow-sm space-y-6">
+        <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+          <svg class="w-5 h-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          <span>Identidad Visual & Recursos Gráficos</span>
+        </h2>
+
+        <!-- Banner de portada -->
+        <div class="space-y-2">
+          <label class="text-xs font-semibold text-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+            <span>Portada o Banner Corporativo</span>
+            <span class="text-[11px] text-slate-400 font-normal">Recomendado: 1200 x 320 px (JPG, PNG, WebP)</span>
+          </label>
+
+          <input #bannerInput type="file" accept="image/png, image/jpeg, image/webp" class="hidden" (change)="onBannerSelected($event)">
+
+          <div class="relative w-full h-40 sm:h-48 rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 group">
+            @if (empresaModel().banner) {
+              <img [src]="empresaModel().banner" alt="Banner de la empresa" class="w-full h-full object-cover">
+            } @else {
+              <div class="w-full h-full bg-linear-to-r from-brand-indigo-dark to-brand-indigo flex items-center justify-center text-white/50 text-sm font-semibold">
+                Sin imagen de portada configurada
+              </div>
+            }
+
+            <div class="absolute inset-0 bg-slate-900/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+              <button
+                type="button"
+                (click)="bannerInput.click()"
+                [disabled]="isUploadingBanner()"
+                class="btn-tactile-secondary px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-brand-indigo" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                </svg>
+                <span>{{ isUploadingBanner() ? 'Subiendo...' : 'Cambiar Portada' }}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Logotipo corporativo -->
+        <div class="flex items-center gap-5 pt-2">
+          <input #logoInput type="file" accept="image/png, image/jpeg, image/webp" class="hidden" (change)="onLogoSelected($event)">
+
+          <div class="relative w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden border-2 border-slate-200 bg-slate-50 shrink-0 shadow-sm flex items-center justify-center text-2xl font-black text-brand-indigo">
+            @if (empresaModel().logo) {
+              <img [src]="empresaModel().logo" alt="Logotipo corporativo" class="w-full h-full object-cover">
+            } @else {
+              <span>{{ empresaModel().nombre.charAt(0) || 'E' }}</span>
+            }
+          </div>
+
+          <div class="space-y-1.5">
+            <h4 class="text-xs sm:text-sm font-bold text-slate-900">Logotipo o Isotipo Oficial</h4>
+            <p class="text-[11px] sm:text-xs text-slate-400 leading-relaxed">
+              Formato cuadrado preferido (400 x 400 px). Se mostrará en tus ofertas de empleo y notificaciones.
+            </p>
+            <button
+              type="button"
+              (click)="logoInput.click()"
+              [disabled]="isUploadingLogo()"
+              class="btn-tactile-secondary inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold">
+              <svg class="w-3.5 h-3.5 text-brand-indigo" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+              </svg>
+              <span>{{ isUploadingLogo() ? 'Subiendo...' : 'Subir Logotipo' }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- B. SECCIÓN DE DATOS COMERCIALES -->
+      <div class="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-sm space-y-5">
+        <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+          <svg class="w-5 h-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>Información Comercial y de Contacto</span>
+        </h2>
+
+        <form (submit)="$event.preventDefault(); guardar()" class="space-y-4">
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Nombre comercial -->
+            <div class="space-y-1">
+              <label for="emp-nombre" class="text-xs font-semibold text-slate-700">Razón Social o Nombre Comercial*</label>
+              <input
+                type="text"
+                id="emp-nombre"
+                [formField]="empresaForm.nombre"
+                [class.input-error]="empresaForm.nombre().touched() && empresaForm.nombre().invalid()"
+                placeholder="Ej: InnovaCorp Technologies S.A."
+                class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow]">
+              @if (empresaForm.nombre().touched() && empresaForm.nombre().invalid()) {
+                <p class="text-[11px] text-red-500 font-medium pt-0.5">
+                  {{ empresaForm.nombre().errors()?.[0]?.message }}
+                </p>
+              }
+            </div>
+
+            <!-- Rubro o Industria -->
+            <div class="space-y-1">
+              <label for="emp-rubro" class="text-xs font-semibold text-slate-700">Sector o Industria</label>
+              <select
+                id="emp-rubro"
+                [formField]="empresaForm.rubro"
+                class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow]">
+                @for (rubro of rubrosDisponibles; track rubro) {
+                  <option [value]="rubro">{{ rubro }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <!-- Descripción Institucional -->
+          <div class="space-y-1">
+            <div class="flex items-center justify-between">
+              <label for="emp-desc" class="text-xs font-semibold text-slate-700">Acerca de la Compañía / Propuesta de Valor*</label>
+              <span class="text-[11px] text-slate-400">{{ empresaModel().descripcion.length || 0 }} / 1000</span>
+            </div>
+            <textarea
+              id="emp-desc"
+              rows="4"
+              [formField]="empresaForm.descripcion"
+              [class.input-error]="empresaForm.descripcion().touched() && empresaForm.descripcion().invalid()"
+              placeholder="Presenta tu empresa a los candidatos: misión, tecnologías que utilizan, cultura de trabajo y beneficios corporativos..."
+              class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow] resize-none"></textarea>
+            @if (empresaForm.descripcion().touched() && empresaForm.descripcion().invalid()) {
+              <p class="text-[11px] text-red-500 font-medium pt-0.5">
+                {{ empresaForm.descripcion().errors()?.[0]?.message }}
+              </p>
+            }
+          </div>
+
+          <!-- Sitio Web y Teléfono -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <label for="emp-sitio" class="text-xs font-semibold text-slate-700">Sitio Web Corporativo</label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                  </svg>
+                </span>
+                <input
+                  type="url"
+                  id="emp-sitio"
+                  [formField]="empresaForm.sitio_web"
+                  [class.input-error]="empresaForm.sitio_web().touched() && empresaForm.sitio_web().invalid()"
+                  placeholder="https://tuempresa.com"
+                  class="w-full pl-10 pr-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow]">
+              </div>
+              @if (empresaForm.sitio_web().touched() && empresaForm.sitio_web().invalid()) {
+                <p class="text-[11px] text-red-500 font-medium pt-0.5">
+                  {{ empresaForm.sitio_web().errors()?.[0]?.message }}
+                </p>
+              }
+            </div>
+
+            <div class="space-y-1">
+              <label for="emp-tel" class="text-xs font-semibold text-slate-700">Teléfono de Contacto</label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                </span>
+                <input
+                  type="text"
+                  id="emp-tel"
+                  [formField]="empresaForm.telefono"
+                  placeholder="+54 11 4821 9900"
+                  class="w-full pl-10 pr-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow]">
+              </div>
+            </div>
+          </div>
+
+          <!-- Ubicación y Dirección -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <label for="emp-ubicacion" class="text-xs font-semibold text-slate-700">Sede Principal / Ciudad*</label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </span>
+                <input
+                  type="text"
+                  id="emp-ubicacion"
+                  [formField]="empresaForm.ubicacion"
+                  [class.input-error]="empresaForm.ubicacion().touched() && empresaForm.ubicacion().invalid()"
+                  placeholder="Ej: Buenos Aires, Argentina"
+                  class="w-full pl-10 pr-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow]">
+              </div>
+              @if (empresaForm.ubicacion().touched() && empresaForm.ubicacion().invalid()) {
+                <p class="text-[11px] text-red-500 font-medium pt-0.5">
+                  {{ empresaForm.ubicacion().errors()?.[0]?.message }}
+                </p>
+              }
+            </div>
+
+            <div class="space-y-1">
+              <label for="emp-dir" class="text-xs font-semibold text-slate-700">Dirección Física de Oficinas</label>
+              <input
+                type="text"
+                id="emp-dir"
+                [formField]="empresaForm.direccion"
+                placeholder="Ej: Av. del Libertador 1450, Piso 12"
+                class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow]">
+            </div>
+          </div>
+
+          <!-- Botón de Guardado al pie del formulario: ÚNICA acción primaria (DoD & AI_RULES) -->
+          <div class="pt-5 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <span class="text-xs text-slate-400 order-2 sm:order-1">* Campos obligatorios para el perfil comercial</span>
+            <button
+              type="submit"
+              [disabled]="isSaving() || empresaForm().invalid()"
+              class="btn-tactile-primary order-1 sm:order-2 w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl text-xs sm:text-sm font-semibold">
+              @if (isSaving()) {
+                <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>Guardando...</span>
+              } @else {
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Guardar Cambios</span>
+              }
+            </button>
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+
+    <!-- COLUMNA DERECHA: Vista Previa en Vivo (4 cols) -->
+    <div class="lg:col-span-5 xl:col-span-4 space-y-6 lg:sticky lg:top-24">
+
+      <!-- Tarjeta de Vista Previa -->
+      <div class="bg-white rounded-3xl border border-slate-200/90 overflow-hidden shadow-md space-y-0">
+
+        <div class="px-5 py-3.5 bg-slate-50 border-b border-slate-200/70 flex items-center justify-between">
+          <span class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Vista Previa en Vivo</span>
+          </span>
+          <span class="text-[11px] text-slate-400">Cómo te ven los candidatos</span>
+        </div>
+
+        <!-- Banner y Avatar en Preview -->
+        <div class="relative">
+          <div class="w-full h-28 bg-linear-to-r from-brand-indigo-dark to-brand-indigo overflow-hidden">
+            @if (empresaModel().banner) {
+              <img [src]="empresaModel().banner" alt="Banner preview" class="w-full h-full object-cover">
+            }
+          </div>
+
+          <div class="px-5">
+            <div class="relative -mt-10 mb-3 w-16 h-16 rounded-2xl border-2 border-white bg-white shadow-md overflow-hidden flex items-center justify-center font-black text-xl text-brand-indigo shrink-0">
+              @if (empresaModel().logo) {
+                <img [src]="empresaModel().logo" alt="Logo preview" class="w-full h-full object-cover">
+              } @else {
+                <span>{{ empresaModel().nombre.charAt(0) || 'E' }}</span>
+              }
+            </div>
+
+            <!-- Título y Verificación -->
+            <div class="space-y-1 pb-4">
+              <div class="flex items-center gap-1.5">
+                <h3 class="text-base font-extrabold text-slate-900 leading-tight">
+                  {{ empresaModel().nombre || 'Nombre de la Empresa' }}
+                </h3>
+                <span class="text-emerald-500" title="Empresa Verificada">
+                  <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                  </svg>
+                </span>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-2 pt-0.5">
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-50 text-brand-indigo border border-indigo-100">
+                  {{ empresaModel().rubro || 'Tecnología' }}
+                </span>
+                @if (empresaModel().ubicacion) {
+                  <span class="text-[11px] text-slate-500 flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span>{{ empresaModel().ubicacion }}</span>
+                  </span>
+                }
+              </div>
+
+              <!-- Descripción en preview -->
+              <p class="text-xs text-slate-600 line-clamp-4 pt-2 leading-relaxed">
+                {{ empresaModel().descripcion || 'Agrega una descripción para que los candidatos conozcan la cultura y proyectos de tu compañía.' }}
+              </p>
+
+              <!-- Enlaces en preview -->
+              @if (empresaModel().sitio_web) {
+                <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+                  <a [href]="empresaModel().sitio_web" target="_blank" rel="noopener noreferrer" class="text-xs text-brand-indigo hover:underline flex items-center gap-1 font-medium">
+                    <span>Visitar sitio web</span>
+                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                  </a>
+                  <span class="text-[10px] text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60">
+                    Verificada
+                  </span>
+                </div>
+              }
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Badge Informativo de Confianza -->
+      <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
+        <div class="flex items-center gap-2 text-xs font-bold text-slate-800">
+          <svg class="w-4 h-4 text-brand-indigo" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+          <span>Perfil Comercial Respaldado</span>
+        </div>
+        <p class="text-[11px] text-slate-500 leading-relaxed">
+          Las empresas con perfil completo y branding corporativo reciben un 40% más de postulaciones calificadas de desarrolladores y postulantes en WorkLink.
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ================================================================= -->
+  <!-- 3. TOAST DE CONFIRMACIÓN VISUAL                                   -->
+  <!-- ================================================================= -->
+  @if (toastMsg()) {
+    <div
+      class="fixed bottom-6 right-6 z-50 bg-slate-900 text-white text-xs sm:text-sm font-semibold px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2.5 animate-toast-in"
+      role="status"
+      aria-live="polite">
+      <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg>
+      <span>{{ toastMsg() }}</span>
+    </div>
+  }
+
+</div>

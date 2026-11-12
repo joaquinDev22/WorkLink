@@ -1,1 +1,259 @@
-﻿<p>proyecto-detail works!</p>
+<div class="page-enter w-full space-y-6 pb-14">
+
+  <!-- Barra de retorno contextual -->
+  <div class="flex items-center justify-between">
+    <a
+      [routerLink]="isCliente() ? '/freelance/mis-proyectos' : '/freelance/proyectos'"
+      class="btn-tactile-secondary inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-700 hover:text-brand-indigo focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky rounded-xl px-3.5 py-2">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      </svg>
+      <span>{{ isCliente() ? 'Volver a Mis Proyectos' : 'Volver a Proyectos' }}</span>
+    </a>
+  </div>
+
+  @if (isLoading()) {
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start animate-pulse" aria-busy="true">
+      <div class="lg:col-span-8 bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8 space-y-6">
+        <div class="h-6 bg-slate-200 rounded-full w-36"></div>
+        <div class="h-8 bg-slate-200 rounded-xl w-3/4"></div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 py-4 border-y border-slate-100">
+          <div class="h-10 bg-slate-200 rounded-lg"></div>
+          <div class="h-10 bg-slate-200 rounded-lg"></div>
+          <div class="h-10 bg-slate-200 rounded-lg"></div>
+        </div>
+        <div class="space-y-3">
+          <div class="h-4 bg-slate-200 rounded w-full"></div>
+          <div class="h-4 bg-slate-200 rounded w-5/6"></div>
+          <div class="h-4 bg-slate-200 rounded w-2/3"></div>
+        </div>
+      </div>
+      <div class="lg:col-span-4 bg-white border border-slate-200/80 rounded-2xl p-6 space-y-4">
+        <div class="h-5 bg-slate-200 rounded w-32"></div>
+        <div class="h-9 bg-slate-200 rounded-xl w-44"></div>
+        <div class="h-12 bg-slate-200 rounded-xl w-full"></div>
+      </div>
+    </div>
+  } @else if (error() || !proyecto()) {
+    <div role="alert" class="bg-white border border-dashed border-slate-300 rounded-2xl p-8 sm:p-12 text-center space-y-4 max-w-lg mx-auto my-8">
+      <div class="w-12 h-12 mx-auto rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center border border-rose-200">
+        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <h1 class="text-lg font-bold text-slate-900">Proyecto no disponible</h1>
+      <p class="text-sm text-slate-600">{{ error() }}</p>
+      <a routerLink="/freelance/proyectos" class="btn-tactile-primary inline-flex items-center px-5 py-2.5 text-sm">
+        Explorar catálogo
+      </a>
+    </div>
+  } @else {
+    @let p = proyecto()!;
+    @let estado = estadoConfig[p.estado];
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+      <!-- Columna Principal (8 cols) -->
+      <article class="detail-animate lg:col-span-8 bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8 shadow-xs space-y-6">
+        <!-- Badges y Fecha -->
+        <div class="flex flex-wrap items-center gap-2.5">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold {{ estado.badgeClass }}">
+            <span class="w-1.5 h-1.5 rounded-full {{ estado.dotClass }}"></span>
+            {{ estado.label }}
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-brand-indigo border border-indigo-100">
+            {{ p.area }}
+          </span>
+          <span class="text-xs text-slate-500 sm:ml-auto">
+            Publicado el {{ formatFecha(p.fechaPublicacion) }}
+          </span>
+        </div>
+
+        <h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight text-pretty">
+          {{ p.nombreProyecto || p.area }}
+        </h1>
+
+        <!-- Ficha técnica resumida -->
+        <dl class="grid grid-cols-1 sm:grid-cols-3 gap-4 py-4 border-y border-slate-100">
+          <div>
+            <dt class="text-xs font-medium text-slate-500">Duración estimada</dt>
+            <dd class="text-sm font-bold text-slate-900 mt-0.5">{{ p.duracion || 'A convenir' }}</dd>
+          </div>
+          <div>
+            <dt class="text-xs font-medium text-slate-500">Modalidad de pago</dt>
+            <dd class="text-sm font-bold text-slate-900 mt-0.5">{{ p.tipoPago || 'Por hitos' }}</dd>
+          </div>
+          @if (p.nombreFreelancer) {
+            <div>
+              <dt class="text-xs font-medium text-slate-500">Freelancer asignado</dt>
+              <dd class="text-sm font-bold text-brand-indigo mt-0.5">{{ p.nombreFreelancer }}</dd>
+            </div>
+          }
+        </dl>
+
+        <!-- Descripción -->
+        <section class="space-y-2.5">
+          <h2 class="text-base font-bold text-slate-900">Alcance y requerimientos</h2>
+          <p class="text-sm sm:text-base text-slate-700 leading-relaxed whitespace-pre-line text-pretty">
+            {{ p.descripcion }}
+          </p>
+        </section>
+
+        <!-- Habilidades -->
+        @if (p.habilidades && p.habilidades.length > 0) {
+          <section class="space-y-3 pt-4 border-t border-slate-100">
+            <h2 class="text-sm font-bold text-slate-900">Tecnologías y habilidades requeridas</h2>
+            <div class="flex flex-wrap gap-2">
+              @for (skill of p.habilidades; track skill) {
+                <span class="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-medium bg-slate-100 text-slate-800 border border-slate-200/80">
+                  {{ skill }}
+                </span>
+              }
+            </div>
+          </section>
+        }
+
+        <!-- Reseñas del proyecto si existen -->
+        @if (calificaciones().length > 0) {
+          <section class="space-y-3 pt-4 border-t border-slate-100">
+            <h2 class="text-sm font-bold text-slate-900">Valoración del proyecto</h2>
+            <div class="space-y-3">
+              @for (cal of calificaciones(); track cal.calificacionId) {
+                <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-4 space-y-2">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-1" [attr.aria-label]="'Puntaje: ' + cal.puntaje + ' de 5'">
+                      @for (star of [1, 2, 3, 4, 5]; track star) {
+                        <svg
+                          class="w-4 h-4"
+                          [class.text-amber-400]="star <= cal.puntaje"
+                          [class.text-slate-300]="star > cal.puntaje"
+                          fill="currentColor"
+                          viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                      }
+                    </div>
+                    @if (cal.fechaComentario) {
+                      <span class="text-xs text-slate-400">{{ formatFecha(cal.fechaComentario) }}</span>
+                    }
+                  </div>
+                  <p class="text-sm text-slate-700 leading-relaxed">{{ cal.comentario }}</p>
+                </div>
+              }
+            </div>
+          </section>
+        }
+      </article>
+
+      <!-- Columna Derecha Sticky (4 cols) -->
+      <aside class="detail-animate lg:col-span-4 space-y-5 lg:sticky lg:top-6">
+
+        <!-- Tarjeta de Presupuesto y Acción Principal -->
+        <div class="bg-white border border-slate-200/80 rounded-2xl p-6 space-y-5 shadow-xs">
+          <div class="space-y-1">
+            <span class="text-xs font-semibold text-slate-500">Presupuesto asignado</span>
+            <div class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight tabular-nums">
+              ${{ p.presupuestoMin }} - ${{ p.presupuestoMax }}
+            </div>
+          </div>
+
+          @if (propuestaRecienEnviada(); as enviada) {
+            <div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs sm:text-sm space-y-1">
+              <div class="font-bold">Propuesta enviada</div>
+              <p>Cotización enviada por <strong class="tabular-nums">${{ enviada.costoPropuesto }}</strong>.</p>
+            </div>
+          }
+
+          @if (isFreelancer()) {
+            @if (p.estado === 'BUSCANDO_TALENTO') {
+              <button
+                type="button"
+                (click)="mostrarModalPropuesta.set(true)"
+                class="btn-tactile-primary w-full py-3.5 px-4 min-h-[44px] text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
+                <span>{{ propuestaRecienEnviada() ? 'Enviar otra propuesta' : 'Postularme con Propuesta' }}</span>
+              </button>
+            } @else {
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 text-center">
+                Este proyecto ya no recibe nuevas postulaciones ({{ estado.label }}).
+              </div>
+              @if (p.estado === 'EN_PROGRESO') {
+                <a
+                  routerLink="/freelance/mis-trabajos"
+                  class="btn-tactile-secondary w-full py-2.5 px-4 min-h-[44px] text-sm flex items-center justify-center">
+                  Ir a Mis Trabajos
+                </a>
+              }
+              @if (p.estado === 'EN_PROGRESO' || p.estado === 'FINALIZADO') {
+                <a
+                  [routerLink]="['/freelance/proyecto', p.proyectoId, 'pagos']"
+                  class="btn-tactile-secondary w-full py-2.5 px-4 min-h-[44px] text-sm flex items-center justify-center">
+                  Ver Pagos del Proyecto
+                </a>
+              }
+            }
+          } @else if (isCliente()) {
+            <div class="space-y-2.5">
+              @if (p.estado === 'EN_PROGRESO' || p.estado === 'FINALIZADO') {
+                <a
+                  [routerLink]="['/freelance/proyecto', p.proyectoId, 'pagos']"
+                  class="btn-tactile-primary w-full py-3 px-4 min-h-[44px] text-sm flex items-center justify-center gap-2">
+                  <span>Pagos y Checkout</span>
+                </a>
+              } @else {
+                <a
+                  [routerLink]="['/freelance/proyecto', p.proyectoId, 'propuestas']"
+                  class="btn-tactile-primary w-full py-3 px-4 min-h-[44px] text-sm flex items-center justify-center gap-2">
+                  <span>Comparar Propuestas</span>
+                </a>
+              }
+              @if (p.estado === 'BUSCANDO_TALENTO') {
+                <a
+                  [routerLink]="['/freelance/proyecto', p.proyectoId, 'editar']"
+                  class="btn-tactile-secondary w-full py-2.5 px-4 min-h-[44px] text-sm flex items-center justify-center">
+                  Editar Proyecto
+                </a>
+              }
+              <a
+                routerLink="/freelance/mis-proyectos"
+                class="btn-tactile-secondary w-full py-2.5 px-4 min-h-[44px] text-sm flex items-center justify-center">
+                Gestionar Hitos y Estado
+              </a>
+            </div>
+          }
+
+          <div class="flex items-center justify-center gap-2 text-xs text-slate-500 pt-1">
+            <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            <span>Seguimiento por hitos verificables</span>
+          </div>
+        </div>
+
+        <!-- Ficha del Cliente -->
+        <div class="bg-white border border-slate-200/80 rounded-2xl p-5 space-y-3 shadow-xs">
+          <h2 class="text-xs font-bold text-slate-500 pb-2 border-b border-slate-100">
+            Cliente contratante
+          </h2>
+          <div class="flex items-center gap-3">
+            <div class="size-11 rounded-full bg-indigo-50 text-brand-indigo font-bold text-base flex items-center justify-center border border-indigo-200 shrink-0">
+              {{ p.nombreCliente ? p.nombreCliente.charAt(0).toUpperCase() : 'C' }}
+            </div>
+            <div class="min-w-0">
+              <div class="text-sm font-bold text-slate-900 truncate">{{ p.nombreCliente }}</div>
+              <div class="text-xs text-emerald-700 font-medium">Identidad verificada</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  }
+
+  <app-propuesta-modal
+    [(isOpen)]="mostrarModalPropuesta"
+    [proyecto]="proyecto()"
+    (propuestaEnviada)="onPropuestaEnviada($event)">
+  </app-propuesta-modal>
+</div>

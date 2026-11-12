@@ -1,149 +1,188 @@
-import { Component, signal, computed, OnInit, OnDestroy } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnDestroy,
+  computed,
+  inject,
+  signal
+} from '@angular/core'
+import { RouterLink } from '@angular/router'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-export type RolFiltro = 'TODOS' | 'FREELANCER' | 'CLIENTE' | 'EMPRESA';
+export type Recorrido = 'POSTULANTE' | 'EMPRESA' | 'FREELANCE'
 
-export interface TestimonioItem {
-  readonly id: string;
-  readonly nombre: string;
-  readonly rol: 'FREELANCER' | 'CLIENTE' | 'EMPRESA';
-  readonly cargo: string;
-  readonly empresaOStack: string;
-  readonly comentario: string;
-  readonly avatar: string;
+export interface RecorridoItem {
+  readonly id: Recorrido
+  readonly etiqueta: string
+  readonly titulo: string
+  readonly pasos: readonly string[]
 }
 
-export interface EmpresaItem {
-  readonly nombre: string;
-}
+gsap.registerPlugin(ScrollTrigger)
 
 @Component({
   selector: 'app-landing-page',
   standalone: true,
   imports: [RouterLink],
   templateUrl: './landing-page.html',
-  styleUrl: './landing-page.css',
+  styleUrl: './landing-page.css'
 })
-export class LandingPage implements OnInit, OnDestroy {
-  // Marcas para el marquee infinito
-  readonly empresas: readonly EmpresaItem[] = [
-    { nombre: 'MercadoLibre' },
-    { nombre: 'Globant' },
-    { nombre: 'Auth0' },
-    { nombre: 'Ualá' },
-    { nombre: 'Despegar' },
-    { nombre: 'Tiendanube' },
-    { nombre: 'Pomelo' },
-    { nombre: 'Accenture' },
-  ];
+export class LandingPage implements AfterViewInit, OnDestroy {
+  private hostEl = inject(ElementRef<HTMLElement>)
+  private gsapCtx: gsap.Context | null = null
 
-  // Testimonios con experiencias concretas del producto
-  readonly testimonios: readonly TestimonioItem[] = [
+  // Los tres recorridos reales del MVP (dossier §2.8): sin métricas ni testimonios inventados
+  readonly recorridos: readonly RecorridoItem[] = [
     {
-      id: '1',
-      nombre: 'Mateo Silva',
-      rol: 'FREELANCER',
-      cargo: 'Desarrollador Full Stack',
-      empresaOStack: 'Angular · Spring Boot',
-      comentario: 'La tranquilidad de que los fondos de cada hito queden en custodia antes de tirar una sola línea de código cambió por completo cómo cotizo mis proyectos.',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
+      id: 'POSTULANTE',
+      etiqueta: 'Postulantes',
+      titulo: 'Encuentra tu primer empleo en IT',
+      pasos: [
+        'Crea tu cuenta con email o Google y elige el rol Postulante.',
+        'Completa tu perfil: habilidades, portfolio y CV en PDF.',
+        'Filtra vacantes por modalidad y tecnología, y postúlate con una carta.',
+        'Sigue el estado de cada postulación y entra a la entrevista por Google Meet.'
+      ]
     },
     {
-      id: '2',
-      nombre: 'Lucía Fernández',
-      rol: 'EMPRESA',
-      cargo: 'VP of Engineering',
-      empresaOStack: 'Cloud Logistics Inc.',
-      comentario: 'Publicamos la vacante de Tech Lead y en menos de 48 horas teníamos candidatos con perfiles técnicos verificados y disponibilidad real.',
-      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80',
+      id: 'EMPRESA',
+      etiqueta: 'Empresas',
+      titulo: 'Contrata con un proceso ordenado',
+      pasos: [
+        'Registra la empresa y completá su perfil corporativo.',
+        'Da de alta a tus recruiters con el email con el que se registraron.',
+        'Publica vacantes y revisa a cada candidato con su CV.',
+        'Agenda entrevistas técnicas con fecha, hora y enlace de videollamada.'
+      ]
     },
     {
-      id: '3',
-      nombre: 'Gonzalo Rivas',
-      rol: 'CLIENTE',
-      cargo: 'Product Founder',
-      empresaOStack: 'Fintech Startup',
-      comentario: 'Liberar los pagos únicamente cuando el entregable cumple con los criterios de aceptación acordados nos dio el control que ninguna otra plataforma ofrecía.',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80',
-    },
-    {
-      id: '4',
-      nombre: 'Camila Morales',
-      rol: 'FREELANCER',
-      cargo: 'UI/UX & Design Engineer',
-      empresaOStack: 'Design Systems · Tailwind',
-      comentario: 'No tener comisiones ocultas ni sorpresas al liquidar mis cobros hace que sea mi plataforma predilecta para clientes corporativos.',
-      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80',
-    },
-  ];
-
-  // Señal reactiva para el filtro activo
-  readonly rolFiltro = signal<RolFiltro>('TODOS');
-
-  // Cálculo derivado de testimonios filtrados
-  readonly testimoniosFiltrados = computed(() => {
-    const filtro = this.rolFiltro();
-    if (filtro === 'TODOS') {
-      return this.testimonios;
+      id: 'FREELANCE',
+      etiqueta: 'Freelance',
+      titulo: 'Proyectos por hitos, pagados antes de empezar',
+      pasos: [
+        'El cliente publica un proyecto con su rango de presupuesto.',
+        'Los freelancers envían propuestas y el cliente adjudica la que elige.',
+        'El monto acordado se divide en partes iguales entre los hitos.',
+        'Cada hito se paga con Mercado Pago antes de empezar; el freelancer lo entrega y se habilita el siguiente.'
+      ]
     }
-    return this.testimonios.filter((t) => t.rol === filtro);
-  });
+  ]
 
-  // =========================================================================
-  // SEÑALES REACTIVAS PARA EL CONTADOR ANIMADO (0 -> MÁXIMO)
-  // =========================================================================
-  readonly talentosCount = signal(0);
-  readonly custodiaCount = signal(0);
-  readonly empresasCount = signal(0);
+  // Respuestas basadas en lo que el sistema hace hoy (sin promesas de soporte, comisiones ni garantías)
+  readonly preguntas: readonly { pregunta: string; respuesta: string }[] = [
+    { pregunta: '¿Cuánto cuesta usar WorkLink?', respuesta: 'Crear la cuenta es gratis en cualquier rol. En los proyectos freelance, el cliente paga cada hito por Mercado Pago.' },
+    { pregunta: '¿Puedo buscar empleo y hacer freelance con la misma cuenta?', respuesta: 'Sí. Si eres postulante, cambias a modo freelancer desde tu perfil con un clic, sin crear otra cuenta.' },
+    { pregunta: '¿Cómo se paga un hito?', respuesta: 'El cliente paga el próximo hito pendiente con Mercado Pago Checkout Pro. Cuando el pago se confirma, el hito pasa a en progreso y el freelancer empieza a trabajar.' },
+    { pregunta: '¿WorkLink guarda los datos de mi tarjeta?', respuesta: 'No. El pago se hace en Mercado Pago; WorkLink solo registra el monto y el número de operación para el historial.' },
+    { pregunta: '¿Cómo sumo a mi equipo de recruiters?', respuesta: 'Cada recruiter se registra con el rol Recruiter. Después, la empresa lo da de alta desde su panel con el mismo email y ya puede gestionar las vacantes.' }
+  ]
 
-  // Formateadores reactivos para la plantilla
-  readonly talentosTexto = computed(() => `+${this.talentosCount().toLocaleString('es-AR')}`);
-  readonly custodiaTexto = computed(() => `${this.custodiaCount()}%`);
-  readonly empresasTexto = computed(() => `+${this.empresasCount()}`);
+  readonly recorridoActivo = signal<Recorrido>('POSTULANTE')
+  readonly recorridoSeleccionado = computed(
+    () => this.recorridos.find((r) => r.id === this.recorridoActivo()) ?? this.recorridos[0]
+  )
 
-  private frameId: number | null = null;
-
-  ngOnInit(): void {
-    this.iniciarAnimacionMetricas();
+  ngAfterViewInit(): void {
+    this.iniciarAnimacionesLanding()
   }
 
   ngOnDestroy(): void {
-    // Evita fugas de memoria si el usuario navega a otra vista durante la animación
-    if (this.frameId !== null) {
-      cancelAnimationFrame(this.frameId);
-    }
+    this.gsapCtx?.revert()
   }
 
-  cambiarFiltro(nuevoFiltro: RolFiltro): void {
-    this.rolFiltro.set(nuevoFiltro);
+  cambiarRecorrido(id: Recorrido): void {
+    if (this.recorridoActivo() === id) return
+    this.recorridoActivo.set(id)
+
+    queueMicrotask(() => {
+      const scope = gsap.context(() => {
+        const mm = gsap.matchMedia()
+        mm.add('(prefers-reduced-motion: no-preference)', () => {
+          gsap.from('.paso-item', {
+            y: 12,
+            autoAlpha: 0,
+            duration: 0.28,
+            stagger: 0.04,
+            ease: 'power3.out',
+            force3D: true,
+            clearProps: 'transform,opacity,visibility'
+          })
+        })
+      }, this.hostEl.nativeElement)
+      this.gsapCtx?.add(() => scope.revert())
+    })
   }
 
-  private iniciarAnimacionMetricas(): void {
-    const duracionMs = 1800; // 1.8 segundos de recorrido
-    const inicio = performance.now();
+  private iniciarAnimacionesLanding(): void {
+    this.gsapCtx?.revert()
+    this.gsapCtx = gsap.context(() => {
+      const mm = gsap.matchMedia()
 
-    const paso = (tiempoActual: number) => {
-      const transcurrido = tiempoActual - inicio;
-      const progreso = Math.min(transcurrido / duracionMs, 1);
+      mm.add('(prefers-reduced-motion: no-preference)', () => {
+        const heroTl = gsap.timeline({ defaults: { ease: 'power3.out', force3D: true } })
 
-      // Curva de desaceleración cúbica (easeOutCubic)
-      const factorEasing = 1 - Math.pow(1 - progreso, 3);
+        heroTl
+          .from('.hero-stagger', {
+            y: 18,
+            autoAlpha: 0,
+            duration: 0.48,
+            stagger: 0.08,
+            clearProps: 'transform,opacity,visibility'
+          })
+          .from(
+            '.hero-showcase',
+            {
+              y: 22,
+              scale: 0.98,
+              autoAlpha: 0,
+              duration: 0.56,
+              clearProps: 'transform,opacity,visibility'
+            },
+            '-=0.35'
+          )
 
-      this.talentosCount.set(Math.floor(factorEasing * 3000));
-      this.custodiaCount.set(Math.floor(factorEasing * 100));
-      this.empresasCount.set(Math.floor(factorEasing * 500));
+        gsap.from('.pilar-card', {
+          y: 20,
+          autoAlpha: 0,
+          duration: 0.45,
+          stagger: 0.1,
+          ease: 'power3.out',
+          force3D: true,
+          clearProps: 'transform,opacity,visibility',
+          scrollTrigger: {
+            trigger: '.pilares-section',
+            start: 'top 84%',
+            once: true
+          }
+        })
 
-      if (progreso < 1) {
-        this.frameId = requestAnimationFrame(paso);
-      } else {
-        // Garantiza valores finales exactos
-        this.talentosCount.set(3000);
-        this.custodiaCount.set(100);
-        this.empresasCount.set(500);
-        this.frameId = null;
-      }
-    };
+        gsap.from('.ciclo-paso', {
+          y: 16,
+          autoAlpha: 0,
+          duration: 0.4,
+          stagger: 0.12,
+          ease: 'power3.out',
+          force3D: true,
+          clearProps: 'transform,opacity,visibility',
+          scrollTrigger: { trigger: '.ciclo-section', start: 'top 80%', once: true }
+        })
 
-    this.frameId = requestAnimationFrame(paso);
+        gsap.from('.cta-slab', {
+          y: 18,
+          autoAlpha: 0,
+          duration: 0.44,
+          ease: 'power3.out',
+          force3D: true,
+          clearProps: 'transform,opacity,visibility',
+          scrollTrigger: {
+            trigger: '.cta-slab',
+            start: 'top 88%',
+            once: true
+          }
+        })
+      })
+    }, this.hostEl.nativeElement)
   }
 }

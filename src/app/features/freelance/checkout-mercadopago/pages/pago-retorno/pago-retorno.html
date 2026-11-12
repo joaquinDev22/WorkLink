@@ -1,0 +1,170 @@
+<div class="w-full pb-14 page-enter">
+  @let estado = estadoRetorno();
+
+  <div class="retorno-card bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8 shadow-xs space-y-6">
+
+    <!-- Cabecera de estado del retorno -->
+    <div class="flex flex-col sm:flex-row sm:items-start gap-4 border-b border-slate-100 pb-6">
+      @if (estado === 'success') {
+        <div class="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center shrink-0">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <div class="space-y-1.5">
+          <h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+            Pago aprobado en MercadoPago
+          </h1>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            La pasarela confirmó la operación. Verificamos el registro real del proyecto en WorkLink debajo.
+          </p>
+        </div>
+      } @else if (estado === 'pending') {
+        <div class="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center shrink-0">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div class="space-y-1.5">
+          <h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+            Pago pendiente de acreditación
+          </h1>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            MercadoPago está procesando el medio de pago elegido. Cuando se acredite, el webhook actualizará el historial del proyecto.
+          </p>
+        </div>
+      } @else {
+        <div class="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center shrink-0">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </div>
+        <div class="space-y-1.5">
+          <h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+            El pago no pudo completarse
+          </h1>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            La transacción fue rechazada o cancelada en MercadoPago. No se registraron cargos en tu proyecto y podés reintentarlo cuando quieras.
+          </p>
+        </div>
+      }
+    </div>
+
+    <!-- Parámetros recibidos de MercadoPago -->
+    @if (paymentId() || mpStatus() || externalReference() || preferenceId()) {
+      <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 border border-slate-200/80 rounded-xl p-4 text-xs sm:text-sm">
+        @if (paymentId()) {
+          <div>
+            <dt class="text-slate-500 font-medium">ID de operación MercadoPago</dt>
+            <dd class="font-mono font-bold text-slate-900 tabular-nums mt-0.5">{{ paymentId() }}</dd>
+          </div>
+        }
+        @if (mpStatus()) {
+          <div>
+            <dt class="text-slate-500 font-medium">Estado reportado</dt>
+            <dd class="font-bold text-slate-900 mt-0.5 uppercase">{{ mpStatus() }}</dd>
+          </div>
+        }
+        @if (externalReference()) {
+          <div>
+            <dt class="text-slate-500 font-medium">Referencia de proyecto</dt>
+            <dd class="font-mono font-bold text-slate-900 tabular-nums mt-0.5">{{ externalReference() }}</dd>
+          </div>
+        }
+        @if (preferenceId()) {
+          <div>
+            <dt class="text-slate-500 font-medium">Preferencia Checkout Pro</dt>
+            <dd class="font-mono text-xs font-semibold text-slate-700 truncate mt-0.5">{{ preferenceId() }}</dd>
+          </div>
+        }
+      </dl>
+    }
+
+    <!-- Revalidación contra backend (GET /proyectos/{id}/pagos) -->
+    @if (proyectoId(); as pId) {
+      <section class="space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 class="text-sm sm:text-base font-bold text-slate-900">
+              @if (proyecto(); as p) {
+                Estado en WorkLink: {{ p.nombreProyecto || p.area }}
+              } @else {
+                Pagos registrados en el servidor (Proyecto #{{ pId }})
+              }
+            </h2>
+            <p class="text-xs text-slate-500 tabular-nums">
+              Total confirmado en base de datos: <strong class="text-slate-800">{{ totalConfirmadoTexto() }}</strong>
+            </p>
+          </div>
+
+          <button
+            type="button"
+            (click)="revalidarEstado()"
+            [disabled]="isRevalidating()"
+            class="btn-tactile-secondary px-3.5 py-2 min-h-[40px] text-xs inline-flex items-center gap-1.5 cursor-pointer">
+            <svg
+              class="w-3.5 h-3.5"
+              [class.animate-spin]="isRevalidating()"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            <span>{{ isRevalidating() ? 'Verificando...' : 'Revalidar estado' }}</span>
+          </button>
+        </div>
+
+        @if (revalidationError()) {
+          <div role="alert" class="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">
+            {{ revalidationError() }}
+          </div>
+        } @else if (isRevalidating()) {
+          <div class="h-16 bg-slate-100 rounded-xl animate-pulse" aria-busy="true"></div>
+        } @else if (pagosConfirmados().length === 0) {
+          <div class="p-4 rounded-xl border border-dashed border-slate-200 text-xs sm:text-sm text-slate-600">
+            Todavía no figura un pago acreditado para este proyecto. Si acabás de pagar, aguardá unos segundos y tocá <strong>Revalidar estado</strong>.
+          </div>
+        } @else {
+          <div class="divide-y divide-slate-100 border border-slate-200/80 rounded-xl overflow-hidden">
+            @for (pago of pagosConfirmados(); track pago.pagoId) {
+              @let cfg = medioPagoConfig[pago.medioDePago];
+              <div class="px-4 py-3 flex items-center justify-between gap-3 bg-white text-sm">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <span class="font-mono text-xs font-semibold text-slate-500 tabular-nums">#{{ pago.pagoId }}</span>
+                  <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold {{ cfg?.badgeClass || 'bg-slate-100 text-slate-700' }}">
+                    {{ cfg?.label || pago.medioDePago }}
+                  </span>
+                </div>
+                <span class="font-black text-slate-900 tabular-nums shrink-0">
+                  {{ formatMonto(pago.monto, pago.moneda) }}
+                </span>
+              </div>
+            }
+          </div>
+        }
+      </section>
+    } @else {
+      <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-600">
+        No recibimos la referencia del proyecto en la URL de retorno. Podés verificar tus movimientos desde Mis Proyectos.
+      </div>
+    }
+
+    <!-- Acciones de continuación -->
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-4 border-t border-slate-100">
+      <a
+        [routerLink]="isCliente() ? '/freelance/mis-proyectos' : '/freelance/mis-trabajos'"
+        class="btn-tactile-secondary px-5 py-2.5 min-h-[44px] text-sm inline-flex items-center justify-center">
+        {{ isCliente() ? 'Volver a Mis Proyectos' : 'Volver a Mis Trabajos' }}
+      </a>
+
+      @if (proyectoId(); as pId) {
+        <a
+          [routerLink]="['/freelance/proyecto', pId, 'pagos']"
+          class="btn-tactile-primary px-5 py-2.5 min-h-[44px] text-sm inline-flex items-center justify-center">
+          {{ estado === 'failure' ? 'Reintentar pago del proyecto' : 'Ver pagos del proyecto' }}
+        </a>
+      }
+    </div>
+  </div>
+</div>
