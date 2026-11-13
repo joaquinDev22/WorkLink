@@ -1,4 +1,5 @@
-import { Component, effect, inject, input, output, signal } from '@angular/core'
+import { Component, computed, effect, inject, input, output, signal } from '@angular/core'
+import { HttpErrorResponse } from '@angular/common/http'
 import { FormsModule } from '@angular/forms'
 import { EntrevistaService } from '../../services/entrevista'
 import { EntrevistaResponseDTO } from '../../models/entrevista.models'
@@ -16,6 +17,9 @@ export class AgendaModal {
   isOpen = input<boolean>(false)
   candidatos = input<PostulacionResponseDTO[]>([])
   preselectedPostulacionId = input<number | null>(null)
+  // Si viene una entrevista, el modal reprograma esa cita en vez de agendar una nueva
+  entrevista = input<EntrevistaResponseDTO | null>(null)
+  readonly esReprogramacion = computed(() => this.entrevista() !== null)
 
   close = output<void>()
   scheduled = output<EntrevistaResponseDTO>()
@@ -39,6 +43,16 @@ export class AgendaModal {
       } else if (this.candidatos().length > 0 && !this.selectedPostulacionId()) {
         this.selectedPostulacionId.set(this.candidatos()[0].postulacionId)
       }
+    })
+
+    effect(() => {
+      const e = this.entrevista()
+      if (!e) return
+      this.selectedPostulacionId.set(e.postulacionId)
+      this.fecha.set(e.date)
+      this.hora.set(e.time?.slice(0, 5) || '15:00')
+      this.link.set(e.link || '')
+      this.notas.set(e.notas || '')
     })
 
     // Fecha sugerida por defecto: mañana
@@ -73,6 +87,30 @@ export class AgendaModal {
     this.isSubmitting.set(true)
     this.errorMsg.set(null)
 
+    const reprogramar = this.entrevista()
+    if (reprogramar) {
+      this.entrevistaService
+        .reprogramarEntrevista(reprogramar.id, {
+          postulacionId: reprogramar.postulacionId,
+          fecha: this.fecha(),
+          hora: this.hora(),
+          link: this.link().trim() || undefined,
+          notas: this.notas().trim() || undefined
+        })
+        .subscribe({
+          next: (actualizada) => {
+            this.isSubmitting.set(false)
+            this.scheduled.emit(actualizada)
+            this.onClose()
+          },
+          error: (err: HttpErrorResponse) => {
+            this.isSubmitting.set(false)
+            this.errorMsg.set(err.error?.details?.[0] ?? 'Error al reprogramar la entrevista. Inténtalo nuevamente.')
+          }
+        })
+      return
+    }
+
     const cand = this.candidatos().find((c) => c.postulacionId === Number(postId))
     const candidatoInfo = cand
       ? {
@@ -99,9 +137,10 @@ export class AgendaModal {
           this.scheduled.emit(nueva)
           this.onClose()
         },
-        error: () => {
+        error: (err: HttpErrorResponse) => {
           this.isSubmitting.set(false)
-          this.errorMsg.set('Error al coordinar la entrevista. Inténtalo nuevamente.')
+          // El backend explica el motivo (p. ej. "ya tiene una entrevista programada; reprogramala")
+          this.errorMsg.set(err.error?.details?.[0] ?? 'Error al coordinar la entrevista. Inténtalo nuevamente.')
         }
       })
   }

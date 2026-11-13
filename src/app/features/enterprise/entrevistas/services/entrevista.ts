@@ -56,6 +56,24 @@ export class EntrevistaService {
     )
   }
 
+  // PUT /api/v1/recruiter/entrevistas/{id} - cambia fecha, hora y link de una entrevista PROGRAMADA
+  reprogramarEntrevista(id: number, datos: EntrevistaRequestDTO): Observable<EntrevistaResponseDTO> {
+    this.isMutating.set(true)
+
+    const horaNormalizada = datos.hora && datos.hora.length === 5 ? `${datos.hora}:00` : datos.hora
+    const payload: EntrevistaRequestDTO = { ...datos, hora: horaNormalizada }
+
+    return this.client.put<EntrevistaResponseDTO>(`${this.API_URL}/${id}`, payload).pipe(
+      tap({
+        next: (res) => {
+          this.entrevistas.update((prev) => prev.map((e) => (e.id === id ? res : e)))
+          this.isMutating.set(false)
+        },
+        error: () => this.isMutating.set(false)
+      })
+    )
+  }
+
   cancelarEntrevista(id: number): Observable<void> {
     this.isMutating.set(true)
 

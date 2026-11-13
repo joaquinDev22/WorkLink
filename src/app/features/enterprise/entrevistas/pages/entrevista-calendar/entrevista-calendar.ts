@@ -22,6 +22,8 @@ export class EntrevistaCalendar implements OnInit {
 
   readonly filterStatus = signal<'TODAS' | 'PROGRAMADA' | 'COMPLETADA' | 'CANCELADA'>('TODAS')
   readonly isAgendaModalOpen = signal<boolean>(false)
+  // Entrevista que se está reprogramando (null = el modal agenda una nueva)
+  readonly entrevistaAReprogramar = signal<EntrevistaResponseDTO | null>(null)
 
   // Modal para confirmar cancelación de entrevista
   readonly citaACancelar = signal<EntrevistaResponseDTO | null>(null)
@@ -64,16 +66,24 @@ export class EntrevistaCalendar implements OnInit {
   }
 
   abrirAgendaModal(): void {
+    this.entrevistaAReprogramar.set(null)
+    this.isAgendaModalOpen.set(true)
+  }
+
+  abrirReprogramar(e: EntrevistaResponseDTO): void {
+    this.entrevistaAReprogramar.set(e)
     this.isAgendaModalOpen.set(true)
   }
 
   cerrarAgendaModal(): void {
     this.isAgendaModalOpen.set(false)
+    this.entrevistaAReprogramar.set(null)
   }
 
   onEntrevistaScheduled(nueva: EntrevistaResponseDTO): void {
+    const accion = this.entrevistaAReprogramar() ? 'reprogramada' : 'coordinada'
     this.cerrarAgendaModal()
-    this.toastMessage.set(`¡Entrevista coordinada con ${nueva.candidateName} para el ${nueva.date} a las ${nueva.time} hs!`)
+    this.toastMessage.set(`¡Entrevista ${accion} con ${nueva.candidateName} para el ${nueva.date} a las ${nueva.time} hs!`)
     setTimeout(() => {
       this.toastMessage.set(null)
     }, 4500)
