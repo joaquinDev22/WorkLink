@@ -2,16 +2,12 @@ import { inject } from '@angular/core'
 import { CanActivateFn, Router } from '@angular/router'
 import { TokenStorage } from '../services/token-storage'
 import { UserRole } from '../../models/user-role'
-import { environment } from '../../../../environments/environment'
 
 export const roleGuard: CanActivateFn = (route) => {
   const router = inject(Router)
   const tokenStorage = inject(TokenStorage)
 
   // 1. MODO DESARROLLO (Bypass activo): Permitir navegar libremente
-  if (environment.bypassAuth) {
-    return true
-  }
 
   // 2. Leemos la sesión actual del usuario
   const session = tokenStorage.getSession()

@@ -51,9 +51,6 @@ function mergeCatalogo(apiItems: Array<{ name: string }>): SkillOption[] {
 
 function getCatalogoShared(http: HttpClient): Observable<SkillOption[]> {
   if (!cachedCatalogo$) {
-    if (environment.bypassAuth) {
-      cachedCatalogo$ = of(mergeCatalogo([])).pipe(shareReplay(1))
-    } else {
       cachedCatalogo$ = http.get<any[]>(`${environment.apiUrl}/habilidades`).pipe(
         map((items) =>
           mergeCatalogo(
@@ -63,7 +60,7 @@ function getCatalogoShared(http: HttpClient): Observable<SkillOption[]> {
         catchError(() => of(mergeCatalogo([]))),
         shareReplay(1)
       )
-    }
+    
   }
   return cachedCatalogo$
 }

@@ -17,81 +17,6 @@ export class RecruiterService {
   getRecruiters(): Observable<RecruiterResponseDTO[]> {
     this.isLoading.set(true)
 
-    if (environment.bypassAuth) {
-      const mockList: RecruiterResponseDTO[] = this.recruiters().length > 0 
-        ? this.recruiters() 
-        : [
-            {
-              recruiterId: 101,
-              nombre: 'Lucía',
-              apellido: 'Fernández',
-              email: 'lucia.fernandez@innovacorp.com',
-              fechaNacimiento: '1992-06-14',
-              area: 'Tecnología e Innovación',
-              empresaId: 101,
-              nombreEmpresa: 'InnovaCorp Technologies S.A.'
-            },
-            {
-              recruiterId: 102,
-              nombre: 'Martín',
-              apellido: 'Gómez',
-              email: 'martin.gomez@innovacorp.com',
-              fechaNacimiento: '1988-11-23',
-              area: 'People & Talent Acquisition',
-              empresaId: 101,
-              nombreEmpresa: 'InnovaCorp Technologies S.A.'
-            },
-            {
-              recruiterId: 103,
-              nombre: 'Valentina',
-              apellido: 'Rossi',
-              email: 'valentina.rossi@innovacorp.com',
-              fechaNacimiento: '1995-03-08',
-              area: 'Operaciones y Ventas',
-              empresaId: 101,
-              nombreEmpresa: 'InnovaCorp Technologies S.A.'
-            },
-            {
-              recruiterId: 104,
-              nombre: 'Santiago',
-              apellido: 'Paz',
-              email: 'santiago.paz@innovacorp.com',
-              fechaNacimiento: '1990-09-12',
-              area: 'Tecnología e Innovación',
-              empresaId: 101,
-              nombreEmpresa: 'InnovaCorp Technologies S.A.'
-            },
-            {
-              recruiterId: 105,
-              nombre: 'Camila',
-              apellido: 'Vega',
-              email: 'camila.vega@innovacorp.com',
-              fechaNacimiento: '1994-01-28',
-              area: 'People & Talent Acquisition',
-              empresaId: 101,
-              nombreEmpresa: 'InnovaCorp Technologies S.A.'
-            },
-            {
-              recruiterId: 106,
-              nombre: 'Federico',
-              apellido: 'Morales',
-              email: 'federico.morales@innovacorp.com',
-              fechaNacimiento: '1987-05-19',
-              area: 'Operaciones y Ventas',
-              empresaId: 101,
-              nombreEmpresa: 'InnovaCorp Technologies S.A.'
-            }
-          ]
-
-      return of(mockList).pipe(
-        delay(200),
-        tap((data) => {
-          this.recruiters.set(data)
-          this.isLoading.set(false)
-        })
-      )
-    }
-
     return this.client.get<RecruiterResponseDTO[]>(this.API_URL).pipe(
       tap({
         next: (data) => {
@@ -107,27 +32,6 @@ export class RecruiterService {
   crearRecruiter(datos: RecruiterRequestDTO): Observable<RecruiterResponseDTO> {
     this.isMutating.set(true)
 
-    if (environment.bypassAuth) {
-      const nuevo: RecruiterResponseDTO = {
-        recruiterId: Date.now(),
-        nombre: datos.nombre.trim(),
-        apellido: datos.apellido.trim(),
-        email: datos.email.trim().toLowerCase(),
-        fechaNacimiento: datos.fechaNacimiento,
-        area: datos.area?.trim() || 'General',
-        empresaId: 101,
-        nombreEmpresa: 'InnovaCorp Technologies S.A.'
-      }
-
-      return of(nuevo).pipe(
-        delay(250),
-        tap((recruiter) => {
-          this.recruiters.update((prev) => [recruiter, ...prev])
-          this.isMutating.set(false)
-        })
-      )
-    }
-
     return this.client.post<RecruiterResponseDTO>(this.API_URL, datos).pipe(
       tap({
         next: (recruiter) => {
@@ -142,16 +46,6 @@ export class RecruiterService {
   // Dar de baja a un recruiter (DELETE /api/v1/empresas/recruiters/{id})
   eliminarRecruiter(id: number): Observable<void> {
     this.isMutating.set(true)
-
-    if (environment.bypassAuth) {
-      return of(undefined).pipe(
-        delay(200),
-        tap(() => {
-          this.recruiters.update((prev) => prev.filter((r) => r.recruiterId !== id))
-          this.isMutating.set(false)
-        })
-      )
-    }
 
     return this.client.delete<void>(`${this.API_URL}/${id}`).pipe(
       tap({

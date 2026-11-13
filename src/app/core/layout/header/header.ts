@@ -128,7 +128,7 @@ export class Header implements OnInit {
       return {
         nombre,
         subtitulo: perfil?.descripcion ? (perfil.descripcion.length > 34 ? perfil.descripcion.slice(0, 34) + '...' : perfil.descripcion) : 'Candidato Activo',
-        email: perfil?.email || (s?.nombreUsuario ? `${s.nombreUsuario.toLowerCase()}@worklink.app` : 'postulante@worklink.app'),
+        email: perfil?.email || '',
         rol: 'POSTULANTE',
         badgeClass: 'bg-sky-50 text-sky-700 border-sky-200/90 shadow-2xs',
         badgeLabel: 'Postulante',
@@ -143,7 +143,7 @@ export class Header implements OnInit {
       return {
         nombre,
         subtitulo: 'Contratante Freelance',
-        email: perfil?.email || (s?.nombreUsuario ? `${s.nombreUsuario.toLowerCase()}@worklink.app` : 'cliente@worklink.app'),
+        email: perfil?.email || '',
         rol: 'CLIENTE',
         badgeClass: 'bg-amber-50 text-amber-700 border-amber-200/90 shadow-2xs',
         badgeLabel: 'Cliente',
@@ -158,7 +158,7 @@ export class Header implements OnInit {
     return {
       nombre,
       subtitulo: perfil?.descripcion ? (perfil.descripcion.length > 34 ? perfil.descripcion.slice(0, 34) + '...' : perfil.descripcion) : 'Desarrollador Freelance',
-      email: perfil?.email || (s?.nombreUsuario ? `${s.nombreUsuario.toLowerCase()}@worklink.app` : 'freelancer@worklink.app'),
+      email: perfil?.email || '',
       rol: 'FREELANCER',
       badgeClass: 'bg-purple-50 text-purple-700 border-purple-200/90 shadow-2xs',
       badgeLabel: 'Freelancer',
