@@ -32,30 +32,6 @@ export class EmpresaService {
   getMiEmpresa(): Observable<EmpresaResponseDTO> {
     this.isLoading.set(true)
 
-    if (environment.bypassAuth) {
-      const mockEmpresa: EmpresaResponseDTO = this.empresaActual() || {
-        id: 101,
-        uuid: 'emp-uuid-9841',
-        nombre: 'InnovaCorp Technologies S.A.',
-        descripcion: 'Compañía líder en transformación digital y desarrollo de software escalable en la nube. Diseñamos ecosistemas de microservicios, plataformas SaaS y arquitecturas seguras para el sector corporativo y financiero.',
-        sitio_web: 'https://innovacorp.example.com',
-        ubicacion: 'Buenos Aires, Argentina',
-        direccion: 'Av. del Libertador 1450, Piso 12',
-        telefono: '+54 11 4821 9900',
-        rubro: 'Tecnología y Software',
-        logo: '',
-        banner: '',
-        perfil_id: 1
-      }
-      return of(mockEmpresa).pipe(
-        delay(200),
-        tap((data) => {
-          this.empresaActual.set(data)
-          this.isLoading.set(false)
-        })
-      )
-    }
-
     return this.client.get<EmpresaResponseDTO>(`${this.API_URL}/my`).pipe(
       tap({
         next: (data) => {
@@ -69,9 +45,6 @@ export class EmpresaService {
 
   // Obtener perfil público de una empresa (GET /api/v1/empresas/{id} o /uuid/{uuid})
   getEmpresaById(idOrUuid: number | string): Observable<EmpresaResponseDTO> {
-    if (environment.bypassAuth) {
-      return this.getMiEmpresa()
-    }
     const path = typeof idOrUuid === 'string' && idOrUuid.startsWith('uuid/') ? idOrUuid : idOrUuid
     return this.client.get<EmpresaResponseDTO>(`${this.API_URL}/${path}`)
   }
@@ -79,27 +52,6 @@ export class EmpresaService {
   // Crear o actualizar datos comerciales de la empresa (POST / PUT)
   guardarEmpresa(datos: EmpresaRequestDTO): Observable<EmpresaResponseDTO> {
     const actual = this.empresaActual()
-
-    if (environment.bypassAuth) {
-      const actualizado: EmpresaResponseDTO = {
-        id: actual?.id || 101,
-        uuid: actual?.uuid || 'emp-uuid-9841',
-        perfil_id: actual?.perfil_id || 1,
-        nombre: datos.nombre,
-        descripcion: datos.descripcion,
-        sitio_web: datos.sitio_web,
-        ubicacion: datos.ubicacion,
-        direccion: datos.direccion,
-        telefono: datos.telefono,
-        rubro: datos.rubro,
-        logo: datos.logo || actual?.logo || '',
-        banner: datos.banner || actual?.banner || ''
-      }
-      return of(actualizado).pipe(
-        delay(300),
-        tap((data) => this.empresaActual.set(data))
-      )
-    }
 
     if (actual?.id) {
       return this.client.put<EmpresaResponseDTO>(`${this.API_URL}/${actual.id}`, datos).pipe(
@@ -114,12 +66,6 @@ export class EmpresaService {
 
   // Carga de logotipo corporativo
   uploadLogo(file: File): Observable<{ logoUrl: string }> {
-    if (environment.bypassAuth) {
-      const localUrl = URL.createObjectURL(file)
-      this.empresaActual.update((emp) => (emp ? { ...emp, logo: localUrl } : null))
-      return of({ logoUrl: localUrl }).pipe(delay(250))
-    }
-
     const formData = new FormData()
     formData.append('file', file)
     return this.client.post<{ logoUrl: string }>(`${this.API_URL}/logo`, formData).pipe(
@@ -131,12 +77,6 @@ export class EmpresaService {
 
   // Carga de banner o portada corporativa
   uploadBanner(file: File): Observable<{ bannerUrl: string }> {
-    if (environment.bypassAuth) {
-      const localUrl = URL.createObjectURL(file)
-      this.empresaActual.update((emp) => (emp ? { ...emp, banner: localUrl } : null))
-      return of({ bannerUrl: localUrl }).pipe(delay(250))
-    }
-
     const formData = new FormData()
     formData.append('file', file)
     return this.client.post<{ bannerUrl: string }>(`${this.API_URL}/banner`, formData).pipe(
@@ -148,16 +88,6 @@ export class EmpresaService {
 
   // Métricas agregadas para el dashboard corporativo (GET /api/v1/empresas/dashboard)
   getDashboardStats(): Observable<DashboardStatsResponseDTO> {
-    if (environment.bypassAuth) {
-      const stats: DashboardStatsResponseDTO = {
-        totalVacantes: 3,
-        totalPostulaciones: 38,
-        entrevistasPendientes: 6,
-        contratacionesEfectuadas: 4
-      }
-      return of(stats).pipe(delay(200))
-    }
-
     return this.client.get<DashboardStatsResponseDTO>(`${this.API_URL}/dashboard`)
   }
 }

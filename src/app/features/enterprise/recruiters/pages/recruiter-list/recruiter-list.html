@@ -89,7 +89,7 @@
 
       <!-- Segmented Control de Áreas -->
       @if (availableAreas().length > 0) {
-        <div class="flex flex-wrap items-center gap-1.5 bg-slate-200/60 p-1.5 rounded-2xl text-xs shrink-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div class="flex flex-wrap items-center gap-1.5 bg-slate-200/60 p-1.5 rounded-2xl text-xs shrink-0 scrollbar-none [&::-webkit-scrollbar]:hidden">
           <button
             type="button"
             (click)="selectedArea.set('TODAS'); onFilterChange()"
@@ -126,9 +126,8 @@
         }
       </div>
     } @else if (filteredRecruiters().length > 0) {
-
       <!-- Tabla Desktop -->
-      <div class="hidden md:block overflow-x-auto overflow-y-hidden [scrollbar-width:thin]">
+      <div class="hidden md:block overflow-x-auto overflow-y-hidden scrollbar-thin">
         <table class="w-full text-left text-xs sm:text-sm">
           <thead class="border-b border-slate-100 bg-slate-50/75 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
             <tr>
@@ -312,7 +311,6 @@
       }
 
     } @else {
-
       <!-- Estado Vacío -->
       <div class="p-12 text-center space-y-3">
         <p class="text-sm font-bold text-slate-800">

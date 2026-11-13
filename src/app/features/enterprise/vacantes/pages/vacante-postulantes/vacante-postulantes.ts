@@ -53,9 +53,8 @@ export class VacantePostulantes implements OnInit {
     const list = this.vacanteService.postulaciones()
 
     // Si es postulante, solo ve sus propias postulaciones (employeeId 300 / tú)
-    const filteredByRole = this.isRecruiter()
-      ? list
-      : list.filter((p) => p.employeeId === 300 || p.nombreCandidato.includes('Joaquín'))
+    // El backend ya devuelve solo las postulaciones que le corresponden al usuario autenticado
+    const filteredByRole = list
 
     return filteredByRole.filter((p) => {
       const matchText =

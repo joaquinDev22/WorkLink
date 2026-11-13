@@ -83,7 +83,7 @@
               </label>
               @if (proyecto(); as p) {
                 <span class="text-xs font-medium text-slate-500 tabular-nums">
-                  Presupuesto: ${{ p.presupuestoMin }} - ${{ p.presupuestoMax }}
+                  Presupuesto: {{ formatMonto(p.presupuestoMin) }} - {{ formatMonto(p.presupuestoMax) }}
                 </span>
               }
             </div>

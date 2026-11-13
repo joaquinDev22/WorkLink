@@ -19,6 +19,7 @@ import {
   formatFechaProyecto
 } from '../../../proyecto-gestion/models/proyecto.models'
 import { PropuestaModal } from '../../components/propuesta-modal/propuesta-modal'
+import { formatMontoMoneda } from '../../../checkout-mercadopago/models/mercadopago.models'
 
 @Component({
   imports: [RouterLink, PropuestaModal],
@@ -27,6 +28,7 @@ import { PropuestaModal } from '../../components/propuesta-modal/propuesta-modal
   templateUrl: './proyecto-detail.html'
 })
 export class ProyectoDetail implements OnInit, OnDestroy {
+  readonly formatMonto = formatMontoMoneda
   private route = inject(ActivatedRoute)
   private catalogService = inject(ProyectoCatalog)
   private auth = inject(Auth)

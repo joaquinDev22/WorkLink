@@ -44,7 +44,7 @@
           class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-[background-color,border-color,box-shadow]" />
         @if (vacanteForm.puesto().touched() && vacanteForm.puesto().invalid()) {
           <p class="text-[11px] text-rose-600 font-medium pt-0.5">
-            {{ vacanteForm.puesto().errors()?.[0]?.message }}
+            {{ vacanteForm.puesto().errors().at(0)?.message }}
           </p>
         }
       </div>
@@ -109,7 +109,7 @@
             class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-[background-color,border-color,box-shadow]" />
           @if (vacanteForm.ubicacion().touched() && vacanteForm.ubicacion().invalid()) {
             <p class="text-[11px] text-rose-600 font-medium pt-0.5">
-              {{ vacanteForm.ubicacion().errors()?.[0]?.message }}
+              {{ vacanteForm.ubicacion().errors().at(0)?.message }}
             </p>
           }
         </div>
@@ -125,7 +125,7 @@
             class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-[background-color,border-color,box-shadow]" />
           @if (vacanteForm.finalizacion().touched() && vacanteForm.finalizacion().invalid()) {
             <p class="text-[11px] text-rose-600 font-medium pt-0.5">
-              {{ vacanteForm.finalizacion().errors()?.[0]?.message }}
+              {{ vacanteForm.finalizacion().errors().at(0)?.message }}
             </p>
           }
         </div>
@@ -203,7 +203,7 @@
       <div class="space-y-1">
         <div class="flex items-center justify-between text-xs">
           <label for="vac-desc" class="font-semibold text-slate-700">Contenido Detallado *</label>
-          <span class="text-slate-400">{{ vacanteForm.descripcion().value()?.length || 0 }} / 2500</span>
+          <span class="text-slate-400">{{ vacanteForm.descripcion().value().length }} / 2500</span>
         </div>
         <textarea
           id="vac-desc"
@@ -213,7 +213,7 @@
           class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo leading-relaxed transition-[background-color,border-color,box-shadow] resize-y"></textarea>
         @if (vacanteForm.descripcion().touched() && vacanteForm.descripcion().invalid()) {
           <p class="text-[11px] text-rose-600 font-medium pt-0.5">
-            {{ vacanteForm.descripcion().errors()?.[0]?.message }}
+            {{ vacanteForm.descripcion().errors().at(0)?.message }}
           </p>
         }
       </div>

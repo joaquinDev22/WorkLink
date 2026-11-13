@@ -57,7 +57,7 @@
               class="w-full px-3.5 py-2.5 min-h-[44px] text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky transition-colors" />
             @if (proyectoForm.nombreProyecto().touched() && proyectoForm.nombreProyecto().invalid()) {
               <p class="text-[11px] text-rose-600 font-medium">
-                {{ proyectoForm.nombreProyecto().errors()?.[0]?.message }}
+                {{ proyectoForm.nombreProyecto().errors().at(0)?.message }}
               </p>
             }
           </div>
@@ -85,7 +85,7 @@
             class="w-full p-3.5 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky leading-relaxed transition-colors"></textarea>
           @if (proyectoForm.descripcion().touched() && proyectoForm.descripcion().invalid()) {
             <p class="text-[11px] text-rose-600 font-medium">
-              {{ proyectoForm.descripcion().errors()?.[0]?.message }}
+              {{ proyectoForm.descripcion().errors().at(0)?.message }}
             </p>
           }
         </div>
@@ -95,7 +95,7 @@
       <section class="edit-section space-y-4">
         <div class="border-b border-slate-100 pb-2">
           <h2 class="text-sm font-bold text-slate-900">Presupuesto y Plazos</h2>
-          <p class="text-xs text-slate-500">Define el rango estimado en pesos (ARS) (ARS) y esquema de trabajo.</p>
+          <p class="text-xs text-slate-500">Define el rango estimado en pesos (ARS) y esquema de trabajo.</p>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -109,7 +109,7 @@
               class="w-full px-3.5 py-2.5 min-h-[44px] text-sm font-semibold tabular-nums bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky transition-colors" />
             @if (proyectoForm.presupuestoMin().touched() && proyectoForm.presupuestoMin().invalid()) {
               <p class="text-[11px] text-rose-600 font-medium">
-                {{ proyectoForm.presupuestoMin().errors()?.[0]?.message }}
+                {{ proyectoForm.presupuestoMin().errors().at(0)?.message }}
               </p>
             }
           </div>
@@ -124,7 +124,7 @@
               class="w-full px-3.5 py-2.5 min-h-[44px] text-sm font-semibold tabular-nums bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky transition-colors" />
             @if (proyectoForm.presupuestoMax().invalid() && (proyectoForm.presupuestoMax().touched() || proyectoForm.presupuestoMin().touched())) {
               <p class="text-[11px] text-rose-600 font-medium">
-                {{ proyectoForm.presupuestoMax().errors()?.[0]?.message }}
+                {{ proyectoForm.presupuestoMax().errors().at(0)?.message }}
               </p>
             }
           </div>

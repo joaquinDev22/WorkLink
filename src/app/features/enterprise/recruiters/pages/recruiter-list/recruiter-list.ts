@@ -24,6 +24,7 @@ export class RecruiterList implements OnInit {
   selectedArea = signal<string>('TODAS')
   isMobileFilterOpen = signal<boolean>(false)
   recruiterToDelete = signal<RecruiterResponseDTO | null>(null)
+  
   toastMsg = signal<string | null>(null)
 
   // Lista calculada y filtrada reactivamente

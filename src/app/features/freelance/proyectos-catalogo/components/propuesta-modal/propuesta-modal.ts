@@ -4,6 +4,7 @@ import {
   PostulacionProyectoResponseDTO,
   ProyectoResponseDTO
 } from '../../../proyecto-gestion/models/proyecto.models'
+import { formatMontoMoneda } from '../../../checkout-mercadopago/models/mercadopago.models'
 
 @Component({
   selector: 'app-propuesta-modal',
@@ -12,6 +13,7 @@ import {
   templateUrl: './propuesta-modal.html'
 })
 export class PropuestaModal {
+  readonly formatMonto = formatMontoMoneda
   private catalogService = inject(ProyectoCatalog)
 
   isOpen = model<boolean>(false)

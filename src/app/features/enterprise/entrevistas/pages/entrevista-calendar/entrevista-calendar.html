@@ -113,7 +113,7 @@
               <span class="block text-xl font-black text-slate-900 leading-tight">
                 {{ e.date.split('-')[2] }}
               </span>
-              <span class="block text-[11px] font-semibold text-slate-500 pt-0.5">
+              <span class="block text-[11px] font-semibold text-slate-600 pt-0.5">
                 {{ e.time }} hs
               </span>
             </div>
@@ -172,6 +172,14 @@
               </a>
 
               @if (isRecruiter()) {
+                <button
+                  type="button"
+                  (click)="abrirReprogramar(e)"
+                  class="btn-tactile-secondary text-xs px-3 py-2 text-center"
+                  title="Reprogramar encuentro"
+                >
+                  Reprogramar
+                </button>
                 <button
                   type="button"
                   (click)="abrirModalCancelar(e)"
@@ -262,6 +270,7 @@
   <app-agenda-modal
     [isOpen]="isAgendaModalOpen()"
     [candidatos]="candidatosElegibles()"
+    [entrevista]="entrevistaAReprogramar()"
     (close)="cerrarAgendaModal()"
     (scheduled)="onEntrevistaScheduled($event)"
   />

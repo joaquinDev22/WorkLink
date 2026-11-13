@@ -9,6 +9,7 @@ import {
 } from '../../models/proyecto.models'
 import { ProyectoWorkspacePanel } from '../../components/proyecto-workspace-panel/proyecto-workspace-panel'
 import { Paginator } from '../../../../../shared/components/paginator/paginator'
+import { formatMontoMoneda } from '../../../checkout-mercadopago/models/mercadopago.models'
 
 @Component({
   imports: [RouterLink, ProyectoWorkspacePanel, Paginator],
@@ -17,6 +18,7 @@ import { Paginator } from '../../../../../shared/components/paginator/paginator'
   templateUrl: './mis-proyectos-cliente.html'
 })
 export class MisProyectosCliente implements OnInit {
+  readonly formatMonto = formatMontoMoneda
   protected proyectoAdmin = inject(ProyectoAdmin)
 
   readonly proyectos = this.proyectoAdmin.misProyectos

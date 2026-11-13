@@ -29,7 +29,7 @@
               {{ estado.label }}
             </span>
             <span class="text-xs text-slate-500 tabular-nums">
-              Presupuesto estimado: ${{ p.presupuestoMin }} - ${{ p.presupuestoMax }}
+              Presupuesto estimado: {{ formatMonto(p.presupuestoMin) }} - {{ formatMonto(p.presupuestoMax) }}
             </span>
           </div>
           <h1 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight truncate">
@@ -98,7 +98,7 @@
                 <div class="sm:text-right">
                   <div class="text-[11px] font-medium text-slate-500">Cotización</div>
                   <div class="text-lg font-black text-slate-900 tabular-nums">
-                    ${{ prop.costoPropuesto }}
+                    {{ formatMonto(prop.costoPropuesto) }}
                   </div>
                 </div>
 
@@ -140,7 +140,7 @@
         <h2 id="assign-modal-title" class="text-lg font-bold text-slate-900">Confirmar adjudicación</h2>
         <p class="text-sm text-slate-600 leading-relaxed">
           ¿Confirmas contratar a <strong class="text-slate-900">{{ cand.nombreEmpleado }}</strong> por una cotización de
-          <strong class="text-slate-900 tabular-nums">${{ cand.costoPropuesto }}</strong>?
+          <strong class="text-slate-900 tabular-nums">{{ formatMonto(cand.costoPropuesto) }}</strong>?
         </p>
         <p class="text-xs text-slate-500">
           El proyecto pasará a estado En Progreso y se cerrarán las nuevas postulaciones.

@@ -18,6 +18,7 @@ import {
   ProyectoResponseDTO,
   formatFechaProyecto
 } from '../../models/proyecto.models'
+import { formatMontoMoneda } from '../../../checkout-mercadopago/models/mercadopago.models'
 
 @Component({
   imports: [RouterLink],
@@ -26,6 +27,7 @@ import {
   templateUrl: './proyecto-propuestas.html'
 })
 export class ProyectoPropuestas implements OnInit, OnDestroy {
+  readonly formatMonto = formatMontoMoneda
   private route = inject(ActivatedRoute)
   private catalogService = inject(ProyectoCatalog)
   private proyectoAdmin = inject(ProyectoAdmin)

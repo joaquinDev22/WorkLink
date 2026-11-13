@@ -279,7 +279,7 @@
                     </span>
                   </div>
                   <div class="flex items-center justify-between text-xs text-slate-600 tabular-nums">
-                    <span>Vence {{ formatFecha(h.fechaLimite) }}</span>
+                    <span>{{ h.fechaLimite ? "Vence " + formatFecha(h.fechaLimite) : "Sin fecha límite" }}</span>
                     <span class="font-bold text-slate-900">{{ formatMonto(h.monto) }}</span>
                   </div>
                 </div>

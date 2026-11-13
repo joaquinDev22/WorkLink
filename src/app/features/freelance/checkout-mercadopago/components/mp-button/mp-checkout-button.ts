@@ -1,6 +1,5 @@
 import { Component, inject, input, output, signal } from '@angular/core'
 import { Router } from '@angular/router'
-import { environment } from '../../../../../../environments/environment'
 import { MercadoPagoPreferenceResponseDTO } from '../../models/mercadopago.models'
 import { Mercadopago } from '../../services/mercadopago'
 
@@ -39,13 +38,6 @@ export class MpCheckoutButton {
           this.checkoutError.emit(
             'La pasarela no devolvió una URL válida de pago. Intentá nuevamente o registrá un pago directo.'
           )
-          return
-        }
-
-        if (environment.bypassAuth) {
-          this.isRedirecting.set(false)
-          const parsed = new URL(targetUrl)
-          this.router.navigateByUrl(`${parsed.pathname}${parsed.search}`)
           return
         }
 
