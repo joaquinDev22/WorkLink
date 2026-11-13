@@ -66,7 +66,7 @@
               class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-[border-color,box-shadow]" />
             @if (recruiterForm.nombre().touched() && recruiterForm.nombre().invalid()) {
               <p class="text-[11px] text-rose-600">
-                {{ recruiterForm.nombre().errors()?.[0]?.message }}
+                {{ recruiterForm.nombre().errors().at(0)?.message }}
               </p>
             }
           </div>
@@ -81,7 +81,7 @@
               class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-[border-color,box-shadow]" />
             @if (recruiterForm.apellido().touched() && recruiterForm.apellido().invalid()) {
               <p class="text-[11px] text-rose-600">
-                {{ recruiterForm.apellido().errors()?.[0]?.message }}
+                {{ recruiterForm.apellido().errors().at(0)?.message }}
               </p>
             }
           </div>
@@ -105,7 +105,7 @@
           </div>
           @if (recruiterForm.email().touched() && recruiterForm.email().invalid()) {
             <p class="text-[11px] text-rose-600">
-              {{ recruiterForm.email().errors()?.[0]?.message }}
+              {{ recruiterForm.email().errors().at(0)?.message }}
             </p>
           }
         </div>
@@ -121,7 +121,7 @@
               class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-indigo/30 focus:border-brand-indigo transition-[border-color,box-shadow]" />
             @if (recruiterForm.fechaNacimiento().touched() && recruiterForm.fechaNacimiento().invalid()) {
               <p class="text-[11px] text-rose-600">
-                {{ recruiterForm.fechaNacimiento().errors()?.[0]?.message }}
+                {{ recruiterForm.fechaNacimiento().errors().at(0)?.message }}
               </p>
             }
           </div>

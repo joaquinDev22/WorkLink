@@ -125,7 +125,7 @@
                 class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow]">
               @if (empresaForm.nombre().touched() && empresaForm.nombre().invalid()) {
                 <p class="text-[11px] text-red-500 font-medium pt-0.5">
-                  {{ empresaForm.nombre().errors()?.[0]?.message }}
+                  {{ empresaForm.nombre().errors().at(0)?.message }}
                 </p>
               }
             </div>
@@ -159,7 +159,7 @@
               class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow] resize-none"></textarea>
             @if (empresaForm.descripcion().touched() && empresaForm.descripcion().invalid()) {
               <p class="text-[11px] text-red-500 font-medium pt-0.5">
-                {{ empresaForm.descripcion().errors()?.[0]?.message }}
+                {{ empresaForm.descripcion().errors().at(0)?.message }}
               </p>
             }
           </div>
@@ -184,7 +184,7 @@
               </div>
               @if (empresaForm.sitio_web().touched() && empresaForm.sitio_web().invalid()) {
                 <p class="text-[11px] text-red-500 font-medium pt-0.5">
-                  {{ empresaForm.sitio_web().errors()?.[0]?.message }}
+                  {{ empresaForm.sitio_web().errors().at(0)?.message }}
                 </p>
               }
             </div>
@@ -228,7 +228,7 @@
               </div>
               @if (empresaForm.ubicacion().touched() && empresaForm.ubicacion().invalid()) {
                 <p class="text-[11px] text-red-500 font-medium pt-0.5">
-                  {{ empresaForm.ubicacion().errors()?.[0]?.message }}
+                  {{ empresaForm.ubicacion().errors().at(0)?.message }}
                 </p>
               }
             </div>

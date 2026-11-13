@@ -248,13 +248,13 @@
                         class="btn-tactile-ghost-dark w-full min-h-[48px] py-2.5 px-3.5 rounded-xl flex items-center justify-between text-left">
                         
                         <div class="flex items-center gap-3">
-                            <img [src]="rolSeleccionado()?.icono" [alt]="rolSeleccionado()?.titulo" class="w-6 h-6 object-contain">
+                            <img [src]="rolSeleccionado().icono" [alt]="rolSeleccionado().titulo" class="w-6 h-6 object-contain">
                             <div>
                                 <span class="block font-bold text-white text-sm leading-tight">
-                                    {{ rolSeleccionado()?.titulo }}
+                                    {{ rolSeleccionado().titulo }}
                                 </span>
                                 <span class="block text-xs text-slate-200 leading-tight line-clamp-1 font-normal">
-                                    {{ rolSeleccionado()?.descripcion }}
+                                    {{ rolSeleccionado().descripcion }}
                                 </span>
                             </div>
                         </div>
