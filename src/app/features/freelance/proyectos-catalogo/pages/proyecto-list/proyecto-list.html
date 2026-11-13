@@ -211,7 +211,7 @@
                 <div class="sm:text-right shrink-0 bg-slate-50 sm:bg-transparent px-3 py-2 sm:p-0 rounded-xl border border-slate-100 sm:border-0">
                   <div class="text-[11px] font-semibold text-slate-500">Presupuesto</div>
                   <div class="text-base sm:text-lg font-black text-slate-900 tabular-nums">
-                    ${{ p.presupuestoMin }} - ${{ p.presupuestoMax }}
+                    {{ formatMonto(p.presupuestoMin) }} - {{ formatMonto(p.presupuestoMax) }}
                   </div>
                 </div>
               </div>

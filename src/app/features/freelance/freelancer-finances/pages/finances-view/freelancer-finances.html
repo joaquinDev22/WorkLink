@@ -116,7 +116,7 @@
           </div>
         } @else if (transactions().length === 0) {
           <div class="py-10 px-4 text-center border border-dashed border-slate-200 rounded-xl space-y-2">
-            <p class="text-sm font-semibold text-slate-700">Todavía no tenés transacciones registradas</p>
+            <p class="text-sm font-semibold text-slate-700">Todavía no tienes transacciones registradas</p>
             <p class="text-xs text-slate-500 max-w-sm mx-auto">
               Cuando un cliente abone hitos o pagos en tus proyectos asignados, aparecerán listados acá.
             </p>
@@ -273,7 +273,7 @@
 
           @if (proyectos().length === 0) {
             <p class="text-xs sm:text-sm text-slate-500 py-4 text-center">
-              Todavía no tenés proyectos asignados.
+              Todavía no tienes proyectos asignados.
             </p>
           } @else {
             <div class="divide-y divide-slate-100">
@@ -295,7 +295,7 @@
                       {{ cfg.label }}
                     </span>
                     <span class="text-xs font-bold text-slate-800 tabular-nums">
-                      ${{ p.presupuestoMin }} - ${{ p.presupuestoMax }}
+                      {{ formatMonto(p.presupuestoMin) }} - {{ formatMonto(p.presupuestoMax) }}
                     </span>
                   </div>
                 </div>

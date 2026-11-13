@@ -38,7 +38,7 @@ export class VacanteCreateEdit implements OnInit {
   })
 
   // Etiquetas interactivas de tecnologías y habilidades requeridas
-  etiquetas = signal<string[]>(['Angular', 'TypeScript'])
+  etiquetas = signal<string[]>([])
   tagInput = signal<string>('')
 
   // Opciones de configuración

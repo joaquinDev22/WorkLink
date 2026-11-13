@@ -95,7 +95,6 @@ export class EmpresaDashboard implements OnInit, OnDestroy {
   readonly postulacionesRecibidas = computed<number>(() => this.stats()?.totalPostulaciones ?? 0)
   readonly entrevistasProgramadas = computed<number>(() => this.stats()?.entrevistasPendientes ?? 0)
   readonly contratacionesRealizadas = computed<number>(() => this.stats()?.contratacionesEfectuadas ?? 0)
-  readonly filtroTecnico = computed<number>(() => Math.round(this.postulacionesRecibidas() * 0.5))
 
   readonly tasaEfectividad = computed<string>(() => {
     const post = this.postulacionesRecibidas()

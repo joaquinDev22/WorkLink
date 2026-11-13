@@ -105,7 +105,8 @@ export class VacanteService {
   // Verificar si el postulante actual ya aplicó a una vacante
   yaPostulado(vacanteId: number): boolean {
     return this.misPostulacionesIds().includes(vacanteId) ||
-      this.postulaciones().some((p) => p.vacanteId === vacanteId && (p.employeeId === 300 || p.nombreCandidato.includes('(Tú)')))
+      // Para un postulante, postulaciones() son las suyas (GET /vacantes/postulaciones devuelve solo las propias)
+      this.postulaciones().some((p) => p.vacanteId === vacanteId)
   }
 
   // Diálogo de postulación / enviar candidatura (POST /api/v1/vacantes/{id}/postulaciones/me)

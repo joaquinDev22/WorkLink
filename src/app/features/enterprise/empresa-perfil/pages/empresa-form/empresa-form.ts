@@ -32,7 +32,7 @@ export class EmpresaForm implements OnInit {
     ubicacion: '',
     direccion: '',
     telefono: '',
-    rubro: 'Tecnología y Software',
+    rubro: '',
     logo: '',
     banner: ''
   })
@@ -90,7 +90,7 @@ export class EmpresaForm implements OnInit {
             ubicacion: emp.ubicacion || '',
             direccion: emp.direccion || '',
             telefono: emp.telefono || '',
-            rubro: emp.rubro || 'Tecnología y Software',
+            rubro: emp.rubro || '',
             logo: emp.logo || '',
             banner: emp.banner || ''
           })

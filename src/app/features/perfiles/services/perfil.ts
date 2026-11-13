@@ -225,19 +225,18 @@ export class Perfil {
 
   updateProfile(datos: EditProfileModel): Observable<PerfilUsuarioDTO> {
     const current = this.perfilActual()
-    const esEmpresa = current?.rol === 'EMPRESA'
 
     const payload: EditProfileModel = {
       nombre: (datos.nombre || current?.nombre || '').trim(),
-      apellido: (datos.apellido || (esEmpresa ? 'Empresa' : (current?.apellido || ''))).trim(),
+      apellido: (datos.apellido || current?.apellido || '').trim(),
       email: (datos.email || current?.email || '').trim(),
       rol: current?.rol || 'POSTULANTE',
       telefono: (datos.telefono || current?.telefono || '').trim(),
-      pais: (datos.pais || current?.pais || 'Argentina').trim(),
+      pais: (datos.pais || current?.pais || '').trim(),
       descripcion: (datos.descripcion || current?.descripcion || '').trim(),
-      ubicacion: (datos.ubicacion || current?.ubicacion || 'Remoto').trim(),
+      ubicacion: (datos.ubicacion || current?.ubicacion || '').trim(),
       sitioWeb: (datos.sitioWeb || current?.sitioWeb || '').trim(),
-      fechaNacimiento: (datos.fechaNacimiento || current?.fechaNacimiento || '1998-01-01').trim(),
+      fechaNacimiento: (datos.fechaNacimiento || current?.fechaNacimiento || '').trim(),
       tieneCv: Boolean(current?.tieneCv)
     }
 

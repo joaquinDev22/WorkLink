@@ -11,7 +11,7 @@
     </div>
     <a
       routerLink="/freelance/nuevo-proyecto"
-      class="btn-tactile-primary px-5 py-2.5 min-h-[44px] text-sm inline-flex items-center justify-center gap-2 shrink-0">
+      class="btn-tactile-primary px-5 py-2.5 min-h-11 text-sm inline-flex items-center justify-center gap-2 shrink-0">
       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
       </svg>
@@ -36,7 +36,7 @@
     </div>
   } @else if (proyectos().length === 0) {
     <div class="bg-white border border-dashed border-slate-300 rounded-2xl p-10 text-center space-y-3">
-      <h2 class="text-base font-bold text-slate-900">Todavía no publicaste proyectos</h2>
+      <h2 class="text-base font-bold text-slate-900">Todavía no has publicado proyectos</h2>
       <p class="text-sm text-slate-500 max-w-md mx-auto">
         Publica tu primer encargo freelance para recibir propuestas técnicas y coordinar entregas por hitos.
       </p>
@@ -55,7 +55,7 @@
           [class]="active
             ? 'btn-tactile-primary font-semibold'
             : 'btn-tactile-secondary text-slate-700 font-medium'"
-          class="px-3.5 py-2 min-h-[40px] rounded-xl text-xs">
+          class="px-3.5 py-2 min-h-10 rounded-xl text-xs">
           {{ labelEstado(est) }}
         </button>
       }
@@ -92,7 +92,7 @@
                 </div>
               </button>
               <div class="flex items-center justify-between gap-2 text-xs text-slate-600 tabular-nums pt-0.5">
-                <span>${{ p.presupuestoMin }} - ${{ p.presupuestoMax }}</span>
+                <span>{{ formatMonto(p.presupuestoMin) }} - {{ formatMonto(p.presupuestoMax) }}</span>
                 @if (p.estado === 'EN_PROGRESO' || p.estado === 'FINALIZADO') {
                   <a
                     [routerLink]="['/freelance/proyecto', p.proyectoId, 'pagos']"

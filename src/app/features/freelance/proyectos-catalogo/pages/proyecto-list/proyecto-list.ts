@@ -18,6 +18,7 @@ import {
   formatFechaProyecto
 } from '../../../proyecto-gestion/models/proyecto.models'
 import { Paginator } from '../../../../../shared/components/paginator/paginator'
+import { formatMontoMoneda } from '../../../checkout-mercadopago/models/mercadopago.models'
 
 @Component({
   imports: [RouterLink, NgTemplateOutlet, Paginator],
@@ -30,6 +31,7 @@ import { Paginator } from '../../../../../shared/components/paginator/paginator'
   }
 })
 export class ProyectoList implements OnInit, OnDestroy {
+  readonly formatMonto = formatMontoMoneda
   private hostEl = inject(ElementRef<HTMLElement>)
   protected catalogService = inject(ProyectoCatalog)
 
@@ -91,7 +93,8 @@ export class ProyectoList implements OnInit, OnDestroy {
     const maxP = this.presupuestoMaxFiltro()
     const reqSkills = this.skillsSeleccionadas().map((s) => s.toLowerCase())
 
-    return this.catalogo().filter((p) => {
+    // Solo se ofrecen los proyectos que aceptan propuestas (los demás no se pueden postular)
+    return this.catalogo().filter((p) => p.estado === 'BUSCANDO_TALENTO').filter((p) => {
       const coincideArea = area === 'todos' || p.area.toLowerCase() === area
       const coincideTexto =
         !termino ||

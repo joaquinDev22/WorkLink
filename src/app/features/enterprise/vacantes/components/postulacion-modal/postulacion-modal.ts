@@ -1,9 +1,11 @@
-import { Component, input, output, signal, inject } from '@angular/core'
+import { Component, computed, input, output, signal, inject } from '@angular/core'
+import { RouterLink } from '@angular/router'
 import { VacanteResponseDTO, PostulacionResponseDTO } from '../../models/vacante.models'
 import { VacanteService } from '../../services/vacante'
+import { Perfil } from '../../../../perfiles/services/perfil'
 
 @Component({
-  imports: [],
+  imports: [RouterLink],
   selector: 'app-postulacion-modal',
   styleUrl: './postulacion-modal.css',
   templateUrl: './postulacion-modal.html'
@@ -22,7 +24,13 @@ export class PostulacionModal {
   errorMessage = signal<string | null>(null)
 
   readonly MAX_CHARS = 500
-  readonly cvAdjunto = 'cv_joaquin_nieva_2026.pdf'
+  private perfilService = inject(Perfil)
+  // El CV que se adjunta es el del perfil: se muestra lo que el backend informa, nunca un archivo de ejemplo
+  readonly tieneCv = computed(() => this.perfilService.perfilActual()?.tieneCv === true)
+
+  constructor() {
+    if (!this.perfilService.perfilActual()) this.perfilService.cargarPerfil().subscribe({ error: () => {} })
+  }
 
   onClose(): void {
     if (this.isSubmitting()) return

@@ -190,8 +190,8 @@ export class ProyectoWorkspacePanel implements OnChanges, OnDestroy {
     this.proyectoAdmin
       .crearHito(this.proyecto().proyectoId, {
         titulo,
-        descripcion: this.hitoDesc().trim() || 'Entregable acordado por hito.',
-        fechaLimite: this.hitoFechaLimite() || new Date().toISOString().split('T')[0]
+        descripcion: this.hitoDesc().trim(),
+        fechaLimite: this.hitoFechaLimite() || undefined
       })
       .subscribe({
         next: (nuevo) => {

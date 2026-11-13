@@ -137,6 +137,7 @@
                 id="emp-rubro"
                 [formField]="empresaForm.rubro"
                 class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-indigo focus:border-brand-indigo outline-hidden transition-[background-color,border-color,box-shadow]">
+                <option value="">Selecciona un sector</option>
                 @for (rubro of rubrosDisponibles; track rubro) {
                   <option [value]="rubro">{{ rubro }}</option>
                 }
@@ -308,16 +309,11 @@
                 <h3 class="text-base font-extrabold text-slate-900 leading-tight">
                   {{ empresaModel().nombre || 'Nombre de la Empresa' }}
                 </h3>
-                <span class="text-emerald-500" title="Empresa Verificada">
-                  <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                  </svg>
-                </span>
               </div>
 
               <div class="flex flex-wrap items-center gap-2 pt-0.5">
                 <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-50 text-brand-indigo border border-indigo-100">
-                  {{ empresaModel().rubro || 'Tecnología' }}
+                  {{ empresaModel().rubro || 'Rubro' }}
                 </span>
                 @if (empresaModel().ubicacion) {
                   <span class="text-[11px] text-slate-500 flex items-center gap-1">
@@ -344,9 +340,6 @@
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                     </svg>
                   </a>
-                  <span class="text-[10px] text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60">
-                    Verificada
-                  </span>
                 </div>
               }
             </div>

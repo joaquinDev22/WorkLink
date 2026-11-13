@@ -44,7 +44,7 @@ export class ProyectoEdit implements OnInit, OnDestroy {
   readonly isLoadingProyecto = signal<boolean>(false)
 
   readonly errorMsg = signal<string | null>(null)
-  readonly habilidades = signal<string[]>(['Angular', 'TypeScript'])
+  readonly habilidades = signal<string[]>([])
   readonly skillInput = signal<string>('')
 
   readonly areasSugeridas = [
@@ -84,8 +84,8 @@ export class ProyectoEdit implements OnInit, OnDestroy {
     nombreProyecto: '',
     area: 'Desarrollo Web',
     descripcion: '',
-    presupuestoMin: 500,
-    presupuestoMax: 1500,
+    presupuestoMin: 0,
+    presupuestoMax: 0,
     duracion: '1 a 3 meses',
     tipoPago: 'Por Hitos'
   })

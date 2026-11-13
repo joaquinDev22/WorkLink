@@ -354,7 +354,7 @@
                     <p class="text-xs font-bold text-slate-800 truncate">
                       Curriculum-Vitae.pdf
                     </p>
-                    <span class="text-[10px] text-emerald-600 font-semibold">✓ Verificado y listo</span>
+                    <span class="text-[10px] text-emerald-600 font-semibold">✓ Cargado</span>
                   </div>
                 </div>
 
@@ -688,7 +688,7 @@
                   <span>Histórico de Empresas para las que Trabajó</span>
                 </h2>
                 <p class="text-xs text-slate-500 mt-0.5">
-                  Trayectoria corporativa verificada en selección técnica, headhunting y gestión de talent pools.
+                  Empresas en las que trabajaste como recruiter.
                 </p>
               </div>
 
@@ -960,7 +960,7 @@
                         Cliente: <span class="font-bold text-slate-700">{{ p.nombreCliente }}</span>
                       </div>
                       <div class="font-bold text-slate-900">
-                        ${{ p.presupuestoMin }} - ${{ p.presupuestoMax }}
+                        {{ formatMonto(p.presupuestoMin) }} - {{ formatMonto(p.presupuestoMax) }}
                       </div>
                     </div>
                   </div>
@@ -1146,7 +1146,7 @@
                   <span>Proyectos Publicados como Cliente</span>
                 </h2>
                 <p class="text-xs text-slate-500">
-                  Resumen de las búsquedas freelance que publicaste en WorkLink
+                  Resumen de las búsquedas freelance que has publicado en WorkLink
                 </p>
               </div>
 
@@ -1193,7 +1193,7 @@
                     </div>
                     <div class="pt-2 border-t border-slate-200/60 flex items-center justify-between text-xs text-slate-500">
                       <span>Presupuesto</span>
-                      <span class="font-bold text-slate-900 tabular-nums">${{ p.presupuestoMin }} - ${{ p.presupuestoMax }}</span>
+                      <span class="font-bold text-slate-900 tabular-nums">{{ formatMonto(p.presupuestoMin) }} - {{ formatMonto(p.presupuestoMax) }}</span>
                     </div>
                   </a>
                 }
@@ -1201,7 +1201,7 @@
             } @else {
               <div class="py-8 px-4 text-center border-2 border-dashed border-slate-200 rounded-2xl space-y-2.5">
                 <p class="text-slate-500 text-xs sm:text-sm font-medium">
-                  Todavía no publicaste proyectos freelance.
+                  Todavía no has publicado proyectos freelance.
                 </p>
                 <a
                   routerLink="/freelance/nuevo-proyecto"

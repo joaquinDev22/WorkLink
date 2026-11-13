@@ -63,7 +63,7 @@ export type EstadoHito = 'PENDIENTE' | 'EN_PROGRESO' | 'COMPLETADO'
 export interface HitoRequestDTO {
   titulo: string
   descripcion: string
-  fechaLimite: string // YYYY-MM-DD (el monto lo reparte el backend en partes iguales)
+  fechaLimite?: string // YYYY-MM-DD, opcional (el monto lo reparte el backend en partes iguales)
 }
 
 export interface HitoResponseDTO {

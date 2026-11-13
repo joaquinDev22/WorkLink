@@ -15,6 +15,7 @@ import {
   ESTADO_PROYECTO_CONFIG,
   formatFechaProyecto
 } from '../../../proyecto-gestion/models/proyecto.models'
+import { formatMontoMoneda } from '../../../checkout-mercadopago/models/mercadopago.models'
 
 @Component({
   imports: [RouterLink],
@@ -23,6 +24,7 @@ import {
   templateUrl: './cliente-dashboard.html'
 })
 export class ClienteDashboard implements OnInit, OnDestroy {
+  readonly formatMonto = formatMontoMoneda
   protected clienteService = inject(Cliente)
   protected proyectoAdmin = inject(ProyectoAdmin)
   private hostEl = inject(ElementRef<HTMLElement>)

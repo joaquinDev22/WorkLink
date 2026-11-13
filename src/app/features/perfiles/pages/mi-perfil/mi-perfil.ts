@@ -18,6 +18,7 @@ import { Cliente } from '../../../freelance/cliente-dashboard/services/cliente'
 import { PerfilCompletitudBanner } from '../../components/perfil-completitud/perfil-completitud'
 import { SkillAutocomplete } from '../../../../shared/components/skill-autocomplete/skill-autocomplete'
 import { catchError, forkJoin, map, Observable, of } from 'rxjs'
+import { formatMontoMoneda } from '../../../freelance/checkout-mercadopago/models/mercadopago.models'
 
 export interface HistorialEmpresaRecruiter {
   id: number
@@ -77,6 +78,7 @@ export const PATTERNS_TELEFONO: Record<string, { regex: RegExp, ejemplo: string 
   templateUrl: './mi-perfil.html',
 })
 export class MiPerfil implements OnInit, HasPendingChanges {
+  readonly formatMonto = formatMontoMoneda
 
   protected perfilService = inject(Perfil)
   protected morph = inject(MorphService)
@@ -837,13 +839,13 @@ export class MiPerfil implements OnInit, HasPendingChanges {
         id: Date.now(),
         empresa: nombre,
         rolPuesto: puesto,
-        periodo: this.empresaHistorialPeriodo().trim() || '2024 - Presente',
-        ubicacion: this.empresaHistorialUbicacion().trim() || 'Buenos Aires, Argentina',
+        periodo: this.empresaHistorialPeriodo().trim(),
+        ubicacion: this.empresaHistorialUbicacion().trim(),
         tipoUbicacion: this.empresaHistorialTipo(),
         esActual: this.empresaHistorialEsActual(),
-        descripcion: this.empresaHistorialDescripcion().trim() || 'Gestión y coordinación de talento técnico IT.',
-        logros: logros.length > 0 ? logros : ['Cobertura integral de posiciones técnicas'],
-        perfilesReclutados: tags.length > 0 ? tags : ['IT Recruiting', 'Talent Acquisition']
+        descripcion: this.empresaHistorialDescripcion().trim(),
+        logros,
+        perfilesReclutados: tags
       }
       this.historialRecruiter.update(items => {
         const actualizados = [nuevo, ...items]
