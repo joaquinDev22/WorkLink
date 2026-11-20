@@ -57,7 +57,7 @@ export class EmpresaForm implements OnInit {
 
     required(f.descripcion, { message: 'La descripción corporativa es obligatoria' })
     minLength(f.descripcion, 10, { message: 'La descripción debe tener al menos 10 caracteres' })
-    maxLength(f.descripcion, 1000, { message: 'La descripción no debe superar los 1000 caracteres' })
+    maxLength(f.descripcion, 500, { message: 'La descripción no debe superar los 500 caracteres' })
 
     required(f.ubicacion, { message: 'La sede o ciudad principal es obligatoria' })
 
