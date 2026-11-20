@@ -1,30 +1,26 @@
 // Recruiter DTO contracts
-// POST y PUT /api/v1/empresas/recruiters
+// POST y PUT /api/v1/empresas/recruiters: la empresa vincula al recruiter solo por email
 export interface RecruiterRequestDTO {
-  nombre: string
-  apellido: string
   email: string
-  fechaNacimiento: string // YYYY-MM-DD
-  area?: string
 }
 
-// GET /api/v1/empresas/recruiters
+// GET /api/v1/empresas/recruiters y GET /api/v1/recruiter/vinculacion
 export interface RecruiterResponseDTO {
   recruiterId: number
   nombre: string
   apellido: string
   email: string
-  fechaNacimiento: string // YYYY-MM-DD
-  area?: string
+  fechaNacimiento?: string | null // YYYY-MM-DD
+  area?: string | null
   empresaId: number
   nombreEmpresa: string
+  fechaVinculacion?: string | null // ISO
+  vinculacionVista: boolean
+  bajaSolicitadaEn?: string | null // ISO: cuándo pidió la baja
+  fechaBajaHabilitada?: string | null // ISO: desde cuándo puede desvincularse solo
 }
 
-// Modelo tipado estricto para Signal Forms (sin opcionales para evitar fallos de enlace en templates)
+// Modelo tipado estricto para Signal Forms
 export interface RecruiterFormModel {
-  nombre: string
-  apellido: string
   email: string
-  fechaNacimiento: string
-  area: string
 }
