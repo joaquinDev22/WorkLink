@@ -51,7 +51,7 @@ export interface EditProfileModel {
   ubicacion: string
   sitioWeb: string
   fechaNacimiento: string
-  email?: string
+  email: string
   rol?: string
   tieneCv?: boolean
 }
