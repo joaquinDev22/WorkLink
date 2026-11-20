@@ -5,6 +5,7 @@ import { form, minLength, maxLength, required, validate, FormField } from '@angu
 import { VacanteService } from '../../services/vacante'
 import { VacanteFormModel, VacanteRequestDTO, ModalidadTrabajo } from '../../models/vacante.models'
 import { SkillAutocomplete } from '../../../../../shared/components/skill-autocomplete/skill-autocomplete'
+import { hoyISO, mananaISO } from '../../../../../core/utils/fechas'
 
 @Component({
   selector: 'app-vacante-create-edit',
@@ -23,8 +24,9 @@ export class VacanteCreateEdit implements OnInit {
   vacanteId = signal<number | null>(null)
   isEditMode = computed(() => this.vacanteId() !== null)
 
-  // Fecha mínima permitida (hoy)
-  readonly todayDate = new Date().toISOString().split('T')[0]
+  // La fecha límite no puede ser hoy: la vacante tiene que quedar abierta al menos hasta mañana
+  readonly todayDate = hoyISO()
+  readonly minFinalizacion = mananaISO()
 
   // Modelo reactivo para Signal Forms
   vacanteModel = signal<VacanteFormModel>({
@@ -84,14 +86,14 @@ export class VacanteCreateEdit implements OnInit {
 
     required(f.finalizacion, { message: 'La fecha límite de postulación es obligatoria' })
 
-    // Validador de fecha límite: no puede ser anterior al día de hoy (Criterio de Aceptación Escenario 1)
+    // Validador de fecha límite: tiene que ser posterior a hoy (ni anterior ni el mismo día)
     validate(f.finalizacion, ({ value }) => {
       const fecha = value()
       if (!fecha) return null
-      if (fecha < this.todayDate) {
+      if (fecha <= this.todayDate) {
         return {
           kind: 'minDate',
-          message: 'La fecha límite no puede ser anterior al día de hoy'
+          message: 'La fecha límite tiene que ser a partir de mañana'
         }
       }
       return null

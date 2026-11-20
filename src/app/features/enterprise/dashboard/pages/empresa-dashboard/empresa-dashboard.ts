@@ -7,6 +7,7 @@ import { VacanteService } from '../../../vacantes/services/vacante'
 import { RecruiterService } from '../../../recruiters/services/recruiter'
 import { DashboardStatsResponseDTO } from '../../../empresa-perfil/models/empresa.models'
 import { VacanteResponseDTO } from '../../../vacantes/models/vacante.models'
+import { hoyISO } from '../../../../../core/utils/fechas'
 
 @Component({
   selector: 'app-empresa-dashboard',
@@ -29,7 +30,7 @@ export class EmpresaDashboard implements OnInit, OnDestroy {
   readonly stats = signal<DashboardStatsResponseDTO | null>(null)
   readonly isLoading = signal<boolean>(true)
 
-  readonly todayDate = new Date().toISOString().split('T')[0]
+  readonly todayDate = hoyISO()
 
   // Vacantes activas según fecha límite
   readonly vacantesActivas = computed<VacanteResponseDTO[]>(() => {
