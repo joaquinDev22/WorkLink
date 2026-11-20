@@ -68,6 +68,15 @@
           Cancelar proyecto
         </button>
       }
+
+      @if (role() === 'CLIENTE' && puedeEliminar()) {
+        <button
+          type="button"
+          (click)="mostrarModalEliminar.set(true)"
+          class="btn-tactile-secondary px-3.5 py-2 min-h-[40px] text-xs text-rose-600 cursor-pointer">
+          Eliminar
+        </button>
+      }
     </div>
   </header>
 
@@ -384,6 +393,54 @@
           (click)="confirmarCancelacion()"
           class="btn-tactile-danger px-4 py-2.5 min-h-[44px] rounded-xl font-bold text-xs sm:text-sm">
           {{ isMutating() ? 'Cancelando...' : 'Confirmar cancelación' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Modal de confirmación de eliminación: solo proyectos sin freelancer -->
+@if (mostrarModalEliminar()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div
+      class="animate-modal-backdrop fixed inset-0 bg-slate-900/55 backdrop-blur-xs"
+      (click)="!isMutating() && mostrarModalEliminar.set(false)"
+      aria-hidden="true"></div>
+
+    <div
+      role="alertdialog"
+      aria-modal="true"
+      aria-labelledby="eliminar-title"
+      aria-describedby="eliminar-desc"
+      class="animate-modal-card relative z-10 w-full max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-2xl border border-slate-200 p-6 shadow-2xl space-y-4">
+      <div class="flex items-start gap-3">
+        <div class="w-10 h-10 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center shrink-0 border border-rose-200">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        </div>
+        <div class="space-y-1">
+          <h3 id="eliminar-title" class="text-base font-bold text-slate-900">¿Eliminar «{{ proyecto().nombreProyecto }}»?</h3>
+          <p id="eliminar-desc" class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+            Se borran el proyecto y las propuestas que recibió. No se puede deshacer.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2.5 pt-2">
+        <button
+          type="button"
+          [disabled]="isMutating()"
+          (click)="mostrarModalEliminar.set(false)"
+          class="btn-tactile-secondary px-4 py-2.5 min-h-[44px] text-xs sm:text-sm cursor-pointer">
+          Volver
+        </button>
+        <button
+          type="button"
+          [disabled]="isMutating()"
+          (click)="confirmarEliminacion()"
+          class="btn-tactile-danger px-4 py-2.5 min-h-[44px] rounded-xl font-bold text-xs sm:text-sm">
+          {{ isMutating() ? 'Eliminando...' : 'Sí, eliminar' }}
         </button>
       </div>
     </div>

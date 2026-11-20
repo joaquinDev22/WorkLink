@@ -92,6 +92,16 @@ export class ProyectoAdmin {
       .pipe(finalize(() => this.isMutating.set(false)))
   }
 
+  // DELETE /api/v1/freelance/proyectos/{id} - Eliminar un proyecto sin freelancer (buscando talento o cancelado)
+  eliminarProyecto(proyectoId: number): Observable<void> {
+    this.isMutating.set(true)
+
+    return this.client.delete<void>(`${this.API_URL}/${proyectoId}`).pipe(
+      tap(() => this.misProyectos.update((list) => list.filter((p) => p.proyectoId !== proyectoId))),
+      finalize(() => this.isMutating.set(false))
+    )
+  }
+
   // GET /api/v1/freelance/proyectos/{proyectoId}/hitos - Lista de hitos
   getHitos(proyectoId: number): Observable<HitoResponseDTO[]> {
     return this.client.get<HitoResponseDTO[]>(`${this.API_URL}/${proyectoId}/hitos`)

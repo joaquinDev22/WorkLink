@@ -14,6 +14,7 @@ import { ProyectoAdmin } from '../../services/proyecto-admin'
 import { ProyectoCatalog } from '../../../proyectos-catalogo/services/proyecto-catalog'
 import { ProyectoRequestDTO } from '../../models/proyecto.models'
 import { SkillAutocomplete } from '../../../../../shared/components/skill-autocomplete/skill-autocomplete'
+import { Notificaciones } from '../../../../../core/services/notificaciones'
 
 interface ProyectoFormModel {
   nombreProyecto: string
@@ -37,6 +38,10 @@ export class ProyectoEdit implements OnInit, OnDestroy {
   private hostEl = inject(ElementRef<HTMLElement>)
   protected proyectoAdmin = inject(ProyectoAdmin)
   private catalogService = inject(ProyectoCatalog)
+  private notificaciones = inject(Notificaciones)
+
+  // Queda en true al guardar con éxito: el botón no se vuelve a habilitar mientras se redirige (evita duplicados)
+  readonly guardado = signal<boolean>(false)
 
   readonly isMutating = this.proyectoAdmin.isMutating
   readonly proyectoId = signal<number | null>(null)
@@ -201,6 +206,7 @@ export class ProyectoEdit implements OnInit, OnDestroy {
 
   onSubmit(event: Event): void {
     event.preventDefault()
+    if (this.isMutating() || this.guardado()) return
     this.errorMsg.set(null)
 
     if (this.proyectoForm().invalid()) {
@@ -235,7 +241,15 @@ export class ProyectoEdit implements OnInit, OnDestroy {
 
     req$.subscribe({
       next: (res) => {
-        this.router.navigate(['/freelance/proyecto', res.uuid || res.proyectoId])
+        this.guardado.set(true)
+        if (editId !== null) {
+          this.notificaciones.mostrar('Guardaste los cambios del proyecto.', 'exito')
+          this.router.navigate(['/freelance/proyecto', res.uuid || res.proyectoId])
+          return
+        }
+        // Al panel, reemplazando el formulario en el historial: "atrás" no vuelve a un formulario ya enviado
+        this.notificaciones.mostrar(`Publicaste «${res.nombreProyecto}». Ya pueden enviarte propuestas.`, 'exito')
+        this.router.navigate(['/freelance/cliente-dashboard'], { replaceUrl: true })
       },
       error: (err) => {
         this.errorMsg.set(

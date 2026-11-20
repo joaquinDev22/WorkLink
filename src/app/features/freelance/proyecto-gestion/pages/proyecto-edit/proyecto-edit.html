@@ -215,7 +215,7 @@
         </a>
         <button
           type="submit"
-          [disabled]="proyectoForm().invalid() || isMutating()"
+          [disabled]="proyectoForm().invalid() || isMutating() || guardado()"
           class="btn-tactile-primary px-6 py-2.5 min-h-[44px] text-sm disabled:opacity-50 disabled:pointer-events-none cursor-pointer">
           @if (isMutating()) {
             <span>{{ isEditMode() ? 'Guardando cambios...' : 'Publicando proyecto...' }}</span>
