@@ -17,6 +17,7 @@ import { RouterLink } from '@angular/router'
 import { gsap } from 'gsap'
 import { formatMontoMoneda } from '../../../checkout-mercadopago/models/mercadopago.models'
 import { ProyectoAdmin } from '../../services/proyecto-admin'
+import { Notificaciones } from '../../../../../core/services/notificaciones'
 import { ProyectoCatalog } from '../../../proyectos-catalogo/services/proyecto-catalog'
 import {
   CalificacionProyectoResponseDTO,
@@ -59,7 +60,14 @@ export class ProyectoWorkspacePanel implements OnChanges, OnDestroy {
   readonly hoy = hoyISO()
 
   // Cancelación irreversible (WL-36)
+  private notificaciones = inject(Notificaciones)
   readonly mostrarModalCancelar = signal<boolean>(false)
+  // Eliminar: solo mientras no haya freelancer (buscando talento o cancelado)
+  readonly mostrarModalEliminar = signal<boolean>(false)
+  readonly puedeEliminar = computed(() => {
+    const e = this.proyecto().estado
+    return e === 'BUSCANDO_TALENTO' || e === 'CANCELADO'
+  })
 
   // Calificación 1..5 estrellas (WL-37)
   readonly puntajeSeleccionado = signal<number>(5)
@@ -112,9 +120,9 @@ export class ProyectoWorkspacePanel implements OnChanges, OnDestroy {
 
   @HostListener('document:keydown.escape')
   onEscape(): void {
-    if (this.mostrarModalCancelar() && !this.isMutating()) {
-      this.mostrarModalCancelar.set(false)
-    }
+    if (this.isMutating()) return
+    this.mostrarModalCancelar.set(false)
+    this.mostrarModalEliminar.set(false)
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -263,6 +271,27 @@ export class ProyectoWorkspacePanel implements OnChanges, OnDestroy {
       error: (err) => {
         this.isMutating.set(false)
         this.feedbackError.set(err.error?.message || 'No se pudo cancelar el proyecto.')
+      }
+    })
+  }
+
+  confirmarEliminacion(): void {
+    this.feedbackError.set(null)
+    const { proyectoId, nombreProyecto } = this.proyecto()
+
+    this.isMutating.set(true)
+
+    // El servicio lo saca de "Mis proyectos": la lista pasa a mostrar el siguiente
+    this.proyectoAdmin.eliminarProyecto(proyectoId).subscribe({
+      next: () => {
+        this.isMutating.set(false)
+        this.mostrarModalEliminar.set(false)
+        this.notificaciones.mostrar(`Eliminaste «${nombreProyecto}».`, 'exito')
+      },
+      // El motivo (por ejemplo, que ya tiene freelancer) lo avisa el interceptor
+      error: () => {
+        this.isMutating.set(false)
+        this.mostrarModalEliminar.set(false)
       }
     })
   }
