@@ -178,7 +178,22 @@
 
                 <!-- Alcance Operativo -->
                 <td class="px-6 py-4 text-xs text-slate-500">
-                  Gestión de postulantes y entrevistas
+                  @if (rec.bajaSolicitadaEn) {
+                    <div class="flex flex-col items-start gap-1.5">
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+                        Pidió la baja el {{ rec.bajaSolicitadaEn | date: 'dd/MM/yyyy' }}
+                      </span>
+                      <button
+                        type="button"
+                        (click)="aceptarBaja(rec)"
+                        [disabled]="isMutating()"
+                        class="btn-tactile-secondary px-3 py-1 rounded-lg text-[11px] font-semibold disabled:opacity-50">
+                        Aceptar baja
+                      </button>
+                    </div>
+                  } @else {
+                    Gestión de postulantes y entrevistas
+                  }
                 </td>
 
                 <!-- Acciones -->
@@ -224,6 +239,20 @@
                     RECRUITER
                   </span>
                 </div>
+                @if (rec.bajaSolicitadaEn) {
+                  <div class="flex flex-wrap items-center gap-2 pt-1">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+                      Pidió la baja el {{ rec.bajaSolicitadaEn | date: 'dd/MM/yyyy' }}
+                    </span>
+                    <button
+                      type="button"
+                      (click)="aceptarBaja(rec)"
+                      [disabled]="isMutating()"
+                      class="btn-tactile-secondary px-2.5 py-1 rounded-lg text-[10px] font-semibold disabled:opacity-50">
+                      Aceptar baja
+                    </button>
+                  </div>
+                }
               </div>
             </div>
 

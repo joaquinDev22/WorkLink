@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms'
 import { EntrevistaService } from '../../services/entrevista'
 import { EntrevistaResponseDTO } from '../../models/entrevista.models'
 import { PostulacionResponseDTO } from '../../../vacantes/models/vacante.models'
+import { mananaISO } from '../../../../../core/utils/fechas'
 
 @Component({
   imports: [FormsModule],
@@ -33,7 +34,8 @@ export class AgendaModal {
   isSubmitting = signal<boolean>(false)
   errorMsg = signal<string | null>(null)
 
-  readonly minDate = new Date().toISOString().split('T')[0]
+  // Las entrevistas se agendan del día siguiente en adelante
+  readonly minDate = mananaISO()
 
   constructor() {
     effect(() => {
@@ -56,9 +58,7 @@ export class AgendaModal {
     })
 
     // Fecha sugerida por defecto: mañana
-    const manana = new Date()
-    manana.setDate(manana.getDate() + 1)
-    this.fecha.set(manana.toISOString().split('T')[0])
+    this.fecha.set(mananaISO())
   }
 
   onClose(): void {
@@ -76,6 +76,11 @@ export class AgendaModal {
 
     if (!this.fecha()) {
       this.errorMsg.set('Indica una fecha válida para la entrevista.')
+      return
+    }
+
+    if (this.fecha() < this.minDate) {
+      this.errorMsg.set('La entrevista tiene que ser a partir de mañana.')
       return
     }
 

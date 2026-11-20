@@ -709,7 +709,7 @@
             @if (historialRecruiter().length > 0) {
               <!-- Timeline Vertical de Experiencias Laborales -->
               <div class="space-y-6 relative before:absolute before:inset-y-0 before:left-5 before:w-0.5 before:bg-slate-200/70">
-                @for (item of historialRecruiter(); track item.id) {
+                @for (item of historialPagina(); track item.id) {
                   <div class="relative flex items-start gap-4 sm:gap-6 group">
                     <!-- Monograma Timeline -->
                     <div class="relative z-10 w-10 h-10 rounded-2xl bg-white border-2 border-slate-200 text-brand-indigo font-black text-sm flex items-center justify-center shrink-0 shadow-sm group-hover:border-brand-indigo group-hover:scale-105 transition-[border-color,transform]">
@@ -800,6 +800,7 @@
                   </div>
                 }
               </div>
+              <app-paginator [currentPage]="paginaHistorial()" [totalItems]="historialRecruiter().length" [pageSize]="5" itemLabel="experiencias" (pageChange)="paginaHistorial.set($event)" />
             } @else {
               <div class="py-8 px-4 text-center border-2 border-dashed border-slate-200 rounded-2xl space-y-2">
                 <p class="text-slate-500 text-xs sm:text-sm font-medium">
@@ -922,7 +923,7 @@
               </div>
             } @else if ((proyectosAsignados() || []).length > 0) {
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                @for (p of proyectosAsignados(); track p.proyectoId) {
+                @for (p of asignadosPagina(); track p.proyectoId) {
                   <div class="p-4 rounded-2xl bg-slate-50/70 border border-slate-200/80 hover:border-slate-300 transition-colors flex flex-col justify-between gap-3">
                     <div class="space-y-2">
                       <div class="flex items-start justify-between gap-2">
@@ -966,6 +967,7 @@
                   </div>
                 }
               </div>
+              <app-paginator [currentPage]="paginaAsignados()" [totalItems]="proyectosAsignados().length" [pageSize]="4" itemLabel="proyectos" (pageChange)="paginaAsignados.set($event)" />
             } @else {
               <div class="py-6 px-4 text-center border-2 border-dashed border-slate-200 rounded-2xl text-xs text-slate-500">
                 Aún no tienes proyectos freelance asignados en tu histórico.
@@ -1171,7 +1173,7 @@
               <div class="py-8 text-center text-xs text-slate-400">Cargando proyectos publicados...</div>
             } @else if (proyectosPublicadosCliente().length > 0) {
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                @for (p of proyectosPublicadosCliente(); track p.proyectoId) {
+                @for (p of publicadosPagina(); track p.proyectoId) {
                   <a
                     [routerLink]="['/freelance/proyecto', p.uuid || p.proyectoId]"
                     class="p-4 rounded-2xl bg-slate-50/70 border border-slate-200/80 hover:border-brand-indigo/40 hover:bg-white transition-[background-color,border-color,box-shadow] hover:shadow-xs flex flex-col justify-between gap-2.5">
@@ -1198,6 +1200,7 @@
                   </a>
                 }
               </div>
+              <app-paginator [currentPage]="paginaPublicados()" [totalItems]="proyectosPublicadosCliente().length" [pageSize]="4" itemLabel="proyectos" (pageChange)="paginaPublicados.set($event)" />
             } @else {
               <div class="py-8 px-4 text-center border-2 border-dashed border-slate-200 rounded-2xl space-y-2.5">
                 <p class="text-slate-500 text-xs sm:text-sm font-medium">

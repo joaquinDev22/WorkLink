@@ -101,7 +101,7 @@
     </div>
   } @else {
     <div class="space-y-4">
-      @for (e of entrevistasFiltradas(); track e.id) {
+      @for (e of entrevistasPagina(); track e.id) {
         <article class="bg-white rounded-2xl border border-slate-200/90 p-5 sm:p-6 shadow-sm hover:shadow-md transition-[box-shadow,border-color] duration-200 flex flex-col md:flex-row md:items-center justify-between gap-5 animate-row-enter">
           <!-- Bloque de Fecha, Hora y Participante -->
           <div class="flex items-start gap-4 min-w-0 w-full md:w-auto">
@@ -197,6 +197,7 @@
           </div>
         </article>
       }
+      <app-paginator [currentPage]="pagina()" [totalItems]="entrevistasFiltradas().length" [pageSize]="8" itemLabel="entrevistas" (pageChange)="pagina.set($event)" />
     </div>
   }
 

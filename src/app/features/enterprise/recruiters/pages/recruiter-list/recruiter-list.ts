@@ -116,7 +116,15 @@ export class RecruiterList implements OnInit {
   }
 
   onRecruiterSaved(nuevo: RecruiterResponseDTO): void {
-    this.mostrarToast(`¡${nuevo.nombre} ${nuevo.apellido} se ha sumado al equipo de reclutamiento!`)
+    this.mostrarToast(`¡${nuevo.nombre} se sumó al equipo! Le avisamos que lo vinculaste a tu empresa.`)
+  }
+
+  // El recruiter pidió la baja: la empresa la acepta y queda desvinculado
+  aceptarBaja(recruiter: RecruiterResponseDTO): void {
+    this.recruiterService.aceptarBaja(recruiter.recruiterId).subscribe({
+      next: () => this.mostrarToast(`Aceptaste la baja de ${recruiter.nombre}. Ya no forma parte de tu empresa.`),
+      error: (err) => this.mostrarToast(err?.error?.message || 'No se pudo aceptar la baja. Intenta nuevamente.')
+    })
   }
 
   solicitarBaja(recruiter: RecruiterResponseDTO): void {

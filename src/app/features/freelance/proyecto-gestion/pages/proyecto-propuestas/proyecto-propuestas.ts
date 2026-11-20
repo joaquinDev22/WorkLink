@@ -1,3 +1,4 @@
+import { Paginator, paginar } from '../../../../../shared/components/paginator/paginator'
 ﻿import {
   Component,
   ElementRef,
@@ -21,7 +22,7 @@ import {
 import { formatMontoMoneda } from '../../../checkout-mercadopago/models/mercadopago.models'
 
 @Component({
-  imports: [RouterLink],
+  imports: [RouterLink, Paginator],
   selector: 'app-proyecto-propuestas',
   styleUrl: './proyecto-propuestas.css',
   templateUrl: './proyecto-propuestas.html'
@@ -46,6 +47,9 @@ export class ProyectoPropuestas implements OnInit, OnDestroy {
 
   readonly estadoConfig = ESTADO_PROYECTO_CONFIG
   readonly formatFecha = (f?: string) => formatFechaProyecto(f, false)
+
+  readonly pagina = signal<number>(1)
+  readonly propuestasPagina = computed(() => paginar(this.propuestasOrdenadas(), this.pagina(), 6))
 
   readonly propuestasOrdenadas = computed<PostulacionProyectoResponseDTO[]>(() => {
     const list = [...this.propuestas()]

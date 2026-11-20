@@ -27,6 +27,7 @@ import {
   ProyectoResponseDTO,
   formatFechaProyecto
 } from '../../models/proyecto.models'
+import { hoyISO } from '../../../../../core/utils/fechas'
 
 @Component({
   imports: [RouterLink],
@@ -53,6 +54,8 @@ export class ProyectoWorkspacePanel implements OnChanges, OnDestroy {
   readonly hitoTitulo = signal<string>('')
   readonly hitoDesc = signal<string>('')
   readonly hitoFechaLimite = signal<string>('')
+  // La fecha límite de un hito no puede ser anterior a hoy
+  readonly hoy = hoyISO()
 
   // Cancelación irreversible (WL-36)
   readonly mostrarModalCancelar = signal<boolean>(false)
@@ -183,6 +186,12 @@ export class ProyectoWorkspacePanel implements OnChanges, OnDestroy {
     const titulo = this.hitoTitulo().trim()
     if (!titulo) {
       this.feedbackError.set('Ingresa un título para el hito.')
+      return
+    }
+
+    const fechaLimite = this.hitoFechaLimite()
+    if (fechaLimite && fechaLimite < hoyISO()) {
+      this.feedbackError.set('La fecha límite del hito no puede ser anterior a hoy.')
       return
     }
 

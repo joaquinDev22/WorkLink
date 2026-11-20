@@ -43,6 +43,21 @@ export class RecruiterService {
     )
   }
 
+  // Aceptar la baja que pidió el recruiter (POST /api/v1/empresas/recruiters/{id}/baja/aceptar)
+  aceptarBaja(id: number): Observable<void> {
+    this.isMutating.set(true)
+
+    return this.client.post<void>(`${this.API_URL}/${id}/baja/aceptar`, {}).pipe(
+      tap({
+        next: () => {
+          this.recruiters.update((prev) => prev.filter((r) => r.recruiterId !== id))
+          this.isMutating.set(false)
+        },
+        error: () => this.isMutating.set(false)
+      })
+    )
+  }
+
   // Dar de baja a un recruiter (DELETE /api/v1/empresas/recruiters/{id})
   eliminarRecruiter(id: number): Observable<void> {
     this.isMutating.set(true)

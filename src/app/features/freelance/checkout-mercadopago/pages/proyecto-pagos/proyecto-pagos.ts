@@ -1,3 +1,4 @@
+import { Paginator, paginar } from '../../../../../shared/components/paginator/paginator'
 import {
   Component,
   ElementRef,
@@ -30,7 +31,7 @@ import {
 import { Mercadopago } from '../../services/mercadopago'
 
 @Component({
-  imports: [RouterLink, MpCheckoutButton],
+  imports: [RouterLink, MpCheckoutButton, Paginator],
   selector: 'app-proyecto-pagos',
   styleUrl: './proyecto-pagos.css',
   templateUrl: './proyecto-pagos.html'
@@ -46,6 +47,9 @@ export class ProyectoPagos implements OnInit, OnDestroy {
   readonly proyecto = signal<ProyectoResponseDTO | null>(null)
   readonly hitos = signal<HitoResponseDTO[]>([])
   readonly pagos = signal<PagosResponseDTO[]>([])
+
+  readonly pagina = signal<number>(1)
+  readonly pagosPagina = computed(() => paginar(this.pagos(), this.pagina(), 10))
 
   readonly isLoading = signal<boolean>(true)
   readonly isRefreshingPagos = signal<boolean>(false)

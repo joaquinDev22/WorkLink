@@ -1,3 +1,4 @@
+import { Paginator, paginar } from '../../../../../shared/components/paginator/paginator'
 import {
   Component,
   ElementRef,
@@ -29,7 +30,7 @@ import {
 import { Finances } from '../../services/finances'
 
 @Component({
-  imports: [RouterLink],
+  imports: [RouterLink, Paginator],
   selector: 'app-freelancer-finances',
   styleUrl: './freelancer-finances.css',
   templateUrl: './freelancer-finances.html'
@@ -77,6 +78,11 @@ export class FreelancerFinances implements OnInit, OnDestroy {
   readonly enProgreso = computed(
     () => this.proyectos().filter((p) => p.estado === 'EN_PROGRESO').length
   )
+
+  readonly pagina = signal<number>(1)
+  readonly transaccionesPagina = computed(() => paginar(this.transaccionesFiltradas(), this.pagina(), 10))
+  readonly paginaProyectos = signal<number>(1)
+  readonly proyectosPagina = computed(() => paginar(this.proyectos(), this.paginaProyectos(), 5))
 
   readonly transaccionesFiltradas = computed<FreelancerTransactionResponseDTO[]>(() => {
     const q = this.busqueda().trim().toLowerCase()

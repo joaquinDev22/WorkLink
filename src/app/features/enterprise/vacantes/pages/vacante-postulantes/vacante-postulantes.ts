@@ -1,3 +1,4 @@
+import { Paginator, paginar } from '../../../../../shared/components/paginator/paginator'
 import { Component, computed, inject, OnInit, signal } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { Auth } from '../../../../../core/auth/services/auth'
@@ -7,7 +8,7 @@ import { AgendaModal } from '../../../entrevistas/components/agenda-modal/agenda
 import { EntrevistaResponseDTO } from '../../../entrevistas/models/entrevista.models'
 
 @Component({
-  imports: [RouterLink, AgendaModal],
+  imports: [RouterLink, AgendaModal, Paginator],
   selector: 'app-vacante-postulantes',
   styleUrl: './vacante-postulantes.css',
   templateUrl: './vacante-postulantes.html'
@@ -70,9 +71,19 @@ export class VacantePostulantes implements OnInit {
     })
   })
 
+  readonly pagina = signal<number>(1)
+  readonly postulacionesPagina = computed(() => paginar(this.postulacionesFiltradas(), this.pagina(), 10))
+
   ngOnInit(): void {
     this.vacanteService.getCatalogoVacantes().subscribe()
     this.vacanteService.getPostulacionesPorVacante().subscribe()
+  }
+
+  // Orden del proceso: una postulación solo avanza, nunca vuelve a una etapa anterior
+  private readonly ordenEstados: EstadoPostulacion[] = ['PENDIENTE', 'VISUALIZADO', 'ENTREVISTA_AGENDADA', 'RECHAZADO']
+
+  esEstadoAnterior(actual: EstadoPostulacion, opcion: EstadoPostulacion): boolean {
+    return this.ordenEstados.indexOf(opcion) < this.ordenEstados.indexOf(actual)
   }
 
   cambiarEstado(
@@ -83,6 +94,12 @@ export class VacantePostulantes implements OnInit {
     const nuevoEstado = select.value as EstadoPostulacion
 
     if (nuevoEstado === postulacion.estado) return
+
+    if (this.esEstadoAnterior(postulacion.estado, nuevoEstado)) {
+      select.value = postulacion.estado
+      this.mostrarToast('El estado de la postulación no puede retroceder.')
+      return
+    }
 
     this.vacanteService
       .actualizarEstadoPostulacion(postulacion.vacanteId, postulacion.postulacionId, nuevoEstado)
@@ -97,13 +114,19 @@ export class VacantePostulantes implements OnInit {
             this.abrirAgendarPara(postulacion)
           }
         },
-        error: () => {
-          this.toastMessage.set('Error al actualizar el estado de la postulación.')
-          setTimeout(() => {
-            this.toastMessage.set(null)
-          }, 3500)
+        error: (err) => {
+          // El backend rechaza el cambio (por ejemplo, si hay una entrevista agendada): se vuelve al estado real
+          select.value = postulacion.estado
+          this.mostrarToast(err?.error?.message || 'Error al actualizar el estado de la postulación.')
         }
       })
+  }
+
+  private mostrarToast(mensaje: string): void {
+    this.toastMessage.set(mensaje)
+    setTimeout(() => {
+      this.toastMessage.set(null)
+    }, 4500)
   }
 
   abrirAgendarPara(postulacion: PostulacionResponseDTO): void {
@@ -118,6 +141,8 @@ export class VacantePostulantes implements OnInit {
 
   onEntrevistaAgendada(nueva: EntrevistaResponseDTO): void {
     this.cerrarAgendaModal()
+    // Agendar la entrevista avanza la postulación en el backend: se recarga para mostrar el estado real
+    this.vacanteService.getPostulacionesPorVacante().subscribe()
     this.toastMessage.set(`¡Entrevista coordinada con ${nueva.candidateName} para el ${nueva.date} a las ${nueva.time} hs!`)
     setTimeout(() => {
       this.toastMessage.set(null)
