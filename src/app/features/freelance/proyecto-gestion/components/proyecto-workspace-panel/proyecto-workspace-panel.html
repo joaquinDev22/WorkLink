@@ -170,8 +170,9 @@
             <input
               id="hitoFecha"
               #hf
-              type="date"
-              [min]="hoy"
+              type="text"
+              appPicker="fecha"
+              [pickerMin]="hoy"
               [value]="hitoFechaLimite()"
               (input)="hitoFechaLimite.set(hf.value)"
               class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm" />

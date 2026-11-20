@@ -1,3 +1,4 @@
+import { Picker } from '../../../../../shared/directives/picker'
 import { Component, computed, effect, inject, input, output, signal } from '@angular/core'
 import { HttpErrorResponse } from '@angular/common/http'
 import { FormsModule } from '@angular/forms'
@@ -7,7 +8,7 @@ import { PostulacionResponseDTO } from '../../../vacantes/models/vacante.models'
 import { esFinDeSemana, mananaISO, proximoDiaHabilISO } from '../../../../../core/utils/fechas'
 
 @Component({
-  imports: [FormsModule],
+  imports: [FormsModule, Picker],
   selector: 'app-agenda-modal',
   styleUrl: './agenda-modal.css',
   templateUrl: './agenda-modal.html'

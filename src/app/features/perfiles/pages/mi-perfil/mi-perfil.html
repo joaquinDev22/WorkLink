@@ -1356,7 +1356,8 @@
               <div class="space-y-1">
                 <label for="fechaNacimiento" class="text-xs font-semibold text-slate-700">Fecha de Nacimiento*</label>
                 <input
-                  type="date"
+                  type="text"
+                  appPicker="fecha"
                   id="fechaNacimiento"
                   [formField]="editForm.fechaNacimiento"
                   [class.input-error]="editForm.fechaNacimiento().touched() && editForm.fechaNacimiento().invalid()"

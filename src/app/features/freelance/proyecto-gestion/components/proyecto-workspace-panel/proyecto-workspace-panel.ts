@@ -1,3 +1,4 @@
+import { Picker } from '../../../../../shared/directives/picker'
 import {
   Component,
   ElementRef,
@@ -30,7 +31,7 @@ import {
 import { hoyISO } from '../../../../../core/utils/fechas'
 
 @Component({
-  imports: [RouterLink],
+  imports: [RouterLink, Picker],
   selector: 'app-proyecto-workspace-panel',
   styleUrl: './proyecto-workspace-panel.css',
   templateUrl: './proyecto-workspace-panel.html'

@@ -67,7 +67,7 @@
             >
               <option value="TODAS">Todas las vacantes asignadas</option>
               @for (v of vacantesDisponibles(); track v.vacanteId) {
-                <option [value]="v.vacanteId">{{ v.puesto }}</option>
+                <option [value]="v.vacanteId" [selected]="v.vacanteId === vacanteFilter()">{{ v.puesto }}</option>
               }
             </select>
           </div>

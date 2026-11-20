@@ -744,3 +744,75 @@
     flex-shrink: 0;
   }
 }
+
+/* ---------- Selectores de fecha y hora (flatpickr) con la estética del sitio ---------- */
+.flatpickr-calendar {
+  font-family: inherit;
+  border-radius: 1rem;
+  border: 1px solid var(--color-slate-200);
+  box-shadow: 0 12px 32px -8px rgb(15 23 42 / 0.18), 0 2px 6px rgb(15 23 42 / 0.06);
+  padding: 0.25rem;
+}
+.flatpickr-calendar.arrowTop::before,
+.flatpickr-calendar.arrowTop::after,
+.flatpickr-calendar.arrowBottom::before,
+.flatpickr-calendar.arrowBottom::after {
+  display: none;
+}
+.flatpickr-months .flatpickr-month,
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+  font-weight: 700;
+  color: var(--color-slate-800);
+}
+.flatpickr-current-month {
+  font-size: 0.95rem;
+}
+.flatpickr-months .flatpickr-prev-month:hover svg,
+.flatpickr-months .flatpickr-next-month:hover svg {
+  fill: var(--color-brand-indigo);
+}
+span.flatpickr-weekday {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-slate-400);
+  text-transform: uppercase;
+}
+.flatpickr-day {
+  border-radius: 0.6rem;
+  font-size: 0.8rem;
+  color: var(--color-slate-700);
+}
+.flatpickr-day:hover,
+.flatpickr-day:focus {
+  background: var(--color-indigo-50);
+  border-color: var(--color-indigo-50);
+}
+.flatpickr-day.today {
+  border-color: var(--color-brand-indigo-light);
+}
+.flatpickr-day.selected,
+.flatpickr-day.selected:hover,
+.flatpickr-day.selected:focus {
+  background: var(--color-brand-indigo);
+  border-color: var(--color-brand-indigo);
+  color: #fff;
+}
+.flatpickr-day.flatpickr-disabled,
+.flatpickr-day.flatpickr-disabled:hover {
+  color: var(--color-slate-300);
+  background: transparent;
+  cursor: not-allowed;
+}
+.flatpickr-time input,
+.flatpickr-time .flatpickr-am-pm {
+  font-weight: 700;
+  color: var(--color-slate-800);
+}
+.flatpickr-time input:hover,
+.flatpickr-time input:focus {
+  background: var(--color-indigo-50);
+}
+/* El input visible es de solo lectura (abre el calendario): que no parezca deshabilitado */
+input.flatpickr-input[readonly] {
+  cursor: pointer;
+}

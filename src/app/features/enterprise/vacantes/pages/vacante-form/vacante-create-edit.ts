@@ -1,3 +1,4 @@
+import { Picker } from '../../../../../shared/directives/picker'
 import { Component, OnInit, inject, signal, computed } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { Router, ActivatedRoute, RouterLink } from '@angular/router'
@@ -10,7 +11,7 @@ import { hoyISO, mananaISO } from '../../../../../core/utils/fechas'
 @Component({
   selector: 'app-vacante-create-edit',
   standalone: true,
-  imports: [CommonModule, FormField, RouterLink, SkillAutocomplete],
+  imports: [CommonModule, FormField, RouterLink, SkillAutocomplete, Picker],
   templateUrl: './vacante-create-edit.html',
   styleUrl: './vacante-create-edit.css'
 })

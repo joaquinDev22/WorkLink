@@ -1,3 +1,4 @@
+import { Picker } from '../../../../shared/directives/picker'
 import { Paginator, paginar } from '../../../../shared/components/paginator/paginator'
 import { HasPendingChanges } from '../../../../core/models/pending-changes.model'
 import { Component, OnInit, inject, computed, signal, effect, untracked } from '@angular/core'
@@ -73,7 +74,7 @@ export const PATTERNS_TELEFONO: Record<string, { regex: RegExp, ejemplo: string 
 }
 
 @Component({
-  imports: [CommonModule, FormsModule, FormField, RouterLink, PerfilCompletitudBanner, SkillAutocomplete, Paginator],
+  imports: [CommonModule, FormsModule, FormField, RouterLink, PerfilCompletitudBanner, SkillAutocomplete, Paginator, Picker],
   selector: 'app-mi-perfil',
   styleUrl: './mi-perfil.css',
   templateUrl: './mi-perfil.html',
