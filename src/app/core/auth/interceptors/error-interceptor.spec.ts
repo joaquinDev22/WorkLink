@@ -24,4 +24,12 @@ describe('errorInterceptor', () => {
     const texto = responderError(422, ['Ese horario ya está ocupado por otra entrevista. Elige otro día u hora.'])
     expect(texto).toBe('Ese horario ya está ocupado por otra entrevista. Elige otro día u hora.')
   })
+
+  it('saca el nombre del campo de los errores de validación', () => {
+    const texto = responderError(400, [
+      'nombreProyecto: El nombre del proyecto no puede superar los 30 caracteres',
+      'area: El área no puede superar los 10 caracteres'
+    ])
+    expect(texto).toBe('El nombre del proyecto no puede superar los 30 caracteres. El área no puede superar los 10 caracteres')
+  })
 })

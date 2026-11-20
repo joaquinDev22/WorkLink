@@ -18,7 +18,10 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       // ErrorResponseDTO del backend: el detalle útil viene en details[]; se usa como message
       const body = error.error
       const detalles = body?.details
-      const mensajeBackend = Array.isArray(detalles) && detalles.length > 0 ? detalles.join('. ') : body?.message
+      // Sin el prefijo "campo: " que agregaban las validaciones del back (nombreProyecto: El título...)
+      const mensajeBackend = Array.isArray(detalles) && detalles.length > 0
+        ? detalles.map((d: unknown) => String(d).replace(/^[a-z]\w*:\s*/, '')).join('. ')
+        : body?.message
 
       // Nunca mostrar texto técnico: sin respuesta (servidor caído), cualquier 5xx (puede traer SQL, como
       // "Unknown column ... in 'field list'") o un mensaje que huela a código o a base de datos

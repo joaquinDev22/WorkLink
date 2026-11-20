@@ -96,6 +96,7 @@ export class ProyectoEdit implements OnInit, OnDestroy {
     maxLength(f.nombreProyecto, 120, { message: 'El título no debe superar los 120 caracteres' })
 
     required(f.area, { message: 'Selecciona o ingresa un área de especialidad' })
+    maxLength(f.area, 50, { message: 'El área no debe superar los 50 caracteres' })
 
     required(f.descripcion, { message: 'La descripción técnica es obligatoria' })
     minLength(f.descripcion, 20, {
