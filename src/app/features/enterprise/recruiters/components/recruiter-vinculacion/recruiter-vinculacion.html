@@ -1,93 +1,96 @@
 @if (vinculacion(); as v) {
+<div class="space-y-3">
   <!-- Aviso de contratación: se muestra hasta que el recruiter lo confirma -->
   @if (!v.vinculacionVista) {
-    <div class="flex flex-col sm:flex-row sm:items-center gap-3 p-4 rounded-2xl bg-indigo-50 border border-indigo-100" role="status">
-      <div class="w-9 h-9 rounded-xl bg-brand-indigo text-white flex items-center justify-center shrink-0">
-        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-        </svg>
-      </div>
+    <div class="flex flex-col gap-3 p-4 rounded-2xl bg-indigo-50 border border-indigo-100" role="status">
       <div class="flex-1 min-w-0">
-        <p class="text-sm font-bold text-slate-900">¡{{ v.nombreEmpresa }} te sumó a su equipo de reclutamiento!</p>
+        <p class="text-sm font-bold text-slate-900">{{ v.nombreEmpresa }} te sumó a su equipo de reclutamiento</p>
         <p class="text-xs text-slate-600">
-          Desde el {{ v.fechaVinculacion | date: 'dd/MM/yyyy' }} puedes gestionar sus vacantes, postulantes y entrevistas.
+          @if (v.fechaVinculacion) {
+            Desde el {{ v.fechaVinculacion | date: 'dd/MM/yyyy' }} puedes gestionar sus vacantes, postulantes y entrevistas.
+          } @else {
+            Ya puedes gestionar sus vacantes, postulantes y entrevistas.
+          }
         </p>
       </div>
       <button type="button" (click)="entendido()" [disabled]="isMutating()"
-        class="btn-tactile-primary px-4 py-2 rounded-xl text-xs font-semibold shrink-0 disabled:opacity-50">
+        class="btn-tactile-primary self-start px-4 py-2 rounded-xl text-xs font-semibold disabled:opacity-50">
         Entendido
       </button>
     </div>
   }
 
-  <!-- Vinculación y baja -->
-  <div class="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-3">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-      <div>
-        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Tu empresa</p>
-        <p class="text-sm font-bold text-slate-900">{{ v.nombreEmpresa }}</p>
-      </div>
-
-      @if (!v.bajaSolicitadaEn) {
-        @if (!confirmandoSolicitud()) {
-          <button type="button" (click)="confirmandoSolicitud.set(true)"
-            class="btn-tactile-secondary px-4 py-2 rounded-xl text-xs font-semibold text-rose-600">
-            Solicitar baja de la empresa
-          </button>
+  @if (v.bajaSolicitadaEn) {
+    <div class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-2">
+      <p>
+        Pediste la baja el <strong>{{ v.bajaSolicitadaEn | date: 'dd/MM/yyyy' }}</strong>.
+        @if (puedeIrseSolo()) {
+          La empresa no respondió en 15 días: ya puedes desvincularte por tu cuenta.
         } @else {
-          <div class="flex flex-wrap items-center gap-2">
-            <span class="text-xs text-slate-600">¿Seguro? La empresa tiene 15 días para responder.</span>
-            <button type="button" (click)="confirmandoSolicitud.set(false)" class="btn-tactile-secondary px-3 py-1.5 rounded-lg text-xs font-semibold">
-              No
+          Si la empresa no responde, vas a poder desvincularte por tu cuenta a partir del
+          <strong>{{ v.fechaBajaHabilitada | date: 'dd/MM/yyyy' }}</strong>
+          ({{ diasRestantes() }} {{ diasRestantes() === 1 ? 'día' : 'días' }}).
+        }
+      </p>
+      <div class="flex flex-wrap gap-2">
+        <button type="button" (click)="cancelarSolicitud()" [disabled]="isMutating()"
+          class="btn-tactile-secondary px-3 py-1.5 rounded-lg text-xs font-semibold disabled:opacity-50">
+          Cancelar solicitud
+        </button>
+        @if (puedeIrseSolo()) {
+          <button type="button" (click)="confirmando.set('irme')" [disabled]="isMutating()"
+            class="btn-tactile-primary px-3 py-1.5 rounded-lg text-xs font-semibold disabled:opacity-50">
+            Desvincularme ahora
+          </button>
+        }
+      </div>
+    </div>
+  } @else {
+    <button type="button" (click)="confirmando.set('solicitar')"
+      class="btn-tactile-secondary w-full px-4 py-2 rounded-xl text-xs font-semibold text-rose-600">
+      Solicitar baja de la empresa
+    </button>
+  }
+
+  @if (mensaje()) {
+    <p class="text-xs text-emerald-700" role="status">{{ mensaje() }}</p>
+  }
+  @if (error()) {
+    <p class="text-xs text-rose-600" role="alert">{{ error() }}</p>
+  }
+
+  <!-- Confirmación de la baja -->
+  @if (confirmando(); as accion) {
+    <div class="fixed inset-0 z-50 overflow-y-auto" role="alertdialog" aria-modal="true"
+      aria-labelledby="baja-titulo" aria-describedby="baja-detalle" (keydown.escape)="confirmando.set(null)">
+      <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs animate-modal-backdrop" (click)="confirmando.set(null)"></div>
+      <div class="flex min-h-full items-center justify-center p-4">
+        <div cdkTrapFocus [cdkTrapFocusAutoCapture]="true"
+          class="relative w-full sm:max-w-md rounded-3xl bg-white text-left shadow-2xl border border-slate-200/90 p-6 space-y-5 animate-modal-card">
+          <div class="space-y-1.5">
+            <h3 id="baja-titulo" class="text-base font-bold text-slate-900">
+              {{ accion === 'solicitar' ? '¿Solicitar la baja de ' + v.nombreEmpresa + '?' : '¿Desvincularte de ' + v.nombreEmpresa + '?' }}
+            </h3>
+            <p id="baja-detalle" class="text-sm text-slate-600 leading-relaxed">
+              @if (accion === 'solicitar') {
+                La empresa tiene 15 días para responder. Mientras tanto sigues gestionando sus vacantes, y puedes cancelar la solicitud cuando quieras.
+              } @else {
+                Dejarás de ver sus vacantes, postulantes y entrevistas. Para volver, la empresa tendrá que sumarte de nuevo.
+              }
+            </p>
+          </div>
+          <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+            <button type="button" (click)="confirmando.set(null)" class="btn-tactile-secondary px-4 py-2 rounded-xl text-sm font-semibold">
+              Volver
             </button>
-            <button type="button" (click)="solicitarBaja()" [disabled]="isMutating()"
-              class="btn-tactile-primary px-3 py-1.5 rounded-lg text-xs font-semibold disabled:opacity-50">
-              Sí, solicitar baja
+            <button type="button" (click)="accion === 'solicitar' ? solicitarBaja() : irmeSolo()" [disabled]="isMutating()"
+              class="btn-tactile-primary px-4 py-2 rounded-xl text-sm font-semibold disabled:opacity-50">
+              {{ accion === 'solicitar' ? 'Solicitar baja' : 'Desvincularme' }}
             </button>
           </div>
-        }
-      }
-    </div>
-
-    @if (v.bajaSolicitadaEn) {
-      <div class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-2">
-        <p>
-          Pediste la baja el <strong>{{ v.bajaSolicitadaEn | date: 'dd/MM/yyyy' }}</strong>.
-          @if (puedeIrseSolo()) {
-            La empresa no respondió en 15 días: ya puedes desvincularte por tu cuenta.
-          } @else {
-            Si la empresa no responde, vas a poder desvincularte por tu cuenta a partir del
-            <strong>{{ v.fechaBajaHabilitada | date: 'dd/MM/yyyy' }}</strong>
-            ({{ diasRestantes() }} {{ diasRestantes() === 1 ? 'día' : 'días' }}).
-          }
-        </p>
-        <div class="flex flex-wrap gap-2">
-          <button type="button" (click)="cancelarSolicitud()" [disabled]="isMutating()"
-            class="btn-tactile-secondary px-3 py-1.5 rounded-lg text-xs font-semibold disabled:opacity-50">
-            Cancelar solicitud
-          </button>
-          @if (puedeIrseSolo()) {
-            <button type="button" (click)="irmeSolo()" [disabled]="isMutating()"
-              class="btn-tactile-primary px-3 py-1.5 rounded-lg text-xs font-semibold disabled:opacity-50">
-              Desvincularme ahora
-            </button>
-          }
         </div>
       </div>
-    }
-
-    @if (mensaje()) {
-      <p class="text-xs text-emerald-700" role="status">{{ mensaje() }}</p>
-    }
-    @if (error()) {
-      <p class="text-xs text-rose-600" role="alert">{{ error() }}</p>
-    }
-  </div>
-} @else if (sinEmpresa()) {
-  <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-600" role="status">
-    @if (mensaje()) {
-      {{ mensaje() }}
-    }
-    Todavía no estás vinculado a ninguna empresa. Pasale a la empresa el email con el que te registraste para que te sume a su equipo.
-  </div>
+    </div>
+  }
+</div>
 }

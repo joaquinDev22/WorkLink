@@ -1,3 +1,4 @@
+import { RecruiterVinculacion } from '../../../enterprise/recruiters/components/recruiter-vinculacion/recruiter-vinculacion'
 import { Picker } from '../../../../shared/directives/picker'
 import { Paginator, paginar } from '../../../../shared/components/paginator/paginator'
 import { HasPendingChanges } from '../../../../core/models/pending-changes.model'
@@ -74,7 +75,7 @@ export const PATTERNS_TELEFONO: Record<string, { regex: RegExp, ejemplo: string 
 }
 
 @Component({
-  imports: [CommonModule, FormsModule, FormField, RouterLink, PerfilCompletitudBanner, SkillAutocomplete, Paginator, Picker],
+  imports: [CommonModule, FormsModule, FormField, RouterLink, PerfilCompletitudBanner, SkillAutocomplete, Paginator, Picker, RecruiterVinculacion],
   selector: 'app-mi-perfil',
   styleUrl: './mi-perfil.css',
   templateUrl: './mi-perfil.html',
