@@ -172,7 +172,7 @@ export class VacanteCatalogo implements OnInit, OnDestroy {
 
   onPostulacionExitosa(nueva: PostulacionResponseDTO): void {
     this.cerrarModalPostulacion()
-    this.toastMessage.set(`¡Postulación enviada con éxito para "${nueva.puestoVacante}"!`)
+    this.toastMessage.set(`Te postulaste a "${nueva.puestoVacante}".`)
     setTimeout(() => {
       this.toastMessage.set(null)
     }, 4500)

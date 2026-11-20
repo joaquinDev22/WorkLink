@@ -71,7 +71,7 @@ export class VacanteDetail implements OnInit {
 
   onPostulado(nueva: PostulacionResponseDTO): void {
     this.cerrarModal()
-    this.toastMessage.set(`¡Te has postulado con éxito a "${nueva.puestoVacante}"!`)
+    this.toastMessage.set(`Te postulaste a "${nueva.puestoVacante}".`)
     setTimeout(() => {
       this.toastMessage.set(null)
     }, 4500)

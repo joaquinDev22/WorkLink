@@ -1,4 +1,4 @@
-import { esFinDeSemana, proximoDiaHabilISO } from './fechas'
+import { esFinDeSemana, fechaLegible, proximoDiaHabilISO } from './fechas'
 
 describe('fechas', () => {
   it('detecta sábados y domingos en hora local', () => {
@@ -11,5 +11,11 @@ describe('fechas', () => {
     const proximo = proximoDiaHabilISO()
     expect(esFinDeSemana(proximo)).toBe(false)
     expect(proximo > new Date().toLocaleDateString('sv')).toBe(true)
+  })
+})
+
+describe('fechaLegible', () => {
+  it('muestra el día de la semana y el mes en palabras', () => {
+    expect(fechaLegible('2026-11-25')).toBe('miércoles, 25 de noviembre')
   })
 })

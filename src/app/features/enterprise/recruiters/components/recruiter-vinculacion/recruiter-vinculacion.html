@@ -10,7 +10,7 @@
       <div class="flex-1 min-w-0">
         <p class="text-sm font-bold text-slate-900">¡{{ v.nombreEmpresa }} te sumó a su equipo de reclutamiento!</p>
         <p class="text-xs text-slate-600">
-          Desde el {{ v.fechaVinculacion | date: 'dd/MM/yyyy' }} podés gestionar sus vacantes, postulantes y entrevistas.
+          Desde el {{ v.fechaVinculacion | date: 'dd/MM/yyyy' }} puedes gestionar sus vacantes, postulantes y entrevistas.
         </p>
       </div>
       <button type="button" (click)="entendido()" [disabled]="isMutating()"
@@ -54,7 +54,7 @@
         <p>
           Pediste la baja el <strong>{{ v.bajaSolicitadaEn | date: 'dd/MM/yyyy' }}</strong>.
           @if (puedeIrseSolo()) {
-            La empresa no respondió en 15 días: ya podés desvincularte por tu cuenta.
+            La empresa no respondió en 15 días: ya puedes desvincularte por tu cuenta.
           } @else {
             Si la empresa no responde, vas a poder desvincularte por tu cuenta a partir del
             <strong>{{ v.fechaBajaHabilitada | date: 'dd/MM/yyyy' }}</strong>

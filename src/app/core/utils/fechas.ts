@@ -25,6 +25,12 @@ export function esFinDeSemana(iso: string): boolean {
   return dia === 0 || dia === 6
 }
 
+// 'YYYY-MM-DD' -> "miércoles 25 de noviembre", para mostrarle la fecha a una persona
+export function fechaLegible(iso: string): string {
+  const [y, m, d] = iso.split('-').map(Number)
+  return new Date(y, m - 1, d).toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' })
+}
+
 // Mañana, o el lunes siguiente si mañana cae en fin de semana
 export function proximoDiaHabilISO(): string {
   const fecha = new Date()
