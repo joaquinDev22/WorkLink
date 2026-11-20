@@ -1,3 +1,4 @@
+import { Paginator, paginar } from '../../../../../shared/components/paginator/paginator'
 import { Component, computed, inject, OnInit, signal } from '@angular/core'
 import { Auth } from '../../../../../core/auth/services/auth'
 import { EntrevistaService } from '../../services/entrevista'
@@ -6,7 +7,7 @@ import { EntrevistaResponseDTO } from '../../models/entrevista.models'
 import { AgendaModal } from '../../components/agenda-modal/agenda-modal'
 
 @Component({
-  imports: [AgendaModal],
+  imports: [AgendaModal, Paginator],
   selector: 'app-entrevista-calendar',
   styleUrl: './entrevista-calendar.css',
   templateUrl: './entrevista-calendar.html'
@@ -37,6 +38,9 @@ export class EntrevistaCalendar implements OnInit {
   })
 
   // Lista filtrada reactivamente
+  readonly pagina = signal<number>(1)
+  readonly entrevistasPagina = computed(() => paginar(this.entrevistasFiltradas(), this.pagina(), 8))
+
   readonly entrevistasFiltradas = computed<EntrevistaResponseDTO[]>(() => {
     const list = this.entrevistaService.entrevistas()
     const status = this.filterStatus()

@@ -148,7 +148,7 @@
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-100 text-sm">
-                @for (tx of transaccionesFiltradas(); track tx.id) {
+                @for (tx of transaccionesPagina(); track tx.id) {
                   <tr class="animate-row-enter">
                     <td class="py-3 pr-3 font-mono text-xs font-semibold text-slate-600 tabular-nums">
                       #{{ tx.id }}
@@ -181,6 +181,7 @@
               </tbody>
             </table>
           </div>
+          <app-paginator [currentPage]="pagina()" [totalItems]="transaccionesFiltradas().length" [pageSize]="10" itemLabel="movimientos" (pageChange)="pagina.set($event)" />
         }
       </section>
 
@@ -277,7 +278,7 @@
             </p>
           } @else {
             <div class="divide-y divide-slate-100">
-              @for (p of proyectos(); track p.proyectoId) {
+              @for (p of proyectosPagina(); track p.proyectoId) {
                 @let cfg = estadoConfig[p.estado];
                 <div class="py-3 first:pt-0 last:pb-0 flex items-center justify-between gap-3">
                   <div class="space-y-0.5 min-w-0">
@@ -301,6 +302,7 @@
                 </div>
               }
             </div>
+            <app-paginator [currentPage]="paginaProyectos()" [totalItems]="proyectos().length" [pageSize]="5" itemLabel="proyectos" [compact]="true" (pageChange)="paginaProyectos.set($event)" />
           }
         </section>
       </aside>

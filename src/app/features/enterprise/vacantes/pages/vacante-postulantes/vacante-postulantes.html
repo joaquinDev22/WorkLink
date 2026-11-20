@@ -167,7 +167,7 @@
               </td>
             </tr>
           } @else {
-            @for (postulacion of postulacionesFiltradas(); track postulacion.postulacionId) {
+            @for (postulacion of postulacionesPagina(); track postulacion.postulacionId) {
               <tr class="block md:table-row py-3 md:py-0 hover:bg-slate-50/80 transition-colors animate-row-enter">
                 <!-- Columna Candidato -->
                 <td class="block md:table-cell py-2 px-4 md:py-4 md:px-6">
@@ -305,6 +305,9 @@
           }
         </tbody>
       </table>
+    </div>
+    <div class="px-4 md:px-6 pb-4">
+      <app-paginator [currentPage]="pagina()" [totalItems]="postulacionesFiltradas().length" [pageSize]="10" itemLabel="postulaciones" (pageChange)="pagina.set($event)" />
     </div>
   </div>
 

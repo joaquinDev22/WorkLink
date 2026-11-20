@@ -1,5 +1,12 @@
 import { Component, computed, input, output } from '@angular/core'
 
+/** Recorta la página pedida (fuera de rango se ajusta a la primera/última, igual que el paginador). */
+export function paginar<T>(items: T[], page: number, size: number): T[] {
+  const total = Math.max(1, Math.ceil(items.length / size))
+  const p = Math.min(Math.max(1, page), total)
+  return items.slice((p - 1) * size, p * size)
+}
+
 @Component({
   selector: 'app-paginator',
   standalone: true,

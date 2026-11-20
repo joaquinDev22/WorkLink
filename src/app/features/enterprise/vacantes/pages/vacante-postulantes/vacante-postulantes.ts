@@ -1,3 +1,4 @@
+import { Paginator, paginar } from '../../../../../shared/components/paginator/paginator'
 import { Component, computed, inject, OnInit, signal } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { Auth } from '../../../../../core/auth/services/auth'
@@ -7,7 +8,7 @@ import { AgendaModal } from '../../../entrevistas/components/agenda-modal/agenda
 import { EntrevistaResponseDTO } from '../../../entrevistas/models/entrevista.models'
 
 @Component({
-  imports: [RouterLink, AgendaModal],
+  imports: [RouterLink, AgendaModal, Paginator],
   selector: 'app-vacante-postulantes',
   styleUrl: './vacante-postulantes.css',
   templateUrl: './vacante-postulantes.html'
@@ -69,6 +70,9 @@ export class VacantePostulantes implements OnInit {
       return matchText && matchEstado && matchVacante
     })
   })
+
+  readonly pagina = signal<number>(1)
+  readonly postulacionesPagina = computed(() => paginar(this.postulacionesFiltradas(), this.pagina(), 10))
 
   ngOnInit(): void {
     this.vacanteService.getCatalogoVacantes().subscribe()

@@ -222,7 +222,7 @@
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 text-sm">
-                  @for (pago of pagos(); track pago.pagoId) {
+                  @for (pago of pagosPagina(); track pago.pagoId) {
                     <tr class="animate-row-enter">
                       <td class="py-3 pr-3 font-mono text-xs font-semibold text-slate-700 tabular-nums">
                         #{{ pago.pagoId }}
@@ -249,6 +249,7 @@
                 </tbody>
               </table>
             </div>
+            <app-paginator [currentPage]="pagina()" [totalItems]="pagos().length" [pageSize]="10" itemLabel="pagos" (pageChange)="pagina.set($event)" />
           }
         </section>
       </div>

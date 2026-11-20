@@ -1,3 +1,4 @@
+import { Paginator, paginar } from '../../../../shared/components/paginator/paginator'
 import { HasPendingChanges } from '../../../../core/models/pending-changes.model'
 import { Component, OnInit, inject, computed, signal, effect, untracked } from '@angular/core'
 import { CommonModule } from '@angular/common'
@@ -72,7 +73,7 @@ export const PATTERNS_TELEFONO: Record<string, { regex: RegExp, ejemplo: string 
 }
 
 @Component({
-  imports: [CommonModule, FormsModule, FormField, RouterLink, PerfilCompletitudBanner, SkillAutocomplete],
+  imports: [CommonModule, FormsModule, FormField, RouterLink, PerfilCompletitudBanner, SkillAutocomplete, Paginator],
   selector: 'app-mi-perfil',
   styleUrl: './mi-perfil.css',
   templateUrl: './mi-perfil.html',
@@ -144,6 +145,12 @@ export class MiPerfil implements OnInit, HasPendingChanges {
   reputacion = signal<ReputacionPerfilDTO | null>(null)
   isLoadingReputacion = signal<boolean>(false)
   readonly paginaResenas = signal<number>(1)
+  readonly paginaHistorial = signal<number>(1)
+  readonly historialPagina = computed(() => paginar(this.historialRecruiter(), this.paginaHistorial(), 5))
+  readonly paginaAsignados = signal<number>(1)
+  readonly asignadosPagina = computed(() => paginar(this.proyectosAsignados() || [], this.paginaAsignados(), 4))
+  readonly paginaPublicados = signal<number>(1)
+  readonly publicadosPagina = computed(() => paginar(this.proyectosPublicadosCliente(), this.paginaPublicados(), 4))
   readonly pageSizeResenas = 3
 
   readonly totalPaginasResenas = computed<number>(() => {
