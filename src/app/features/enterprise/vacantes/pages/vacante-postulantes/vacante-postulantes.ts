@@ -1,6 +1,6 @@
 import { Paginator, paginar } from '../../../../../shared/components/paginator/paginator'
 import { Component, computed, inject, OnInit, signal } from '@angular/core'
-import { RouterLink } from '@angular/router'
+import { ActivatedRoute, RouterLink } from '@angular/router'
 import { Auth } from '../../../../../core/auth/services/auth'
 import { VacanteService } from '../../services/vacante'
 import { EstadoPostulacion, PostulacionResponseDTO, VacanteResponseDTO } from '../../models/vacante.models'
@@ -16,6 +16,7 @@ import { EntrevistaResponseDTO } from '../../../entrevistas/models/entrevista.mo
 export class VacantePostulantes implements OnInit {
   protected auth = inject(Auth)
   protected vacanteService = inject(VacanteService)
+  private route = inject(ActivatedRoute)
 
   // Rol activo
   readonly userRole = computed(() => this.auth.session()?.rol)
@@ -41,9 +42,9 @@ export class VacantePostulantes implements OnInit {
   // Toast feedback
   readonly toastMessage = signal<string | null>(null)
 
-  // Lista de vacantes para el selector de filtro
+  // Vacantes de la empresa del recruiter para el selector de filtro (no todo el catálogo público)
   readonly vacantesDisponibles = computed<VacanteResponseDTO[]>(() => {
-    return this.vacanteService.catalogoVacantes()
+    return this.vacanteService.misVacantes()
   })
 
   // Lista filtrada reactivamente
@@ -75,7 +76,10 @@ export class VacantePostulantes implements OnInit {
   readonly postulacionesPagina = computed(() => paginar(this.postulacionesFiltradas(), this.pagina(), 10))
 
   ngOnInit(): void {
-    this.vacanteService.getCatalogoVacantes().subscribe()
+    // Si se llega desde una vacante ("Ver candidatos"), el listado arranca filtrado por esa vacante
+    const vacanteId = Number(this.route.snapshot.queryParamMap.get('vacanteId'))
+    if (vacanteId) this.vacanteFilter.set(vacanteId)
+    if (this.isRecruiter()) this.vacanteService.getMisVacantes().subscribe()
     this.vacanteService.getPostulacionesPorVacante().subscribe()
   }
 
