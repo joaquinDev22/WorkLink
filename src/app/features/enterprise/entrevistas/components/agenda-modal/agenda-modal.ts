@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms'
 import { EntrevistaService } from '../../services/entrevista'
 import { EntrevistaResponseDTO } from '../../models/entrevista.models'
 import { PostulacionResponseDTO } from '../../../vacantes/models/vacante.models'
-import { mananaISO } from '../../../../../core/utils/fechas'
+import { esFinDeSemana, mananaISO, proximoDiaHabilISO } from '../../../../../core/utils/fechas'
 
 @Component({
   imports: [FormsModule],
@@ -36,6 +36,9 @@ export class AgendaModal {
 
   // Las entrevistas se agendan del día siguiente en adelante
   readonly minDate = mananaISO()
+  // Horario de oficina, igual que en el backend: de lunes a viernes, de 9 a 18 hs
+  readonly horaInicio = '09:00'
+  readonly horaFin = '17:59'
 
   constructor() {
     effect(() => {
@@ -57,8 +60,8 @@ export class AgendaModal {
       this.notas.set(e.notas || '')
     })
 
-    // Fecha sugerida por defecto: mañana
-    this.fecha.set(mananaISO())
+    // Fecha sugerida por defecto: el próximo día hábil
+    this.fecha.set(proximoDiaHabilISO())
   }
 
   onClose(): void {
@@ -84,8 +87,19 @@ export class AgendaModal {
       return
     }
 
+    if (esFinDeSemana(this.fecha())) {
+      this.errorMsg.set('Las entrevistas se agendan de lunes a viernes.')
+      return
+    }
+
     if (!this.hora()) {
       this.errorMsg.set('Indica un horario para la entrevista.')
+      return
+    }
+
+    // 'HH:mm' se compara bien como texto
+    if (this.hora() < this.horaInicio || this.hora() > this.horaFin) {
+      this.errorMsg.set('El horario tiene que ser de oficina: de 9 a 18 hs.')
       return
     }
 

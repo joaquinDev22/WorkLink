@@ -17,3 +17,18 @@ export function mananaISO(): string {
   manana.setDate(manana.getDate() + 1)
   return fechaLocalISO(manana)
 }
+
+// 'YYYY-MM-DD' como fecha local (new Date('YYYY-MM-DD') la toma en UTC y en Argentina da el día anterior)
+export function esFinDeSemana(iso: string): boolean {
+  const [y, m, d] = iso.split('-').map(Number)
+  const dia = new Date(y, m - 1, d).getDay()
+  return dia === 0 || dia === 6
+}
+
+// Mañana, o el lunes siguiente si mañana cae en fin de semana
+export function proximoDiaHabilISO(): string {
+  const fecha = new Date()
+  do fecha.setDate(fecha.getDate() + 1)
+  while (fecha.getDay() === 0 || fecha.getDay() === 6)
+  return fechaLocalISO(fecha)
+}

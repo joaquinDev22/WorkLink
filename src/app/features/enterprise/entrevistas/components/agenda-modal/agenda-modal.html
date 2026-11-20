@@ -99,10 +99,14 @@
               <input
                 id="agenda-hora"
                 type="time"
+                [min]="horaInicio"
+                [max]="horaFin"
+                aria-describedby="agenda-hora-ayuda"
                 [ngModel]="hora()"
                 (ngModelChange)="hora.set($event)"
                 class="w-full rounded-xl border border-slate-300 p-2 text-xs sm:text-sm text-slate-800 bg-white shadow-inner focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
               />
+              <p id="agenda-hora-ayuda" class="text-[11px] text-slate-500">Lunes a viernes, de 9 a 18 hs.</p>
             </div>
           </div>
 
