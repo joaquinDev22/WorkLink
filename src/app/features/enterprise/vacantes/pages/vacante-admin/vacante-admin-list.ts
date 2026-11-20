@@ -5,13 +5,12 @@ import { RouterLink } from '@angular/router'
 import { VacanteService } from '../../services/vacante'
 import { VacanteResponseDTO } from '../../models/vacante.models'
 import { Auth } from '../../../../../core/auth/services/auth'
-import { RecruiterVinculacion } from '../../../recruiters/components/recruiter-vinculacion/recruiter-vinculacion'
 import { hoyISO } from '../../../../../core/utils/fechas'
 
 @Component({
   selector: 'app-vacante-admin-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, RecruiterVinculacion],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './vacante-admin-list.html',
   styleUrl: './vacante-admin-list.css'
 })

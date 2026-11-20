@@ -1,22 +1,23 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core'
 import { DatePipe } from '@angular/common'
+import { A11yModule } from '@angular/cdk/a11y'
 import { RecruiterVinculacionService } from '../../services/recruiter-vinculacion'
 
-// Aviso "te contrató X" + solicitud de baja (si la empresa no responde en 15 días, el recruiter se va por su cuenta)
+// En el perfil del recruiter: aviso "te contrató X" + solicitud de baja (si la empresa no responde en 15 días, el recruiter se va por su cuenta)
 @Component({
   selector: 'app-recruiter-vinculacion',
   standalone: true,
-  imports: [DatePipe],
+  imports: [DatePipe, A11yModule],
   templateUrl: './recruiter-vinculacion.html'
 })
 export class RecruiterVinculacion implements OnInit {
   protected service = inject(RecruiterVinculacionService)
 
   readonly vinculacion = this.service.vinculacion
-  readonly sinEmpresa = this.service.sinEmpresa
   readonly isMutating = this.service.isMutating
 
-  readonly confirmandoSolicitud = signal<boolean>(false)
+  // Qué baja se está confirmando en el modal (null = cerrado)
+  readonly confirmando = signal<'solicitar' | 'irme' | null>(null)
   readonly mensaje = signal<string | null>(null)
   readonly error = signal<string | null>(null)
 
@@ -43,7 +44,7 @@ export class RecruiterVinculacion implements OnInit {
     this.limpiar()
     this.service.solicitarBaja().subscribe({
       next: () => {
-        this.confirmandoSolicitud.set(false)
+        this.confirmando.set(null)
         this.mensaje.set('Le enviamos tu solicitud de baja a la empresa. Si no responde en 15 días, vas a poder desvincularte por tu cuenta.')
       },
       error: (err) => this.mostrarError(err)
@@ -61,7 +62,10 @@ export class RecruiterVinculacion implements OnInit {
   irmeSolo(): void {
     this.limpiar()
     this.service.confirmarBaja().subscribe({
-      next: () => this.mensaje.set('Te desvinculaste de la empresa.'),
+      next: () => {
+        this.confirmando.set(null)
+        this.mensaje.set('Te desvinculaste de la empresa.')
+      },
       error: (err) => this.mostrarError(err)
     })
   }
@@ -72,6 +76,6 @@ export class RecruiterVinculacion implements OnInit {
   }
 
   private mostrarError(err: { error?: { message?: string } }): void {
-    this.error.set(err?.error?.message || 'No se pudo completar la acción. Intentá nuevamente.')
+    this.error.set(err?.error?.message || 'No pudimos completar la acción. Inténtalo de nuevo.')
   }
 }
