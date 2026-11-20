@@ -5,7 +5,7 @@ import { Auth } from '../services/auth'
 import { Notificaciones } from '../../services/notificaciones'
 
 const SIN_CONEXION = 'No pudimos conectar con el servidor. Revisa tu conexión o intenta de nuevo en unos minutos.'
-const ERROR_SERVIDOR = 'El servidor no pudo procesar la solicitud. Intenta de nuevo en unos minutos.'
+const ERROR_SERVIDOR = 'Algo falló de nuestro lado. Inténtalo de nuevo en unos minutos.'
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(Auth)
@@ -20,10 +20,12 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       const detalles = body?.details
       const mensajeBackend = Array.isArray(detalles) && detalles.length > 0 ? detalles.join('. ') : body?.message
 
-      // Sin respuesta legible (servidor caído = "Failed to fetch", HTML de un proxy, Blob): nunca mostrar el texto técnico
+      // Nunca mostrar texto técnico: sin respuesta (servidor caído), cualquier 5xx (puede traer SQL, como
+      // "Unknown column ... in 'field list'") o un mensaje que huela a código o a base de datos
       const mensaje = error.status === 0
         ? SIN_CONEXION
-        : typeof mensajeBackend === 'string' && mensajeBackend.trim() && !/Exception|java\.|SQL|\.java:/i.test(mensajeBackend)
+        : error.status < 500 && typeof mensajeBackend === 'string' && mensajeBackend.trim()
+            && !/Exception|java\.|SQL|\.java:|column|field list|constraint|Duplicate entry|syntax/i.test(mensajeBackend)
           ? mensajeBackend
           : ERROR_SERVIDOR
 

@@ -1,3 +1,4 @@
+import { fechaLegible } from '../../../../../core/utils/fechas'
 import { Paginator, paginar } from '../../../../../shared/components/paginator/paginator'
 import { Component, computed, inject, OnInit, signal } from '@angular/core'
 import { ActivatedRoute, RouterLink } from '@angular/router'
@@ -109,7 +110,7 @@ export class VacantePostulantes implements OnInit {
       .actualizarEstadoPostulacion(postulacion.vacanteId, postulacion.postulacionId, nuevoEstado)
       .subscribe({
         next: () => {
-          this.toastMessage.set(`Estado de "${postulacion.nombreCandidato}" actualizado a ${nuevoEstado}`)
+          this.toastMessage.set(`${postulacion.nombreCandidato} ahora está en "${nuevoEstado.replaceAll('_', ' ').toLowerCase()}".`)
           setTimeout(() => {
             this.toastMessage.set(null)
           }, 3500)
@@ -121,7 +122,7 @@ export class VacantePostulantes implements OnInit {
         error: (err) => {
           // El backend rechaza el cambio (por ejemplo, si hay una entrevista agendada): se vuelve al estado real
           select.value = postulacion.estado
-          this.mostrarToast(err?.error?.message || 'Error al actualizar el estado de la postulación.')
+          this.mostrarToast(err?.error?.message || 'No pudimos cambiar el estado. Inténtalo de nuevo.')
         }
       })
   }
@@ -147,7 +148,7 @@ export class VacantePostulantes implements OnInit {
     this.cerrarAgendaModal()
     // Agendar la entrevista avanza la postulación en el backend: se recarga para mostrar el estado real
     this.vacanteService.getPostulacionesPorVacante().subscribe()
-    this.toastMessage.set(`¡Entrevista coordinada con ${nueva.candidateName} para el ${nueva.date} a las ${nueva.time} hs!`)
+    this.toastMessage.set(`Entrevista con ${nueva.candidateName} agendada para el ${fechaLegible(nueva.date)} a las ${nueva.time} hs.`)
     setTimeout(() => {
       this.toastMessage.set(null)
     }, 4500)
@@ -186,7 +187,7 @@ export class VacantePostulantes implements OnInit {
         setTimeout(() => this.toastMessage.set(null), 3000)
       },
       error: () => {
-        this.toastMessage.set('No se pudo descargar el CV.')
+        this.toastMessage.set('No pudimos descargar el CV. Inténtalo de nuevo.')
         setTimeout(() => this.toastMessage.set(null), 3000)
       }
     })

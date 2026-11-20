@@ -1,3 +1,4 @@
+import { fechaLegible } from '../../../../../core/utils/fechas'
 import { Paginator, paginar } from '../../../../../shared/components/paginator/paginator'
 import { Component, computed, inject, OnInit, signal } from '@angular/core'
 import { Auth } from '../../../../../core/auth/services/auth'
@@ -85,9 +86,9 @@ export class EntrevistaCalendar implements OnInit {
   }
 
   onEntrevistaScheduled(nueva: EntrevistaResponseDTO): void {
-    const accion = this.entrevistaAReprogramar() ? 'reprogramada' : 'coordinada'
+    const accion = this.entrevistaAReprogramar() ? 'reprogramada' : 'agendada'
     this.cerrarAgendaModal()
-    this.toastMessage.set(`¡Entrevista ${accion} con ${nueva.candidateName} para el ${nueva.date} a las ${nueva.time} hs!`)
+    this.toastMessage.set(`Entrevista con ${nueva.candidateName} ${accion} para el ${fechaLegible(nueva.date)} a las ${nueva.time} hs.`)
     setTimeout(() => {
       this.toastMessage.set(null)
     }, 4500)
@@ -110,14 +111,14 @@ export class EntrevistaCalendar implements OnInit {
     this.entrevistaService.cancelarEntrevista(e.id).subscribe({
       next: () => {
         this.cerrarModalCancelar()
-        this.toastMessage.set(`Entrevista con ${e.candidateName} cancelada exitosamente.`)
+        this.toastMessage.set(`Cancelaste la entrevista con ${e.candidateName}.`)
         setTimeout(() => {
           this.toastMessage.set(null)
         }, 3500)
       },
       error: () => {
         this.cerrarModalCancelar()
-        this.toastMessage.set('Error al cancelar la entrevista.')
+        this.toastMessage.set('No pudimos cancelar la entrevista. Inténtalo de nuevo.')
         setTimeout(() => {
           this.toastMessage.set(null)
         }, 3500)

@@ -159,7 +159,7 @@ export class AgendaModal {
         },
         error: (err: HttpErrorResponse) => {
           this.isSubmitting.set(false)
-          // El backend explica el motivo (p. ej. "ya tiene una entrevista programada; reprogramala")
+          // El backend explica el motivo (p. ej. "ya tiene una entrevista programada; reprográmala")
           this.errorMsg.set(err.error?.details?.[0] ?? 'Error al coordinar la entrevista. Inténtalo nuevamente.')
         }
       })
