@@ -300,7 +300,11 @@ export class Perfil {
       { params: { nombre, nivel: nivelNormalizado.toString() } }
     ).pipe(
       tap(nueva => {
-        this.perfilActual.update(p => p ? { ...p, habilidades: [...(p.habilidades || []), nueva] } : null)
+        // Si ya la tenía, el back le actualiza el nivel: se reemplaza en vez de duplicarla
+        this.perfilActual.update(p => p ? {
+          ...p,
+          habilidades: [...(p.habilidades || []).filter(h => h.habilidadId !== nueva.habilidadId), nueva]
+        } : null)
       })
     )
   }

@@ -240,6 +240,15 @@ export class MiPerfil implements OnInit, HasPendingChanges {
 
     required(f.pais, { message: 'El país es obligatorio' })
 
+    validate(f.email, ({ value }) => {
+      const email = value()?.trim() || ''
+      if (!email) return { kind: 'required', message: 'El email es obligatorio' }
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+        return { kind: 'pattern', message: 'Ingresa un email válido, por ejemplo nombre@correo.com' }
+      }
+      return null
+    })
+
     validate(f.fechaNacimiento, ({ value }) => {
       if (this.esEmpresa()) return null
       const fecha = value()?.trim() || ''
