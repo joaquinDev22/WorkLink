@@ -1,5 +1,6 @@
 import { Component, ElementRef, OnDestroy, OnInit, inject, signal, computed } from '@angular/core'
 import { CommonModule } from '@angular/common'
+import { forkJoin } from 'rxjs'
 import { RouterLink } from '@angular/router'
 import gsap from 'gsap'
 import { EmpresaService } from '../../../empresa-perfil/services/empresa'
@@ -111,12 +112,15 @@ export class EmpresaDashboard implements OnInit, OnDestroy {
   cargarDatos(): void {
     this.isLoading.set(true)
     this.empresaService.getMiEmpresa().subscribe()
-    this.vacanteService.getMisVacantes().subscribe()
-    this.recruiterService.getRecruiters().subscribe()
 
-    this.empresaService.getDashboardStats().subscribe({
-      next: (data) => {
-        this.stats.set(data)
+    // Se espera a todo junto: si no, el panel aparece con ceros y salta cuando llegan las vacantes
+    forkJoin({
+      stats: this.empresaService.getDashboardStats(),
+      vacantes: this.vacanteService.getMisVacantes(),
+      recruiters: this.recruiterService.getRecruiters()
+    }).subscribe({
+      next: ({ stats }) => {
+        this.stats.set(stats)
         this.isLoading.set(false)
         this.animateKpis()
       },
